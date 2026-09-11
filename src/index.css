@@ -1,0 +1,1448 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0f2a5e;
+  --color-primary-hover: #0c2350;
+  --color-primary-container: #e8edf8;
+  --color-surface: #f5f6fa;
+  --color-on-surface: #1a1d2e;
+  --color-surface-container: #ffffff;
+  --color-outline-variant: #dde1ee;
+  --color-outline: #6b7280;
+}
+
+/* Abyssinica SIL Amharic Font Setup - scoped strictly to Ethiopic Unicode range so English text is never affected */
+@font-face {
+  font-family: 'Abyssinica SIL';
+  src: url('/AbyssinicaSIL-Regular.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F;
+}
+
+@font-face {
+  font-family: 'Abyssinica SIL';
+  src: url('/AbyssinicaSIL-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F;
+}
+
+@font-face {
+  font-family: 'Abyssinica SIL';
+  src: url('/AbyssinicaSIL-Regular.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F;
+}
+
+/* Material Symbols & SVG Icon Rules */
+.material-symbols-outlined,
+.material-symbols-rounded,
+.material-symbols-sharp,
+.material-icons,
+.material-icons-outlined,
+.material-icons-round,
+.material-icons-sharp,
+.prefix-icon,
+[data-icon] {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+html {
+  font-size: 16px; /* Base body size */
+  text-rendering: optimizeLegibility;
+}
+
+:root, html.light {
+  --color-primary: #0f2a5e;
+  --color-primary-hover: #0c2350;
+  --color-primary-container: #e8edf8;
+  --color-primary-light: #e8edf8;
+  --color-secondary-container: #e8edf8;
+  --color-surface: #f5f6fa;
+  --color-on-surface: #1a1d2e;
+  --color-on-surface-variant: #1a1d2e;
+  --color-surface-container: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f6fa;
+  --color-surface-container-high: #e8edf8;
+  --color-surface-container-highest: #dde1ee;
+  --color-surface-bright: #ffffff;
+  --color-surface-dim: #f5f6fa;
+  --color-surface-variant: #e8edf8;
+  --color-secondary: #6b7280;
+  --color-outline: #6b7280;
+  --color-outline-variant: #dde1ee;
+  --color-brand-indigo: #0f2a5e;
+  --color-topnav: #0f2a5e;
+  --color-topnav-hover: #0c2350;
+  --color-topnav-dark: #071330;
+  --color-sidebar-bg: #0f2a5e;
+  --color-sidebar-hover: #0c2350;
+  --color-sidebar-text: #e8edf8;
+  --color-sidebar-active-text: #ffffff;
+  color-scheme: light;
+}
+
+html.dark {
+  --color-primary: #38bdf8;
+  --color-primary-hover: #7dd3fc;
+  --color-primary-container: #1e293b;
+  --color-primary-light: #0f172a;
+  --color-secondary-container: #1e293b;
+  --color-surface: #0b0f19;
+  --color-on-surface: #f8fafc;
+  --color-on-surface-variant: #e2e8f0;
+  --color-surface-container: #1e293b;
+  --color-surface-container-lowest: #0b0f19;
+  --color-surface-container-low: #0f172a;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  --color-surface-bright: #1e293b;
+  --color-surface-dim: #0b0f19;
+  --color-surface-variant: #1e293b;
+  --color-secondary: #cbd5e1; /* Slate 300 - clearly legible in dark mode */
+  --color-outline: #94a3b8; /* Slate 400 */
+  --color-outline-variant: #334155; /* Slate 700 */
+  --color-brand-indigo: #38bdf8;
+  --color-topnav: #1e293b;
+  --color-topnav-hover: #334155;
+  --color-topnav-dark: #0f172a;
+  --color-sidebar-bg: #1a2226;
+  --color-sidebar-hover: #11181a;
+  --color-sidebar-text: #cbd5e1;
+  --color-sidebar-active-text: #ffffff;
+  color-scheme: dark;
+}
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-ethiopic: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-container: var(--color-primary-container);
+  --color-primary-light: var(--color-primary-light);
+  --color-secondary-container: var(--color-secondary-container);
+  --color-surface: var(--color-surface);
+  --color-on-surface: var(--color-on-surface);
+  --color-on-surface-variant: var(--color-on-surface-variant);
+  --color-surface-container: var(--color-surface-container);
+  --color-surface-container-lowest: var(--color-surface-container-lowest);
+  --color-surface-container-low: var(--color-surface-container-low);
+  --color-surface-container-high: var(--color-surface-container-high);
+  --color-surface-container-highest: var(--color-surface-container-highest);
+  --color-surface-bright: var(--color-surface-bright);
+  --color-surface-dim: var(--color-surface-dim);
+  --color-surface-variant: var(--color-surface-variant);
+  --color-secondary: var(--color-secondary);
+  --color-outline: var(--color-outline);
+  --color-outline-variant: var(--color-outline-variant);
+  --color-brand-indigo: var(--color-brand-indigo);
+  --color-topnav: var(--color-topnav);
+  --color-topnav-hover: var(--color-topnav-hover);
+  --color-topnav-dark: var(--color-topnav-dark);
+  --color-sidebar-bg: var(--color-sidebar-bg);
+  --color-sidebar-hover: var(--color-sidebar-hover);
+  --color-sidebar-text: var(--color-sidebar-text);
+  --color-sidebar-active-text: var(--color-sidebar-active-text);
+
+  /* Page & Section Palette Overrides */
+  --color-slate-50: #f5f6fa;
+  --color-slate-100: #e8edf8;
+  --color-slate-200: #dde1ee;
+  --color-slate-900: #1a1d2e;
+
+  --color-gray-50: #f5f6fa;
+  --color-gray-100: #e8edf8;
+  --color-gray-900: #1a1d2e;
+
+  /* Forest Green #16a34a - Success / Alert */
+  --color-emerald-400: #16a34a;
+  --color-emerald-500: #16a34a;
+  --color-emerald-600: #16a34a;
+  --color-emerald-700: #15803d;
+  --color-green-400: #16a34a;
+  --color-green-500: #16a34a;
+  --color-green-600: #16a34a;
+  --color-green-700: #15803d;
+  
+  /* Deep Red #e85d26 / #B91C1C - Error / Alert */
+  --color-rose-400: #e85d26;
+  --color-rose-500: #e85d26;
+  --color-rose-600: #d9531e;
+  --color-rose-700: #b91c1c;
+  --color-red-400: #e85d26;
+  --color-red-500: #e85d26;
+  --color-red-600: #d9531e;
+  --color-red-700: #b91c1c;
+  
+  /* Warning - Yellow Accent */
+  --color-amber-400: #f59e0b;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-yellow-400: #EAB308;
+  --color-yellow-500: #EAB308;
+  --color-yellow-600: #CA8A04;
+  --color-yellow-700: #A16207;
+  
+  --color-blue-400: #254685;
+  --color-blue-500: #0f2a5e;
+  --color-blue-600: #0c2350;
+  --color-blue-700: #071330;
+}
+
+/* Base default body and system typography: clean English sans-serif */
+body,
+html {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f6fa !important;
+  color: #1a1d2e !important;
+  line-height: 1.5;
+  margin: 0;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+}
+
+/* Abyssinica SIL is applied ONLY when Amharic language is set as the system language, or on Amharic text */
+html[lang="am"],
+html.system-lang-am,
+html.lang-am,
+body.system-lang-am,
+body.lang-am,
+[data-system-lang="am"],
+.system-lang-am,
+.lang-am,
+.font-ethiopic,
+[lang="am"],
+:lang(am),
+.amharic,
+[data-lang="am"] {
+  font-family: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Inside Amharic mode, buttons and inputs use the Amharic font stack */
+html.system-lang-am button,
+html.system-lang-am input,
+html.system-lang-am select,
+html.system-lang-am textarea,
+body.system-lang-am button,
+body.system-lang-am input,
+body.system-lang-am select,
+body.system-lang-am textarea {
+  font-family: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* =========================================================================
+   STANDARDIZED ACCESSIBLE TYPOGRAPHY SYSTEM
+   ========================================================================= */
+
+/* Display & Hero Titles */
+.app-display-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--color-on-surface);
+}
+
+/* H1 - Primary Page Titles */
+.app-page-title {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--color-on-surface);
+}
+
+/* H2 - Section Headings */
+.app-section-title {
+  font-size: clamp(0.9375rem, 1.5vw, 1.125rem);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--color-on-surface);
+}
+
+/* H3 - Card Titles */
+.app-card-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--color-on-surface);
+}
+
+/* Subtitles & Descriptions */
+.app-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-secondary);
+}
+
+/* Form Input Field Labels */
+.app-field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  color: var(--color-on-surface);
+  margin-bottom: 0.375rem;
+}
+
+/* Helper / Supporting Text */
+.app-helper-text {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-secondary);
+}
+
+/* Micro / Caption Metadata */
+.app-caption {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-secondary);
+}
+
+/* Table Column Headers */
+.app-table-head {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
+}
+
+/* Badges & Status Pills */
+.app-badge {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Monospace ID & Serial Display */
+.app-mono-id {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 800;
+  letter-spacing: 0.025em;
+}
+
+/* Placeholder Contrast Enhancement matching reference #9aa0ae */
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
+  color: #9aa0ae !important;
+  opacity: 1 !important;
+}
+
+html.dark input::placeholder,
+.dark input::placeholder,
+html.dark textarea::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+/* Focus Indicators */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid #0f2a5e;
+  outline-offset: 1px;
+}
+
+html.dark input:focus-visible,
+.dark input:focus-visible,
+html.dark select:focus-visible,
+.dark select:focus-visible,
+html.dark textarea:focus-visible,
+.dark textarea:focus-visible,
+html.dark button:focus-visible,
+.dark button:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 1px;
+}
+
+/* Global Light Theme Body and Canvas Colors (strictly matching reference #f5f6fa and #1a1d2e) */
+html.light body,
+html:not(.dark) body {
+  background-color: #f5f6fa !important;
+  color: #1a1d2e !important;
+}
+
+/* Explicit Section Background Utility Rules for Light Theme */
+html.light .bg-surface,
+html:not(.dark) .bg-surface {
+  background-color: #f5f6fa !important;
+}
+
+html.light .bg-surface-container,
+html:not(.dark) .bg-surface-container {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-surface-container-lowest,
+html:not(.dark) .bg-surface-container-lowest {
+  background-color: #ffffff !important;
+}
+
+html.light .bg-surface-container-low,
+html:not(.dark) .bg-surface-container-low {
+  background-color: #f5f6fa !important;
+}
+
+html.light .bg-surface-container-high,
+html:not(.dark) .bg-surface-container-high,
+html.light .bg-primary-container,
+html:not(.dark) .bg-primary-container,
+html.light .bg-secondary-container,
+html:not(.dark) .bg-secondary-container {
+  background-color: #e8edf8 !important;
+}
+
+html.light .text-on-surface,
+html:not(.dark) .text-on-surface {
+  color: #1a1d2e !important;
+}
+
+html.light .border-outline-variant,
+html:not(.dark) .border-outline-variant {
+  border-color: #dde1ee !important;
+}
+
+/* Global Input Fields Enhancement matching reference */
+html.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+html.light textarea,
+html:not(.dark) textarea,
+html.light select,
+html:not(.dark) select {
+  color: #1a1d2e;
+}
+
+html.light input:focus,
+html:not(.dark) input:focus,
+html.light textarea:focus,
+html:not(.dark) textarea:focus,
+html.light select:focus,
+html:not(.dark) select:focus {
+  border-color: #0f2a5e !important;
+}
+
+.font-ethiopic,
+.system-lang-am,
+[data-system-lang="am"],
+[lang="am"],
+:lang(am),
+.amharic,
+[data-lang="am"] {
+  font-family: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Global Dark Mode Comprehensive Overrides */
+html.dark,
+.dark {
+  background-color: #131314 !important;
+  color: #e3e3e3 !important;
+  color-scheme: dark;
+}
+
+html.dark body,
+.dark body {
+  background-color: #131314 !important;
+  color: #e3e3e3 !important;
+}
+
+/* Background overrides in dark mode (catching opacity modifiers like /95, /90, /80) */
+html.dark [class*="bg-surface-container-lowest"],
+.dark [class*="bg-surface-container-lowest"],
+html.dark [class*="bg-white"],
+.dark [class*="bg-white"] {
+  background-color: #0f0f11 !important;
+}
+
+html.dark [class*="bg-surface-container"],
+.dark [class*="bg-surface-container"],
+html.dark [class*="bg-slate-50"],
+.dark [class*="bg-slate-50"],
+html.dark [class*="bg-slate-100"],
+.dark [class*="bg-slate-100"],
+html.dark [class*="bg-gray-50"],
+.dark [class*="bg-gray-50"],
+html.dark [class*="bg-gray-100"],
+.dark [class*="bg-gray-100"] {
+  background-color: #1e1f20 !important;
+}
+
+html.dark [class*="bg-surface-container-high"],
+.dark [class*="bg-surface-container-high"],
+html.dark [class*="bg-surface-container-highest"],
+.dark [class*="bg-surface-container-highest"],
+html.dark [class*="bg-slate-200"],
+.dark [class*="bg-slate-200"] {
+  background-color: #2d2f31 !important;
+}
+
+html.dark [class*="bg-surface"],
+.dark [class*="bg-surface"] {
+  background-color: #131314 !important;
+}
+
+/* Navigation & Header Overrides for Dark Mode */
+html.dark header,
+.dark header,
+html.dark nav,
+.dark nav,
+html.dark aside,
+.dark aside {
+  background-color: #1e1f20 !important;
+  border-color: #3c4043 !important;
+}
+
+/* Card and Container borders in dark mode */
+html.dark [class*="border-outline-variant"],
+.dark [class*="border-outline-variant"],
+html.dark [class*="border-slate-100"],
+.dark [class*="border-slate-100"],
+html.dark [class*="border-slate-200"],
+.dark [class*="border-slate-200"],
+html.dark [class*="border-slate-300"],
+.dark [class*="border-slate-300"],
+html.dark [class*="border-gray-200"],
+.dark [class*="border-gray-200"],
+html.dark [class*="border-gray-300"],
+.dark [class*="border-gray-300"] {
+  border-color: #2d2f31 !important;
+}
+
+/* Text color overrides in dark mode */
+html.dark [class*="text-on-surface"],
+.dark [class*="text-on-surface"],
+html.dark [class*="text-slate-900"],
+.dark [class*="text-slate-900"],
+html.dark [class*="text-slate-800"],
+.dark [class*="text-slate-800"],
+html.dark [class*="text-slate-700"],
+.dark [class*="text-slate-700"],
+html.dark [class*="text-slate-950"],
+.dark [class*="text-slate-950"],
+html.dark [class*="text-gray-900"],
+.dark [class*="text-gray-900"],
+html.dark [class*="text-gray-800"],
+.dark [class*="text-gray-800"],
+html.dark [class*="text-gray-700"],
+.dark [class*="text-gray-700"],
+html.dark [class*="text-zinc-950"],
+.dark [class*="text-zinc-950"],
+html.dark [class*="text-zinc-900"],
+.dark [class*="text-zinc-900"],
+html.dark [class*="text-zinc-800"],
+.dark [class*="text-zinc-800"],
+html.dark [class*="text-zinc-700"],
+.dark [class*="text-zinc-700"],
+html.dark [class*="text-neutral-950"],
+.dark [class*="text-neutral-950"],
+html.dark [class*="text-neutral-900"],
+.dark [class*="text-neutral-900"],
+html.dark [class*="text-neutral-800"],
+.dark [class*="text-neutral-800"],
+html.dark [class*="text-neutral-700"],
+.dark [class*="text-neutral-700"],
+html.dark [class*="text-stone-950"],
+.dark [class*="text-stone-950"],
+html.dark [class*="text-stone-900"],
+.dark [class*="text-stone-900"],
+html.dark [class*="text-stone-800"],
+.dark [class*="text-stone-800"] {
+  color: #e3e3e3 !important;
+}
+
+/* Fix standard un-namespaced text-black issues in layout */
+html.dark .text-black:not(.printable-a4-document *):not(.printable-sticker *):not(.printable-id-card *),
+.dark .text-black:not(.printable-a4-document *):not(.printable-sticker *):not(.printable-id-card *) {
+  color: #ffffff !important;
+}
+
+html.dark [class*="text-secondary"],
+.dark [class*="text-secondary"],
+html.dark [class*="text-slate-600"],
+.dark [class*="text-slate-600"],
+html.dark [class*="text-slate-500"],
+.dark [class*="text-slate-500"],
+html.dark [class*="text-gray-600"],
+.dark [class*="text-gray-600"],
+html.dark [class*="text-gray-500"],
+.dark [class*="text-gray-500"],
+html.dark [class*="text-zinc-600"],
+.dark [class*="text-zinc-600"],
+html.dark [class*="text-zinc-500"],
+.dark [class*="text-zinc-500"],
+html.dark [class*="text-neutral-600"],
+.dark [class*="text-neutral-600"],
+html.dark [class*="text-neutral-500"],
+.dark [class*="text-neutral-500"] {
+  color: #c4c7c5 !important;
+}
+
+/* Input, Select, Textarea in dark mode */
+html.dark input[type="text"],
+.dark input[type="text"],
+html.dark input[type="number"],
+.dark input[type="number"],
+html.dark input[type="date"],
+.dark input[type="date"],
+html.dark input[type="search"],
+.dark input[type="search"],
+html.dark input[type="password"],
+.dark input[type="password"],
+html.dark select,
+.dark select,
+html.dark textarea,
+.dark textarea {
+  background-color: #0f0f11 !important;
+  color: #e3e3e3 !important;
+  border-color: #3c4043 !important;
+}
+
+html.dark input::placeholder,
+.dark input::placeholder,
+html.dark textarea::placeholder,
+.dark textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Light tint boxes override in dark mode */
+html.dark [class*="bg-sky-50"],
+.dark [class*="bg-sky-50"],
+html.dark [class*="bg-blue-50"],
+.dark [class*="bg-blue-50"],
+html.dark [class*="bg-sky-100"],
+.dark [class*="bg-sky-100"],
+html.dark [class*="bg-sky-200"],
+.dark [class*="bg-sky-200"],
+html.dark [class*="bg-blue-100"],
+.dark [class*="bg-blue-100"] {
+  background-color: rgba(191, 90, 242, 0.15) !important;
+  border-color: rgba(191, 90, 242, 0.3) !important;
+}
+
+html.dark [class*="text-sky-950"],
+.dark [class*="text-sky-950"],
+html.dark [class*="text-sky-900"],
+.dark [class*="text-sky-900"],
+html.dark [class*="text-sky-800"],
+.dark [class*="text-sky-800"],
+html.dark [class*="text-sky-700"],
+.dark [class*="text-sky-700"],
+html.dark [class*="text-sky-600"],
+.dark [class*="text-sky-600"],
+html.dark [class*="text-blue-950"],
+.dark [class*="text-blue-950"],
+html.dark [class*="text-blue-900"],
+.dark [class*="text-blue-900"],
+html.dark [class*="text-blue-800"],
+.dark [class*="text-blue-800"],
+html.dark [class*="text-blue-700"],
+.dark [class*="text-blue-700"],
+html.dark [class*="text-blue-600"],
+.dark [class*="text-blue-600"] {
+  color: #da8eff !important;
+}
+
+html.dark [class*="text-sky-400"],
+.dark [class*="text-sky-400"],
+html.dark [class*="text-sky-300"],
+.dark [class*="text-sky-300"],
+html.dark [class*="text-blue-400"],
+.dark [class*="text-blue-400"],
+html.dark [class*="text-blue-300"],
+.dark [class*="text-blue-300"] {
+  color: #e8d5ff !important;
+}
+
+html.dark [class*="bg-emerald-50"],
+.dark [class*="bg-emerald-50"],
+html.dark [class*="bg-green-50"],
+.dark [class*="bg-green-50"] {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+html.dark [class*="text-emerald-900"],
+.dark [class*="text-emerald-900"],
+html.dark [class*="text-emerald-950"],
+.dark [class*="text-emerald-950"],
+html.dark [class*="text-green-900"],
+.dark [class*="text-green-900"] {
+  color: #10b981 !important;
+}
+
+html.dark [class*="bg-amber-50"],
+.dark [class*="bg-amber-50"],
+html.dark [class*="bg-yellow-50"],
+.dark [class*="bg-yellow-50"] {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+html.dark [class*="text-amber-900"],
+.dark [class*="text-amber-900"],
+html.dark [class*="text-amber-950"],
+.dark [class*="text-amber-950"] {
+  color: #f59e0b !important;
+}
+
+html.dark [class*="bg-rose-50"],
+.dark [class*="bg-rose-50"],
+html.dark [class*="bg-red-50"],
+.dark [class*="bg-red-50"] {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+html.dark [class*="text-rose-900"],
+.dark [class*="text-rose-900"],
+html.dark [class*="text-rose-950"],
+.dark [class*="text-rose-950"],
+html.dark [class*="text-red-900"],
+.dark [class*="text-red-900"] {
+  color: #ef4444 !important;
+}
+
+html.dark [class*="bg-purple-50"],
+.dark [class*="bg-purple-50"],
+html.dark [class*="bg-indigo-50"],
+.dark [class*="bg-indigo-50"] {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+html.dark [class*="text-purple-900"],
+.dark [class*="text-purple-900"],
+html.dark [class*="text-indigo-900"],
+.dark [class*="text-indigo-900"] {
+  color: #8b5cf6 !important;
+}
+
+/* Modals & Dialog overlays */
+html.dark [class*="bg-black/50"],
+.dark [class*="bg-black/50"],
+html.dark [class*="bg-slate-900/60"],
+.dark [class*="bg-slate-900/60"] {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Tables in Dark Mode */
+html.dark tr:hover,
+.dark tr:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+html.dark th,
+.dark th {
+  background-color: #0a0a0a !important;
+  color: #cbd5e1 !important;
+  border-color: #1f1f1f !important;
+}
+
+html.dark td,
+.dark td {
+  border-color: #1f1f1f !important;
+}
+
+/* Ensure printable ID cards and A4 documents retain clean light appearance for official scanning */
+html.dark .printable-id-card,
+.dark .printable-id-card {
+  background-color: #e4f2f7 !important;
+  color: #1e293b !important;
+}
+
+html.dark .printable-a4-document,
+.dark .printable-a4-document,
+html.dark .printable-a4-document *,
+.dark .printable-a4-document * {
+  color: #0f172a !important;
+}
+
+html.dark .printable-a4-document,
+.dark .printable-a4-document {
+  background-color: #ffffff !important;
+}
+
+@media print {
+  @page {
+    size: auto;
+    margin: 0;
+  }
+
+  html, body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .no-print,
+  button:not(.printable-a4-document *):not(.printable-id-card *):not(.printable-sticker *),
+  nav,
+  header,
+  aside,
+  [data-no-print="true"] {
+    display: none !important;
+  }
+
+  /* When printing an isolated document, hide background application and isolate the document */
+  body[data-print-target] #app-root-container,
+  body.is-printing-doc #app-root-container {
+    visibility: hidden !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Make sure modal overlays are transparent so no dark backdrop prints */
+  body[data-print-target] .fixed,
+  body[data-print-target] .backdrop-blur-md,
+  body[data-print-target] .backdrop-blur,
+  body[data-print-target] [class*="bg-black"],
+  body[data-print-target] [class*="bg-slate-950"],
+  body.is-printing-doc .fixed,
+  body.is-printing-doc .backdrop-blur-md,
+  body.is-printing-doc .backdrop-blur,
+  body.is-printing-doc [class*="bg-black"],
+  body.is-printing-doc [class*="bg-slate-950"] {
+    background-color: transparent !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Reset zoom transforms applied by interactive preview containers */
+  body[data-print-target] [data-zoomable-container="true"],
+  body[data-print-target] [data-zoomable-container="true"] > div,
+  body.is-printing-doc [data-zoomable-container="true"],
+  body.is-printing-doc [data-zoomable-container="true"] > div {
+    transform: none !important;
+    zoom: 1 !important;
+  }
+
+  /* Make the printable document and all its inner elements visible */
+  body[data-print-target] .printable-a4-document,
+  body[data-print-target] .printable-id-card,
+  body[data-print-target] .printable-sticker,
+  body.is-printing-doc .printable-a4-document,
+  body.is-printing-doc .printable-id-card,
+  body.is-printing-doc .printable-sticker {
+    visibility: visible !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
+    z-index: 9999999 !important;
+    box-shadow: none !important;
+    background-color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  body[data-print-target] .printable-a4-document *,
+  body[data-print-target] .printable-id-card *,
+  body[data-print-target] .printable-sticker *,
+  body.is-printing-doc .printable-a4-document *,
+  body.is-printing-doc .printable-id-card *,
+  body.is-printing-doc .printable-sticker * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Specific document formats for print preview */
+  body[data-print-target="a4"] .printable-a4-document,
+  body.is-printing-doc .printable-a4-document {
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    height: 297mm !important;
+    border: 3px double #000000 !important;
+    padding: 8mm 10mm !important;
+    box-sizing: border-box !important;
+  }
+
+  body[data-print-target="id-card"] .printable-id-card,
+  body.is-printing-doc .printable-id-card {
+    width: 580px !important;
+    max-width: 580px !important;
+    height: 366px !important;
+    top: 15mm !important;
+    border: 1px solid #cbd5e1 !important;
+    box-sizing: border-box !important;
+  }
+
+  body[data-print-target="sticker"] .printable-sticker,
+  body.is-printing-doc .printable-sticker {
+    width: 380px !important;
+    max-width: 380px !important;
+    height: 380px !important;
+    top: 15mm !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.zoom-container {
+  transform-origin: top left;
+  transition: transform 0.2s ease-out;
+}
+
+@keyframes scanBeam {
+  0% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(220px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+}
+
+.animate-scan-beam {
+  animation: scanBeam 2.4s ease-in-out infinite;
+}
+
+@keyframes whiteLaser {
+  0% {
+    top: 6%;
+    opacity: 0.7;
+  }
+  50% {
+    top: 92%;
+    opacity: 1;
+  }
+  100% {
+    top: 6%;
+    opacity: 0.7;
+  }
+}
+
+.animate-white-laser {
+  animation: whiteLaser 2.2s ease-in-out infinite;
+}
+
+@keyframes redLaser {
+  0% {
+    top: 5%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 92%;
+    opacity: 1;
+  }
+  100% {
+    top: 5%;
+    opacity: 0.8;
+  }
+}
+
+.animate-red-laser {
+  animation: redLaser 2.2s ease-in-out infinite;
+}
+
+/* Global Dropdown Arrow Fix */
+select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: none !important;
+}
+
+/* Prevent default browser input black borders */
+input:focus {
+  outline: none;
+}
+
+.border-none,
+input.border-none,
+input[type="tel"].border-none {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Navbar Action Progress Loader */
+@keyframes navbarProgress {
+  0% {
+    left: -35%;
+    width: 35%;
+  }
+  50% {
+    left: 30%;
+    width: 55%;
+  }
+  100% {
+    left: 100%;
+    width: 40%;
+  }
+}
+
+.animate-navbar-progress {
+  animation: navbarProgress 1.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ==========================================================================
+   ATOMIC LEVEL SIZING SYSTEM (Strictly Aligned with Design System Reference)
+   ========================================================================== */
+
+/* 1. Shell & Headers */
+.ref-header {
+  min-height: 4rem; /* 64px (min-h-16) */
+  padding: 0.75rem 1rem; /* px-4 py-3 */
+  gap: 0.75rem; /* gap-3 */
+}
+@media (min-width: 768px) {
+  .ref-header {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.ref-brand-avatar {
+  width: 2.5rem; /* 40px (w-10) */
+  height: 2.5rem; /* 40px (h-10) */
+  border-radius: 9999px;
+  border-width: 2px;
+  border-color: #e8edf8;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ref-brand-title {
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+/* 2. Breadcrumbs */
+.ref-breadcrumb {
+  min-height: 2.5rem; /* 40px (min-h-10) */
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  font-size: 11px;
+  gap: 5px;
+  display: flex;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .ref-breadcrumb {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* 3. Section Title Blocks */
+.ref-section-title {
+  padding: 1rem; /* px-4 py-4 */
+  border-bottom: 1px solid #dde1ee;
+  border-radius: 10px;
+  margin-bottom: 0.75rem; /* mb-3 */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+  background-color: #ffffff;
+}
+@media (min-width: 768px) {
+  .ref-section-title {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+html.dark .ref-section-title {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+
+.ref-section-icon {
+  width: 2.5rem; /* 40px (w-10) */
+  height: 2.5rem; /* 40px (h-10) */
+  border-radius: 9px;
+  background-color: #e8edf8;
+  color: #0f2a5e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+html.dark .ref-section-icon {
+  background-color: rgba(15, 42, 94, 0.5);
+  color: #facc15;
+}
+
+.ref-h1 {
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #1a1d2e;
+}
+html.dark .ref-h1 {
+  color: #f8fafc;
+}
+
+.ref-subtitle {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 0.125rem;
+}
+html.dark .ref-subtitle {
+  color: #94a3b8;
+}
+
+/* 4. Atomic Input Fields */
+.ref-search-bar {
+  width: 100%;
+  height: 2.75rem; /* 44px (h-11) */
+  border: 1px solid #dde1ee;
+  border-radius: 10px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-left: 0.75rem; /* px-3 */
+  padding-right: 0.75rem;
+}
+html.dark .ref-search-bar {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.ref-input {
+  width: 100%;
+  height: 2.75rem; /* 44px (h-11) */
+  border: 1px solid #dde1ee;
+  border-radius: 10px;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a1d2e;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  outline: none;
+}
+html.dark .ref-input {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+.ref-input::placeholder {
+  font-size: 14px;
+  font-weight: 400;
+  color: #9aa0ae !important;
+}
+
+/* 5. Atomic Tabs & Filters */
+.ref-tab {
+  min-height: 38px;
+  border-radius: 9px;
+  padding: 7px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* gap-2 */
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 150ms ease-in-out;
+}
+
+.ref-tab-active {
+  background-color: #0f2a5e;
+  color: #ffffff;
+  border: 1px solid #0f2a5e;
+}
+html.dark .ref-tab-active {
+  background-color: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.ref-tab-inactive {
+  background-color: #ffffff;
+  color: #1a1d2e;
+  border: 1px solid #dde1ee;
+}
+.ref-tab-inactive:hover {
+  background-color: #f8f9fc;
+  border-color: #cbd2e4;
+}
+html.dark .ref-tab-inactive {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+html.dark .ref-tab-inactive:hover {
+  background-color: #334155;
+}
+
+.ref-tab-count {
+  min-width: 1.25rem; /* 20px (min-w-5) */
+  height: 1.25rem; /* 20px (h-5) */
+  padding: 0 6px;
+  border-radius: 6px; /* rounded-md */
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 6. Summary Bars */
+.ref-summary-bar {
+  min-height: 2.25rem; /* 36px (min-h-9) */
+  border-radius: 9px;
+  padding: 0.5rem 0.75rem; /* px-3 py-2 */
+  background-color: #e8edf8;
+  color: #0f2a5e;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+html.dark .ref-summary-bar {
+  background-color: rgba(15, 42, 94, 0.4);
+  color: #93c5fd;
+}
+
+.ref-count-pill {
+  padding: 3px 8px; /* px-2 py-[3px] */
+  border-radius: 6px;
+  background-color: #0f2a5e;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 7. Member Cards */
+.ref-card {
+  padding: 0.75rem; /* 12px (p-3) */
+  border: 1px solid #dde1ee;
+  border-radius: 10px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem; /* gap-3 */
+  transition: border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
+}
+.ref-card:hover {
+  border-color: #cbd2e4;
+  box-shadow: 0 2px 8px rgba(15, 42, 94, 0.05);
+}
+html.dark .ref-card {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+html.dark .ref-card:hover {
+  border-color: #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ref-avatar-index {
+  width: 2rem; /* 32px (w-8) */
+  height: 2rem; /* 32px (h-8) */
+  border-radius: 8px;
+  background-color: #e8edf8;
+  color: #0f2a5e;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+html.dark .ref-avatar-index {
+  background-color: rgba(15, 42, 94, 0.4);
+  color: #facc15;
+}
+
+.ref-card-title {
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 600;
+  color: #1a1d2e;
+  margin-bottom: 0.375rem; /* mb-1.5 */
+}
+html.dark .ref-card-title {
+  color: #f8fafc;
+}
+
+.ref-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.625rem; /* gap-2.5 */
+  font-size: 11px;
+  color: #6b7280;
+}
+html.dark .ref-meta-row {
+  color: #94a3b8;
+}
+
+.ref-badge {
+  padding: 3px 8px; /* px-2 py-[3px] */
+  border-radius: 6px; /* rounded-md */
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ref-btn-circular {
+  width: 2rem; /* 32px (w-8) */
+  height: 2rem; /* 32px (h-8) */
+  border-radius: 9999px;
+  background-color: #eef0f7;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.ref-btn-circular:hover {
+  background-color: #dde1ee;
+  color: #1a1d2e;
+}
+html.dark .ref-btn-circular {
+  background-color: #1e293b;
+  color: #94a3b8;
+}
+html.dark .ref-btn-circular:hover {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+.ref-btn-action {
+  width: 2.25rem; /* 36px (w-9) */
+  height: 2.25rem; /* 36px (h-9) */
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.ref-notif-badge {
+  position: absolute;
+  top: -0.25rem; /* -top-1 */
+  right: -0.25rem; /* -right-1 */
+  min-width: 1.25rem; /* min-w-5 (20px) */
+  height: 1.25rem; /* h-5 (20px) */
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 9999px;
+  background-color: #e85d26;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* 8. Global Input & Select Harmonization (Atomic standard: 44px / 10px rounded / 14px font) */
+html.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not(.h-auto):not([data-scanner] *),
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not(.h-auto):not([data-scanner] *),
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not(.h-auto):not([data-scanner] *),
+html.light select:not(.h-auto):not([data-scanner] *),
+html:not(.dark) select:not(.h-auto):not([data-scanner] *),
+html.dark select:not(.h-auto):not([data-scanner] *),
+.ref-input {
+  min-height: 2.75rem; /* 44px */
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* Harmonized input placeholder styling */
+input::placeholder,
+textarea::placeholder {
+  color: #9aa0ae;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #94a3b8;
+}
+
+
+
+
+

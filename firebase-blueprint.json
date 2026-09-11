@@ -1,0 +1,145 @@
+{
+  "entities": {
+    "motorcycle_registrations": {
+      "title": "Motorcycle Registrations",
+      "description": "Permit applications and motor vehicle registrations in the permit database",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Registration identifier" },
+        "fullName": { "type": "string", "description": "Full name of the motor owner" },
+        "phone": { "type": "string", "description": "Contact phone number" },
+        "userPortraitPhoto": { "type": "string", "description": "Portrait photo URL or base64" },
+        "nationalIdPhoto": { "type": "string", "description": "National ID photo URL or base64" },
+        "drivingLicensePhoto": { "type": "string", "description": "Driving license photo URL or base64" },
+        "drivingPermitPhoto": { "type": "string", "description": "Driving permit photo URL or base64" },
+        "vehicleCategory": { "type": "string", "description": "Category (electric or gas_under_110cc)" },
+        "motorBrand": { "type": "string", "description": "Motor brand name" },
+        "motorModel": { "type": "string", "description": "Motor model" },
+        "engineOrSerialNo": { "type": "string", "description": "Engine or chassis serial number" },
+        "plateNumber": { "type": "string", "description": "Vehicle plate number" },
+        "registrationDate": { "type": "string", "description": "Registration date string" },
+        "status": { "type": "string", "description": "Approval and print status" },
+        "qrCodeData": { "type": "string", "description": "QR hash or encoded identifier" },
+        "registeredBy": { "type": "string", "description": "Clerk or user that registered the vehicle" },
+        "rejectionReason": { "type": "string", "description": "Reason for rejection if rejected" }
+      },
+      "required": ["id", "fullName", "phone", "vehicleCategory", "engineOrSerialNo", "plateNumber", "status"]
+    },
+    "officer_assignments": {
+      "title": "Officer Assignments",
+      "description": "Duty assignments for field officers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Assignment ID" },
+        "officerName": { "type": "string", "description": "Officer full name" },
+        "badgeId": { "type": "string", "description": "Officer badge ID" },
+        "subCity": { "type": "string", "description": "Sub-city or district" },
+        "locationName": { "type": "string", "description": "Checkpoint or location name" },
+        "shift": { "type": "string", "description": "Shift period" },
+        "status": { "type": "string", "description": "Officer active status" },
+        "phone": { "type": "string", "description": "Officer contact phone" },
+        "assignedDate": { "type": "string", "description": "Assigned date" }
+      },
+      "required": ["id", "officerName", "badgeId", "status"]
+    },
+    "print_batch_orders": {
+      "title": "Print Batch Orders",
+      "description": "Batch print orders for printing press production",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Batch order ID" },
+        "orderDate": { "type": "string", "description": "Order placement date" },
+        "totalItems": { "type": "number", "description": "Number of permits in batch" },
+        "registrationIds": { "type": "array", "items": { "type": "string" }, "description": "List of registration IDs" },
+        "status": { "type": "string", "description": "Printing status" },
+        "notes": { "type": "string", "description": "Printing press notes" },
+        "updatedAt": { "type": "string", "description": "Last updated timestamp" }
+      },
+      "required": ["id", "orderDate", "status"]
+    },
+    "verification_logs": {
+      "title": "Field Verification Logs",
+      "description": "Logs recorded by traffic officers during field QR scanning",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Log entry ID" },
+        "scannedAt": { "type": "string", "description": "Scan timestamp" },
+        "plateNumber": { "type": "string", "description": "Scanned plate number" },
+        "fullName": { "type": "string", "description": "Owner full name" },
+        "phone": { "type": "string", "description": "Owner phone" },
+        "vehicleCategory": { "type": "string", "description": "Vehicle category" },
+        "engineOrSerialNo": { "type": "string", "description": "Engine or serial number" },
+        "permitStatus": { "type": "string", "description": "Permit status" },
+        "verificationStatus": { "type": "string", "description": "Verified, warning, or flagged" },
+        "officerNotes": { "type": "string", "description": "Notes added by checking officer" },
+        "officerBadgeId": { "type": "string", "description": "Badge ID of checking officer" },
+        "locationName": { "type": "string", "description": "Location of check" },
+        "userPortraitPhoto": { "type": "string", "description": "Driver portrait photo" },
+        "nationalIdPhoto": { "type": "string", "description": "National ID photo" }
+      },
+      "required": ["id", "scannedAt", "plateNumber", "fullName", "verificationStatus"]
+    },
+    "system_settings": {
+      "title": "System & User Settings",
+      "description": "Configuration and settings stored in permit database",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Settings document ID" },
+        "officerName": { "type": "string", "description": "Officer name" },
+        "department": { "type": "string", "description": "Department name" },
+        "subCityOffice": { "type": "string", "description": "Sub city office" },
+        "defaultPrinter": { "type": "string", "description": "Default printer name" },
+        "cardStockType": { "type": "string", "description": "Card stock type" },
+        "calendarSystem": { "type": "string", "description": "Calendar system" },
+        "autoPrintQR": { "type": "boolean", "description": "Auto print QR code" },
+        "emailAlerts": { "type": "boolean", "description": "Email alerts enabled" },
+        "security2FA": { "type": "boolean", "description": "2FA security enabled" },
+        "highRiskAlerts": { "type": "boolean", "description": "High risk alerts enabled" }
+      },
+      "required": ["id", "officerName", "department"]
+    },
+    "unregistered_reports": {
+      "title": "Unregistered Vehicle Reports",
+      "description": "Field reports of unregistered or unpermitted vehicles recorded by patrol officers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Report identifier" },
+        "reportedAt": { "type": "string", "description": "Reporting timestamp" },
+        "plateNumber": { "type": "string", "description": "Vehicle plate number if present" },
+        "driverName": { "type": "string", "description": "Driver or owner name" },
+        "driverPhone": { "type": "string", "description": "Driver contact phone" },
+        "vehicleCategory": { "type": "string", "description": "Vehicle category" },
+        "engineOrSerialNo": { "type": "string", "description": "Engine or serial number" },
+        "subCity": { "type": "string", "description": "Sub city district" },
+        "locationName": { "type": "string", "description": "Incident checkpoint or street location" },
+        "officerBadgeId": { "type": "string", "description": "Reporting officer badge ID" },
+        "officerName": { "type": "string", "description": "Reporting officer full name" },
+        "notes": { "type": "string", "description": "Officer field notes and incident details" },
+        "evidencePhoto": { "type": "string", "description": "Vehicle or scene evidence photo URL" },
+        "status": { "type": "string", "description": "Report resolution status" }
+      },
+      "required": ["id", "reportedAt", "vehicleCategory", "subCity", "officerBadgeId", "notes"]
+    },
+    "payment_receipts": {
+      "title": "Payment Receipts",
+      "description": "Owner permit payment receipts registered by clerks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Receipt document identifier" },
+        "receiptNumber": { "type": "string", "description": "Bank or treasury payment receipt number" },
+        "ownerRegistrationId": { "type": "string", "description": "Linked motorcycle registration ID" },
+        "ownerName": { "type": "string", "description": "Vehicle owner full name" },
+        "plateNumber": { "type": "string", "description": "Vehicle plate number" },
+        "phone": { "type": "string", "description": "Owner contact phone" },
+        "paymentDate": { "type": "string", "description": "Date of payment" },
+        "expirationDate": { "type": "string", "description": "Calculated expiration date (1 month after payment date)" },
+        "amount": { "type": "string", "description": "Payment amount in Birr" },
+        "receiptScreenshot": { "type": "string", "description": "Image data URL or screenshot photo of payment receipt" },
+        "notes": { "type": "string", "description": "Clerk remarks or treasury notes" },
+        "enteredBy": { "type": "string", "description": "Clerk badge ID or user name" },
+        "createdAt": { "type": "string", "description": "Record creation timestamp" }
+      },
+      "required": ["id", "receiptNumber", "ownerName", "paymentDate", "expirationDate", "enteredBy"]
+    }
+  }
+}
