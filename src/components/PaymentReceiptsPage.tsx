@@ -5,7 +5,6 @@ import { calculateOneMonthExpiration, getPaymentReceiptStatus } from '../utils/p
 import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
-import { SectionHeader } from './SectionHeader';
 
 interface PaymentReceiptsPageProps {
   userBadgeId: string;
@@ -354,39 +353,41 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Page Header & Action Bar */}
-      <SectionHeader
-        icon="receipt_long"
-        title={isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}
-        subtitle={
-          isAmharic
-            ? 'የባህር ዳር ከተማ አስተዳደር የ1 ወር ክፍያ ደረሰኞች ክትትልና ምዝገባ'
-            : '1-Month Municipal Payment Receipts Tracking & Archival'
-        }
-        actions={
-          <button
-            type="button"
-            onClick={() => {
-              setIsFormOpen(!isFormOpen);
-              setSubmitError('');
-              setSubmitSuccess('');
-            }}
-            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] text-white text-xs font-bold transition-all shadow-sm cursor-pointer shrink-0"
-          >
-            <Icon className="material-symbols-outlined text-[18px]">
-              {isFormOpen ? 'close' : 'add_circle'}
-            </Icon>
-            <span>
-              {isFormOpen
-                ? isAmharic
-                  ? 'ፎርሙን ዝጋ'
-                  : 'Close Form'
-                : isAmharic
-                ? 'አዲስ ደረሰኝ መዝግብ'
-                : 'New Payment Receipt'}
-            </span>
-          </button>
-        }
-      />
+      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[#1D61E7]/10 text-[#1D61E7] border border-[#1D61E7]/20 flex items-center justify-center shrink-0">
+            <Icon className="material-symbols-outlined text-[24px]">receipt_long</Icon>
+          </div>
+          <div>
+            <h1 className="text-base sm:text-lg font-black text-on-surface uppercase tracking-wide">
+              {isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}
+            </h1>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            setIsFormOpen(!isFormOpen);
+            setSubmitError('');
+            setSubmitSuccess('');
+          }}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer shrink-0"
+        >
+          <Icon className="material-symbols-outlined text-[18px]">
+            {isFormOpen ? 'close' : 'add_circle'}
+          </Icon>
+          <span>
+            {isFormOpen
+              ? isAmharic
+                ? 'ፎርሙን ዝጋ'
+                : 'Close Form'
+              : isAmharic
+              ? 'አዲስ ደረሰኝ መዝግብ'
+              : 'New Payment Receipt'}
+          </span>
+        </button>
+      </div>
 
       {/* Global Success Banner */}
       {submitSuccess && (
@@ -414,7 +415,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             onClick={() => setStatusFilter('all')}
             className={`p-2.5 sm:p-3 rounded-lg border text-left transition-all cursor-pointer ${
               statusFilter === 'all'
-                ? 'bg-[#0f2a5e] text-white border-[#0f2a5e] shadow-md ring-2 ring-blue-400'
+                ? 'bg-[#1D61E7] text-white border-blue-600 shadow-md ring-2 ring-blue-400'
                 : 'bg-surface-container-lowest border-outline-variant hover:border-blue-300 text-on-surface'
             }`}
           >
@@ -498,18 +499,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {isFormOpen && (
         <form
           onSubmit={handleSubmitForm}
-          className="bg-surface-container-lowest border-2 border-[#0f2a5e]/40 rounded-xl p-4 sm:p-6 shadow-md space-y-5 animate-in fade-in slide-in-from-top-4 duration-200"
+          className="bg-surface-container-lowest border-2 border-[#1D61E7]/40 rounded-xl p-4 sm:p-6 shadow-md space-y-5 animate-in fade-in slide-in-from-top-4 duration-200"
         >
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
             <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-[#0f2a5e] text-[22px]">post_add</Icon>
+              <Icon className="material-symbols-outlined text-[#1D61E7] text-[22px]">post_add</Icon>
               <h2 className="text-sm font-black text-on-surface uppercase tracking-wider">
                 {isAmharic ? 'አዲስ የክፍያ ደረሰኝ መመዝገቢያ ፎርም' : 'New Payment Receipt Entry Form'}
               </h2>
             </div>
             <span className="text-[11px] font-extrabold text-slate-500">
               {isAmharic ? 'መዝጋቢ፦ ' : 'Clerk: '}
-              <span className="text-[#0f2a5e] font-black">{userBadgeId}</span>
+              <span className="text-[#1D61E7] font-black">{userBadgeId}</span>
             </span>
           </div>
 
@@ -533,7 +534,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   value={receiptNumber}
                   onChange={(e) => setReceiptNumber(e.target.value)}
                   placeholder={isAmharic ? 'ምሳሌ፦ FT24083091122' : 'e.g. FT24083091122 or REC-9921'}
-                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]"
+                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
                 />
                 <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
                   receipt
@@ -575,7 +576,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       ? 'የምዝገባ ቁጥር፣ ሰሌዳ፣ ወይም ሞተር ቁጥር አስገባ...'
                       : 'Enter Registration #, Plate #, or Engine #'
                   }
-                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]"
+                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
                 />
                 <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
                   badge
@@ -602,7 +603,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="bg-surface-container/30 border border-outline-variant/70 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-outline-variant/40 pb-2">
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[#0f2a5e] text-[20px]">person_pin</Icon>
+                <Icon className="material-symbols-outlined text-[#1D61E7] text-[20px]">person_pin</Icon>
                 <h3 className="text-xs font-black text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'ከማህደር የተወጣጣ የባለቤት መረጃ & የክፍያ ሁኔታ' : 'Fetched Owner Info & Expiration Status'}
                 </h3>
@@ -762,7 +763,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="500"
-                className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]"
+                className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
               />
             </div>
 
@@ -822,7 +823,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 />
                 <label
                   htmlFor="receipt-screenshot-upload"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] text-white text-xs font-bold cursor-pointer transition-all shadow-xs"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold cursor-pointer transition-all shadow-xs"
                 >
                   <Icon className="material-symbols-outlined text-[18px]">cloud_upload</Icon>
                   <span>{isAmharic ? 'ስክሪንሾት / ደረሰኝ ፎቶ ስቀል' : 'Upload Receipt Screenshot'}</span>
@@ -846,7 +847,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={isAmharic ? 'ተጨማሪ መረጃ ካለ ያስገቡ...' : 'Add optional clerk notes...'}
-              className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]"
+              className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
             />
           </div>
 
@@ -862,7 +863,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || selectedRegInfo?.expirationStatusType === 'active'}
-              className="px-5 py-2.5 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] disabled:bg-slate-400 dark:disabled:bg-slate-700 text-white text-xs font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
+              className="px-5 py-2.5 rounded-lg bg-[#1D61E7] hover:bg-blue-700 disabled:bg-slate-400 dark:disabled:bg-slate-700 text-white text-xs font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
             >
               {isSubmitting ? (
                 <>
@@ -893,11 +894,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
             {/* Live Search Input */}
             <div className="relative flex-1 min-w-0 max-w-md">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#6b7280]">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-secondary">
                 <Icon className="material-symbols-outlined text-[18px]">search</Icon>
               </div>
               <input
-                type="search"
+                type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={
@@ -905,13 +906,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
                     : 'Search receipt #, owner name, or plate...'
                 }
-                className="w-full h-11 pl-9 pr-8 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] font-normal text-[#1a1d2e] dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+                className="w-full pl-9 pr-8 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-2.5 flex items-center text-[#6b7280] hover:text-[#1a1d2e] dark:hover:text-white cursor-pointer"
+                  className="absolute inset-y-0 right-2.5 flex items-center text-secondary hover:text-on-surface"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">close</Icon>
                 </button>
@@ -919,27 +920,37 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
 
             {/* Status Filter Tabs in Clean Compact Pill Style */}
-            <div className="flex items-center gap-2 flex-wrap shrink-0">
+            <div className="flex items-center gap-1 flex-wrap shrink-0">
               {[
                 {
                   id: 'all' as const,
                   label: isAmharic ? 'ሁሉም' : 'All',
                   count: metrics.total,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'active' as const,
                   label: isAmharic ? 'ትክክለኛ' : 'Active',
                   count: metrics.activeCount,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'expiring_soon' as const,
                   label: isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring Soon',
                   count: metrics.expiringSoonCount,
+                  badgeColor:
+                    metrics.expiringSoonCount > 0
+                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                      : 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'expired' as const,
                   label: isAmharic ? 'ጊዜው ያለፈበት' : 'Expired',
                   count: metrics.expiredCount,
+                  badgeColor:
+                    metrics.expiredCount > 0
+                      ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
+                      : 'bg-surface-container-highest text-secondary',
                 },
               ].map((tab) => {
                 const isActive = statusFilter === tab.id;
@@ -948,22 +959,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setStatusFilter(tab.id)}
-                    className={`tab shrink-0 min-h-[38px] border rounded-[9px] px-3 py-[7px] flex items-center gap-2 text-[13px] font-semibold transition-all cursor-pointer select-none ${
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
                       isActive
-                        ? 'border-[#0f2a5e] bg-[#0f2a5e] text-white'
-                        : 'border-[#dde1ee] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#1a1d2e] dark:text-slate-200 hover:border-[#cbd2e4]'
+                        ? 'bg-primary text-white font-extrabold shadow-2xs'
+                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
                     }`}
                   >
                     <span className="tracking-tight">{tab.label}</span>
                     <span
-                      className={`count min-w-5 h-5 px-1.5 rounded-md inline-flex items-center justify-center text-[11px] font-bold ${
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
                         isActive
-                          ? 'bg-white/[.2] text-white'
-                          : tab.id === 'expired' && (tab.count || 0) > 0
-                          ? 'bg-[#c5221f] text-white'
-                          : tab.id === 'expiring_soon' && (tab.count || 0) > 0
-                          ? 'bg-[#d97706] text-white'
-                          : 'bg-[#eef0f7] dark:bg-slate-700 text-[#6b7280] dark:text-slate-300'
+                          ? 'bg-white/20 text-white'
+                          : tab.badgeColor
                       }`}
                     >
                       {tab.count}
@@ -1201,7 +1208,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <button
                 type="button"
                 onClick={() => setPreviewReceipt(null)}
-                className="px-5 py-2 rounded-lg bg-[#0f2a5e] text-white text-xs font-bold hover:bg-[#0c2350] transition-all cursor-pointer"
+                className="px-5 py-2 rounded-lg bg-[#1D61E7] text-white text-xs font-bold hover:bg-blue-700 transition-all cursor-pointer"
               >
                 {isAmharic ? 'ዝጋ' : 'Close'}
               </button>

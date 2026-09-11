@@ -22,7 +22,6 @@ import {
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
 import { checkDuplicateRegistration } from '../utils/validation';
-import { SectionHeader } from './SectionHeader';
 
 interface TodaySubmissionsPageProps {
   lang: Language;
@@ -357,38 +356,45 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* PAGE SECTION HEADER MATCHING SYSTEM STANDARD */}
-      <SectionHeader
-        icon="edit_note"
-        title={isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
-        subtitle={
-          isAmharic
-            ? 'የዛሬ የተመዘገቡ ማመልከቻዎች፣ መረጃዎችን ማረሚያ እና እንደገና ማቅረቢያ'
-            : 'Registry of today’s submissions, information corrections, and re-submissions'
-        }
-        actions={
-          onNavigateToNewRegistration ? (
-            <button
-              type="button"
-              onClick={onNavigateToNewRegistration}
-              className="px-3.5 py-2 bg-yellow-500 hover:bg-yellow-400 text-[#0f2a5e] font-extrabold text-xs rounded-lg shadow-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
-            >
-              <Icon className="material-symbols-outlined text-[18px]">add_circle</Icon>
-              <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
-            </button>
-          ) : undefined
-        }
-      />
-
       {/* SINGLE UNIFIED TABLE CONTAINER MATCHING RECORDS PAGE STYLE */}
       <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
 
+        {/* CONTAINER SECTION HEADER (MATCHING RECORDS PAGE STYLE) */}
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'የዛሬ የተመዘገቡ ማመልከቻዎች፣ መረጃዎችን ማረሚያ እና እንደገና ማቅረቢያ'
+                  : 'Registry of today’s submissions, information corrections, and re-submissions'}
+              </p>
+            </div>
+          </div>
+
+          {onNavigateToNewRegistration && (
+            <button
+              type="button"
+              onClick={onNavigateToNewRegistration}
+              className="px-3.5 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-[#0B1E48] font-extrabold text-xs rounded-md shadow-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
+              <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
+            </button>
+          )}
+        </div>
+
         {/* SUB-FILTER SLIDE BAR (SEARCH, DATE TOGGLE & STATUS SLIDE PILLS) */}
-        <div className="p-3 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/40 dark:border-slate-800">
-          {/* Live Search Input - Harmonized to Atomic Standard (h-11, rounded-[10px]) */}
-          <div className="relative flex-1 min-w-[200px] max-w-md">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#6b7280]">
-              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+        <div className="p-2.5 sm:p-3 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/40 dark:border-slate-800">
+          {/* Live Search Input */}
+          <div className="relative flex-1 min-w-[180px] max-w-sm">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
+              <Icon className="material-symbols-outlined text-[16px]">search</Icon>
             </div>
             <input
               type="text"
@@ -398,15 +404,15 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 setPage(1);
               }}
               placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chassis...'}
-              className="w-full h-11 pl-9 pr-8 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+              className="w-full pl-8 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-2xs"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-2.5 flex items-center text-[#6b7280] hover:text-[#1a1d2e] dark:hover:text-white cursor-pointer"
+                className="absolute inset-y-0 right-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
               >
-                <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                <Icon className="material-symbols-outlined text-[15px]">close</Icon>
               </button>
             )}
           </div>
@@ -414,16 +420,16 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           {/* Status & Date Filter Segmented Slide Pills */}
           <div className="flex items-center gap-2 flex-wrap">
             {/* Date Pill Toggle */}
-            <div className="relative inline-flex items-center p-1 rounded-xl bg-slate-200/70 dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700/90">
+            <div className="relative inline-flex items-center p-0.5 rounded-full bg-slate-200/70 dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700/90 shadow-inner">
               <button
                 type="button"
                 onClick={() => {
                   setDateFilter('today');
                   setPage(1);
                 }}
-                className={`relative z-10 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`relative z-10 px-2.5 py-1 rounded-full text-xs font-bold transition-colors cursor-pointer ${
                   dateFilter === 'today'
-                    ? 'bg-white dark:bg-slate-700 text-[#0f2a5e] dark:text-white shadow-xs font-extrabold'
+                    ? 'bg-white dark:bg-slate-700 text-[#0B1E48] dark:text-white shadow-xs font-extrabold'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
@@ -435,9 +441,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   setDateFilter('all');
                   setPage(1);
                 }}
-                className={`relative z-10 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`relative z-10 px-2.5 py-1 rounded-full text-xs font-bold transition-colors cursor-pointer ${
                   dateFilter === 'all'
-                    ? 'bg-white dark:bg-slate-700 text-[#0f2a5e] dark:text-white shadow-xs font-extrabold'
+                    ? 'bg-white dark:bg-slate-700 text-[#0B1E48] dark:text-white shadow-xs font-extrabold'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
@@ -445,28 +451,38 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               </button>
             </div>
 
-            {/* Status Filter Tabs in Ref-Tab Pill Style */}
-            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+            {/* Status Filter Tabs in Clean Compact Pill Style */}
+            <div className="flex items-center gap-1 flex-wrap shrink-0">
               {[
                 {
                   id: 'all',
                   label: isAmharic ? 'ሁሉም' : 'All',
                   count: dateFilteredRegs.length,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'pending_approval',
                   label: isAmharic ? 'የሚጠበቁ' : 'Pending',
                   count: pendingCount,
+                  badgeColor:
+                    pendingCount > 0
+                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                      : 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'approved',
                   label: isAmharic ? 'የፀደቁ' : 'Approved',
                   count: approvedCount,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'rejected',
                   label: isAmharic ? 'ውድቅ' : 'Rejected',
                   count: rejectedCount,
+                  badgeColor:
+                    rejectedCount > 0
+                      ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
+                      : 'bg-surface-container-highest text-secondary',
                 },
               ].map((tab) => {
                 const isActive = statusFilter === tab.id;
@@ -478,14 +494,18 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setStatusFilter(tab.id);
                       setPage(1);
                     }}
-                    className={`ref-tab ${isActive ? 'ref-tab-active' : 'ref-tab-inactive'}`}
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                      isActive
+                        ? 'bg-primary text-white font-extrabold shadow-2xs'
+                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                    }`}
                   >
-                    <span>{tab.label}</span>
+                    <span className="tracking-tight">{tab.label}</span>
                     <span
-                      className={`ref-tab-count ${
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
                         isActive
                           ? 'bg-white/20 text-white'
-                          : 'bg-[#e8edf8] dark:bg-slate-800 text-[#0f2a5e] dark:text-slate-300'
+                          : tab.badgeColor
                       }`}
                     >
                       {tab.count}
@@ -562,7 +582,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               setDateFilter('all');
                               setPage(1);
                             }}
-                            className="px-3 py-1.5 bg-yellow-500 text-[#0f2a5e] font-extrabold text-xs rounded-md shadow-xs hover:bg-yellow-400 cursor-pointer"
+                            className="px-3 py-1.5 bg-yellow-500 text-[#0B1E48] font-extrabold text-xs rounded-md shadow-xs hover:bg-yellow-400 cursor-pointer"
                           >
                             {isAmharic ? 'ሁሉንም ቀናት አሳይ' : 'Show All Dates'}
                           </button>
@@ -584,7 +604,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                 onClick={() => toggleRegExpand(reg.id)}
                                 className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
                                   isExpanded
-                                    ? 'bg-yellow-500 text-[#0f2a5e]'
+                                    ? 'bg-yellow-500 text-[#0B1E48]'
                                     : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
                                 }`}
                                 title={isExpanded ? (isAmharic ? 'አጣጥፍ' : 'Collapse') : (isAmharic ? 'ሰነዶችን እና ዝርዝር አሳይ' : 'Expand Documents & Details')}
@@ -676,7 +696,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                 onClick={() => toggleRegExpand(reg.id)}
                                 className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                                   isExpanded
-                                    ? 'bg-yellow-500 text-[#0f2a5e] shadow-2xs'
+                                    ? 'bg-yellow-500 text-[#0B1E48] shadow-2xs'
                                     : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                                 }`}
                                 title={isExpanded ? (isAmharic ? 'ሰነዶችን ደብቅ' : 'Hide Documents') : (isAmharic ? 'ሰነዶችን ዘርጋ' : 'Expand Documents')}
@@ -691,148 +711,91 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                         {/* Desktop Collapsible Attached Documents Sub-row */}
                         {isExpanded && (
-                          <tr className="bg-slate-50/90 dark:bg-slate-900/80 border-b-2 border-slate-200 dark:border-slate-700">
-                            <td colSpan={7} className="px-6 py-6 sm:px-8 sm:py-7">
-                              <div className="space-y-5 max-w-7xl mx-auto">
-                                <div className="flex flex-wrap items-center justify-between gap-4 pb-3.5 border-b border-slate-200/80 dark:border-slate-700">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center font-bold shrink-0">
-                                      <Icon className="material-symbols-outlined text-[22px]">two_wheeler</Icon>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">
-                                        {reg.fullName || '—'}
-                                      </h4>
-                                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                        {reg.plateNumber ? `ሰሌዳ፡ ${reg.plateNumber}` : 'ሰሌዳ የለውም'} • {reg.motorBrand || ''} {reg.motorModel || ''}
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                                      <Icon className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">photo_library</Icon>
-                                      <span>{isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ተጫን):' : 'Attached Documents (Click to Zoom):'}</span>
-                                    </span>
-                                    {userRole !== 'clerk' && (
-                                      <button
-                                        type="button"
-                                        onClick={() => setInspectReg(reg)}
-                                        className="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-300 font-bold rounded-lg text-xs transition-colors flex items-center gap-1 cursor-pointer shadow-2xs"
-                                      >
-                                        <span>{isAmharic ? 'ሙሉ ፈቃድ መርምር' : 'Inspect Full Permit'}</span>
-                                        <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
-                                      </button>
-                                    )}
-                                  </div>
+                          <tr className="bg-slate-50/90 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-700">
+                            <td colSpan={7} className="px-6 py-3.5">
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                    <Icon className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">photo_library</Icon>
+                                    <span>{isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ተጫን):' : 'Attached Documents (Click to Zoom):'}</span>
+                                  </span>
+                                  {userRole !== 'clerk' && (
+                                    <button
+                                      type="button"
+                                      onClick={() => setInspectReg(reg)}
+                                      className="text-xs font-extrabold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                                    >
+                                      <span>{isAmharic ? 'ሙሉ ፈቃድ መርምር' : 'Inspect Full Permit'}</span>
+                                      <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
+                                    </button>
+                                  )}
                                 </div>
 
-                                {/* Metadata Grid */}
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/80 shadow-2xs text-xs">
-                                  <div>
-                                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">{isAmharic ? 'ሞተር/ቻሲስ ቁጥር' : 'Chassis/Engine:'}</span>
-                                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{reg.engineOrSerialNo || '—'}</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number:'}</span>
-                                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{reg.phone || '—'}</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">{isAmharic ? 'ክፍለ ከተማ / ወረዳ' : 'Sub-City / Woreda:'}</span>
-                                    <span className="font-semibold text-slate-800 dark:text-slate-200">{reg.subCity || '—'} {reg.woreda ? `(ወረዳ ${reg.woreda})` : ''}</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">{isAmharic ? 'የምዝገባ ቀን' : 'Registered Date:'}</span>
-                                    <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">{reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}</span>
-                                  </div>
-                                </div>
-
-                                {/* Attached Photos */}
                                 {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto) ? (
-                                  <div className="flex items-start gap-4 overflow-x-auto pb-2 pt-1">
+                                  <div className="flex items-center gap-3 overflow-x-auto pb-1">
                                     {(reg.userPortraitPhoto || reg.ownerPhoto) && (
                                       <div
                                         onClick={() => openDocumentCarousel((reg.userPortraitPhoto || reg.ownerPhoto)!, reg)}
-                                        className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                        className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                        title={isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
                                       >
-                                        <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                          <SmartImage src={reg.userPortraitPhoto || reg.ownerPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                            <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                          </div>
+                                        <SmartImage src={reg.userPortraitPhoto || reg.ownerPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                         </div>
-                                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                          {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
-                                        </span>
                                       </div>
                                     )}
                                     {reg.nationalIdPhoto && (
                                       <div
                                         onClick={() => openDocumentCarousel(reg.nationalIdPhoto!, reg)}
-                                        className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                        className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                        title={isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}
                                       >
-                                        <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                          <SmartImage src={reg.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                            <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                          </div>
+                                        <SmartImage src={reg.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                         </div>
-                                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                          {isAmharic ? 'መታወቂያ (ፊት)' : 'ID Front'}
-                                        </span>
                                       </div>
                                     )}
                                     {reg.nationalIdBackPhoto && (
                                       <div
                                         onClick={() => openDocumentCarousel(reg.nationalIdBackPhoto!, reg)}
-                                        className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                        className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                        title={isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}
                                       >
-                                        <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                          <SmartImage src={reg.nationalIdBackPhoto} alt="National ID Back" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                            <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                          </div>
+                                        <SmartImage src={reg.nationalIdBackPhoto} alt="National ID Back" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                         </div>
-                                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                          {isAmharic ? 'መታወቂያ (ጀርባ)' : 'ID Back'}
-                                        </span>
                                       </div>
                                     )}
                                     {reg.drivingLicensePhoto && (
                                       <div
                                         onClick={() => openDocumentCarousel(reg.drivingLicensePhoto!, reg)}
-                                        className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                        className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                        title={isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
                                       >
-                                        <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                          <SmartImage src={reg.drivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                            <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                          </div>
+                                        <SmartImage src={reg.drivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                         </div>
-                                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                          {isAmharic ? 'የመንጃ ፍቃድ' : 'License'}
-                                        </span>
                                       </div>
                                     )}
                                     {reg.drivingPermitPhoto && (
                                       <div
                                         onClick={() => openDocumentCarousel(reg.drivingPermitPhoto!, reg)}
-                                        className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                        className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                        title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}
                                       >
-                                        <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                          <SmartImage src={reg.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                            <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                          </div>
+                                        <SmartImage src={reg.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                         </div>
-                                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                          {isAmharic ? 'ሊብሬ / ፍቃድ' : 'Permit / Libre'}
-                                        </span>
                                       </div>
                                     )}
                                   </div>
                                 ) : (
-                                  <p className="text-xs text-slate-400 italic py-1">{isAmharic ? 'ምንም የተያያዘ ሰነድ የለም' : 'No attached documents uploaded.'}</p>
+                                  <p className="text-xs text-slate-400 italic">{isAmharic ? 'ምንም የተያያዘ ሰነድ የለም' : 'No attached documents uploaded.'}</p>
                                 )}
                               </div>
                             </td>
@@ -911,27 +874,25 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     </div>
 
                     {isExpanded && (
-                      <div className="p-4 bg-slate-50 dark:bg-slate-850/80 rounded-xl space-y-3.5 text-xs text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800">
-                        <div className="grid grid-cols-1 gap-2 bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200/60 dark:border-slate-800">
-                          <p className="flex justify-between items-center"><span className="font-bold text-slate-400">{isAmharic ? 'ሞተር/ቻሲስ:' : 'Chassis/Engine:'}</span> <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{reg.engineOrSerialNo || '—'}</span></p>
-                          <p className="flex justify-between items-center"><span className="font-bold text-slate-400">{isAmharic ? 'የሞተር ምርት/ሞዴል:' : 'Brand/Model:'}</span> <span className="font-semibold text-slate-800 dark:text-slate-200">{reg.motorBrand || ''} {reg.motorModel || ''}</span></p>
-                          <p className="flex justify-between items-center"><span className="font-bold text-slate-400">{isAmharic ? 'የምዝገባ ቀን:' : 'Registered:'}</span> <span className="font-mono text-slate-800 dark:text-slate-200">{reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}</span></p>
-                          {reg.status === 'rejected' && reg.rejectionReason && (
-                            <p className="text-rose-600 font-semibold pt-1 border-t border-rose-100 dark:border-rose-900/50"><span className="font-bold">{isAmharic ? 'የውድቅ ምክንያት:' : 'Rejection Reason:'}</span> {reg.rejectionReason}</p>
-                          )}
-                        </div>
+                      <div className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-md space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                        <p><span className="font-bold">{isAmharic ? 'ሞተር/ቻሲስ:' : 'Chassis/Engine:'}</span> {reg.engineOrSerialNo || '—'}</p>
+                        <p><span className="font-bold">{isAmharic ? 'የሞተር ምርት/ሞዴል:' : 'Brand/Model:'}</span> {reg.motorBrand || ''} {reg.motorModel || ''}</p>
+                        <p><span className="font-bold">{isAmharic ? 'የምዝገባ ቀን:' : 'Registered:'}</span> {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}</p>
+                        {reg.status === 'rejected' && reg.rejectionReason && (
+                          <p className="text-rose-600 font-semibold"><span className="font-bold">{isAmharic ? 'የውድቅ ምክንያት:' : 'Rejection Reason:'}</span> {reg.rejectionReason}</p>
+                        )}
 
                         {/* On-Demand Attached Documents Preview */}
                         {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto) && (
-                          <div className="pt-2 border-t border-slate-200/70 dark:border-slate-700/70 space-y-2">
-                            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                          <div className="pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1.5">
+                            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                               {isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ይጫኑ):' : 'Attached Documents (Click to Zoom):'}
                             </span>
-                            <div className="flex items-center gap-3 overflow-x-auto pb-2 pt-1">
+                            <div className="flex items-center gap-2 overflow-x-auto pb-1">
                               {(reg.userPortraitPhoto || reg.ownerPhoto) && (
                                 <div
                                   onClick={() => openDocumentCarousel((reg.userPortraitPhoto || reg.ownerPhoto)!, reg)}
-                                  className="w-16 h-20 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-xs"
+                                  className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-2xs"
                                   title={isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
                                 >
                                   <SmartImage src={reg.userPortraitPhoto || reg.ownerPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover" />
@@ -940,7 +901,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               {reg.nationalIdPhoto && (
                                 <div
                                   onClick={() => openDocumentCarousel(reg.nationalIdPhoto!, reg)}
-                                  className="w-16 h-20 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-xs"
+                                  className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-2xs"
                                   title={isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}
                                 >
                                   <SmartImage src={reg.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover" />
@@ -949,7 +910,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               {reg.nationalIdBackPhoto && (
                                 <div
                                   onClick={() => openDocumentCarousel(reg.nationalIdBackPhoto!, reg)}
-                                  className="w-16 h-20 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-xs"
+                                  className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-2xs"
                                   title={isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}
                                 >
                                   <SmartImage src={reg.nationalIdBackPhoto} alt="National ID Back" fallbackIcon="badge" className="w-full h-full object-cover" />
@@ -958,7 +919,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               {reg.drivingLicensePhoto && (
                                 <div
                                   onClick={() => openDocumentCarousel(reg.drivingLicensePhoto!, reg)}
-                                  className="w-16 h-20 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-xs"
+                                  className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-2xs"
                                   title={isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
                                 >
                                   <SmartImage src={reg.drivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover" />
@@ -967,7 +928,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               {reg.drivingPermitPhoto && (
                                 <div
                                   onClick={() => openDocumentCarousel(reg.drivingPermitPhoto!, reg)}
-                                  className="w-16 h-20 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-xs"
+                                  className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer shadow-2xs"
                                   title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}
                                 >
                                   <SmartImage src={reg.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover" />
@@ -1335,7 +1296,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-[#0f2a5e] text-xs font-black rounded-md shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                    className="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 text-[#0B1E48] text-xs font-black rounded-md shadow-md transition-all flex items-center gap-2 cursor-pointer active:scale-95"
                   >
                     {isSubmitting ? (
                       <Icon className="material-symbols-outlined text-[18px] animate-spin">refresh</Icon>

@@ -24,7 +24,6 @@ import {
   buildRegistrationDocumentList,
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
-import { SectionHeader } from './SectionHeader';
 
 interface MunicipalDashboardOverviewProps {
   userBadgeId: string;
@@ -400,15 +399,23 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   return (
     <div className="space-y-4 sm:space-y-5">
       {/* PAGE HEADER (MATCHING TOP NAVBAR: ዋና ገፅ / Dashboard) */}
-      <SectionHeader
-        icon="space_dashboard"
-        title={isAmharic ? 'ዋና ገፅ' : 'Dashboard'}
-        subtitle={
-          isAmharic
-            ? 'የባህር ዳር ከተማ አስተዳደር የሞተር ሳይክል ፈቃድና ቁጥጥር አጠቃላይ ማጠቃለያ'
-            : 'Bahir Dar City Administration Motorcycle Permit & Inspection Dashboard'
-        }
-      />
+      <div className="p-3.5 sm:p-4 bg-surface-container-lowest border border-outline-variant/70 rounded-lg shadow-xs flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Icon className="material-symbols-outlined text-[20px]">space_dashboard</Icon>
+          </div>
+          <div>
+            <h3 className="font-bold text-sm sm:text-base text-on-surface">
+              {isAmharic ? 'ዋና ገፅ' : 'Dashboard'}
+            </h3>
+            <p className="hidden sm:block text-[11px] font-normal text-secondary mt-0.5">
+              {isAmharic
+                ? 'የባህር ዳር ከተማ አስተዳደር የሞተር ሳይክል ፈቃድና ቁጥጥር አጠቃላይ ማጠቃለያ'
+                : 'Bahir Dar City Administration Motorcycle Permit & Inspection Dashboard'}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* BIG HERO SCAN QR CODE BUTTON FOR TRAFFIC OFFICER */}
       {userRole === 'officer' && (
@@ -442,7 +449,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <button
             type="button"
             onClick={() => handleActionClick('quick_verify')}
-            className="w-full max-w-xs py-3.5 px-6 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] transition-all font-black text-xs sm:text-sm text-white tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md cursor-pointer"
+            className="w-full max-w-xs py-3.5 px-6 rounded-lg bg-[#1D61E7] hover:bg-blue-700 transition-all font-black text-xs sm:text-sm text-white tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[22px]">photo_camera</Icon>
             <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch QR Scanner'}</span>
@@ -452,16 +459,16 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* SUPER ADMIN KEY GOVERNANCE STATS CARDS (FOR SUPERADMIN ROLE ON DASHBOARD ONLY) */}
       {userRole === 'superadmin' && (
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-4 sm:p-5 shadow-xs space-y-3.5">
-          <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="ref-section-icon">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center shrink-0">
                 <Icon className="material-symbols-outlined text-[20px]">admin_panel_settings</Icon>
               </div>
-              <div className="min-w-0">
-                <h3 className="ref-h1 truncate">
+              <div>
+                <h3 className="text-xs font-black text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'የበላይ አስተዳዳሪ ቁጥጥር ማዕከል' : 'Super Admin Governance Metrics'}
                 </h3>
-                <p className="ref-subtitle truncate">
+                <p className="text-[10px] text-secondary font-medium">
                   {isAmharic ? 'የስርዓቱ ተጠቃሚዎችና አጠቃላይ የፈቃድ ስታቲስቲክስ' : 'System user directories & global permit metrics overview'}
                 </p>
               </div>
@@ -596,16 +603,16 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* CLERK STATS OVERVIEW CARDS (ONLY VISIBLE WHEN TOGGLED ON IN SUPER ADMIN) */}
       {userRole === 'clerk' && settings.showClerkPermitStatus && (
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-4 sm:p-5 shadow-xs space-y-3.5">
-          <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="ref-section-icon">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center shrink-0">
                 <Icon className="material-symbols-outlined text-[20px]">badge</Icon>
               </div>
-              <div className="min-w-0">
-                <h3 className="ref-h1 truncate">
+              <div>
+                <h3 className="text-xs font-black text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'የምዝገባ መረጃዎች' : 'Clerk Intake Dashboard Metrics'}
                 </h3>
-                <p className="ref-subtitle truncate">
+                <p className="text-[10px] text-secondary font-medium">
                   {isAmharic ? 'የተመዘገቡ ባለቤቶችና ተሽከርካሪዎች ሁኔታ' : 'Active motorcycle registration records status'}
                 </p>
               </div>
@@ -702,14 +709,20 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveMetricsTab(tab.id)}
-                  className={`ref-tab ${isActive ? 'ref-tab-active' : 'ref-tab-inactive'}`}
+                  className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    isActive
+                      ? 'bg-primary text-white font-extrabold shadow-2xs'
+                      : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                  }`}
                 >
-                  <span>{tab.label}</span>
+                  <span className="tracking-tight">{tab.label}</span>
                   <span
-                    className={`ref-tab-count ${
-                      isActive
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                      isActive && tab.id === 'payments' && paymentMetrics.expiringSoonCount + paymentMetrics.expiredCount > 0
+                        ? 'bg-amber-500/30 text-amber-200'
+                        : isActive
                         ? 'bg-white/20 text-white'
-                        : 'bg-[#e8edf8] dark:bg-slate-800 text-[#0f2a5e] dark:text-slate-300'
+                        : tab.badgeColor
                     }`}
                   >
                     {tab.count}
@@ -993,42 +1006,40 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* ==================== QUICK ACTION SHORTCUTS ==================== */}
       {currentRoleConfig.actions.length > 0 && (
         <div className="p-4 sm:p-6 bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-2xs space-y-4">
-          <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="ref-section-icon">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
                 <Icon className="material-symbols-outlined text-[20px]">{currentRoleConfig.headerIcon}</Icon>
               </div>
-              <div className="min-w-0">
-                <h3 className="ref-h1 truncate">
-                  {currentRoleConfig.title}
-                </h3>
-              </div>
+              <h3 className="text-sm sm:text-base font-extrabold text-on-surface">
+                {currentRoleConfig.title}
+              </h3>
             </div>
           </div>
 
-          <div className={`grid grid-cols-1 ${currentRoleConfig.actions.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3`}>
+          <div className={`grid grid-cols-1 ${currentRoleConfig.actions.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3 sm:gap-4`}>
             {currentRoleConfig.actions.map((act) => (
               <button
                 key={act.key}
                 type="button"
                 onClick={() => handleActionClick(act.key)}
-                className="p-3 bg-white dark:bg-slate-900 border border-[#dde1ee] dark:border-slate-800 rounded-[10px] text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 group hover:border-[#cbd2e4] hover:shadow-[0_2px_8px_rgba(15,42,94,.05)] active:scale-98"
+                className="min-h-[56px] p-4 bg-surface-container-low/70 hover:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 group shadow-2xs hover:shadow-xs active:scale-98"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`w-10 h-10 rounded-[9px] ${act.iconBg} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}>
-                    <Icon className="material-symbols-outlined text-[20px]">{act.icon}</Icon>
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className={`w-11 h-11 rounded-xl ${act.iconBg} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}>
+                    <Icon className="material-symbols-outlined text-[22px]">{act.icon}</Icon>
                   </div>
                   <div className="min-w-0">
-                    <h4 className="text-[14px] sm:text-[15px] font-semibold text-[#1a1d2e] dark:text-white group-hover:text-primary transition-colors truncate">
+                    <h4 className="text-xs sm:text-sm font-extrabold text-on-surface group-hover:text-primary transition-colors truncate">
                       {act.title}
                     </h4>
-                    <p className="text-[11px] text-[#6b7280] dark:text-slate-400 mt-0.5 truncate font-normal">
+                    <p className="text-[11px] text-secondary mt-0.5 truncate font-medium">
                       {act.subtitle}
                     </p>
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-[#eef0f7] dark:bg-slate-800 flex items-center justify-center text-[#6b7280] dark:text-slate-400 group-hover:text-primary group-hover:bg-[#dde1ee] dark:group-hover:bg-slate-700 transition-all shrink-0">
-                  <Icon className="material-symbols-outlined text-[18px]">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
+                  <Icon className="material-symbols-outlined text-[20px]">
                     chevron_right
                   </Icon>
                 </div>
@@ -1041,21 +1052,17 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* RECENT FIELD VERIFICATIONS FEED FOR OFFICER DASHBOARD */}
       {((userRole === 'officer' && getPermissionState(userRole, 10) !== 'deny') || userRole === 'admin' || userRole === 'superadmin') && (
         <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-4 shadow-xs space-y-3">
-          <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="ref-section-icon">
-                <Icon className="material-symbols-outlined text-[20px]">history</Icon>
-              </div>
-              <div className="min-w-0">
-                <h3 className="ref-h1 truncate">
-                  {isAmharic ? 'የቅርብ ጊዜ የመስክ ፍተሻዎች' : 'Recent Field Verifications'}
-                </h3>
-              </div>
+          <div className="flex justify-between items-center border-b border-outline-variant pb-2.5">
+            <div className="flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-primary text-[18px]">history</Icon>
+              <h3 className="text-xs font-bold text-on-surface uppercase tracking-wider">
+                {isAmharic ? 'የቅርብ ጊዜ የመስክ ፍተሻዎች' : 'Recent Field Verifications'}
+              </h3>
             </div>
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('inspection_report_all')}
-              className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+              className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
             >
               <span>{isAmharic ? 'ሁሉንም ታሪክ ይመልከቱ' : 'View Full Verification Logs'}</span>
               <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>

@@ -379,7 +379,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <button
           type="button"
           onClick={() => setActivePage('dashboard')}
-          className="px-4 py-2 bg-[#0f2a5e] hover:bg-[#0c2350] text-white rounded-md text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+          className="px-4 py-2 bg-[#1D61E7] hover:bg-blue-700 text-white rounded-md text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
         >
           <Icon className="material-symbols-outlined text-[16px]">arrow_back</Icon>
           <span>{isAmharic ? 'ወደ ዋና ገፅ ተመለስ' : 'Return to Dashboard'}</span>
@@ -1341,7 +1341,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div className="h-screen h-[100dvh] max-h-screen max-h-[100dvh] overflow-hidden bg-surface text-on-surface flex flex-col font-sans">
       {/* ==================== DESKTOP SIDEBAR NAVIGATION (hidden md:flex) ==================== */}
-      <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 md:z-50 md:bg-[#0f2a5e] md:text-white md:border-r md:border-[#1e3b75] md:p-3.5 md:justify-between md:shadow-2xl">
+      <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 md:z-50 md:bg-[#0A1838] md:text-white md:border-r md:border-[#16274E] md:p-3.5 md:justify-between md:shadow-2xl">
         <div className="flex flex-col h-full min-h-0">
           {/* Desktop Brand & Logo Header */}
           <div
@@ -1372,7 +1372,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               }}
               className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                 activePage === 'dashboard'
-                  ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                  ? 'bg-[#1D61E7] text-white font-black shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
@@ -1390,7 +1390,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('forms')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'forms'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1406,7 +1406,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('today_submissions_adjust')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'today_submissions_adjust'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1422,7 +1422,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('scan')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'scan'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1438,7 +1438,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('payment_receipts')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'payment_receipts'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1454,7 +1454,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('tables')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'tables'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1473,7 +1473,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     }}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'tables'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1492,7 +1492,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     }}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'inspection_report'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1511,7 +1511,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('forms')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'forms'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1527,7 +1527,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('payment_receipts')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'payment_receipts'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1543,7 +1543,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('tables')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'tables'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1562,7 +1562,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     }}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'inspection_report'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1578,7 +1578,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('scan')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'scan'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1593,7 +1593,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => setActivePage('report_unregistered')}
                   className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'report_unregistered'
-                      ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                      ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -1608,7 +1608,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     onClick={() => setActivePage('unregistered_list')}
                     className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'unregistered_list'
-                        ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                        ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
@@ -1633,7 +1633,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => setActivePage('superadmin_users')}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_users' || activePage === 'superadmin'
-                      ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                      ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -1647,7 +1647,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => setActivePage('superadmin_subcities')}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_subcities'
-                      ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                      ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -1661,7 +1661,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => setActivePage('superadmin_permits')}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_permits'
-                      ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                      ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -1675,7 +1675,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={() => setActivePage('superadmin_maintenance')}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_maintenance'
-                      ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                      ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -1695,7 +1695,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 }}
                 className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                   activePage === 'settings'
-                    ? 'bg-white/20 text-white font-black shadow-md border border-white/20'
+                    ? 'bg-[#1D61E7] text-white font-black shadow-md'
                     : 'text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
@@ -1706,8 +1706,8 @@ export const HomePage: React.FC<HomePageProps> = ({
           </nav>
 
           {/* Sidebar Bottom Profile Card & Logout (Matching Image Exact Structure) */}
-          <div className="pt-3 border-t border-[#1e3e7c] space-y-2 mt-auto">
-            <div className="bg-[#15346d] border border-[#1e3e7c] rounded-md p-2.5 flex items-center gap-2.5 text-white shadow-xs">
+          <div className="pt-3 border-t border-[#1E3466] space-y-2 mt-auto">
+            <div className="bg-[#112248] border border-[#1E3466] rounded-md p-2.5 flex items-center gap-2.5 text-white shadow-xs">
               <div className="w-9 h-9 rounded-full bg-slate-200 border-2 border-amber-400 shrink-0 overflow-hidden shadow-xs flex items-center justify-center">
                 <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </div>
@@ -1729,7 +1729,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <button
               type="button"
               onClick={() => setIsLogoutModalOpen(true)}
-              className="w-full bg-[#15346d] hover:bg-[#1c438b] text-white border border-[#254c96] font-extrabold text-xs py-2.5 rounded-md flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98"
+              className="w-full bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] font-extrabold text-xs py-2.5 rounded-md flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98"
             >
               <Icon className="material-symbols-outlined text-[18px] text-amber-400">logout</Icon>
               <span>{isAmharic ? 'ወጣ (Logout)' : 'Logout'}</span>
@@ -1741,8 +1741,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* ==================== MAIN CONTAINER & TOP HEADER (md:pl-64) ==================== */}
       <div className="md:pl-64 flex-1 flex flex-col min-w-0 h-full max-h-full overflow-hidden">
         
-        {/* MOBILE NAVIGATION HEADER (md:hidden) (MATCHING REFERENCE EXACT ATOMIC SIZING) */}
-        <header className="sticky top-0 z-50 bg-[#0f2a5e] text-white shadow-md px-4 md:px-6 py-3 min-h-16 md:hidden shrink-0 relative overflow-hidden flex items-center gap-3">
+        {/* MOBILE NAVIGATION HEADER (md:hidden) */}
+        <header className="sticky top-0 z-50 bg-[#0B1E48] text-white shadow-md px-3 sm:px-6 py-2.5 md:hidden shrink-0 relative overflow-hidden">
           {/* Animated Navbar Action Loading Progress Bar (Under top navbar) */}
           {actionLoadingState.isLoading && (
             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20 overflow-hidden z-50 pointer-events-none">
@@ -1750,7 +1750,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           )}
 
-          <div className="relative z-50 w-full flex items-center justify-between gap-3">
+          <div className="relative z-50 max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
               
               {/* Left Logo & App Brand Title */}
               <div
@@ -1758,21 +1758,100 @@ export const HomePage: React.FC<HomePageProps> = ({
                   setActivePage('dashboard');
                   setIsMobileMenuOpen(false);
                 }}
-                className="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer hover:opacity-90 transition-opacity select-none"
+                className="flex items-center gap-2.5 min-w-0 shrink cursor-pointer hover:opacity-90 transition-opacity select-none"
                 title={isAmharic ? 'ወደ ዋና ገፅ ሂድ' : 'Go to Dashboard'}
               >
-                <div className="w-10 h-10 rounded-full bg-white border-2 border-[#e8edf8] overflow-hidden shrink-0 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
                   <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
                 </div>
                 <div className="min-w-0">
-                  <h1 id="header-text" className="text-[15px] leading-[1.3] font-semibold text-white tracking-tight truncate">
+                  <h1 id="header-text" className="font-extrabold text-xs sm:text-sm text-white tracking-tight leading-tight truncate">
                     {isAmharic ? 'ባህርዳር ሞተረኞች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
                   </h1>
                 </div>
               </div>
 
+              {/* Center Navigation Tabs (Visible on Tablet / Medium screens md:flex) */}
+              <nav className="hidden md:flex items-center gap-1 bg-black/20 p-1 rounded-md border border-white/20 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActivePage('dashboard')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    activePage === 'dashboard'
+                      ? 'bg-yellow-500 text-[#0B1E48] shadow-xs font-black'
+                      : 'text-white/90 hover:bg-white/15'
+                  }`}
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">space_dashboard</Icon>
+                  <span>{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
+                </button>
+
+                {userRole !== 'officer' && (
+                  <button
+                    type="button"
+                    onClick={() => setActivePage('forms')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      activePage === 'forms'
+                        ? 'bg-yellow-500 text-[#0B1E48] shadow-xs font-black'
+                        : 'text-white/90 hover:bg-white/15'
+                    }`}
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">how_to_reg</Icon>
+                    <span>{isAmharic ? 'ምዝገባ' : 'Registration'}</span>
+                  </button>
+                )}
+
+                {userRole !== 'officer' && (
+                  <button
+                    type="button"
+                    onClick={() => setActivePage('tables')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      activePage === 'tables'
+                        ? 'bg-yellow-500 text-[#0B1E48] shadow-xs font-black'
+                        : 'text-white/90 hover:bg-white/15'
+                    }`}
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
+                    <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records'}</span>
+                  </button>
+                )}
+
+                {isTaskViewable(userRole, 10) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInspectionInitialFilter('all');
+                      setActivePage('inspection_report');
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      activePage === 'inspection_report'
+                        ? 'bg-yellow-500 text-[#0B1E48] shadow-xs font-black'
+                        : 'text-white/90 hover:bg-white/15'
+                    }`}
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">analytics</Icon>
+                    <span>{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection'}</span>
+                  </button>
+                )}
+
+                {userRole !== 'clerk' && (
+                  <button
+                    type="button"
+                    onClick={() => setActivePage('scan')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      activePage === 'scan'
+                        ? 'bg-yellow-500 text-[#0B1E48] shadow-xs font-black'
+                        : 'text-white/90 hover:bg-white/15'
+                    }`}
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
+                    <span>{isAmharic ? 'ፍተሻ' : 'Scan'}</span>
+                  </button>
+                )}
+              </nav>
+
               {/* Right Controls (UNIFIED MENU TOGGLE BUTTON & NOTIFICATION BELL) */}
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 {/* Mobile Notification Bell Icon Button */}
                 <div className="relative" ref={mobileNotificationRef}>
                   <button
@@ -1781,17 +1860,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                       setIsNotificationOpen(!isNotificationOpen);
                       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
                     }}
-                    className={`relative w-9 h-9 border-0 rounded-[9px] flex items-center justify-center text-white transition-colors cursor-pointer shrink-0 ${
+                    className={`w-9 h-9 flex items-center justify-center rounded-md border transition-all cursor-pointer shrink-0 shadow-2xs relative ${
                       isNotificationOpen
-                        ? 'bg-yellow-500 text-[#0f2a5e]'
-                        : 'bg-transparent hover:bg-white/[.12]'
+                        ? 'bg-yellow-500 text-[#0B1E48] border-yellow-400 font-black'
+                        : 'bg-white/10 border-white/20 text-white hover:bg-white/20 active:scale-95'
                     }`}
                     title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                     aria-label="Notifications"
                   >
                     <Icon className="material-symbols-outlined text-[20px]">notifications</Icon>
                     {unreadNotificationCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-5 h-5 px-[5px] rounded-full bg-[#e85d26] text-white flex items-center justify-center text-[11px] font-bold">
+                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[18px] h-4.5 px-1 rounded-full flex items-center justify-center absolute -top-1.5 -right-1.5 shadow-2xs border-2 border-[#0B1E48] animate-pulse">
                         {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                       </span>
                     )}
@@ -1807,7 +1886,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     if (isNotificationOpen) setIsNotificationOpen(false);
                   }}
                   aria-label="Toggle Navigation Menu"
-                  className="relative w-9 h-9 border-0 rounded-[9px] flex items-center justify-center text-white bg-white/[.13] hover:bg-white/[.2] transition-colors cursor-pointer shrink-0"
+                  className="w-9 h-9 flex items-center justify-center rounded-md bg-white/10 border border-white/20 text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer shrink-0 shadow-2xs"
                 >
                   <Icon className="material-symbols-outlined text-[22px]">
                     {isMobileMenuOpen ? 'close' : 'menu'}
@@ -1857,7 +1936,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Right Slide-Out Drawer Panel (Reduced Width for Mobile UI) */}
             <div
               ref={mobileDrawerRef}
-              className="relative w-64 sm:w-72 max-w-[78vw] h-full bg-[#0f2a5e] text-white border-l border-yellow-500/30 shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-300 ease-out p-4 sm:p-5"
+              className="relative w-64 sm:w-72 max-w-[78vw] h-full bg-[#0B1E48] text-white border-l border-yellow-500/30 shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-300 ease-out p-4 sm:p-5"
               onClick={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
@@ -1900,12 +1979,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                     }}
                     className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'dashboard'
-                        ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                        ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                         : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'dashboard' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                      <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'dashboard' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                         space_dashboard
                       </Icon>
                       <span className="font-extrabold">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
@@ -1925,12 +2004,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'forms'
-                            ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                            ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'forms' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'forms' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             how_to_reg
                           </Icon>
                           <span className="font-extrabold">{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
@@ -1947,12 +2026,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'today_submissions_adjust'
-                            ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                            ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'today_submissions_adjust' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'today_submissions_adjust' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             edit_note
                           </Icon>
                           <span className="font-extrabold">{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
@@ -1969,12 +2048,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'scan'
-                            ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                            ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'scan' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'scan' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             qr_code_scanner
                           </Icon>
                           <span className="font-extrabold">{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
@@ -1992,12 +2071,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                           }}
                           className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                             activePage === 'tables'
-                              ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                              ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               folder_open
                             </Icon>
                             <span className="font-extrabold">{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
@@ -2017,12 +2096,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                           }}
                           className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                             activePage === 'tables'
-                              ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                              ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               verified
                             </Icon>
                             <span className="font-extrabold">{isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Registry'}</span>
@@ -2044,12 +2123,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                           }}
                           className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                             activePage === 'forms'
-                              ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                              ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'forms' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'forms' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               how_to_reg
                             </Icon>
                             <span className="font-extrabold">{isAmharic ? 'ምዝገባ' : 'Registration'}</span>
@@ -2068,12 +2147,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                           }}
                           className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                             activePage === 'tables'
-                              ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                              ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               table_chart
                             </Icon>
                             <span className="font-extrabold">{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Database'}</span>
@@ -2093,12 +2172,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                           }}
                           className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                             activePage === 'inspection_report'
-                              ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                              ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'inspection_report' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'inspection_report' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               analytics
                             </Icon>
                             <span className="font-extrabold">{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
@@ -2116,12 +2195,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'scan'
-                            ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                            ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'scan' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'scan' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             qr_code_scanner
                           </Icon>
                           <span className="font-extrabold">{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
@@ -2139,12 +2218,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                           }}
                           className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                             activePage === 'unregistered_list'
-                              ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                              ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'unregistered_list' ? 'text-[#0f2a5e]' : 'text-red-400'}`}>
+                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'unregistered_list' ? 'text-[#0B1E48]' : 'text-red-400'}`}>
                               no_drinks
                             </Icon>
                             <span className="font-extrabold">{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}</span>
@@ -2171,7 +2250,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'superadmin_users' || activePage === 'superadmin'
-                            ? 'bg-amber-400 text-[#0f2a5e] font-black shadow-sm'
+                            ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
@@ -2187,7 +2266,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'superadmin_subcities'
-                            ? 'bg-amber-400 text-[#0f2a5e] font-black shadow-sm'
+                            ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
@@ -2203,7 +2282,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'superadmin_permits'
-                            ? 'bg-amber-400 text-[#0f2a5e] font-black shadow-sm'
+                            ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
@@ -2219,7 +2298,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                           activePage === 'superadmin_maintenance'
-                            ? 'bg-amber-400 text-[#0f2a5e] font-black shadow-sm'
+                            ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
@@ -2239,12 +2318,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                       }}
                       className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                         activePage === 'settings'
-                          ? 'bg-yellow-500 text-[#0f2a5e] shadow-sm font-black'
+                          ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                           : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'settings' ? 'text-[#0f2a5e]' : 'text-yellow-400'}`}>
+                        <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'settings' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                           settings
                         </Icon>
                         <span className="font-extrabold">{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
@@ -2298,7 +2377,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     setIsMobileMenuOpen(false);
                     setIsLogoutModalOpen(true);
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-[#15346d] hover:bg-[#1c438b] border border-[#254c96] text-white rounded-md text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-[#132A5E] hover:bg-[#1A387C] border border-[#2A4E9B] text-white rounded-md text-xs font-bold transition-colors cursor-pointer shadow-xs"
                 >
                   <Icon className="material-symbols-outlined text-[18px] text-amber-400">logout</Icon>
                   <span>{isAmharic ? 'ውጣ' : 'Sign Out'}</span>
@@ -2320,8 +2399,8 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           {/* Left Side: Active Page Title */}
           <div className="flex items-center gap-3">
-            <h2 className="font-black text-base text-[#0f2a5e] tracking-tight flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[#0f2a5e] text-[24px]">
+            <h2 className="font-black text-base text-[#0B1E48] tracking-tight flex items-center gap-2.5">
+              <Icon className="material-symbols-outlined text-[#1D61E7] text-[24px]">
                 {activePage === 'dashboard' && 'space_dashboard'}
                 {activePage === 'forms' && 'how_to_reg'}
                 {activePage === 'today_submissions_adjust' && 'edit_note'}
@@ -2437,7 +2516,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Municipal Calendar Header */}
-                  <div className="bg-[#0f2a5e] text-white p-3.5 rounded-lg border-b-2 border-yellow-500 space-y-1 shadow-xs">
+                  <div className="bg-[#0B1E48] text-white p-3.5 rounded-lg border-b-2 border-yellow-500 space-y-1 shadow-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-extrabold text-yellow-400 uppercase tracking-wider flex items-center gap-1">
                         <Icon className="material-symbols-outlined text-[14px]">event</Icon>
@@ -2514,7 +2593,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                           key={d}
                           className={`py-1 rounded font-mono font-bold text-xs ${
                             d === ethDate.day
-                              ? 'bg-[#0f2a5e] text-yellow-300 font-black shadow-xs ring-2 ring-yellow-400'
+                              ? 'bg-[#0B1E48] text-yellow-300 font-black shadow-xs ring-2 ring-yellow-400'
                               : 'text-on-surface hover:bg-surface-container'
                           }`}
                         >
@@ -2545,7 +2624,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                 className="bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface text-xs font-bold px-3 py-1.5 rounded-md flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
               >
-                <div className="w-6 h-6 rounded-full bg-[#0f2a5e] text-white flex items-center justify-center shrink-0 border border-slate-200">
+                <div className="w-6 h-6 rounded-full bg-[#0B1E48] text-white flex items-center justify-center shrink-0 border border-slate-200">
                   <Icon className="material-symbols-outlined text-[14px]">person</Icon>
                 </div>
                 <div className="text-left hidden sm:block">
@@ -2631,18 +2710,18 @@ export const HomePage: React.FC<HomePageProps> = ({
         <main className={
           activePage === 'scan'
             ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
-            : "flex-1 overflow-y-auto w-full max-w-7xl md:max-w-[1600px] px-3 sm:px-4 md:px-6 pt-1.5 sm:pt-2 md:pt-2 pb-6 md:pb-8 mx-auto min-h-0 flex flex-col"
+            : "flex-1 overflow-y-auto w-full max-w-7xl md:max-w-[1600px] px-3 sm:px-4 md:px-6 pt-1.5 sm:pt-2 md:pt-2 pb-16 md:pb-8 mx-auto min-h-0"
         }>
-          {/* BREADCRUMB NAVIGATION MENU (MATCHING REFERENCE EXACT ATOMIC SIZING: min-h-10 text-[11px] gap-[5px]) */}
+          {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (
-            <nav aria-label="Breadcrumb" className="flex items-center gap-[5px] min-h-10 px-0 py-2 text-[11px] bg-transparent overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mb-1">
-              <ol className="flex items-center gap-[5px] text-[11px] min-w-0">
+            <nav aria-label="Breadcrumb" className="bg-transparent px-0 py-0 mb-1 sm:mb-1.5 md:mb-2 flex items-center overflow-x-auto scrollbar-none transition-all">
+              <ol className="flex items-center gap-1 sm:gap-1.5 text-xs font-semibold text-secondary min-w-0">
                 {breadcrumbItems.map((item, index) => {
                   const isLast = index === breadcrumbItems.length - 1;
                   return (
-                    <li key={index} className="flex items-center gap-[5px] min-w-0 shrink-0">
+                    <li key={index} className="flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
                       {index > 0 && (
-                        <Icon className="material-symbols-outlined text-[12px] text-[#9aa0ae] shrink-0">
+                        <Icon className="material-symbols-outlined text-[13px] text-secondary shrink-0 opacity-60">
                           chevron_right
                         </Icon>
                       )}
@@ -2650,13 +2729,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                         type="button"
                         onClick={() => setActivePage(item.page as any)}
                         disabled={isLast}
-                        className={`flex items-center gap-1 transition-colors text-[11px] ${
+                        className={`flex items-center gap-1 py-0.5 px-2 rounded-md transition-all text-xs ${
                           isLast
-                            ? 'text-[#0f2a5e] dark:text-yellow-400 font-semibold cursor-default'
-                            : 'text-[#6b7280] dark:text-slate-400 hover:text-[#0f2a5e] dark:hover:text-white cursor-pointer'
+                            ? 'text-on-surface font-extrabold cursor-default bg-surface-container/60'
+                            : 'text-secondary hover:text-on-surface hover:bg-surface-container font-semibold cursor-pointer'
                         }`}
                       >
-                        <Icon className="material-symbols-outlined text-[13px] shrink-0 opacity-80">
+                        <Icon className="material-symbols-outlined text-[15px] shrink-0 opacity-80">
                           {item.icon}
                         </Icon>
                         <span className="truncate max-w-[130px] sm:max-w-[220px]">{item.label}</span>
@@ -2834,42 +2913,40 @@ export const HomePage: React.FC<HomePageProps> = ({
               )}
             </>
           )}
-
-          {/* Natural scrolling footer (no fixed bottom behavior) matching reference styling */}
-          {activePage !== 'scan' && (
-            <footer className="w-full border-t border-[#dde1ee] dark:border-slate-800 bg-white dark:bg-slate-900 rounded-[10px] px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto mb-2 shadow-2xs">
-              <div className="text-[#6b7280] dark:text-slate-400 text-[11px] font-medium text-center sm:text-left">
-                {isAmharic ? '© 2016 የግንቦት 12 የባህር ዳር ክፍለ ከተሞች ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Sub-City Permit Governance System. All rights reserved.'}
-              </div>
-              
-              <div className="flex items-center gap-3">
-                {/* Language Selector */}
-                <button
-                  type="button"
-                  onClick={onToggleLang}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-[#dde1ee] dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
-                >
-                  <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">translate</Icon>
-                  <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
-                </button>
-
-                {/* Theme Selector */}
-                {onToggleTheme && (
-                  <button
-                    type="button"
-                    onClick={onToggleTheme}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-[9px] bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-[#dde1ee] dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
-                  >
-                    <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">
-                      {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
-                    </Icon>
-                    <span>{currentTheme === 'dark' ? (isAmharic ? 'ብርሃን (Light)' : 'Light Mode') : (isAmharic ? 'ጨለማ (Dark)' : 'Dark Mode')}</span>
-                  </button>
-                )}
-              </div>
-            </footer>
-          )}
         </main>
+
+        {/* Modern, elegant system footer containing language and theme selectors */}
+        <footer className="w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
+          <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
+            {isAmharic ? '© 2016 የግንቦት 12 የባህር ዳር ክፍለ ከተሞች ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Sub-City Permit Governance System. All rights reserved.'}
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {/* Language Selector */}
+            <button
+              type="button"
+              onClick={onToggleLang}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
+            >
+              <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">translate</Icon>
+              <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
+            </button>
+
+            {/* Theme Selector */}
+            {onToggleTheme && (
+              <button
+                type="button"
+                onClick={onToggleTheme}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
+              >
+                <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">
+                  {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
+                </Icon>
+                <span>{currentTheme === 'dark' ? (isAmharic ? 'ብርሃን (Light)' : 'Light Mode') : (isAmharic ? 'ጨለማ (Dark)' : 'Dark Mode')}</span>
+              </button>
+            )}
+          </div>
+        </footer>
       </div>
 
       {/* Floating Toast Notification Stack */}
@@ -2915,7 +2992,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-[#0f2a5e] text-amber-400 flex items-center justify-center shrink-0 border border-yellow-500/40 shadow-xs">
+              <div className="w-12 h-12 rounded-xl bg-[#0B1E48] text-amber-400 flex items-center justify-center shrink-0 border border-yellow-500/40 shadow-xs">
                 <Icon className="material-symbols-outlined text-[26px]">logout</Icon>
               </div>
               <div>
@@ -2931,7 +3008,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="bg-surface-container p-3.5 rounded-lg border border-outline-variant/60 text-xs space-y-1.5">
               <div className="flex justify-between items-center text-on-surface font-bold">
                 <span className="text-outline">{isAmharic ? 'ተጠቃሚ መለያ:' : 'Logged User:'}</span>
-                <span className="font-mono bg-surface-container-high px-2 py-0.5 rounded text-[11px] font-extrabold text-[#0f2a5e] dark:text-yellow-400">
+                <span className="font-mono bg-surface-container-high px-2 py-0.5 rounded text-[11px] font-extrabold text-[#0B1E48] dark:text-yellow-400">
                   {userBadgeId || 'System User'}
                 </span>
               </div>
@@ -2962,7 +3039,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   setIsLogoutModalOpen(false);
                   handleUserLogout();
                 }}
-                className="px-5 py-2.5 rounded-lg bg-[#15346d] hover:bg-[#1c438b] text-white border border-[#254c96] text-xs font-black shadow-sm transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] text-xs font-black shadow-sm transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
               >
                 <Icon className="material-symbols-outlined text-[16px] text-amber-400">logout</Icon>
                 <span>{isAmharic ? 'አዎ፣ ውጣ' : 'Yes, Sign Out'}</span>

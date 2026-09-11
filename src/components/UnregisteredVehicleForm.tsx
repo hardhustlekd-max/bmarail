@@ -7,7 +7,6 @@ import {
   BAHIR_DAR_SUBCITIES,
 } from '../types';
 import { uploadDocumentPhoto } from '../services/storageService';
-import { SectionHeader } from './SectionHeader';
 
 interface UnregisteredVehicleFormProps {
   lang: Language;
@@ -111,27 +110,26 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header Banner */}
-      <SectionHeader
-        icon="report_problem"
-        title={isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}
-        subtitle={
-          isAmharic
-            ? 'በባህር ዳር ከተማ ያለፈቃድ ወይም ያለሰሌዳ የተገኘ ተሽከርካሪ መመዝገቢያ'
-            : 'Incident reporting for unplated or non-permitted motorcycles'
-        }
-        actions={
-          onCancel ? (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer"
-            >
-              {isAmharic ? 'ሰርዝ' : 'Cancel'}
-            </button>
-          ) : undefined
-        }
-      />
+      {/* Header Banner - Icon and Title text only */}
+      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-2xs flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center shrink-0">
+            <Icon className="material-symbols-outlined text-[24px]">report_problem</Icon>
+          </div>
+          <h1 className="text-base sm:text-lg font-black text-on-surface uppercase tracking-wide">
+            {isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}
+          </h1>
+        </div>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-3.5 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer"
+          >
+            {isAmharic ? 'ሰርዝ' : 'Cancel'}
+          </button>
+        )}
+      </div>
 
       {/* Success Notification Banner */}
       {successMessage && (
@@ -164,7 +162,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={plateNumber}
               onChange={(e) => setPlateNumber(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ 3-12345 ወይም የታርጋ የሌለው' : 'e.g. AA 3 99812 or Unplated'}
-              className="w-full h-11 px-3.5 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
             />
           </div>
 
@@ -178,7 +176,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ አበበ ከበደ / DL-90812' : 'e.g. Abebe Kebede / DL-90812'}
-              className="w-full h-11 px-3.5 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
             />
           </div>
 
@@ -192,7 +190,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={driverPhone}
               onChange={(e) => setDriverPhone(e.target.value)}
               placeholder="+251 9..."
-              className="w-full h-11 px-3.5 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
             />
           </div>
 
@@ -206,7 +204,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ ፋሲሎ ቀበሌ 04' : 'e.g. Fasilo Kebele 04 Checkpoint'}
-              className="w-full h-11 px-3.5 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
             />
           </div>
         </div>

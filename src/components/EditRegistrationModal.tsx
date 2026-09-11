@@ -247,7 +247,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-lg bg-yellow-500 text-[#0f2a5e] flex items-center justify-center font-bold shrink-0 shadow-xs">
+            <div className="w-10 h-10 rounded-lg bg-yellow-500 text-[#0B1E48] flex items-center justify-center font-bold shrink-0 shadow-xs">
               <Icon className="material-symbols-outlined text-[24px]">edit_document</Icon>
             </div>
             <div className="min-w-0">
@@ -658,7 +658,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                       onClick={() => setStatus(st.id as any)}
                       className={`p-2.5 rounded-lg border text-center font-bold text-xs transition-all cursor-pointer ${
                         status === st.id
-                          ? `bg-slate-900 text-white dark:bg-yellow-500 dark:text-[#0f2a5e] ring-2 ring-yellow-500 font-black shadow-xs`
+                          ? `bg-slate-900 text-white dark:bg-yellow-500 dark:text-[#0B1E48] ring-2 ring-yellow-500 font-black shadow-xs`
                           : `bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400`
                       }`}
                     >
@@ -725,7 +725,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 id="save-edit-registration-btn"
                 type="submit"
                 disabled={isSubmitting || !canEdit}
-                className="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#0f2a5e] text-xs rounded-lg font-black cursor-pointer shadow-md flex items-center gap-1.5 transition-transform active:scale-98"
+                className="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#0B1E48] text-xs rounded-lg font-black cursor-pointer shadow-md flex items-center gap-1.5 transition-transform active:scale-98"
               >
                 {isSubmitting ? (
                   <>

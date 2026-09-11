@@ -34,7 +34,6 @@ import {
 } from '../services/dbService';
 import { RolePermissionManagement } from './RolePermissionManagement';
 import { SmartImage } from './SmartImage';
-import { SectionHeader } from './SectionHeader';
 import { SCANNER_THEMES, ScannerThemeKey } from '../utils/scannerThemes';
 
 import { formatEthiopianDateTime } from '../utils/ethiopianCalendar';
@@ -689,38 +688,27 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
   return (
     <div className="space-y-6 pb-12 font-sans text-on-surface">
-      {/* Harmonized Section Header */}
-      <SectionHeader
-        icon={
-          activeTab === 'users'
-            ? 'manage_accounts'
-            : activeTab === 'subcities'
-            ? 'location_city'
-            : activeTab === 'permits'
-            ? 'verified'
-            : 'database'
-        }
-        title={
-          activeTab === 'users'
-            ? (isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions')
-            : activeTab === 'subcities'
-            ? (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')
-            : activeTab === 'permits'
-            ? (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')
-            : (isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance')
-        }
-        subtitle={
-          activeTab === 'users'
-            ? (isAmharic ? 'የስርዓት ተጠቃሚዎች እና ፈቃዶች ማስተዳደሪያ' : 'Manage system administrators, clerks, officers and their privileges')
-            : activeTab === 'subcities'
-            ? (isAmharic ? 'የባህር ዳር ከተማ ክፍለ ከተሞች ማስተዳደሪያ' : 'Configure and monitor registration quotas per Bahir Dar sub-city')
-            : activeTab === 'permits'
-            ? (isAmharic ? 'የይሁንታ ደንቦች እና የቁጥጥር ቅንብሮች' : 'Master approval guidelines and registration constraints')
-            : (isAmharic ? 'የዳታቤዝ ጥገና፣ ባክአፕ እና ኦዲት ቁጥጥር' : 'Database maintenance, data backup, audit logs, and system recovery')
-        }
-        actions={
-          activeTab === 'users' ? (
-            <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center sm:justify-start flex-wrap">
+      {/* Container with header with icon and header text */}
+      <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
+        {/* Header with Icon and Text */}
+        <div className="px-4 sm:px-5 py-3.5 sm:py-4 bg-surface-container border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[22px] sm:text-[24px] shrink-0">
+              {activeTab === 'users' && 'manage_accounts'}
+              {activeTab === 'subcities' && 'location_city'}
+              {activeTab === 'permits' && 'verified'}
+              {activeTab === 'maintenance' && 'database'}
+            </Icon>
+            <h2 className="text-xs sm:text-base font-black text-on-surface truncate">
+              {activeTab === 'users' && (isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions')}
+              {activeTab === 'subcities' && (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')}
+              {activeTab === 'permits' && (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')}
+              {activeTab === 'maintenance' && (isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance')}
+            </h2>
+          </div>
+
+          {activeTab === 'users' && (
+            <div className="flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start flex-wrap">
               {[
                 {
                   id: 'matrix' as const,
@@ -738,9 +726,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setUserViewMode(tab.id)}
-                    className={`ref-tab ${isActive ? 'ref-tab-active' : 'ref-tab-inactive'}`}
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                      isActive
+                        ? 'bg-primary text-white font-extrabold shadow-2xs'
+                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                    }`}
                   >
-                    <span>{tab.label}</span>
+                    <span className="tracking-tight">{tab.label}</span>
                     {typeof tab.count === 'number' && (
                       <span
                         className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
@@ -756,31 +748,32 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 );
               })}
             </div>
-          ) : activeTab === 'maintenance' ? (
+          )}
+          
+          {activeTab === 'maintenance' && (
             <div className="flex items-center gap-2">
               <button
                 onClick={handleForceSyncDatabase}
-                className="px-3.5 py-2 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant rounded-lg text-[11px] font-bold transition-all flex items-center gap-1"
               >
-                <Icon className="material-symbols-outlined text-[16px]">sync</Icon>
+                <Icon className="material-symbols-outlined text-[15px]">sync</Icon>
                 <span>{isAmharic ? 'ዳታቤዝ አድስ' : 'Sync DB'}</span>
               </button>
               <button
                 onClick={handleExportFullDatabaseBackup}
-                className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg text-[11px] font-black transition-all flex items-center gap-1"
               >
-                <Icon className="material-symbols-outlined text-[16px]">download</Icon>
+                <Icon className="material-symbols-outlined text-[15px]">download</Icon>
                 <span>{isAmharic ? 'ባክአፕ አውርድ' : 'Export'}</span>
               </button>
             </div>
-          ) : undefined
-        }
-      />
+          )}
+        </div>
 
-      {/* Body Container holding page content */}
-      <div>
-        {isBlocked ? renderBlockedUI() : (
-          <>
+        {/* Body Container holding page content */}
+        <div className="p-4 sm:p-5">
+          {isBlocked ? renderBlockedUI() : (
+            <>
 
       {/* ================= TAB 1: USERS & RBAC GOVERNANCE ================= */}
       {activeTab === 'users' && (
@@ -798,7 +791,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           ) : (
             <div className="space-y-4">
               {/* Controls & Search Bar */}
-              <div className="bg-surface-container-lowest p-3 rounded-xl border border-outline-variant shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              <div className="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
                 <div className="flex-1 flex flex-col sm:flex-row items-center gap-2.5">
                   <div className="relative w-full sm:w-80">
                     <input
@@ -810,9 +803,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                           ? 'በስም፣ መታወቂያ ወይም ኢሜይል ፈልግ...'
                           : 'Search by name, badge ID, or email...'
                       }
-                      className="w-full h-11 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] pl-9 pr-4 text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+                      className="w-full bg-surface-container border border-outline-variant rounded-md pl-9 pr-4 py-2 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-[#0B1E48]"
                     />
-                    <Icon className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6b7280] text-[18px]">
+                    <Icon className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">
                       search
                     </Icon>
                   </div>
@@ -820,7 +813,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   <select
                     value={roleFilter}
                     onChange={(e) => setRoleFilter(e.target.value)}
-                    className="w-full sm:w-48 h-11 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] px-3 text-[14px] font-bold text-slate-900 dark:text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+                    className="w-full sm:w-48 bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-[#0B1E48]"
                   >
                     <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
                     <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
@@ -841,7 +834,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
                   <button
                     onClick={() => setShowAddUserModal(true)}
-                    className="w-full sm:w-auto px-4 py-2 bg-[#0f2a5e] hover:bg-[#0c2350] text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 shrink-0 cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2 bg-[#0B1E48] hover:bg-[#162B5B] text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 shrink-0 cursor-pointer"
                   >
                     <Icon className="material-symbols-outlined text-[18px]">person_add</Icon>
                     <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
@@ -1034,7 +1027,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                 </div>
 
                                 <div className="flex items-center gap-2 text-xs flex-wrap pt-0.5">
-                                  <span className="font-mono font-bold text-[#0f2a5e] dark:text-yellow-400 bg-surface-container px-1.5 py-0.5 rounded text-[11px]">
+                                  <span className="font-mono font-bold text-[#0B1E48] dark:text-yellow-400 bg-surface-container px-1.5 py-0.5 rounded text-[11px]">
                                     {user.badgeId}
                                   </span>
                                   <span
@@ -1149,23 +1142,21 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {/* ================= TAB 2: SUBCITY GOVERNANCE ================= */}
       {activeTab === 'subcities' && (
         <div className="space-y-5">
-          <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="ref-section-icon">
-                <Icon className="material-symbols-outlined text-[20px]">location_city</Icon>
-              </div>
-              <div className="min-w-0">
-                <h2 className="ref-h1 truncate">
+          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Icon className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">location_city</Icon>
+                <h3 className="font-black text-base text-on-surface">
                   {isAmharic ? 'የባህር ዳር ክፍለ ከተሞች አስተዳደር እና ቁጥጥር' : 'Bahir Dar Sub-City Governance & Permit Freeze'}
-                </h2>
-                <p className="ref-subtitle truncate">
-                  {isAmharic
-                    ? 'የእያንዳንዱን 6ቱ የባህር ዳር ክፍለ ከተሞች ምዝገባ ይቆጣጠሩ፣ የሞተር ብዛት ይመልከቱ ወይም ምዝገባ በጊዜያዊነት ያግዱ'
-                    : 'Monitor permit volumes across all 6 Bahir Dar sub-cities and toggle registration freeze states in real-time.'}
-                </p>
+                </h3>
               </div>
+              <p className="text-xs text-outline mt-1 font-medium">
+                {isAmharic
+                  ? 'የእያንዳንዱን 6ቱ የባህር ዳር ክፍለ ከተሞች ምዝገባ ይቆጣጠሩ፣ የሞተር ብዛት ይመልከቱ ወይም ምዝገባ በጊዜያዊነት ያግዱ'
+                  : 'Monitor permit volumes across all 6 Bahir Dar sub-cities and toggle registration freeze states in real-time.'}
+              </p>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 self-start sm:self-auto">
               <span className="px-3 py-1.5 rounded-md bg-surface-container text-xs font-bold text-on-surface border border-outline-variant">
                 {subCitiesList.length} {isAmharic ? 'ክፍለ ከተሞች' : 'Sub-Cities'}
               </span>
@@ -1432,33 +1423,27 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {/* ================= TAB 4: MASTER PERMITS CONTROLS ================= */}
       {activeTab === 'permits' && (
         <div className="space-y-4">
-          <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="ref-section-icon">
-                <Icon className="material-symbols-outlined text-[20px]">verified</Icon>
-              </div>
-              <div className="min-w-0">
-                <h2 className="ref-h1 truncate">
+          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-extrabold text-base text-on-surface">
                   {isAmharic ? 'የሞተር ብስክሌቶች ፈቃድ የበላይ ውሳኔ' : 'Master Registration Approvals & Overrides'}
-                </h2>
-                <p className="ref-subtitle truncate">
+                </h3>
+                <p className="text-xs text-outline">
                   {isAmharic
                     ? 'በዋና አስተዳዳሪ ደረጃ የሚደረጉ የጅምላ ማጽደቂያዎችና ውሳኔዎች'
                     : 'Execute master bulk actions and force override status on any registration.'}
                 </p>
               </div>
+
+              <button
+                onClick={handleMasterApproveAllPending}
+                className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-md transition-all shadow-md active:scale-95 flex items-center gap-1.5"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">done_all</Icon>
+                {isAmharic ? 'የሚጠብቁትን ሁሉ በጅምላ አጽድቅ' : 'Bulk Approve Pending Permits'}
+              </button>
             </div>
-
-            <button
-              onClick={handleMasterApproveAllPending}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-md transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0"
-            >
-              <Icon className="material-symbols-outlined text-[18px]">done_all</Icon>
-              {isAmharic ? 'የሚጠብቁትን ሁሉ በጅምላ አጽድቅ' : 'Bulk Approve Pending Permits'}
-            </button>
-          </div>
-
-          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
 
             {/* Quick Master Summary */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
@@ -1496,28 +1481,24 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         <div className="space-y-6">
           {/* Section 1: Live Database Health & Cloud Synchronization Hub */}
           <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
-            <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="ref-section-icon">
-                  <Icon className="material-symbols-outlined text-[20px]">database</Icon>
-                </div>
-                <div className="min-w-0">
-                  <h2 className="ref-h1 truncate">
-                    {isAmharic ? 'የዳታቤዝ ሁኔታና የቀጥታ ማመሳሰያ (Database & Cloud Sync)' : 'Database Health & Cloud Sync'}
-                  </h2>
-                  <p className="ref-subtitle truncate">
-                    {isAmharic
-                      ? 'ከፋየርቤዝ ክላውድ (Firestore) እና ከአካባቢያዊ መሸጎጫ (IndexedDB) ጋር ያለው የቀጥታ ሁኔታ'
-                      : 'Real-time synchronization status with Firebase Firestore and persistent IndexedDB storage.'}
-                  </p>
-                </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
+              <div>
+                <h3 className="font-black text-base text-on-surface flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-[#1D61E7] text-[22px]">database</Icon>
+                  {isAmharic ? 'የዳታቤዝ ሁኔታና የቀጥታ ማመሳሰያ (Database & Cloud Sync)' : 'Database Health & Cloud Sync'}
+                </h3>
+                <p className="text-xs text-outline mt-0.5">
+                  {isAmharic
+                    ? 'ከፋየርቤዝ ክላውድ (Firestore) እና ከአካባቢያዊ መሸጎጫ (IndexedDB) ጋር ያለው የቀጥታ ሁኔታ'
+                    : 'Real-time synchronization status with Firebase Firestore and persistent IndexedDB storage.'}
+                </p>
               </div>
 
               <button
                 type="button"
                 onClick={handleForceSyncDatabase}
                 disabled={isSyncingLiveDb}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0f2a5e] hover:bg-[#0c2350] text-white rounded-md text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0B1E48] hover:bg-[#162B5B] text-white rounded-md text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
               >
                 <Icon className={`material-symbols-outlined text-[18px] ${isSyncingLiveDb ? 'animate-spin' : ''}`}>
                   sync
@@ -1576,21 +1557,15 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
           {/* Section 2: Backup & Restoration Center */}
           <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
-            <div className="ref-section-title rounded-[10px]">
-              <div className="ref-section-icon">
-                <Icon className="material-symbols-outlined text-[20px]">backup</Icon>
-              </div>
-              <div>
-                <h2 className="ref-h1">
-                  {isAmharic ? 'የሲስተም ዳታቤዝ ባክአፕና መልሶ ማግኛ (Backup & Restore)' : 'System Backup & Restoration'}
-                </h2>
-                <p className="ref-subtitle">
-                  {isAmharic
-                    ? 'ሁሉንም የተመዘገቡ ተሽከርካሪዎች፣ ተጠቃሚዎች፣ ኦፊሰሮችና የኦዲት መዝገቦች በ JSON ፋይል ማውረድ ወይም ከቀድሞ ባክአፕ መመለስ ይችላሉ።'
-                    : 'Safely export all database collections into a standardized JSON backup file or restore previously exported data.'}
-                </p>
-              </div>
-            </div>
+            <h3 className="font-black text-base text-on-surface flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-emerald-600 text-[22px]">backup</Icon>
+              {isAmharic ? 'የሲስተም ዳታቤዝ ባክአፕና መልሶ ማግኛ (Backup & Restore)' : 'System Backup & Restoration'}
+            </h3>
+            <p className="text-xs text-outline">
+              {isAmharic
+                ? 'ሁሉንም የተመዘገቡ ተሽከርካሪዎች፣ ተጠቃሚዎች፣ ኦፊሰሮችና የኦዲት መዝገቦች በ JSON ፋይል ማውረድ ወይም ከቀድሞ ባክአፕ መመለስ ይችላሉ።'
+                : 'Safely export all database collections into a standardized JSON backup file or restore previously exported data.'}
+            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               {/* Backup Card */}
@@ -1635,7 +1610,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </p>
                 </div>
 
-                <label className="w-full py-2.5 bg-[#0f2a5e] hover:bg-[#0c2350] text-white rounded-md text-xs font-extrabold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
+                <label className="w-full py-2.5 bg-[#0B1E48] hover:bg-[#162B5B] text-white rounded-md text-xs font-extrabold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
                   <Icon className={`material-symbols-outlined text-[18px] ${isRestoringBackup ? 'animate-spin' : ''}`}>
                     {isRestoringBackup ? 'sync' : 'restore_page'}
                   </Icon>
@@ -1658,24 +1633,20 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
           {/* Section 3: Live System Audit Trail */}
           <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
-            <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="ref-section-icon">
-                  <Icon className="material-symbols-outlined text-[20px]">history_edu</Icon>
-                </div>
-                <div className="min-w-0">
-                  <h2 className="ref-h1 truncate">
-                    {isAmharic ? 'የሲስተም አጠቃቀም የኦዲት ማህደር (System Audit Trail)' : 'System Audit Trail'}
-                  </h2>
-                  <p className="ref-subtitle truncate">
-                    {isAmharic
-                      ? 'በዋና አስተዳዳሪዎችና ፀሐፊዎች የተከናወኑ የደህንነትና የፈቃድ ለውጦች ሙሉ ታሪክ'
-                      : 'Real-time trace of administrative actions, permission overrides, and permit reviews.'}
-                  </p>
-                </div>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
+              <div>
+                <h3 className="font-black text-base text-on-surface flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-amber-600 text-[22px]">history_edu</Icon>
+                  {isAmharic ? 'የሲስተም አጠቃቀም የኦዲት ማህደር (System Audit Trail)' : 'System Audit Trail'}
+                </h3>
+                <p className="text-xs text-outline mt-0.5">
+                  {isAmharic
+                    ? 'በዋና አስተዳዳሪዎችና ፀሐፊዎች የተከናወኑ የደህንነትና የፈቃድ ለውጦች ሙሉ ታሪክ'
+                    : 'Real-time trace of administrative actions, permission overrides, and permit reviews.'}
+                </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleExportAuditTrail}
@@ -1707,7 +1678,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   value={auditSearch}
                   onChange={(e) => setAuditSearch(e.target.value)}
                   placeholder={isAmharic ? 'በመታወቂያ ወይም በድርጊት ፈልግ...' : 'Search by badge, action, details...'}
-                  className="w-full pl-9 pr-3 py-2 bg-surface-container border border-outline-variant rounded-md text-xs font-semibold focus:outline-hidden focus:border-[#0f2a5e]"
+                  className="w-full pl-9 pr-3 py-2 bg-surface-container border border-outline-variant rounded-md text-xs font-semibold focus:outline-hidden focus:border-[#0B1E48]"
                 />
               </div>
 
@@ -1719,7 +1690,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     onClick={() => setAuditSeverityFilter(sev)}
                     className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all capitalize cursor-pointer ${
                       auditSeverityFilter === sev
-                        ? 'bg-[#0f2a5e] text-white shadow-xs'
+                        ? 'bg-[#0B1E48] text-white shadow-xs'
                         : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
                     }`}
                   >
@@ -1809,7 +1780,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 <button
                   type="button"
                   onClick={() => setAuditViewLimit((prev) => prev + 50)}
-                  className="text-xs font-bold text-[#0f2a5e] hover:underline"
+                  className="text-xs font-bold text-[#1D61E7] hover:underline"
                 >
                   {isAmharic ? 'ተጨማሪ የኦዲት መዝገቦችን አሳይ' : 'Load more audit records'}
                 </button>
@@ -1819,24 +1790,24 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
           {/* Section 4: Scanner Result Page Theme Selector (Super Admin Only) */}
           <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
-            <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="ref-section-icon">
-                  <Icon className="material-symbols-outlined text-[20px]">palette</Icon>
-                </div>
-                <div className="min-w-0">
-                  <h2 className="ref-h1 truncate">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                    <Icon className="material-symbols-outlined text-[20px]">palette</Icon>
+                  </div>
+                  <h3 className="font-black text-base text-on-surface">
                     {isAmharic ? 'የስካነር ውጤት ገጽ ገጽታ መምረጫ (Scanner Result Themes)' : 'Scanner Result Page Theme Settings'}
-                  </h2>
-                  <p className="ref-subtitle truncate">
-                    {isAmharic
-                      ? '⚠️ ይህ ገጽታ የሚተገበረው ለስካነር ውጤት ማሳያ ገጽ ብቻ ነው፤ እዚህ ሲመረጥ ለሁሉም ኦፊሰሮችና ተጠቃሚዎች ወዲያውኑ ይተገበራል።'
-                      : '⚠️ Themes are strictly applied only to the scanner result page and take effect globally for all officers and users.'}
-                  </p>
+                  </h3>
                 </div>
+                <p className="text-xs text-outline mt-1 font-medium">
+                  {isAmharic
+                    ? '⚠️ ይህ ገጽታ የሚተገበረው ለስካነር ውጤት ማሳያ ገጽ ብቻ ነው፤ እዚህ ሲመረጥ ለሁሉም ኦፊሰሮችና ተጠቃሚዎች ወዲያውኑ ይተገበራል።'
+                    : '⚠️ Themes are strictly applied only to the scanner result page and take effect globally for all officers and users.'}
+                </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2">
                 <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
                   <span>
@@ -1952,7 +1923,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       className={`w-full py-2 px-3 rounded-lg font-extrabold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-emerald-600 text-white shadow-xs cursor-default'
-                          : 'bg-[#0f2a5e] hover:bg-[#0c2350] text-white shadow-xs active:scale-98'
+                          : 'bg-[#0B1E48] hover:bg-[#162B5B] text-white shadow-xs active:scale-98'
                       }`}
                     >
                       {isSelected ? (
@@ -1975,15 +1946,15 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
           {/* Section 5: DANGER ZONE */}
           <div className="bg-red-50/40 border-2 border-red-300 rounded-lg p-5 space-y-4">
-            <div className="ref-section-title rounded-[10px] !bg-red-100/70 !border-red-200">
-              <div className="ref-section-icon !bg-red-200/80 !text-red-700 !border-red-300">
+            <div className="flex items-center gap-2.5 border-b border-red-200 pb-3">
+              <div className="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center shrink-0">
                 <Icon className="material-symbols-outlined text-[20px]">warning</Icon>
               </div>
               <div>
-                <h2 className="ref-h1 !text-red-900">
+                <h3 className="font-black text-base text-red-900">
                   {isAmharic ? 'አደገኛ ቀጠና (Danger Zone Operations)' : 'Danger Zone Operations'}
-                </h2>
-                <p className="ref-subtitle !text-red-700">
+                </h3>
+                <p className="text-xs text-red-700 mt-0.5">
                   {isAmharic
                     ? 'እነዚህ ተግባራት በዳታቤዝ ላይ ዘላቂ ለውጥ ያመጣሉ፤ እባክዎ ከመፈጸምዎ በፊት አስቀድመው ባክአፕ ይያዙ።'
                     : 'Destructive system maintenance tasks. Actions cannot be undone without a recent JSON backup.'}
@@ -2077,6 +2048,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </>
           )}
         </div> {/* End of Body Container holding page content */}
+      </div> {/* End of Container with header with icon and header text */}
 
       {/* ================= MODAL: ADD SYSTEM USER ================= */}
       {showAddUserModal && (
@@ -2106,7 +2078,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   value={newFullName}
                   onChange={(e) => setNewFullName(e.target.value)}
                   placeholder="e.g. ዮሐንስ ተስፋዬ"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f2a5e]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0B1E48]"
                 />
               </div>
 
@@ -2121,7 +2093,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     value={newBadgeId}
                     onChange={(e) => setNewBadgeId(e.target.value)}
                     placeholder="e.g. CLERK-501"
-                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold focus:outline-hidden focus:border-[#0f2a5e]"
+                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold focus:outline-hidden focus:border-[#0B1E48]"
                   />
                 </div>
 
@@ -2132,7 +2104,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value as UserRole)}
-                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#0f2a5e]"
+                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#0B1E48]"
                   >
                     <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
                     <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin)' : 'Admin'}</option>
@@ -2151,7 +2123,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
                   placeholder="e.g. yohannes@permit.gov.et"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f2a5e]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0B1E48]"
                 />
               </div>
 
@@ -2162,7 +2134,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 <select
                   value={newSubCity}
                   onChange={(e) => setNewSubCity(e.target.value)}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f2a5e]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0B1E48]"
                 >
                   {subCitiesList.map((sc) => (
                     <option key={sc.en} value={sc.en}>
@@ -2183,7 +2155,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#0f2a5e] hover:bg-[#0c2350] text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
+                  className="px-5 py-2 bg-[#0B1E48] hover:bg-[#162B5B] text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
                 >
                   {isAmharic ? 'ተጠቃሚውን አስመዝግብ' : 'Create User Account'}
                 </button>
@@ -2215,7 +2187,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   required
                   value={editingUser.fullName}
                   onChange={(e) => setEditingUser({ ...editingUser, fullName: e.target.value })}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f2a5e]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0B1E48]"
                 />
               </div>
 
@@ -2235,7 +2207,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   <select
                     value={editingUser.role}
                     onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as UserRole })}
-                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#0f2a5e]"
+                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#0B1E48]"
                   >
                     <option value="clerk">Clerk</option>
                     <option value="admin">Admin</option>
@@ -2251,7 +2223,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   type="email"
                   value={editingUser.email}
                   onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f2a5e]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0B1E48]"
                 />
               </div>
 
@@ -2260,7 +2232,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 <select
                   value={editingUser.subCity || BAHIR_DAR_SUBCITIES[0].en}
                   onChange={(e) => setEditingUser({ ...editingUser, subCity: e.target.value })}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f2a5e]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0B1E48]"
                 >
                   {subCitiesList.map((sc) => (
                     <option key={sc.en} value={sc.en}>
@@ -2281,7 +2253,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#0f2a5e] hover:bg-[#0c2350] text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
+                  className="px-5 py-2 bg-[#0B1E48] hover:bg-[#162B5B] text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
                 >
                   {isAmharic ? 'ለውጦችን መዝግብ' : 'Save Changes'}
                 </button>

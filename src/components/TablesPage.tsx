@@ -20,7 +20,6 @@ import { OfficerVerificationHistory } from './OfficerVerificationHistory';
 import { VehicleQRSticker } from './VehicleQRSticker';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { SmartImage } from './SmartImage';
-import { SectionHeader } from './SectionHeader';
 import { DataField, SelectField } from './ui/StreamlinedUI';
 import { Icon } from './ui/Icon';
 import {
@@ -386,23 +385,32 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* SECTION HEADER (MATCHING REFERENCE EXACT ATOMIC SIZING) */}
-      <SectionHeader
-        icon="table_chart"
-        title={
-          userRole === 'clerk'
-            ? (activeTableTab === 'approved'
-                ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
-                : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
-            : (isAmharic ? 'የአባላት መረጃ ማህደር' : 'Members Directory')
-        }
-        subtitle={
-          isAmharic
-            ? 'የተመዘገቡ የሞተር ብስክሌት አባላት ሙሉ ዝርዝር እና የፈቃድ ቁጥጥር'
-            : 'Complete directory of registered motorcycle members and permit control'
-        }
-        action={
-          showHiddenControls && (userRole === 'superadmin' || userRole === 'super_admin') ? (
+      {/* SINGLE UNIFIED TABLE CONTAINER (PERMIT STATUS BREAKDOWN CONTAINER STYLE) */}
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
+
+        {/* CONTAINER HEADER (MATCHING PERMIT STATUS BREAKDOWN CARD HEADER) */}
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">table_chart</Icon>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {userRole === 'clerk'
+                  ? (activeTableTab === 'approved'
+                      ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
+                      : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
+                  : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'የፀደቁ፣ በመጠባበቅ ላይ ያሉ እና ውድቅ የተደረጉ የተሽከርካሪ መረጃዎች ዝርዝር'
+                  : 'Registry and verification records of all motorcycle permits'}
+              </p>
+            </div>
+          </div>
+
+          {showHiddenControls && (userRole === 'superadmin' || userRole === 'super_admin') && (
             <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-full text-xs font-black shadow-2xs animate-pulse">
               <Icon className="material-symbols-outlined text-[16px]">visibility_off</Icon>
               <span>
@@ -410,20 +418,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 {registrations.filter((r) => r.hideFromOtherUsers).length}
               </span>
             </div>
-          ) : undefined
-        }
-      />
+          )}
+        </div>
 
-      {/* SINGLE UNIFIED TABLE CONTAINER */}
-      <div className="bg-white dark:bg-slate-900 border border-[#dde1ee] dark:border-slate-800 rounded-[10px] shadow-2xs overflow-hidden">
-
-        {/* ATOMIC SEARCH BAR (MATCHING REFERENCE: ref-search-bar h-11 rounded-[10px] px-3) */}
-        <section className="px-4 md:px-6 py-3 bg-white dark:bg-slate-900 border-b border-[#dde1ee] dark:border-slate-800">
-          <label className="ref-search-bar" htmlFor="memberSearch">
-            <Icon className="material-symbols-outlined text-[#6b7280] dark:text-slate-400 text-[18px] shrink-0">search</Icon>
+        {/* SUB-FILTER SLIDE BAR (FOR REGISTRATIONS: LIVE SEARCH & STATUS SLIDE PILLS) */}
+        <div className="p-2.5 sm:p-3 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/40 dark:border-slate-800">
+          {/* Live Search Input */}
+          <div className="relative flex-1 min-w-[180px] max-w-sm">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
+              <Icon className="material-symbols-outlined text-[16px]">search</Icon>
+            </div>
             <input
-              id="memberSearch"
-              type="search"
+              type="text"
               value={regSearchQuery}
               onChange={(e) => {
                 const val = e.target.value;
@@ -438,101 +444,96 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 setRegPage(1);
               }}
               placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chassis...'}
-              className="w-full border-0 outline-none bg-transparent text-[#1a1d2e] dark:text-white text-[14px] font-normal placeholder:text-[#9aa0ae] dark:placeholder:text-slate-400"
-              aria-label={isAmharic ? 'አባል ፈልግ' : 'Search Member'}
+              className="w-full pl-8 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-2xs"
             />
             {regSearchQuery && (
               <button
                 type="button"
                 onClick={() => setRegSearchQuery('')}
-                className="text-[#6b7280] hover:text-[#1a1d2e] dark:hover:text-white cursor-pointer shrink-0"
+                className="absolute inset-y-0 right-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
               >
-                <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                <Icon className="material-symbols-outlined text-[15px]">close</Icon>
               </button>
             )}
-          </label>
-        </section>
-
-        {/* ATOMIC FILTER TABS (MATCHING REFERENCE EXACT DIMENSIONS) */}
-        <div className="flex items-center justify-between gap-2 px-4 md:px-6 py-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden bg-white dark:bg-slate-900 border-b border-[#dde1ee] dark:border-slate-800" role="tablist">
-          <div className="flex items-center gap-2 flex-wrap">
-            {[
-              {
-                id: 'approved' as const,
-                label: isAmharic ? 'የፀደቁ' : 'Approved',
-                count: approvedCount,
-              },
-              {
-                id: 'pending' as const,
-                label: isAmharic ? 'የሚጠበቁ' : 'Pending',
-                count: pendingCount,
-              },
-              {
-                id: 'expired' as const,
-                label: isAmharic ? 'ያለፈበት' : 'Expired',
-                count: expiredCount,
-              },
-            ].map((tab) => {
-              const isActive = activeTableTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveTableTab(tab.id);
-                    setRegPage(1);
-                  }}
-                  className={`ref-tab ${
-                    isActive ? 'ref-tab-active' : 'ref-tab-inactive'
-                  }`}
-                  role="tab"
-                >
-                  <span>{tab.label}</span>
-                  {typeof tab.count === 'number' && (
-                    <span
-                      className={`ref-tab-count ${
-                        isActive
-                          ? 'bg-white/20 text-white'
-                          : tab.id === 'pending' && (tab.count || 0) > 0
-                          ? 'bg-[#d97706] text-white'
-                          : 'bg-[#eef0f7] dark:bg-slate-700 text-[#6b7280] dark:text-slate-300'
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
           </div>
 
-          {/* Reset filter button if filtered */}
-          {(regSearchQuery || regSubCityFilter !== 'all') && (
-            <button
-              type="button"
-              onClick={() => {
-                setRegSearchQuery('');
-                setRegSubCityFilter('all');
-                setRegPage(1);
-              }}
-              className="px-2.5 py-1 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors flex items-center gap-1 cursor-pointer shrink-0"
-              title={isAmharic ? 'ማጣሪያዎችን አጽዳ' : 'Reset Filters'}
-            >
-              <span>{isAmharic ? 'አጽዳ' : 'Clear'}</span>
-            </button>
-          )}
-        </div>
+          {/* Status Tabs in Clean Compact Pill Style */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1 flex-wrap">
+              {[
+                {
+                  id: 'approved' as const,
+                  label: isAmharic ? 'የፀደቁ' : 'Approved',
+                  count: approvedCount,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
+                },
+                {
+                  id: 'pending' as const,
+                  label: isAmharic ? 'የሚጠበቁ' : 'Pending',
+                  count: pendingCount,
+                  badgeColor:
+                    pendingCount > 0
+                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                      : 'bg-surface-container-highest text-secondary',
+                },
+                {
+                  id: 'expired' as const,
+                  label: isAmharic ? 'ያለፈበት' : 'Expired',
+                  count: expiredCount,
+                  badgeColor:
+                    expiredCount > 0
+                      ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
+                      : 'bg-surface-container-highest text-secondary',
+                },
+              ].map((tab) => {
+                const isActive = activeTableTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTableTab(tab.id);
+                      setRegPage(1);
+                    }}
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                      isActive
+                        ? 'bg-primary text-white font-extrabold shadow-2xs'
+                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                    }`}
+                  >
+                    <span className="tracking-tight">{tab.label}</span>
+                    {typeof tab.count === 'number' && (
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                          isActive
+                            ? 'bg-white/20 text-white'
+                            : tab.badgeColor
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* RESULT SUMMARY PILL BAR (MATCHING REFERENCE: ref-summary-bar min-h-9 rounded-[9px] px-3 py-2 text-[11px]) */}
-        <div className="mx-4 md:mx-6 my-3 ref-summary-bar">
-          <span>
-            {activeTableTab === 'approved' && (isAmharic ? 'የፀደቁ አባላት' : 'Approved Members')}
-            {activeTableTab === 'pending' && (isAmharic ? 'የሚጠበቁ አባላት' : 'Pending Applications')}
-            {activeTableTab === 'expired' && (isAmharic ? 'ያለፈባቸው አባላት' : 'Expired Permits')}
-          </span>
-          <span className="ref-count-pill">
-            {filteredRegistrations.length} {isAmharic ? 'ውጤቶች' : 'results'}
-          </span>
+            {/* Reset filter button if filtered */}
+            {(regSearchQuery || regSubCityFilter !== 'all') && (
+              <button
+                type="button"
+                onClick={() => {
+                  setRegSearchQuery('');
+                  setRegSubCityFilter('all');
+                  setRegPage(1);
+                }}
+                className="px-2.5 py-1 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors flex items-center gap-1 cursor-pointer"
+                title={isAmharic ? 'ማጣሪያዎችን አጽዳ' : 'Reset Filters'}
+              >
+                <span>{isAmharic ? 'አጽዳ' : 'Clear'}</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* --- VIEW 1: REGISTRATIONS TABLE (FILTERED BY STATUS) --- */}
@@ -542,7 +543,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#f8f9fc] dark:bg-slate-800/90 text-[#6b7280] dark:text-slate-300 text-xs font-semibold border-b border-[#dde1ee] dark:border-slate-700">
+                  <tr className="bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider font-extrabold border-b border-slate-200 dark:border-slate-700">
                     <th className="px-4 py-3.5 text-center w-12">#</th>
                     <th className="px-4 py-3.5">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
                     <th className="px-4 py-3.5">{isAmharic ? 'የሰሌዳ ቁጥር & አይነት' : 'Plate No & Category'}</th>
@@ -552,7 +553,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <th className="px-4 py-3.5 text-right">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#dde1ee]/60 dark:divide-slate-800 text-xs">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                   {registrations.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="p-12 text-center text-slate-500 dark:text-slate-400">
@@ -582,7 +583,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             onClick={() => {
                               setActiveTableTab('approved');
                             }}
-                            className="px-3 py-1.5 bg-yellow-500 text-[#0f2a5e] font-extrabold text-xs rounded-md shadow-xs hover:bg-yellow-400 cursor-pointer"
+                            className="px-3 py-1.5 bg-yellow-500 text-[#0B1E48] font-extrabold text-xs rounded-md shadow-xs hover:bg-yellow-400 cursor-pointer"
                           >
                             {isAmharic ? 'የፀደቁትን አሳይ' : 'Show Approved Permits'}
                           </button>
@@ -594,7 +595,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         const isExpanded = !!expandedRegs[reg.id];
                         return (
                           <React.Fragment key={reg.id}>
-                            <tr className="h-16 align-middle hover:bg-[#f8f9fc] dark:hover:bg-slate-800/60 transition-colors">
+                            <tr className="h-16 align-middle hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
                               {/* Index Number & Expand Toggle */}
                               <td className="px-3 py-2.5 align-middle h-16 text-center font-mono font-bold text-slate-400">
                                 <div className="flex items-center justify-center gap-1">
@@ -603,7 +604,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     onClick={() => toggleRegExpand(reg.id)}
                                     className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
                                       isExpanded
-                                        ? 'bg-yellow-500 text-[#0f2a5e]'
+                                        ? 'bg-yellow-500 text-[#0B1E48]'
                                         : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
                                     }`}
                                     title={isExpanded ? (isAmharic ? 'አጣጥፍ' : 'Collapse') : (isAmharic ? 'ሰነዶችን እና ዝርዝር አሳይ' : 'Expand Documents & Details')}
@@ -640,7 +641,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             {/* Plate Number & Category */}
                             <td className="px-4 py-2.5 align-middle h-16">
                               <div className="space-y-1">
-                                <span className="font-mono font-black text-xs text-[#0f2a5e] dark:text-yellow-400 inline-block">
+                                <span className="font-mono font-black text-xs text-[#0B1E48] dark:text-yellow-400 inline-block">
                                   {reg.plateNumber || '—'}
                                 </span>
                                 <div>
@@ -746,7 +747,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => setSelectedRegForA4(reg)}
-                                      className="px-2.5 py-1 bg-[#0f2a5e] hover:bg-[#0c2350] text-yellow-400 font-extrabold text-[11px] rounded-lg transition-all cursor-pointer border border-yellow-500/30 flex items-center gap-1 shadow-2xs"
+                                      className="px-2.5 py-1 bg-[#0B1E48] hover:bg-[#071330] text-yellow-400 font-extrabold text-[11px] rounded-lg transition-all cursor-pointer border border-yellow-500/30 flex items-center gap-1 shadow-2xs"
                                       title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ ወረቀት አትም' : 'Print Movement Permit Document'}
                                     >
                                       <Icon className="material-symbols-outlined text-[15px]">print</Icon>
@@ -815,7 +816,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   onClick={() => toggleRegExpand(reg.id)}
                                   className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                                     isExpanded
-                                      ? 'bg-yellow-500 text-[#0f2a5e] shadow-2xs'
+                                      ? 'bg-yellow-500 text-[#0B1E48] shadow-2xs'
                                       : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                                   }`}
                                   title={isExpanded ? (isAmharic ? 'ሰነዶችን ደብቅ' : 'Hide Documents') : (isAmharic ? 'ሰነዶችን ዘርጋ' : 'Expand Documents')}
@@ -828,181 +829,92 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             </td>
                           </tr>
 
-                          {/* Desktop Collapsible Attached Documents Sub-row (Spacious, elegant layout with generous padding & margins) */}
+                          {/* Desktop Collapsible Attached Documents Sub-row */}
                           {isExpanded && (
-                            <tr className="bg-slate-50/90 dark:bg-slate-900/80 border-b-2 border-slate-200 dark:border-slate-700">
-                              <td colSpan={7} className="px-6 py-6 sm:px-8 sm:py-7">
-                                <div className="space-y-6 max-w-7xl mx-auto">
-                                  {/* Header inside expanded drawer */}
-                                  <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-700">
-                                    <div className="flex items-center gap-3.5">
-                                      <div className="w-11 h-11 rounded-xl bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 flex items-center justify-center font-bold shrink-0">
-                                        <Icon className="material-symbols-outlined text-[24px]">two_wheeler</Icon>
-                                      </div>
-                                      <div>
-                                        <div className="flex items-center gap-2.5 flex-wrap">
-                                          <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                                            {getDisplayName(reg)}
-                                          </h4>
-                                          <span className="font-mono font-black text-xs px-2.5 py-0.5 rounded-md bg-yellow-100 dark:bg-yellow-950/70 text-yellow-900 dark:text-yellow-200 border border-yellow-300/80 shadow-2xs">
-                                            {reg.plateNumber || '—'}
-                                          </span>
-                                          <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold ${
-                                            reg.vehicleCategory === 'electric'
-                                              ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-800'
-                                              : 'bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-200 border border-blue-300 dark:border-blue-800'
-                                          }`}>
-                                            {reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
-                                          </span>
+                            <tr className="bg-slate-50/90 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-700">
+                              <td colSpan={7} className="px-6 py-3.5">
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                      <Icon className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">photo_library</Icon>
+                                      <span>{isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ተጫን):' : 'Attached Documents (Click to Zoom):'}</span>
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setSelectedRegForDetails(reg)}
+                                      className="text-xs font-extrabold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                                    >
+                                      <span>{isAmharic ? 'ሙሉ ዝርዝር እይ' : 'View Full Details'}</span>
+                                      <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
+                                    </button>
+                                  </div>
+
+                                  {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto) ? (
+                                    <div className="flex items-center gap-3 overflow-x-auto pb-1">
+                                      {(reg.userPortraitPhoto || reg.ownerPhoto) && (
+                                        <div
+                                          onClick={() => openDocumentCarousel((reg.userPortraitPhoto || reg.ownerPhoto)!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}`)}
+                                          className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                          title={isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
+                                        >
+                                          <SmartImage src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                            <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                                          </div>
                                         </div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                          {reg.motorBrand || ''} {reg.motorModel || ''} • {reg.subCity || '—'} {reg.woreda ? `(ወረዳ ${reg.woreda})` : ''}
-                                        </p>
-                                      </div>
+                                      )}
+                                      {reg.nationalIdPhoto && (
+                                        <div
+                                          onClick={() => openDocumentCarousel(reg.nationalIdPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}`)}
+                                          className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                          title={isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}
+                                        >
+                                          <SmartImage src={reg.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                            <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {reg.nationalIdBackPhoto && (
+                                        <div
+                                          onClick={() => openDocumentCarousel(reg.nationalIdBackPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}`)}
+                                          className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                          title={isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}
+                                        >
+                                          <SmartImage src={reg.nationalIdBackPhoto} alt="National ID Back" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                            <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {reg.drivingLicensePhoto && (
+                                        <div
+                                          onClick={() => openDocumentCarousel(reg.drivingLicensePhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}`)}
+                                          className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                          title={isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
+                                        >
+                                          <SmartImage src={reg.drivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                            <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {reg.drivingPermitPhoto && (
+                                        <div
+                                          onClick={() => openDocumentCarousel(reg.drivingPermitPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}`)}
+                                          className="w-14 h-16 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                          title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}
+                                        >
+                                          <SmartImage src={reg.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                            <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
-
-                                    <div className="flex items-center gap-3">
-                                      {renderStatusBadge(reg.status, true)}
-                                      <button
-                                        type="button"
-                                        onClick={() => setSelectedRegForDetails(reg)}
-                                        className="px-4 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-300 font-bold rounded-lg text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
-                                      >
-                                        <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
-                                        <span>{isAmharic ? 'ሙሉ ዝርዝር እይ' : 'View Full Details'}</span>
-                                      </button>
-                                    </div>
-                                  </div>
-
-                                  {/* Detailed Metadata Grid */}
-                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/90 dark:border-slate-700/80 shadow-2xs">
-                                    <DataField label={isAmharic ? 'የማህደር መለያ:' : 'Record ID:'} value={reg.id} isMono />
-                                    <DataField label={isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:'} value={reg.phone || '—'} isMono />
-                                    <DataField label={isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:'} value={reg.subCity || '—'} />
-                                    <DataField label={isAmharic ? 'ወረዳ / ቀበሌ:' : 'Woreda / Kebele:'} value={reg.woreda || reg.kebele || '—'} />
-                                    <DataField label={isAmharic ? 'ሴሪያል / ቻሲስ ቁጥር:' : 'Serial / Chassis:'} value={reg.engineOrSerialNo || '—'} isMono />
-                                    <DataField label={isAmharic ? 'የሞተር ቁጥር:' : 'Engine / Motor No:'} value={reg.motorNumber || '—'} isMono />
-                                    <DataField label={isAmharic ? 'የተመዘገበበት ቀን:' : 'Registered Date:'} value={reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'} isMono />
-                                    <DataField label={isAmharic ? 'የመዘገበው ሰራተኛ:' : 'Registered By:'} value={reg.registeredBy || '—'} isMono />
-                                  </div>
-
-                                  {/* Attached Documents Section */}
-                                  <div className="space-y-3.5 pt-2">
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs font-extrabold text-slate-700 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                                        <Icon className="material-symbols-outlined text-[18px] text-yellow-600 dark:text-yellow-400">photo_library</Icon>
-                                        <span>{isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ተጫን):' : 'Attached Documents (Click to Zoom):'}</span>
-                                      </span>
-                                    </div>
-
-                                    {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto || getLatestReceiptForRegistration(reg, paymentReceipts)?.receiptScreenshot || reg.receiptScreenshot) ? (
-                                      <div className="flex items-start gap-4 overflow-x-auto pb-2 pt-1">
-                                        {(reg.userPortraitPhoto || reg.ownerPhoto) && (
-                                          <div
-                                            onClick={() => openDocumentCarousel((reg.userPortraitPhoto || reg.ownerPhoto)!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}`)}
-                                            className="group flex flex-col items-center gap-2 shrink-0 cursor-pointer"
-                                          >
-                                            <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                              <SmartImage src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                                <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                              </div>
-                                            </div>
-                                            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                              {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
-                                            </span>
-                                          </div>
-                                        )}
-                                        {reg.nationalIdPhoto && (
-                                          <div
-                                            onClick={() => openDocumentCarousel(reg.nationalIdPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID (Front)'}`)}
-                                            className="group flex flex-col items-center gap-2 shrink-0 cursor-pointer"
-                                          >
-                                            <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                              <SmartImage src={reg.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                                <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                              </div>
-                                            </div>
-                                            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                              {isAmharic ? 'መታወቂያ (ፊት)' : 'National ID Front'}
-                                            </span>
-                                          </div>
-                                        )}
-                                        {reg.nationalIdBackPhoto && (
-                                          <div
-                                            onClick={() => openDocumentCarousel(reg.nationalIdBackPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}`)}
-                                            className="group flex flex-col items-center gap-2 shrink-0 cursor-pointer"
-                                          >
-                                            <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                              <SmartImage src={reg.nationalIdBackPhoto} alt="National ID Back" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                                <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                              </div>
-                                            </div>
-                                            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                              {isAmharic ? 'መታወቂያ (ጀርባ)' : 'National ID Back'}
-                                            </span>
-                                          </div>
-                                        )}
-                                        {reg.drivingLicensePhoto && (
-                                          <div
-                                            onClick={() => openDocumentCarousel(reg.drivingLicensePhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}`)}
-                                            className="group flex flex-col items-center gap-2 shrink-0 cursor-pointer"
-                                          >
-                                            <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                              <SmartImage src={reg.drivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                                <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                              </div>
-                                            </div>
-                                            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                              {isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
-                                            </span>
-                                          </div>
-                                        )}
-                                        {reg.drivingPermitPhoto && (
-                                          <div
-                                            onClick={() => openDocumentCarousel(reg.drivingPermitPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}`)}
-                                            className="group flex flex-col items-center gap-2 shrink-0 cursor-pointer"
-                                          >
-                                            <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                              <SmartImage src={reg.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                                <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                              </div>
-                                            </div>
-                                            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                              {isAmharic ? 'ሊብሬ / ፍቃድ' : 'Permit / Libre'}
-                                            </span>
-                                          </div>
-                                        )}
-                                        {(() => {
-                                          const latestRc = getLatestReceiptForRegistration(reg, paymentReceipts);
-                                          const receiptImg = latestRc?.receiptScreenshot || reg.receiptScreenshot;
-                                          if (!receiptImg) return null;
-                                          return (
-                                            <div
-                                              onClick={() => openDocumentCarousel(receiptImg, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የባንክ ክፍያ ደረሰኝ' : 'Bank Receipt Slip'}`)}
-                                              className="group flex flex-col items-center gap-2 shrink-0 cursor-pointer"
-                                            >
-                                              <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl overflow-hidden border-2 border-emerald-500 dark:border-emerald-600 group-hover:border-yellow-500 dark:group-hover:border-yellow-400 bg-slate-900 relative shadow-sm transition-all">
-                                                <SmartImage src={receiptImg} alt="Receipt Slip" fallbackIcon="receipt_long" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                                  <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                                </div>
-                                              </div>
-                                              <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 text-center max-w-[96px] truncate group-hover:text-yellow-600 dark:group-hover:text-yellow-400">
-                                                {isAmharic ? 'ክፍያ ደረሰኝ' : 'Receipt Slip'}
-                                              </span>
-                                            </div>
-                                          );
-                                        })()}
-                                      </div>
-                                    ) : (
-                                      <p className="text-xs text-slate-400 italic py-2">{isAmharic ? 'ምንም የተያያዘ ሰነድ አልተገኘም።' : 'No attached documents uploaded for this vehicle record.'}</p>
-                                    )}
-                                  </div>
+                                  ) : (
+                                    <p className="text-xs text-slate-400 italic">{isAmharic ? 'ምንም የተያያዘ ሰነድ የለም' : 'No attached documents uploaded.'}</p>
+                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -1016,7 +928,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               </div>
 
               {/* Mobile Cards / Collapsed Rows View (< md) */}
-              <div className="block md:hidden p-4 sm:p-5 space-y-4">
+              <div className="block md:hidden divide-y divide-slate-200 dark:divide-slate-800">
                 {registrations.length === 0 ? (
                   <div className="p-10 text-center text-slate-500 dark:text-slate-400 space-y-1.5">
                     <Icon className="material-symbols-outlined text-[36px] text-slate-400 dark:text-slate-600 mx-auto block">inbox</Icon>
@@ -1038,160 +950,128 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   paginatedRegistrations.map((reg, index) => {
                     const isExpanded = !!expandedRegs[reg.id];
                     return (
-                      <article
-                        key={reg.id}
-                        className="member p-4 sm:p-5 border border-[#dde1ee] dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 flex flex-col transition-[border-color,box-shadow] duration-150 ease-in-out hover:border-[#cbd2e4] hover:shadow-[0_2px_8px_rgba(15,42,94,.05)] space-y-3.5"
-                      >
-                        {/* Top Summary Row */}
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-start gap-3 min-w-0 flex-1">
-                            {/* Index Number */}
-                            <div className="w-9 h-9 rounded-lg bg-[#e8edf8] dark:bg-[#0f2a5e]/40 text-[#0f2a5e] dark:text-yellow-400 flex items-center justify-center shrink-0 text-sm font-bold">
-                              #{regStartIndex + index + 1}
+                      <div key={reg.id} className="p-3.5 sm:p-4 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                        {/* Collapsed Card Header */}
+                        <div
+                          className="flex items-center justify-between gap-3 cursor-pointer select-none"
+                          onClick={() => toggleRegExpand(reg.id)}
+                        >
+                          <div className="min-w-0 flex-1 space-y-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-xs font-bold text-slate-400">#{regStartIndex + index + 1}</span>
+                              <span className="font-black text-sm text-slate-900 dark:text-white truncate block">{getDisplayName(reg)}</span>
                             </div>
 
-                            {/* Collapsed Card Info */}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-base leading-snug font-bold mb-1.5 break-words text-[#1a1d2e] dark:text-white">
-                                {getDisplayName(reg)}
-                              </p>
-
-                              <div className="flex items-center flex-wrap gap-2 text-[#6b7280] dark:text-slate-400 text-xs">
-                                <span className="plate">
-                                  {isAmharic ? 'ሰሌዳ፡' : 'Plate:'} <strong className="text-[#1a1d2e] dark:text-white font-semibold ml-1">{reg.plateNumber || '—'}</strong>
-                                </span>
-                                <span className={`fuel px-2.5 py-0.5 rounded-md text-[11px] font-semibold ${
-                                  reg.vehicleCategory === 'electric'
-                                    ? 'bg-[#16a34a] text-white'
-                                    : 'bg-[#e8edf8] text-[#0f2a5e] dark:bg-[#0f2a5e]/50 dark:text-yellow-300'
-                                }`}>
+                            <div className="flex items-center gap-3 text-xs flex-wrap pt-0.5">
+                              <div>
+                                <span className="text-slate-500 dark:text-slate-400 mr-1">{isAmharic ? 'ሰሌዳ፡' : 'Plate:'}</span>
+                                <span className="font-mono font-black text-[#0B1E48] dark:text-yellow-400">{reg.plateNumber || '—'}</span>
+                              </div>
+                              <div>
+                                <span className="text-slate-500 dark:text-slate-400 mr-1">{isAmharic ? 'አይነት፡' : 'Type:'}</span>
+                                <span className="font-bold text-slate-700 dark:text-slate-300">
                                   {reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
                                 </span>
                               </div>
                             </div>
                           </div>
 
-                          {/* Expand Toggle Button */}
-                          <button
-                            type="button"
-                            onClick={() => toggleRegExpand(reg.id)}
-                            className="expand cursor-pointer w-9 h-9 border-0 rounded-full bg-[#eef0f7] dark:bg-slate-800 text-[#6b7280] dark:text-slate-300 flex items-center justify-center shrink-0 hover:bg-[#dde1ee] dark:hover:bg-slate-700 transition-colors"
-                            aria-label={isExpanded ? 'ዝርዝር ዝጋ' : 'ዝርዝር ክፈት'}
-                          >
-                            <Icon className={`material-symbols-outlined text-[18px] transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-                              expand_more
-                            </Icon>
-                          </button>
+                          {/* Right Side Expand Icon */}
+                          <div className="shrink-0 pl-1">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors shadow-2xs">
+                              <Icon className="material-symbols-outlined text-[20px]">
+                                {isExpanded ? 'expand_less' : 'expand_more'}
+                              </Icon>
+                            </div>
+                          </div>
                         </div>
 
-                        {/* Collapsible Mobile Body Drawer (Spacious & Non-compact) */}
+                        {/* Collapsible Mobile Body Drawer */}
                         {isExpanded && (
-                          <div className="pt-3.5 border-t border-slate-200 dark:border-slate-800 space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                          <div className="mt-3.5 pt-3.5 border-t border-slate-200 dark:border-slate-800 space-y-3.5 bg-slate-50/80 dark:bg-slate-800/40 p-3.5 rounded-md border border-slate-200/80 dark:border-slate-700/80">
                             {/* Status Text Badge Header */}
-                            <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-800">
-                              <span className="font-bold text-slate-900 dark:text-white text-xs">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/80 dark:border-slate-700/80">
+                              <span className="text-xs font-extrabold text-slate-600 dark:text-slate-300">
                                 {isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}
                               </span>
                               {renderStatusBadge(reg.status, true)}
                             </div>
 
                             {/* Metadata Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs">
+                            <div className="grid grid-cols-2 gap-2 text-xs">
                               <DataField label={isAmharic ? 'የማህደር መለያ:' : 'Record ID:'} value={reg.id} isMono />
                               <DataField label={isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:'} value={reg.phone || '—'} isMono />
                               <DataField label={isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:'} value={reg.subCity || '—'} />
-                              <DataField label={isAmharic ? 'ወረዳ / ቀበሌ:' : 'Woreda / Kebele:'} value={reg.woreda || reg.kebele || '—'} />
                               <DataField label={isAmharic ? 'ሴሪያል ቁጥር:' : 'Serial No:'} value={reg.engineOrSerialNo || '—'} isMono />
-                              <DataField label={isAmharic ? 'የሞተር ቁጥር:' : 'Motor No:'} value={reg.motorNumber || '—'} isMono />
                               <DataField label={isAmharic ? 'የተመዘገበበት ቀን:' : 'Registered Date:'} value={reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'} isMono />
                               <DataField label={isAmharic ? 'የመዘገበው:' : 'Registered By:'} value={reg.registeredBy || '—'} isMono />
                             </div>
 
                             {/* Document Photo Previews / Attachments List */}
-                            {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto || getLatestReceiptForRegistration(reg, paymentReceipts)?.receiptScreenshot || reg.receiptScreenshot) && (
-                              <div className="space-y-2.5 pt-2">
-                                <span className="text-xs font-extrabold text-slate-700 dark:text-slate-200 uppercase tracking-wider block">
+                            {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto) && (
+                              <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-700">
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
                                   {isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ተጫን):' : 'Attached Documents (Click to Zoom):'}
                                 </span>
-                                <div className="flex items-start gap-3 overflow-x-auto pb-2 pt-1">
+                                <div className="flex items-center gap-2 overflow-x-auto pb-1">
                                   {(reg.userPortraitPhoto || reg.ownerPhoto) && (
                                     <div
                                       onClick={() => openDocumentCarousel((reg.userPortraitPhoto || reg.ownerPhoto)!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}`)}
-                                      className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                      className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                      title={isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
                                     >
-                                      <div className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 relative shadow-2xs">
-                                        <SmartImage src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                                        </div>
+                                      <SmartImage src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                        <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                       </div>
-                                      <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[80px] truncate">
-                                        {isAmharic ? 'የባለቤት ፎቶ' : 'Portrait'}
-                                      </span>
                                     </div>
                                   )}
                                   {reg.nationalIdPhoto && (
                                     <div
                                       onClick={() => openDocumentCarousel(reg.nationalIdPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}`)}
-                                      className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                      className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                      title={isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}
                                     >
-                                      <div className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 relative shadow-2xs">
-                                        <SmartImage src={reg.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                                        </div>
+                                      <SmartImage src={reg.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                        <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                       </div>
-                                      <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[80px] truncate">
-                                        {isAmharic ? 'መታወቂያ (ፊት)' : 'ID Front'}
-                                      </span>
                                     </div>
                                   )}
                                   {reg.nationalIdBackPhoto && (
                                     <div
                                       onClick={() => openDocumentCarousel(reg.nationalIdBackPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}`)}
-                                      className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                      className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                      title={isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}
                                     >
-                                      <div className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 relative shadow-2xs">
-                                        <SmartImage src={reg.nationalIdBackPhoto} alt="National ID Back" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                                        </div>
+                                      <SmartImage src={reg.nationalIdBackPhoto} alt="National ID Back" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                        <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                       </div>
-                                      <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[80px] truncate">
-                                        {isAmharic ? 'መታወቂያ (ጀርባ)' : 'ID Back'}
-                                      </span>
                                     </div>
                                   )}
                                   {reg.drivingLicensePhoto && (
                                     <div
                                       onClick={() => openDocumentCarousel(reg.drivingLicensePhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}`)}
-                                      className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                      className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                      title={isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
                                     >
-                                      <div className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 relative shadow-2xs">
-                                        <SmartImage src={reg.drivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                                        </div>
+                                      <SmartImage src={reg.drivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                        <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                       </div>
-                                      <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[80px] truncate">
-                                        {isAmharic ? 'መንጃ ፍቃድ' : 'License'}
-                                      </span>
                                     </div>
                                   )}
                                   {reg.drivingPermitPhoto && (
                                     <div
                                       onClick={() => openDocumentCarousel(reg.drivingPermitPhoto!, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}`)}
-                                      className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                      className="w-12 h-14 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                      title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}
                                     >
-                                      <div className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 border-slate-300 dark:border-slate-700 shrink-0 bg-slate-900 relative shadow-2xs">
-                                        <SmartImage src={reg.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                                        </div>
+                                      <SmartImage src={reg.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                        <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                       </div>
-                                      <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 text-center max-w-[80px] truncate">
-                                        {isAmharic ? 'ሊብሬ / ፍቃድ' : 'Libre'}
-                                      </span>
                                     </div>
                                   )}
                                   {(() => {
@@ -1201,17 +1081,13 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     return (
                                       <div
                                         onClick={() => openDocumentCarousel(receiptImg, reg, `${getDisplayName(reg)} — ${isAmharic ? 'የክፍያ ደረሰኝ' : 'Payment Receipt Slip'}`)}
-                                        className="group flex flex-col items-center gap-1.5 shrink-0 cursor-pointer"
+                                        className="w-12 h-14 rounded-lg overflow-hidden border border-emerald-500 dark:border-emerald-700 shrink-0 bg-slate-900 cursor-pointer relative group shadow-2xs"
+                                        title={isAmharic ? 'የባንክ ክፍያ ደረሰኝ' : 'Payment Receipt Slip'}
                                       >
-                                        <div className="w-16 h-20 sm:w-20 sm:h-24 rounded-lg overflow-hidden border-2 border-emerald-500 dark:border-emerald-600 shrink-0 bg-slate-900 relative shadow-2xs">
-                                          <SmartImage src={receiptImg} alt="Receipt Slip" fallbackIcon="receipt_long" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                            <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                                          </div>
+                                        <SmartImage src={receiptImg} alt="Receipt Slip" fallbackIcon="receipt_long" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                                         </div>
-                                        <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 text-center max-w-[80px] truncate">
-                                          {isAmharic ? 'ደረሰኝ' : 'Receipt'}
-                                        </span>
                                       </div>
                                     );
                                   })()}
@@ -1220,11 +1096,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             )}
 
                             {/* Mobile Actions Bar */}
-                            <div className="flex items-center gap-2 pt-3 border-t border-slate-200 dark:border-slate-700 flex-wrap">
+                            <div className="flex items-center gap-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex-wrap">
                               <button
                                 type="button"
                                 onClick={() => setSelectedRegForDetails(reg)}
-                                className="px-3.5 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1.5"
+                                className="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
                               >
                                 <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                                 <span>{isAmharic ? 'ዝርዝር' : 'Details'}</span>
@@ -1235,7 +1111,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   id={`mobile-edit-reg-btn-${reg.id}`}
                                   type="button"
                                   onClick={() => setEditingRegistration(reg)}
-                                  className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold rounded-lg text-xs cursor-pointer flex items-center gap-1.5 shadow-2xs transition-colors"
+                                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold rounded-lg text-xs cursor-pointer flex items-center gap-1 shadow-2xs transition-colors"
                                   title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
                                 >
                                   <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
@@ -1257,7 +1133,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                       const newHide = !reg.hideFromOtherUsers;
                                       await updateRegistrationInDb(reg.id, { hideFromOtherUsers: newHide });
                                     }}
-                                    className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                                       isSuperUserRegistered
                                         ? 'opacity-40 cursor-not-allowed text-slate-400 bg-slate-100 dark:bg-slate-800/40'
                                         : reg.hideFromOtherUsers
@@ -1290,7 +1166,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => setSelectedRegForQR(reg)}
-                                  className="px-3.5 py-2 bg-purple-700 text-white font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                  className="px-3 py-1.5 bg-purple-700 text-white font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1 shadow-2xs"
                                 >
                                   <Icon className="material-symbols-outlined text-[16px]">badge</Icon>
                                   <span>{isAmharic ? 'መታወቂያ' : 'Digital ID'}</span>
@@ -1302,7 +1178,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   <button
                                     type="button"
                                     onClick={() => setSelectedRegForA4(reg)}
-                                    className="px-3.5 py-2 bg-[#0f2a5e] text-yellow-400 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                    className="px-3 py-1.5 bg-[#0B1E48] text-yellow-400 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1 shadow-2xs"
                                   >
                                     <Icon className="material-symbols-outlined text-[16px]">print</Icon>
                                     <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
@@ -1311,7 +1187,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   <button
                                     type="button"
                                     onClick={() => setSelectedRegForSticker(reg)}
-                                    className="px-3.5 py-2 bg-emerald-600 text-white font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                    className="px-3 py-1.5 bg-emerald-600 text-white font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1 shadow-2xs"
                                   >
                                     <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
                                     <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
@@ -1324,14 +1200,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   <button
                                     type="button"
                                     onClick={() => onApproveRegistration(reg.id)}
-                                    className="px-3.5 py-2 bg-emerald-600 text-white font-extrabold text-xs rounded-lg cursor-pointer"
+                                    className="px-3 py-1.5 bg-emerald-600 text-white font-extrabold text-xs rounded-lg cursor-pointer"
                                   >
                                     {isAmharic ? 'አፅድቅ' : 'Approve'}
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => setRejectingId(reg.id)}
-                                    className="px-3.5 py-2 bg-rose-600 text-white font-extrabold text-xs rounded-lg cursor-pointer"
+                                    className="px-3 py-1.5 bg-rose-600 text-white font-extrabold text-xs rounded-lg cursor-pointer"
                                   >
                                     {isAmharic ? 'ሰርዝ' : 'Reject'}
                                   </button>
@@ -1346,7 +1222,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                       await deleteRegistrationFromDb(reg.id);
                                     }
                                   }}
-                                  className="px-3.5 py-2 bg-red-600 text-white font-extrabold text-xs rounded-lg cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                  className="px-3 py-1.5 bg-red-600 text-white font-extrabold text-xs rounded-lg cursor-pointer flex items-center gap-1 shadow-2xs"
                                   title={isAmharic ? 'ምዝገባውን ሰርዝ' : 'Delete Registration'}
                                 >
                                   <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
@@ -1356,7 +1232,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             </div>
                           </div>
                         )}
-                      </article>
+                      </div>
                     );
                   })
                 )}
@@ -1515,7 +1391,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-md bg-[#0f2a5e] text-yellow-400 flex items-center justify-center font-bold shadow-xs">
+                <div className="w-10 h-10 rounded-md bg-[#0B1E48] text-yellow-400 flex items-center justify-center font-bold shadow-xs">
                   <Icon className="material-symbols-outlined text-[24px]">two_wheeler</Icon>
                 </div>
                 <div>
@@ -1523,7 +1399,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     {isAmharic ? 'የተሟላ የሞተር ሳይክል ምዝገባ መረጃ' : 'Motorcycle Registration Record Details'}
                   </h3>
                   <p className="text-xs font-mono text-slate-500">
-                    Record ID: <span className="font-bold text-[#0f2a5e] dark:text-yellow-400">{selectedRegForDetails.id}</span>
+                    Record ID: <span className="font-bold text-[#0B1E48] dark:text-yellow-400">{selectedRegForDetails.id}</span>
                   </p>
                 </div>
               </div>
@@ -1893,7 +1769,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         setSelectedRegForDetails(null);
                         setSelectedRegForA4(reg);
                       }}
-                      className="px-3.5 py-2 bg-[#0f2a5e] hover:bg-[#0c2350] text-yellow-400 font-extrabold rounded-md text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                      className="px-3.5 py-2 bg-[#0B1E48] hover:bg-[#071330] text-yellow-400 font-extrabold rounded-md text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">print</Icon>
                       <span>{isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Print Permit'}</span>
@@ -1986,7 +1862,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:'}</span>
-                  <span className="font-mono font-bold text-[#0f2a5e] dark:text-yellow-400 block truncate">{renewalModalReg.plateNumber || '—'}</span>
+                  <span className="font-mono font-bold text-[#0B1E48] dark:text-yellow-400 block truncate">{renewalModalReg.plateNumber || '—'}</span>
                 </div>
               </div>
 

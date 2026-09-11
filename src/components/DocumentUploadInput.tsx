@@ -147,13 +147,13 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               ? 'border-red-500 bg-red-50/70 dark:bg-red-950/30 ring-2 ring-red-500/30'
               : isDraggingOver
               ? 'border-primary bg-primary/10 ring-2 ring-primary/30'
-              : 'border-outline-variant hover:border-[#0f2a5e] bg-surface-container/30 hover:bg-[#0f2a5e]/5'
+              : 'border-outline-variant hover:border-[#0B1E48] bg-surface-container/30 hover:bg-[#0B1E48]/5'
           }`}
         >
           {isUploading ? (
             <div className="flex flex-col items-center justify-center space-y-1 py-2">
-              <Icon className="material-symbols-outlined animate-spin text-[#0f2a5e] text-[24px]">progress_activity</Icon>
-              <span className="text-[11px] font-bold text-[#0f2a5e]">
+              <Icon className="material-symbols-outlined animate-spin text-[#0B1E48] text-[24px]">progress_activity</Icon>
+              <span className="text-[11px] font-bold text-[#0B1E48]">
                 {isAmharic ? 'ምስሉ እየተጫነ ነው...' : 'Uploading image...'}
               </span>
             </div>
@@ -162,13 +162,13 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               <div className={`w-9 h-9 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${
                 hasError
                   ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                  : 'bg-[#0f2a5e]/10 text-[#0f2a5e]'
+                  : 'bg-[#0B1E48]/10 text-[#0B1E48]'
               }`}>
                 <Icon className="material-symbols-outlined text-[20px]">
                   {hasError ? 'warning' : 'add_a_photo'}
                 </Icon>
               </div>
-              <p className={`text-xs font-bold ${hasError ? 'text-red-600 dark:text-red-400' : 'text-[#0f2a5e]'}`}>
+              <p className={`text-xs font-bold ${hasError ? 'text-red-600 dark:text-red-400' : 'text-[#0B1E48]'}`}>
                 {hasError
                   ? isAmharic ? 'እባክዎ ሰነዱን ይጫኑ' : 'Please upload document'
                   : isAmharic ? 'ፎቶ/ምስል ይጫኑ' : 'Upload Photo'}

@@ -10,7 +10,6 @@ import {
 import { SmartImage } from './SmartImage';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { DataField } from './ui/StreamlinedUI';
-import { SectionHeader } from './SectionHeader';
 
 interface UnregisteredReportsListProps {
   lang: Language;
@@ -134,38 +133,45 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
   return (
     <div className="space-y-4">
-      {/* Header Container */}
-      <SectionHeader
-        icon="no_drinks"
-        title={isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
-        subtitle={
-          isAmharic
-            ? `ጠቅላላ ${unregisteredReports.length} ያልተመዘገቡ ተሽከርካሪ ሪፖርቶች ተመዝግበዋል`
-            : `Total ${unregisteredReports.length} unregistered vehicle incident logs recorded`
-        }
-        actions={
-          onNewReportClick ? (
-            <button
-              type="button"
-              onClick={onNewReportClick}
-              className="px-3.5 py-2 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-2 shrink-0 cursor-pointer"
-            >
-              <Icon className="material-symbols-outlined text-[18px]">add_alert</Icon>
-              <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>
-            </button>
-          ) : undefined
-        }
-      />
+      {/* Header Container - Icon and Title text only */}
+      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-red-500/10 text-red-600 dark:bg-red-900/30 dark:text-red-400 border border-red-500/20 flex items-center justify-center shrink-0">
+            <Icon className="material-symbols-outlined text-[24px]">no_drinks</Icon>
+          </div>
+          <div>
+            <h1 className="text-base sm:text-lg font-black text-on-surface uppercase tracking-wide">
+              {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
+            </h1>
+            <p className="text-xs text-secondary font-medium">
+              {isAmharic
+                ? `ጠቅላላ ${unregisteredReports.length} ያልተመዘገቡ ተሽከርካሪ ሪፖርቶች ተመዝግበዋል`
+                : `Total ${unregisteredReports.length} unregistered vehicle incident logs recorded`}
+            </p>
+          </div>
+        </div>
+
+        {onNewReportClick && (
+          <button
+            type="button"
+            onClick={onNewReportClick}
+            className="px-3.5 py-2 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-2 shrink-0 cursor-pointer"
+          >
+            <Icon className="material-symbols-outlined text-[18px]">add_alert</Icon>
+            <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>
+          </button>
+        )}
+      </div>
 
       {/* Sub-Filter Toolbar Container */}
       <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 shadow-2xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 w-full max-w-full overflow-hidden">
         {/* Live Search Input */}
         <div className="relative w-full lg:w-auto lg:flex-1 min-w-0 max-w-full lg:max-w-md">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#6b7280]">
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-secondary">
             <Icon className="material-symbols-outlined text-[18px]">search</Icon>
           </div>
           <input
-            type="search"
+            type="text"
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -176,7 +182,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                 ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ፣ ኦፊሰር ወይም መታወቂያ ፈልግ...'
                 : 'Search plate, driver, location, officer, ID...'
             }
-            className="w-full h-11 pl-9 pr-8 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] font-normal text-[#1a1d2e] dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+            className="w-full pl-9 pr-8 py-2 bg-surface border border-outline-variant rounded-lg text-xs font-semibold text-on-surface placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#1D61E7]/20"
           />
           {searchTerm && (
             <button
@@ -185,7 +191,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                 setSearchTerm('');
                 setCurrentPage(1);
               }}
-              className="absolute inset-y-0 right-2.5 flex items-center text-[#6b7280] hover:text-[#1a1d2e] dark:hover:text-white cursor-pointer"
+              className="absolute inset-y-0 right-2.5 flex items-center text-secondary hover:text-on-surface cursor-pointer"
             >
               <Icon className="material-symbols-outlined text-[16px]">close</Icon>
             </button>
@@ -194,7 +200,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
         {/* Status Filter Tabs in Clean Compact Pill Style & Sub-City Dropdown */}
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto max-w-full shrink-0">
-          <div className="flex items-center gap-2 flex-wrap shrink-0">
+          <div className="flex items-center gap-1 flex-wrap shrink-0">
             {[
               {
                 id: 'all' as const,
@@ -242,20 +248,18 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     setStatusFilter(tab.id);
                     setCurrentPage(1);
                   }}
-                  className={`tab shrink-0 min-h-[38px] border rounded-[9px] px-3 py-[7px] flex items-center gap-2 text-[13px] font-semibold transition-all cursor-pointer select-none ${
+                  className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
                     isActive
-                      ? 'border-[#0f2a5e] bg-[#0f2a5e] text-white'
-                      : 'border-[#dde1ee] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#1a1d2e] dark:text-slate-200 hover:border-[#cbd2e4]'
+                      ? 'bg-primary text-white font-extrabold shadow-2xs'
+                      : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
                   }`}
                 >
                   <span className="tracking-tight">{tab.label}</span>
                   <span
-                    className={`count min-w-5 h-5 px-1.5 rounded-md inline-flex items-center justify-center text-[11px] font-bold ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
                       isActive
-                        ? 'bg-white/[.2] text-white'
-                        : tab.id === 'pending' && (tab.count || 0) > 0
-                        ? 'bg-[#d97706] text-white'
-                        : 'bg-[#eef0f7] dark:bg-slate-700 text-[#6b7280] dark:text-slate-300'
+                        ? 'bg-white/20 text-white'
+                        : tab.badgeColor
                     }`}
                   >
                     {tab.count}
@@ -272,7 +276,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
               setSubCityFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="h-11 px-3 rounded-[10px] border border-[#dde1ee] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#1a1d2e] dark:text-white text-[14px] outline-none cursor-pointer"
+            className="px-3 py-2 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs font-bold outline-none cursor-pointer"
           >
             <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
             {BAHIR_DAR_SUBCITIES.map((sc) => (
@@ -388,7 +392,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3 py-1.5 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] text-white text-xs font-bold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ዝርዝር' : 'View Details'}</span>
@@ -462,7 +466,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="w-full py-2 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                          className="w-full py-2 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ሙሉ ዝርዝር ይመልከቱ' : 'View Full Details'}</span>

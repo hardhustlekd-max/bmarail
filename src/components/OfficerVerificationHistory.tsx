@@ -9,7 +9,6 @@ import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { SharedScannerModal } from './SharedScannerModal';
 import { SmartImage } from './SmartImage';
 import { DataField, SelectField } from './ui/StreamlinedUI';
-import { SectionHeader } from './SectionHeader';
 
 
 interface OfficerVerificationHistoryProps {
@@ -292,22 +291,30 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
   return (
     <div className="space-y-4">
-      {/* PAGE HEADER */}
-      <SectionHeader
-        icon="analytics"
-        title={isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}
-        subtitle={
-          isAmharic
-            ? 'የመስክ ፍተሻ፣ የታገዱ እና የተረጋገጡ ተሽከርካሪዎች ታሪክ'
-            : 'Patrol verification logs, field inspections, and status audit records'
-        }
-      />
+      {/* PAGE HEADER (MATCHING TOP NAVBAR: የፍተሻ ሪፖርት / Inspection Report) */}
+      <div className="p-3.5 sm:p-4 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-xs flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
+          </div>
+          <div>
+            <h3 className="font-bold text-sm sm:text-base text-on-surface">
+              {isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}
+            </h3>
+            <p className="hidden sm:block text-[11px] font-normal text-secondary mt-0.5">
+              {isAmharic
+                ? 'የመስክ ፍተሻ፣ የታገዱ እና የተረጋገጡ ተሽከርካሪዎች ታሪክ'
+                : 'Patrol verification logs, field inspections, and status audit records'}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 shadow-2xs flex flex-col sm:flex-row justify-between items-center gap-3">
+      <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 shadow-xs flex flex-col sm:flex-row justify-between items-center gap-3">
         {/* Search */}
         <div className="relative w-full sm:w-80">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#6b7280]">
+          <div className="absolute inset-y-0 left-3 flex items-center justify-center pointer-events-none text-secondary">
             <Icon className="material-symbols-outlined text-[18px]">search</Icon>
           </div>
           <input
@@ -315,7 +322,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={isAmharic ? 'በሰሌዳ፣ ስም ወይም ማስታወሻ ፈልግ...' : 'Search plate, owner name, notes...'}
-            className="w-full h-11 pl-9 pr-3 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20"
+            className="w-full bg-surface border border-outline-variant rounded-md pl-10 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
@@ -333,8 +340,8 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
             <option value="gasoline">{isAmharic ? 'ቤንዚን' : 'Gasoline'}</option>
           </SelectField>
 
-          {/* Status Filter Tabs in Ref-Tab Pill Style */}
-          <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+          {/* Status Filter Tabs in Clean Compact Pill Style */}
+          <div className="flex items-center gap-1 flex-wrap shrink-0">
             {[
               {
                 id: 'all' as const,
@@ -362,9 +369,13 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                     setStatusFilter(tab.id);
                     setCurrentPage(1);
                   }}
-                  className={`ref-tab ${isActive ? 'ref-tab-active' : 'ref-tab-inactive'}`}
+                  className={`group relative flex items-center gap-1 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    isActive
+                      ? 'bg-primary text-white font-extrabold shadow-2xs'
+                      : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                  }`}
                 >
-                  <span>{tab.label}</span>
+                  <span className="tracking-tight">{tab.label}</span>
                 </button>
               );
             })}

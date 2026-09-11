@@ -12,7 +12,6 @@ import { uploadDocumentPhoto } from '../services/storageService';
 import { savePaymentReceiptToDb } from '../services/dbService';
 import { calculateOneMonthExpiration } from '../utils/paymentUtils';
 import { SectionCard, DataField } from './ui/StreamlinedUI';
-import { SectionHeader } from './SectionHeader';
 import { Icon } from './ui/Icon';
 
 import {
@@ -1015,18 +1014,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
   ];
 
   return (
-    <div className="space-y-4">
-      {/* STANDARDIZED SECTION HEADER */}
-      <SectionHeader
-        icon="how_to_reg"
-        title={isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}
-        subtitle={
-          isAmharic
-            ? 'የባለቤት፣ የሞተር፣ የሰነድና የክፍያ መረጃዎች ምዝገባ ቅጽ'
-            : 'Motorcycle, Owner, Document and Payment Intake Form'
-        }
-      />
-
+    <div className="space-y-2 sm:space-y-2.5">
       {/* OFFLINE / UNSUCCESSFUL ONLINE SAVE CONFIRMATION MODAL */}
       {showOfflineConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
@@ -1228,7 +1216,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <button
                   type="button"
                   onClick={handleRegisterNew}
-                  className="w-full sm:w-auto bg-[#0f2a5e] hover:bg-[#0c2350] text-white text-xs font-bold px-3.5 py-1.5 rounded-md flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-xs"
+                  className="w-full sm:w-auto bg-[#0B1E48] hover:bg-[#071330] text-white text-xs font-bold px-3.5 py-1.5 rounded-md flex items-center justify-center gap-1.5 cursor-pointer transition-all shadow-xs"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
                   <span>{isAmharic ? 'አዲስ መዝግብ' : 'Register New'}</span>
@@ -1265,7 +1253,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div className="space-y-4 animate-fadeIn">
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-[#0f2a5e] text-white flex items-center justify-center text-xs font-bold">1</span>
+                      <span className="w-6 h-6 rounded-lg bg-[#0B1E48] text-white flex items-center justify-center text-xs font-bold">1</span>
                       <span>{isAmharic ? '1. ባለቤት' : 'Step 1: Owner Information'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">1 of 4</span>
@@ -1473,7 +1461,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep2}
-                      className="bg-[#0f2a5e] hover:bg-[#0c2350] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ሞተር' : 'Next: Motor Specifications'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -1487,7 +1475,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div className="space-y-4 animate-fadeIn">
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-[#0f2a5e] text-white flex items-center justify-center text-xs font-bold">2</span>
+                      <span className="w-6 h-6 rounded-lg bg-[#0B1E48] text-white flex items-center justify-center text-xs font-bold">2</span>
                       <span>{isAmharic ? '2. ሞተር' : 'Step 2: Motor Details'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">2 of 4</span>
@@ -1819,7 +1807,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep3}
-                      className="bg-[#0f2a5e] hover:bg-[#0c2350] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ዶክመንት' : 'Next: Documents'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -1833,7 +1821,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div className="space-y-4 animate-fadeIn">
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-[#0f2a5e] text-white flex items-center justify-center text-xs font-bold">3</span>
+                      <span className="w-6 h-6 rounded-lg bg-[#0B1E48] text-white flex items-center justify-center text-xs font-bold">3</span>
                       <span>{isAmharic ? '3. ዶክመንት' : 'Step 3: Document Uploads'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">3 of 4</span>
@@ -1920,7 +1908,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep4}
-                      className="bg-[#0f2a5e] hover:bg-[#0c2350] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ክፍያ' : 'Next: Payment Details'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -1934,7 +1922,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div className="space-y-4 animate-fadeIn">
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-[#0f2a5e] text-white flex items-center justify-center text-xs font-bold">4</span>
+                      <span className="w-6 h-6 rounded-lg bg-[#0B1E48] text-white flex items-center justify-center text-xs font-bold">4</span>
                       <span>{isAmharic ? '4. የክፍያ መረጃ' : 'Step 4: Payment Details'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">4 of 5</span>
@@ -2037,7 +2025,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep5}
-                      className="bg-[#0f2a5e] hover:bg-[#0c2350] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ አረጋግጥ' : 'Next: Review & Confirm'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -2051,7 +2039,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div className="space-y-4 animate-fadeIn">
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-[#0f2a5e] text-white flex items-center justify-center text-xs font-bold">5</span>
+                      <span className="w-6 h-6 rounded-lg bg-[#0B1E48] text-white flex items-center justify-center text-xs font-bold">5</span>
                       <span>{isAmharic ? '5. አረጋግጥ' : 'Step 5: Review & Confirmation'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">5 of 5</span>
@@ -2256,7 +2244,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       disabled={!isDataConfirmed || isSubmitting}
                       className={`py-3 px-7 rounded-md font-black text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer ${
                         isDataConfirmed && !isSubmitting
-                          ? 'bg-[#0f2a5e] hover:bg-[#0c2350] text-white active:scale-[0.99] cursor-pointer'
+                          ? 'bg-[#0B1E48] hover:bg-[#071330] text-white active:scale-[0.99] cursor-pointer'
                           : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed shadow-none'
                       }`}
                     >

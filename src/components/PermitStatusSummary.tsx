@@ -88,17 +88,19 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
           : 'bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-4 sm:p-5 shadow-sm space-y-4'
       }
     >
-      {/* Header Bar */}
-      <div className="ref-section-title rounded-[10px] justify-between flex-wrap">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="ref-section-icon">
-            <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
+      {/* Header Bar with Live Pulse */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-md bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
+            <Icon className="material-symbols-outlined text-[22px]">analytics</Icon>
           </div>
-          <div className="min-w-0">
-            <h2 className="ref-h1 truncate">
-              {isAmharic ? 'የአባላት አስተዳደር ሁኔታ' : 'Permit Status Breakdown'}
-            </h2>
-            <p className="ref-subtitle truncate">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-black text-xs sm:text-sm text-on-surface uppercase tracking-wider">
+                {isAmharic ? 'የአባላት አስተዳደር ሁኔታ' : 'Permit Status Breakdown'}
+              </h3>
+            </div>
+            <p className="text-[11px] text-secondary font-medium mt-0.5">
               {isAmharic ? 'የሁሉም ፈቃዶች ሁኔታና ብዛት ማጠቃለያ' : 'Real-time state overview of all permit applications'}
             </p>
           </div>

@@ -71,7 +71,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     <div className="w-full h-full flex-1 flex flex-col font-sans text-on-surface bg-surface min-h-0 overflow-y-auto">
       
       {/* ================= TOP NAVBAR ================= */}
-      <header className="w-full bg-primary text-white shadow-md px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4">
+      <header className="w-full bg-[#0B1E48] text-white shadow-md px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4">
         
         {/* Left Brand & Logo */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink">
@@ -128,7 +128,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   autoComplete="off"
                   className={`w-full bg-surface-container border ${
                     badgeIdError ? 'border-error' : 'border-outline-variant'
-                  } rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface focus:outline-hidden focus:border-[#0f2a5e] focus:ring-2 focus:ring-[#0f2a5e]/20 transition-all font-mono pr-11`}
+                  } rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface focus:outline-hidden focus:border-[#0B1E48] focus:ring-2 focus:ring-[#0B1E48]/20 transition-all font-mono pr-11`}
                 />
                 <div className="absolute right-3 inset-y-0 flex items-center justify-center text-secondary pointer-events-none">
                   <Icon className="material-symbols-outlined text-[18px] leading-none">person</Icon>
@@ -152,7 +152,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={lang === 'am' ? 'የይለፍ ቃል ያስገቡ' : 'Enter Password'}
                   required
-                  className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface focus:outline-hidden focus:border-[#0f2a5e] focus:ring-2 focus:ring-[#0f2a5e]/20 transition-all font-mono pr-11"
+                  className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface focus:outline-hidden focus:border-[#0B1E48] focus:ring-2 focus:ring-[#0B1E48]/20 transition-all font-mono pr-11"
                 />
                 <button
                   type="button"
@@ -183,7 +183,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary-hover text-white py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer mt-1"
+              className="w-full bg-[#0B1E48] hover:bg-[#0D2B5C] text-white py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer mt-1"
             >
               {isLoading ? (
                 <>

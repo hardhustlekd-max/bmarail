@@ -3,7 +3,6 @@ import { Icon } from './ui/Icon';
 import { Language, UserRole, APP_LOGO } from '../types';
 import { changeOnlineUserPassword, SYSTEM_ROLE_CREDENTIALS } from '../services/authService';
 import { updateSystemUserInDb, saveSettingsToDb, subscribeSettings } from '../services/dbService';
-import { SectionHeader } from './SectionHeader';
 
 interface SettingsPageProps {
   userBadgeId: string;
@@ -183,43 +182,56 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-10">
       
-      {/* Top Header Section */}
-      <SectionHeader
-        icon="settings"
-        title={isAmharic ? 'ቅንብሮች' : 'Settings'}
-        subtitle={
-          isAmharic
-            ? 'የይለፍ ቃል ለውጥ፣ የተጠቃሚ መገለጫ እና የስርዓት ምርጫዎችን ያስተዳድሩ'
-            : 'Manage password credentials, profile details, and system preferences'
-        }
-        actions={
-          <div className="flex items-center gap-2">
-            <span className="text-secondary font-mono text-[11px] font-bold hidden sm:inline-block">
-              {userBadgeId}
-            </span>
-            <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-xs ${
-                userRole === 'superadmin'
-                  ? 'bg-purple-500/90 text-white border border-purple-400/50'
-                  : userRole === 'admin'
-                  ? 'bg-blue-500/90 text-white border border-blue-400/50'
-                  : userRole === 'officer'
-                  ? 'bg-amber-500/90 text-white border border-amber-400/50'
-                  : 'bg-emerald-500/90 text-white border border-emerald-400/50'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-              {userRole === 'superadmin'
-                ? 'Super Admin'
-                : userRole === 'admin'
-                ? 'Manager / Admin'
-                : userRole === 'clerk'
-                ? 'Secretary / Clerk'
-                : 'Field Officer'}
-            </span>
+      {/* Top Header Card */}
+      <div className="bg-[#0B1E48] text-white rounded-xl p-5 sm:p-6 shadow-md border-b-4 border-yellow-500 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-yellow-400 shrink-0 shadow-xs">
+            <Icon className="material-symbols-outlined text-[28px]">settings</Icon>
           </div>
-        }
-      />
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="text-[10px] font-extrabold text-yellow-400 uppercase tracking-wider bg-yellow-500/20 px-2 py-0.5 rounded">
+                {isAmharic ? 'የስርዓት ቅንብሮች' : 'System Settings'}
+              </span>
+              <span className="text-white/40 text-xs">•</span>
+              <span className="text-white/80 font-mono text-[11px] font-bold">
+                {userBadgeId}
+              </span>
+            </div>
+            <h1 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
+              {isAmharic ? 'ቅንብሮች' : 'Settings'}
+            </h1>
+            <p className="text-xs text-yellow-200/90 font-medium mt-0.5">
+              {isAmharic
+                ? 'የይለፍ ቃል ለውጥ፣ የተጠቃሚ መገለጫ እና የስርዓት ምርጫዎችን ያስተዳድሩ'
+                : 'Manage password credentials, profile details, and system preferences'}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+          <span
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-xs ${
+              userRole === 'superadmin'
+                ? 'bg-purple-500/90 text-white border border-purple-400/50'
+                : userRole === 'admin'
+                ? 'bg-blue-500/90 text-white border border-blue-400/50'
+                : userRole === 'officer'
+                ? 'bg-amber-500/90 text-white border border-amber-400/50'
+                : 'bg-emerald-500/90 text-white border border-emerald-400/50'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            {userRole === 'superadmin'
+              ? 'Super Admin'
+              : userRole === 'admin'
+              ? 'Manager / Admin'
+              : userRole === 'clerk'
+              ? 'Secretary / Clerk'
+              : 'Field Officer'}
+          </span>
+        </div>
+      </div>
 
         {/* Grid: Left Column (Profile & Preferences) & Right Column (Password Change) */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -229,24 +241,20 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             
             {/* User Profile Card */}
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
-              <div className="ref-section-title rounded-[10px]">
-                <div className="ref-section-icon">
-                  <Icon className="material-symbols-outlined text-[20px]">account_circle</Icon>
-                </div>
-                <div>
-                  <h2 className="ref-h1">
-                    {isAmharic ? 'የተጠቃሚ መገለጫ' : 'User Profile Details'}
-                  </h2>
-                </div>
+              <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
+                <Icon className="material-symbols-outlined text-[#0B1E48] dark:text-yellow-400 text-[22px]">account_circle</Icon>
+                <h2 className="text-sm font-black text-on-surface">
+                  {isAmharic ? 'የተጠቃሚ መገለጫ' : 'User Profile Details'}
+                </h2>
               </div>
 
               <div className="flex items-center gap-3.5">
-                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-yellow-500 flex items-center justify-center text-xl font-black text-[#0f2a5e] dark:text-yellow-400 shrink-0 overflow-hidden shadow-xs">
+                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-yellow-500 flex items-center justify-center text-xl font-black text-[#0B1E48] dark:text-yellow-400 shrink-0 overflow-hidden shadow-xs">
                   <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="font-extrabold text-sm text-on-surface truncate">{displayName}</h3>
-                  <p className="font-mono text-xs font-bold text-[#0f2a5e] dark:text-yellow-400 bg-surface-container px-2 py-0.5 rounded inline-block mt-0.5">
+                  <p className="font-mono text-xs font-bold text-[#0B1E48] dark:text-yellow-400 bg-surface-container px-2 py-0.5 rounded inline-block mt-0.5">
                     {userBadgeId || creds.badgeId}
                   </p>
                   <div className="flex items-center gap-1.5 mt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
@@ -274,12 +282,10 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
             {/* Application Preferences Card */}
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
-              <div className="ref-section-title rounded-[10px]">
-                <div className="ref-section-icon">
-                  <Icon className="material-symbols-outlined text-[20px]">tune</Icon>
-                </div>
-                <div>
-                  <h2 className="ref-h1">
+              <div className="flex items-center justify-between border-b border-outline-variant pb-3">
+                <div className="flex items-center gap-2.5">
+                  <Icon className="material-symbols-outlined text-[#0B1E48] dark:text-yellow-400 text-[22px]">tune</Icon>
+                  <h2 className="text-sm font-black text-on-surface">
                     {isAmharic ? 'የስርዓት ምርጫዎች' : 'System Preferences'}
                   </h2>
                 </div>
@@ -368,7 +374,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     type="button"
                     onClick={() => setSoundAlerts(!soundAlerts)}
                     className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                      soundAlerts ? 'bg-[#0f2a5e] dark:bg-yellow-500' : 'bg-slate-300 dark:bg-slate-700'
+                      soundAlerts ? 'bg-[#0B1E48] dark:bg-yellow-500' : 'bg-slate-300 dark:bg-slate-700'
                     }`}
                   >
                     <div
@@ -411,19 +417,21 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 sm:p-6 shadow-xs space-y-5">
               
-              <div className="ref-section-title rounded-[10px]">
-                <div className="ref-section-icon">
-                  <Icon className="material-symbols-outlined text-[20px]">lock_reset</Icon>
-                </div>
-                <div>
-                  <h2 className="ref-h1">
-                    {isAmharic ? 'የይለፍ ቃል መቀየሪያ' : 'Change Password'}
-                  </h2>
-                  <p className="ref-subtitle">
-                    {isAmharic
-                      ? 'የመለያዎን ደህንነት ለመጠበቅ ጠንካራ የይለፍ ቃል ይምረጡ'
-                      : 'Update your login password to ensure security of your role account'}
-                  </p>
+              <div className="border-b border-outline-variant pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-amber-500/10 dark:bg-amber-400/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <Icon className="material-symbols-outlined text-[22px]">lock_reset</Icon>
+                  </div>
+                  <div>
+                    <h2 className="text-base font-black text-on-surface">
+                      {isAmharic ? 'የይለፍ ቃል መቀየሪያ' : 'Change Password'}
+                    </h2>
+                    <p className="text-xs text-outline mt-0.5">
+                      {isAmharic
+                        ? 'የመለያዎን ደህንነት ለመጠበቅ ጠንካራ የይለፍ ቃል ይምረጡ'
+                        : 'Update your login password to ensure security of your role account'}
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -457,7 +465,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder={isAmharic ? 'የአሁኑን የይለፍ ቃል ያስገቡ' : 'Enter current password'}
-                      className="w-full h-11 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] px-3.5 text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20 transition-all pr-10"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-10"
                     />
                     <button
                       type="button"
@@ -482,7 +490,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder={isAmharic ? 'አዲስ ጠንካራ የይለፍ ቃል ያስገቡ' : 'Enter new strong password'}
-                      className="w-full h-11 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] px-3.5 text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20 transition-all pr-10"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-10"
                       required
                       minLength={6}
                     />
@@ -525,7 +533,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder={isAmharic ? 'አዲሱን የይለፍ ቃል በድጋሚ ያስገቡ' : 'Re-enter new password'}
-                      className="w-full h-11 bg-white dark:bg-slate-800 border border-[#dde1ee] dark:border-slate-700 rounded-[10px] px-3.5 text-[14px] text-slate-900 dark:text-white placeholder:text-[#9aa0ae] focus:outline-none focus:ring-2 focus:ring-[#0f2a5e]/20 transition-all pr-10"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-10"
                       required
                       minLength={6}
                     />
@@ -587,7 +595,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#0f2a5e] hover:bg-[#0c2350] text-white font-extrabold text-xs py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+                    className="w-full bg-[#0B1E48] hover:bg-[#112D6C] text-white font-extrabold text-xs py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98 disabled:opacity-50"
                   >
                     {isLoading ? (
                       <Icon className="material-symbols-outlined text-[18px] animate-spin">sync</Icon>
@@ -620,7 +628,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 <button
                   type="button"
                   onClick={onLogoutClick}
-                  className="px-4 py-2 rounded-lg bg-[#0f2a5e] hover:bg-[#0c2350] text-white text-xs font-black border border-[#1e3e7c] shadow-2xs transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white text-xs font-black border border-[#2A4E9B] shadow-2xs transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
                 >
                   <Icon className="material-symbols-outlined text-[16px] text-amber-400">logout</Icon>
                   <span>{isAmharic ? 'ውጣ' : 'Logout'}</span>
