@@ -1,18 +1,16 @@
-import { ref, uploadBytes, uploadString, getDownloadURL } from 'firebase/storage';
-import { getFirebaseStorage, isFirebaseConfigured } from '../db/firebase';
-import { compressImageToBlob, compressImageBase64, CompressedImageResult } from '../utils/imageCompressor';
+import { compressImageToBlob, CompressedImageResult } from '../utils/imageCompressor';
 
 // In-memory cache to prevent re-uploading identical images
 const imageUploadCache = new Map<string, string>();
 
 /**
- * Uploads an image (File, Blob, or Base64 data URL) to Firebase Cloud Storage.
+ * Uploads an image (File, Blob, or Base64 data URL) to Railway S3 Storage / Express Storage API.
  *
- * Utilizes the 90%+ zero-data-loss compression engine:
+ * Utilizes the zero-data-loss compression engine:
  * 1. Downscales raw captures to optimal 1280px bounding box (preserving 100% of text and stamps).
- * 2. Compresses via next-gen WebP/JPEG with document contrast sharpening.
- * 3. Streams raw binary Blob via uploadBytes (eliminating 33% Base64 bloat).
- * 4. Falls back gracefully to the compressed data URL if offline or unreachable.
+ * 2. Compresses via WebP/JPEG with document contrast sharpening.
+ * 3. Sends binary FormData or compressed payload to /api/storage/upload.
+ * 4. Falls back gracefully to the compressed data URL if offline.
  */
 export async function uploadDocumentPhoto(
   source: string | File | Blob,
@@ -20,9 +18,9 @@ export async function uploadDocumentPhoto(
 ): Promise<string> {
   if (!source) return '';
 
-  // 1. If it's already a cloud URL, return immediately without re-uploading
+  // 1. If it's already a cloud/remote URL, return immediately without re-uploading
   if (typeof source === 'string') {
-    if (source.startsWith('http://') || source.startsWith('https://') || source.startsWith('gs://')) {
+    if (source.startsWith('http://') || source.startsWith('https://') || source.startsWith('/uploads/')) {
       return source;
     }
     if (imageUploadCache.has(source)) {
@@ -30,7 +28,7 @@ export async function uploadDocumentPhoto(
     }
   }
 
-  // 2. High-performance compression pass (90%+ size reduction, zero text/stamp data loss)
+  // 2. High-performance compression pass
   let compressedResult: CompressedImageResult | null = null;
   try {
     compressedResult = await compressImageToBlob(source, {
@@ -46,62 +44,62 @@ export async function uploadDocumentPhoto(
 
   const fallbackDataUrl = compressedResult?.dataUrl || (typeof source === 'string' ? source : '');
 
-  // If offline or Firebase Storage is not configured, return the compressed data URL immediately
-  if (!isFirebaseConfigured() || typeof window === 'undefined' || !navigator.onLine) {
+  // If completely offline, return compressed data URL
+  if (typeof window !== 'undefined' && !navigator.onLine) {
     if (typeof source === 'string' && fallbackDataUrl) {
       imageUploadCache.set(source, fallbackDataUrl);
     }
     return fallbackDataUrl;
   }
 
-  // 3. Attempt Firebase Cloud Storage upload with strict 2500ms safety timeout
+  // 3. Upload to Railway / Express Storage API
   try {
-    const uploadTask = (async () => {
-      const storage = getFirebaseStorage();
-      const uniqueId = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-      const ext = compressedResult?.mimeType === 'image/webp' ? 'webp' : 'jpg';
-      const storagePath = `${folder}/${uniqueId}.${ext}`;
-      const storageRef = ref(storage, storagePath);
+    const formData = new FormData();
+    formData.append('folder', folder);
 
-      if (compressedResult?.blob) {
-        // Direct binary upload: saves 33% bandwidth compared to Base64
-        await uploadBytes(storageRef, compressedResult.blob, {
-          contentType: compressedResult.mimeType,
-          cacheControl: 'public,max-age=31536000',
-        });
-      } else if (fallbackDataUrl) {
-        // Fallback string upload
-        await uploadString(storageRef, fallbackDataUrl, 'data_url', {
-          contentType: 'image/jpeg',
-          cacheControl: 'public,max-age=31536000',
-        });
-      }
+    if (compressedResult?.blob) {
+      const ext = compressedResult.mimeType === 'image/webp' ? 'webp' : 'jpg';
+      formData.append('file', compressedResult.blob, `capture_${Date.now()}.${ext}`);
+    } else if (fallbackDataUrl) {
+      formData.append('dataUrl', fallbackDataUrl);
+    }
 
-      const downloadUrl = await getDownloadURL(storageRef);
-      if (downloadUrl) {
-        if (typeof source === 'string') {
-          imageUploadCache.set(source, downloadUrl);
-        }
-        if (fallbackDataUrl) {
-          imageUploadCache.set(fallbackDataUrl, downloadUrl);
+    const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const uploadPromise = fetch('/api/storage/upload', {
+      method: 'POST',
+      headers,
+      body: formData,
+    }).then(async (res) => {
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.url) {
+          return data.url;
         }
       }
-      return downloadUrl;
-    })();
+      return fallbackDataUrl;
+    });
 
-    // Safety race against timeout so UI never hangs
+    // Safety race with 4000ms timeout
     const result = await Promise.race([
-      uploadTask,
-      new Promise<string>((resolve) => setTimeout(() => resolve(fallbackDataUrl), 2500)),
+      uploadPromise,
+      new Promise<string>((resolve) => setTimeout(() => resolve(fallbackDataUrl), 4000)),
     ]);
 
     const finalUrl = result || fallbackDataUrl;
     if (typeof source === 'string' && finalUrl) {
       imageUploadCache.set(source, finalUrl);
     }
+    if (fallbackDataUrl && finalUrl) {
+      imageUploadCache.set(fallbackDataUrl, finalUrl);
+    }
     return finalUrl;
   } catch (storageErr) {
-    console.warn('Cloud Storage direct upload notice, falling back to local compressed image:', storageErr);
+    console.warn('[Storage] API upload notice, using local compressed data URL:', storageErr);
     if (typeof source === 'string' && fallbackDataUrl) {
       imageUploadCache.set(source, fallbackDataUrl);
     }
@@ -114,5 +112,5 @@ export async function uploadDocumentPhoto(
  */
 export function isRemoteStorageUrl(url?: string): boolean {
   if (!url) return false;
-  return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('gs://');
+  return url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/uploads/');
 }

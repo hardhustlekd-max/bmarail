@@ -51,15 +51,15 @@ export const FirebaseQuotaWidget: React.FC<FirebaseStatusWidgetProps> = ({ isAmh
       {/* Title & Connection Status Indicator */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary">
-          <Icon name="sd_card" size={16} />
+          <Icon name="database" size={16} />
           <span className="tracking-tight uppercase">
-            Local Storage DB
+            Railway PostgreSQL
           </span>
         </div>
         <div className="flex items-center gap-1 text-[10px] font-medium">
           <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>{isAmharic ? 'ሎካል ስቶሬጅ' : 'Local Storage Active'}</span>
+            <span>{isAmharic ? 'ፖስትግሬስ ዳታቤዝ' : 'PostgreSQL Active'}</span>
           </span>
         </div>
       </div>
@@ -71,7 +71,7 @@ export const FirebaseQuotaWidget: React.FC<FirebaseStatusWidgetProps> = ({ isAmh
           <span className="text-[10px] sm:text-[11px]">{isAmharic ? 'የዳታ አቀማመጥ' : 'Storage Engine'}</span>
         </span>
         <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-emerald-700 dark:text-emerald-400">
-          Browser Local Storage
+          PostgreSQL + Railway S3
         </span>
       </div>
 
@@ -88,7 +88,7 @@ export const FirebaseQuotaWidget: React.FC<FirebaseStatusWidgetProps> = ({ isAmh
         </div>
       )}
 
-      {/* Last Firebase Cloud Sync timestamp */}
+      {/* Last Cloud Sync timestamp */}
       <div className="flex items-center justify-between text-[10px] text-secondary bg-surface-container-high/60 px-2 py-1 rounded-md">
         <span>{isAmharic ? 'የመጨረሻ ማመሳሰል:' : 'Last Cloud Sync:'}</span>
         <span className="font-mono font-semibold text-on-surface">
@@ -106,8 +106,8 @@ export const FirebaseQuotaWidget: React.FC<FirebaseStatusWidgetProps> = ({ isAmh
           <Icon name="sync" size={14} className={isSyncing ? 'animate-spin' : ''} />
           <span>
             {isSyncing
-              ? (isAmharic ? 'ከፋየርቤዝ በማመሳሰል ላይ...' : 'Syncing Firebase...')
-              : (isAmharic ? 'ዳታ አሁን አመሳስል' : 'Sync Live Firebase Data')}
+              ? (isAmharic ? 'ከዳታቤዝ በማመሳሰል ላይ...' : 'Syncing Railway DB...')
+              : (isAmharic ? 'ዳታ አሁን አመሳስል' : 'Sync Live Railway DB')}
           </span>
         </button>
       </div>

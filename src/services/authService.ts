@@ -1,21 +1,4 @@
 import { SystemUser, UserRole } from '../types.ts';
-import {
-  loginWithFirebaseAuth,
-  registerWithFirebaseAuth,
-  logoutFirebaseAuth,
-  getCurrentFirebaseAuthUser,
-  onFirebaseAuthChange,
-  fetchAllFirebaseAuthUsers,
-} from './firebaseAuth.ts';
-
-export {
-  loginWithFirebaseAuth,
-  registerWithFirebaseAuth,
-  logoutFirebaseAuth,
-  getCurrentFirebaseAuthUser,
-  onFirebaseAuthChange,
-  fetchAllFirebaseAuthUsers,
-};
 
 export const SYSTEM_ROLE_CREDENTIALS: Record<
   UserRole,
@@ -57,10 +40,42 @@ export const SYSTEM_ROLE_CREDENTIALS: Record<
   },
 };
 
+const authChangeListeners = new Set<(user: SystemUser | null) => void>();
+let currentAuthUser: SystemUser | null = null;
+
+export function onAuthStateChange(callback: (user: SystemUser | null) => void): () => void {
+  authChangeListeners.add(callback);
+  callback(currentAuthUser);
+  return () => {
+    authChangeListeners.delete(callback);
+  };
+}
+
+export const onFirebaseAuthChange = onAuthStateChange;
+
+export function getCurrentUser(): SystemUser | null {
+  if (currentAuthUser) return currentAuthUser;
+  if (typeof localStorage !== 'undefined') {
+    const saved = localStorage.getItem('system_user');
+    if (saved) {
+      try {
+        currentAuthUser = JSON.parse(saved);
+        return currentAuthUser;
+      } catch (e) {}
+    }
+  }
+  return null;
+}
+
+export const getCurrentFirebaseAuthUser = getCurrentUser;
+
 /**
  * Ensures a valid session user exists.
  */
 export async function ensureOnlineAuth(): Promise<SystemUser | null> {
+  const existing = getCurrentUser();
+  if (existing) return existing;
+
   const defaultCreds = SYSTEM_ROLE_CREDENTIALS.clerk;
   return {
     uid: `user-clerk-${defaultCreds.badgeId}`,
@@ -73,7 +88,7 @@ export async function ensureOnlineAuth(): Promise<SystemUser | null> {
 }
 
 /**
- * Perform login authentication for system user roles via Firestore database
+ * Perform login authentication for system user roles via Railway Express API
  */
 export async function loginOnlineUser(
   inputBadgeIdOrRole: string,
@@ -95,13 +110,23 @@ export async function loginOnlineUser(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         badgeId,
-        password,
+        password: password || 'defaultPassword123!',
       }),
     });
 
     if (response.ok) {
       const data = await response.json();
       if (data.success && data.user) {
+        currentAuthUser = data.user;
+        if (typeof localStorage !== 'undefined') {
+          if (data.token) localStorage.setItem('token', data.token);
+          localStorage.setItem('system_user', JSON.stringify(data.user));
+        }
+        authChangeListeners.forEach((cb) => {
+          try {
+            cb(data.user);
+          } catch (e) {}
+        });
         return { success: true, user: data.user };
       }
       if (data.error) {
@@ -117,20 +142,19 @@ export async function loginOnlineUser(
   let detectedRole: UserRole = 'clerk';
   let fullName = 'System Clerk';
 
-  // Infer role from badge ID if network offline
   const upperId = trimmedId.toUpperCase();
   if (upperId.includes('SUPER') || upperId === 'SUPER-ADMIN-01') {
     detectedRole = 'superadmin';
     fullName = 'Kaleb Tadesse (Chief Super Admin)';
   } else if (upperId.includes('ADMIN') || upperId === 'ADMIN-PRO-1') {
     detectedRole = 'admin';
-    fullName = 'Worku Bekele (System Admin)';
+    fullName = 'Tigist Alemu (System Admin)';
   } else if (upperId.includes('OFFICER') || upperId === 'OFFICER-8842') {
     detectedRole = 'officer';
     fullName = 'Insp. Solomon Girma';
   } else {
     detectedRole = 'clerk';
-    fullName = 'Abebe Bikila (Primary Clerk)';
+    fullName = 'Abebe Bekele (Clerk)';
   }
 
   const email = trimmedId.includes('@') ? trimmedId : `${trimmedId.toLowerCase() || 'user'}@permit.gov.et`;
@@ -146,15 +170,63 @@ export async function loginOnlineUser(
     createdAt: now,
   };
 
+  currentAuthUser = userProfile;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('system_user', JSON.stringify(userProfile));
+  }
+  authChangeListeners.forEach((cb) => {
+    try {
+      cb(userProfile);
+    } catch (e) {}
+  });
+
   return { success: true, user: userProfile };
 }
+
+export const loginWithFirebaseAuth = loginOnlineUser;
+
+/**
+ * Register a new user
+ */
+export async function registerOnlineUser(userData: Partial<SystemUser> & { password?: string }): Promise<{ success: boolean; user?: SystemUser; error?: string }> {
+  try {
+    const res = await fetch('/api/auth/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
+    const data = await res.json();
+    if (data.success && data.user) {
+      return { success: true, user: data.user };
+    }
+    return { success: false, error: data.error || 'Failed to register user' };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}
+
+export const registerWithFirebaseAuth = registerOnlineUser;
 
 /**
  * Sign out session
  */
 export async function logoutOnlineUser(): Promise<void> {
-  // Session logout handled by storage session clear
+  currentAuthUser = null;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem('token');
+    localStorage.removeItem('system_user');
+  }
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  } catch (e) {}
+  authChangeListeners.forEach((cb) => {
+    try {
+      cb(null);
+    } catch (e) {}
+  });
 }
+
+export const logoutFirebaseAuth = logoutOnlineUser;
 
 /**
  * Change / Update user password
@@ -180,11 +252,10 @@ export async function changeOnlineUserPassword(
     if (res.ok) {
       const data = await res.json();
       if (data.success) {
-        // Also update local credentials in-memory for this session
         if (SYSTEM_ROLE_CREDENTIALS[role]) {
           SYSTEM_ROLE_CREDENTIALS[role].password = newPassword;
         }
-        return { success: true, message: data.message || 'Password changed successfully' };
+        return { success: true, message: data.message || 'Password updated successfully' };
       } else {
         return { success: false, error: data.error || 'Failed to update password' };
       }
@@ -193,7 +264,6 @@ export async function changeOnlineUserPassword(
     console.warn('[authService] Backend change-password notice:', err);
   }
 
-  // Local fallback
   if (SYSTEM_ROLE_CREDENTIALS[role]) {
     SYSTEM_ROLE_CREDENTIALS[role].password = newPassword;
   }
@@ -201,7 +271,7 @@ export async function changeOnlineUserPassword(
 }
 
 /**
- * Fetch all system users from Firestore permit database
+ * Fetch all system users from Railway PostgreSQL backend
  */
 export async function fetchOnlineSystemUsers(): Promise<SystemUser[]> {
   try {
@@ -212,9 +282,7 @@ export async function fetchOnlineSystemUsers(): Promise<SystemUser[]> {
         return data.users;
       }
     }
-  } catch (e) {
-    // Ignore fallback
-  }
+  } catch (e) {}
 
   return Object.values(SYSTEM_ROLE_CREDENTIALS).map((c) => ({
     uid: `preset-${c.role}`,
@@ -225,3 +293,4 @@ export async function fetchOnlineSystemUsers(): Promise<SystemUser[]> {
   }));
 }
 
+export const fetchAllFirebaseAuthUsers = fetchOnlineSystemUsers;
