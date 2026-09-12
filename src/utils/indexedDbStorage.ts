@@ -10,7 +10,6 @@ import {
   SystemUser,
   SystemAuditLog,
 } from '../types';
-import { stripImagesFromRegistration } from '../services/dbService';
 
 const DB_NAME = 'permit_offline_store_v1';
 const DB_VERSION = 1;
@@ -74,8 +73,8 @@ export async function asyncSaveRegistrations(registrations: MotorcycleRegistrati
 
         await store.clear();
         for (const reg of registrations) {
-          if (reg && reg.id) {
-            await store.put(stripImagesFromRegistration(reg));
+           if (reg && reg.id) {
+            await store.put(reg);
           }
         }
         await tx.done;
@@ -95,7 +94,7 @@ export async function asyncUpsertSingleRegistration(reg: MotorcycleRegistration)
   try {
     const db = await getIndexedDb();
     if (!db || !reg?.id) return;
-    await db.put('registrations', stripImagesFromRegistration(reg));
+    await db.put('registrations', reg);
   } catch (err) {
     console.warn('Async IndexedDB upsert warning:', err);
   }

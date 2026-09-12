@@ -10,7 +10,15 @@ const S3_BUCKET = process.env.STORAGE_BUCKET || process.env.RAILWAY_STORAGE_BUCK
 const S3_ACCESS_KEY = process.env.STORAGE_ACCESS_KEY || process.env.AWS_ACCESS_KEY_ID;
 const S3_SECRET_KEY = process.env.STORAGE_SECRET_KEY || process.env.AWS_SECRET_ACCESS_KEY;
 const S3_REGION = process.env.STORAGE_REGION || process.env.AWS_REGION || 'auto';
-const S3_PUBLIC_DOMAIN = process.env.STORAGE_PUBLIC_DOMAIN || '';
+
+// Public domain configuration (e.g., Cloudflare R2 public URL, custom domain, or Railway public storage domain)
+export const S3_PUBLIC_DOMAIN = (
+  process.env.STORAGE_PUBLIC_DOMAIN ||
+  process.env.S3_PUBLIC_DOMAIN ||
+  process.env.PUBLIC_STORAGE_DOMAIN ||
+  process.env.PUBLIC_BUCKET_URL ||
+  ''
+).trim().replace(/\/+$/, '');
 
 let s3Client: S3Client | null = null;
 
@@ -25,7 +33,7 @@ if (S3_ENDPOINT && S3_BUCKET && S3_ACCESS_KEY && S3_SECRET_KEY) {
       },
       forcePathStyle: true,
     });
-    console.log(`[Storage] S3-compatible Railway Storage Bucket client configured for bucket "${S3_BUCKET}".`);
+    console.log(`[Storage] S3-compatible Railway Storage Bucket client configured for bucket "${S3_BUCKET}". Public domain: ${S3_PUBLIC_DOMAIN || 'None (proxied via /api/storage/file)'}`);
   } catch (err) {
     console.warn('[Storage] Could not initialize S3 client:', err);
     s3Client = null;
@@ -66,6 +74,21 @@ export interface UploadResult {
 }
 
 /**
+ * Format the publicly accessible URL for a given file key
+ */
+export function getPublicUrlForFileKey(fileKey: string): string {
+  const cleanKey = fileKey.replace(/^\/+/, '');
+  if (S3_PUBLIC_DOMAIN) {
+    const domain = S3_PUBLIC_DOMAIN.startsWith('http://') || S3_PUBLIC_DOMAIN.startsWith('https://')
+      ? S3_PUBLIC_DOMAIN
+      : `https://${S3_PUBLIC_DOMAIN}`;
+    return `${domain}/${cleanKey}`;
+  }
+  // Default to server-side proxy route which handles redirection or streaming seamlessly
+  return `/api/storage/file/${cleanKey}`;
+}
+
+/**
  * Upload a Buffer to Railway S3 Bucket or Local uploads storage
  */
 export async function saveFile(
@@ -97,13 +120,7 @@ export async function saveFile(
       });
       await s3Client.send(command);
 
-      if (S3_PUBLIC_DOMAIN) {
-        publicUrl = `${S3_PUBLIC_DOMAIN.replace(/\/$/, '')}/${fileKey}`;
-      } else if (S3_ENDPOINT.includes('amazonaws.com')) {
-        publicUrl = `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com/${fileKey}`;
-      } else {
-        publicUrl = `${S3_ENDPOINT.replace(/\/$/, '')}/${S3_BUCKET}/${fileKey}`;
-      }
+      publicUrl = getPublicUrlForFileKey(fileKey);
       storageType = 's3';
     } catch (s3Err) {
       console.warn('[Storage] S3 upload error, falling back to local file storage:', s3Err);
@@ -148,6 +165,56 @@ export async function saveFile(
     size: buffer.length,
     mimeType,
   };
+}
+
+/**
+ * Retrieve file stream from S3 or local disk for serving/redirecting
+ */
+export async function getFileFromStorage(fileKey: string): Promise<{
+  stream?: any;
+  buffer?: Buffer;
+  contentType?: string;
+  contentLength?: number;
+  localPath?: string;
+  publicRedirectUrl?: string;
+} | null> {
+  const cleanKey = fileKey.replace(/^\/+/, '');
+
+  // If public domain is configured, direct the caller to redirect immediately
+  if (S3_PUBLIC_DOMAIN) {
+    const domain = S3_PUBLIC_DOMAIN.startsWith('http://') || S3_PUBLIC_DOMAIN.startsWith('https://')
+      ? S3_PUBLIC_DOMAIN
+      : `https://${S3_PUBLIC_DOMAIN}`;
+    return { publicRedirectUrl: `${domain}/${cleanKey}` };
+  }
+
+  // 1. Try S3 GetObject
+  if (s3Client && S3_BUCKET) {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: S3_BUCKET,
+        Key: cleanKey,
+      });
+      const response = await s3Client.send(command);
+      return {
+        stream: response.Body,
+        contentType: response.ContentType || 'image/jpeg',
+        contentLength: response.ContentLength,
+      };
+    } catch (s3Err) {
+      console.warn(`[Storage] S3 get error for key "${cleanKey}":`, s3Err);
+    }
+  }
+
+  // 2. Try Local uploads disk
+  const localFilePath = path.join(LOCAL_UPLOADS_DIR, cleanKey);
+  if (fs.existsSync(localFilePath)) {
+    return {
+      localPath: localFilePath,
+    };
+  }
+
+  return null;
 }
 
 /**

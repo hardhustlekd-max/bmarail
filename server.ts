@@ -27,6 +27,8 @@ import {
   saveFile,
   saveBase64Image,
   deleteStoredFile,
+  getFileFromStorage,
+  S3_PUBLIC_DOMAIN,
 } from './src/server/storage.ts';
 
 dotenv.config({ override: true });
@@ -345,7 +347,7 @@ app.delete('/api/auth/users/:id', async (req, res) => {
 // ============================================================================
 
 // POST /api/storage/upload (Supports multipart file upload OR JSON base64 payload)
-app.post('/api/storage/upload', uploadMiddleware.single('file'), async (req, res) => {
+app.post('/api/storage/upload', uploadMiddleware.single('file') as any, async (req, res) => {
   try {
     const folder = req.body.folder || 'permits';
     const uploadedBy = (req as any).user?.badgeId || req.body.uploadedBy || 'system';
@@ -373,6 +375,100 @@ app.post('/api/storage/upload', uploadMiddleware.single('file'), async (req, res
   } catch (err: any) {
     console.error('[Storage Error] Upload failed:', err);
     res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
+// GET /api/storage/file/* (Redirects to public domain if configured, or streams from S3/local disk)
+app.get('/api/storage/file/*', async (req, res) => {
+  try {
+    const rawPath = req.params[0] || (req.url.replace('/api/storage/file/', '').split('?')[0]);
+    const fileKey = decodeURIComponent(rawPath).replace(/^\/+/, '');
+
+    if (!fileKey) {
+      return res.status(400).json({ error: 'File key is required' });
+    }
+
+    const fileInfo = await getFileFromStorage(fileKey);
+    if (!fileInfo) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    // 1. If public redirect URL is returned (e.g. STORAGE_PUBLIC_DOMAIN / S3_PUBLIC_DOMAIN)
+    if (fileInfo.publicRedirectUrl) {
+      return res.redirect(302, fileInfo.publicRedirectUrl);
+    }
+
+    // 2. If local disk file exists
+    if (fileInfo.localPath) {
+      return res.sendFile(fileInfo.localPath);
+    }
+
+    // 3. If S3 stream is available
+    if (fileInfo.stream) {
+      res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      if (fileInfo.contentLength) {
+        res.setHeader('Content-Length', fileInfo.contentLength);
+      }
+      return (fileInfo.stream as any).pipe(res);
+    }
+
+    res.status(404).json({ error: 'File stream unavailable' });
+  } catch (err: any) {
+    console.error('[Storage Error] File fetch failed:', err);
+    res.status(500).json({ error: 'Failed to retrieve file' });
+  }
+});
+
+// GET /api/storage/proxy (Smart redirector/proxy for external or internal image URLs)
+app.get('/api/storage/proxy', async (req, res) => {
+  try {
+    const targetUrl = (req.query.url as string) || (req.query.src as string) || (req.query.key as string);
+    if (!targetUrl) {
+      return res.status(400).json({ error: 'Target URL or key is required' });
+    }
+
+    // Extract fileKey if it points to permits/ or general upload
+    const permitMatch = targetUrl.match(/(?:permits|receipts|reports|uploads)\/[^?#]+/);
+    if (permitMatch) {
+      const fileKey = permitMatch[0].replace(/^uploads\//, '');
+      const fileInfo = await getFileFromStorage(fileKey);
+      if (fileInfo) {
+        if (fileInfo.publicRedirectUrl) return res.redirect(302, fileInfo.publicRedirectUrl);
+        if (fileInfo.localPath) return res.sendFile(fileInfo.localPath);
+        if (fileInfo.stream) {
+          res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          return (fileInfo.stream as any).pipe(res);
+        }
+      }
+    }
+
+    // If it's a direct public domain redirect
+    if (S3_PUBLIC_DOMAIN && targetUrl.includes('/')) {
+      const parts = targetUrl.split('/');
+      const key = parts.slice(-2).join('/');
+      const domain = S3_PUBLIC_DOMAIN.startsWith('http://') || S3_PUBLIC_DOMAIN.startsWith('https://')
+        ? S3_PUBLIC_DOMAIN
+        : `https://${S3_PUBLIC_DOMAIN}`;
+      return res.redirect(302, `${domain}/${key}`);
+    }
+
+    // Fallback: if targetUrl is absolute HTTP/HTTPS, fetch and stream safely
+    if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
+      const remoteRes = await fetch(targetUrl);
+      if (remoteRes.ok && remoteRes.body) {
+        res.setHeader('Content-Type', remoteRes.headers.get('content-type') || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        const arrayBuf = await remoteRes.arrayBuffer();
+        return res.send(Buffer.from(arrayBuf));
+      }
+    }
+
+    res.status(404).json({ error: 'Could not proxy image' });
+  } catch (err: any) {
+    console.error('[Storage Proxy Error]:', err);
+    res.status(500).json({ error: 'Proxy request failed' });
   }
 });
 

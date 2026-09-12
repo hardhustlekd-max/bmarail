@@ -239,17 +239,36 @@ export function mergeRegistrationsPreservingPhotos(
   return Array.from(map.values());
 }
 
+export function sanitizePhotoForCache(photo?: string): string {
+  if (!photo) return '';
+  // Remote URLs, proxy routes, and blob previews are lightweight text strings - keep 100%
+  if (
+    photo.startsWith('http://') ||
+    photo.startsWith('https://') ||
+    photo.startsWith('/') ||
+    photo.startsWith('blob:')
+  ) {
+    return photo;
+  }
+  // Keep compressed data URLs (< 80KB)
+  if (photo.length < 80 * 1024) {
+    return photo;
+  }
+  // Strip only massive uncompressed raw Base64 strings to protect localStorage quota
+  return '';
+}
+
 export function stripImagesFromRegistration(reg: MotorcycleRegistration): MotorcycleRegistration {
   if (!reg) return reg;
   return {
     ...reg,
-    userPortraitPhoto: '',
-    userPortraitThumbnail: '',
-    nationalIdPhoto: '',
-    nationalIdBackPhoto: '',
-    drivingLicensePhoto: '',
-    drivingPermitPhoto: '',
-    receiptScreenshot: '',
+    userPortraitPhoto: sanitizePhotoForCache(reg.userPortraitPhoto),
+    userPortraitThumbnail: sanitizePhotoForCache(reg.userPortraitThumbnail),
+    nationalIdPhoto: sanitizePhotoForCache(reg.nationalIdPhoto),
+    nationalIdBackPhoto: sanitizePhotoForCache(reg.nationalIdBackPhoto),
+    drivingLicensePhoto: sanitizePhotoForCache(reg.drivingLicensePhoto),
+    drivingPermitPhoto: sanitizePhotoForCache(reg.drivingPermitPhoto),
+    receiptScreenshot: sanitizePhotoForCache(reg.receiptScreenshot),
   };
 }
 
@@ -257,11 +276,11 @@ export function stripImagesFromVerificationLog(log: VerificationLog): Verificati
   if (!log) return log;
   return {
     ...log,
-    userPortraitPhoto: '',
-    nationalIdPhoto: '',
-    nationalIdBackPhoto: '',
-    drivingLicensePhoto: '',
-    drivingPermitPhoto: '',
+    userPortraitPhoto: sanitizePhotoForCache(log.userPortraitPhoto),
+    nationalIdPhoto: sanitizePhotoForCache(log.nationalIdPhoto),
+    nationalIdBackPhoto: sanitizePhotoForCache(log.nationalIdBackPhoto),
+    drivingLicensePhoto: sanitizePhotoForCache(log.drivingLicensePhoto),
+    drivingPermitPhoto: sanitizePhotoForCache(log.drivingPermitPhoto),
   };
 }
 
@@ -269,7 +288,7 @@ export function stripImagesFromUnregisteredReport(report: UnregisteredVehicleRep
   if (!report) return report;
   return {
     ...report,
-    evidencePhoto: '',
+    evidencePhoto: sanitizePhotoForCache(report.evidencePhoto),
   };
 }
 
@@ -277,25 +296,25 @@ export function stripImagesFromPaymentReceipt(receipt: PaymentReceipt): PaymentR
   if (!receipt) return receipt;
   return {
     ...receipt,
-    receiptScreenshot: '',
+    receiptScreenshot: sanitizePhotoForCache(receipt.receiptScreenshot),
   };
 }
 
 export function saveStateToLocalStorage(): void {
   if (typeof window === 'undefined') return;
 
-  // 1. Asynchronously persist text data to IndexedDB without storing any images locally
-  asyncSaveRegistrations(inMemory.registrations.map(stripImagesFromRegistration));
+  // 1. Asynchronously persist full data (including remote image URLs and compressed photos) to IndexedDB
+  asyncSaveRegistrations(inMemory.registrations);
   asyncSaveKeyVal('officers', inMemory.officers);
   asyncSaveKeyVal('printOrders', inMemory.printOrders);
-  asyncSaveKeyVal('verifications', inMemory.verifications.map(stripImagesFromVerificationLog));
-  asyncSaveKeyVal('unregisteredReports', inMemory.unregisteredReports.map(stripImagesFromUnregisteredReport));
-  asyncSaveKeyVal('paymentReceipts', inMemory.paymentReceipts.map(stripImagesFromPaymentReceipt));
+  asyncSaveKeyVal('verifications', inMemory.verifications);
+  asyncSaveKeyVal('unregisteredReports', inMemory.unregisteredReports);
+  asyncSaveKeyVal('paymentReceipts', inMemory.paymentReceipts);
   asyncSaveKeyVal('settings', inMemory.settings);
   asyncSaveKeyVal('users', inMemory.users);
   asyncSaveKeyVal('auditLogs', inMemory.auditLogs);
 
-  // 2. LocalStorage cache for fast initial text paint (stripped of all image blobs)
+  // 2. LocalStorage cache for fast initial paint (preserves remote URLs while omitting oversized base64 strings)
   try {
     const payload = {
       registrations: inMemory.registrations.map(stripImagesFromRegistration),

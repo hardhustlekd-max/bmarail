@@ -20,52 +20,71 @@ export const SmartImage: React.FC<SmartImageProps> = ({
   isGrayscale = false,
   ...props
 }) => {
-  const isDataUrl = Boolean(src && src.startsWith('data:'));
-  const isAlreadyCached = Boolean(src && cachedLoadedUrls.has(src));
+  const [currentSrc, setCurrentSrc] = useState<string>(src || '');
+  const [hasTriedProxy, setHasTriedProxy] = useState<boolean>(false);
+  const isDataUrl = Boolean(currentSrc && currentSrc.startsWith('data:'));
+  const isAlreadyCached = Boolean(currentSrc && cachedLoadedUrls.has(currentSrc));
   const [isLoading, setIsLoading] = useState<boolean>(
-    Boolean(src && src.trim() !== '' && !isDataUrl && !isAlreadyCached)
+    Boolean(currentSrc && currentSrc.trim() !== '' && !isDataUrl && !isAlreadyCached)
   );
   const [hasError, setHasError] = useState<boolean>(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Reset state if the source URL changes
+  // Normalize incoming src and handle internal endpoints
   useEffect(() => {
     if (src && src.trim() !== '') {
+      let resolved = src;
+      // If it's an internal railway URL, route through the storage proxy
+      if (src.includes('.railway.internal') || src.includes('minio:9000') || src.includes('localhost:9000')) {
+        resolved = `/api/storage/proxy?url=${encodeURIComponent(src)}`;
+      }
+      setCurrentSrc(resolved);
+      setHasTriedProxy(false);
       setHasError(false);
+
       if (
-        src.startsWith('data:') ||
-        cachedLoadedUrls.has(src) ||
+        resolved.startsWith('data:') ||
+        resolved.startsWith('blob:') ||
+        cachedLoadedUrls.has(resolved) ||
         (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0)
       ) {
         setIsLoading(false);
       } else {
         setIsLoading(true);
-        // Safety timeout so image never gets stuck in loading state
         const timer = setTimeout(() => {
           setIsLoading(false);
-        }, 1200);
+        }, 1500);
         return () => clearTimeout(timer);
       }
     } else {
+      setCurrentSrc('');
       setIsLoading(false);
       setHasError(true);
     }
   }, [src]);
 
   const handleLoad = () => {
-    if (src) {
-      cachedLoadedUrls.add(src);
+    if (currentSrc) {
+      cachedLoadedUrls.add(currentSrc);
     }
     setIsLoading(false);
     setHasError(false);
   };
 
   const handleError = () => {
+    // If direct load failed on a remote URL and we haven't tried the backend proxy yet
+    if (!hasTriedProxy && currentSrc && (currentSrc.startsWith('http://') || currentSrc.startsWith('https://')) && !currentSrc.startsWith('/api/storage/proxy')) {
+      setHasTriedProxy(true);
+      setCurrentSrc(`/api/storage/proxy?url=${encodeURIComponent(currentSrc)}`);
+      setIsLoading(true);
+      return;
+    }
+
     setIsLoading(false);
     setHasError(true);
   };
 
-  const hasNoSrc = !src || src.trim() === '';
+  const hasNoSrc = !currentSrc || currentSrc.trim() === '';
 
   if (hasError || hasNoSrc) {
     return (
@@ -95,13 +114,14 @@ export const SmartImage: React.FC<SmartImageProps> = ({
 
       <img
         ref={imgRef}
-        src={src}
+        src={currentSrc}
         alt={alt}
         loading="lazy"
         decoding="async"
         onLoad={handleLoad}
         onError={handleError}
         referrerPolicy="no-referrer"
+        crossOrigin="anonymous"
         className={`w-full h-full object-cover transition-all duration-200 ${
           isGrayscale ? 'grayscale' : ''
         } ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
