@@ -398,25 +398,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
   return (
     <div className="space-y-4 sm:space-y-5">
-      {/* PAGE HEADER (MATCHING TOP NAVBAR: ዋና ገፅ / Dashboard) */}
-      <div className="p-3.5 sm:p-4 bg-surface-container-lowest border border-outline-variant/70 rounded-lg shadow-xs flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Icon className="material-symbols-outlined text-[20px]">space_dashboard</Icon>
-          </div>
-          <div>
-            <h3 className="font-bold text-sm sm:text-base text-on-surface">
-              {isAmharic ? 'ዋና ገፅ' : 'Dashboard'}
-            </h3>
-            <p className="hidden sm:block text-[11px] font-normal text-secondary mt-0.5">
-              {isAmharic
-                ? 'የባህር ዳር ከተማ አስተዳደር የሞተር ሳይክል ፈቃድና ቁጥጥር አጠቃላይ ማጠቃለያ'
-                : 'Bahir Dar City Administration Motorcycle Permit & Inspection Dashboard'}
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* BIG HERO SCAN QR CODE BUTTON FOR TRAFFIC OFFICER */}
       {userRole === 'officer' && (
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6 sm:p-8 shadow-sm flex flex-col items-center justify-center text-center space-y-4">
@@ -428,7 +409,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
           <div
             onClick={() => handleActionClick('quick_verify')}
-            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center shadow-md group cursor-pointer hover:bg-blue-500/20 transition-all duration-300"
+            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center shadow-md group cursor-pointer hover:bg-blue-500/20 active:scale-95 touch-manipulation transition-all duration-300"
           >
             <Icon className="material-symbols-outlined text-[68px] sm:text-[80px] text-blue-600 group-hover:scale-110 transition-transform duration-300">
               qr_code_scanner
@@ -449,7 +430,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <button
             type="button"
             onClick={() => handleActionClick('quick_verify')}
-            className="w-full max-w-xs py-3.5 px-6 rounded-lg bg-[#1D61E7] hover:bg-blue-700 transition-all font-black text-xs sm:text-sm text-white tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md cursor-pointer"
+            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-[#1D61E7] hover:bg-blue-700 active:scale-95 touch-manipulation transition-all font-black text-xs sm:text-sm text-white tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[22px]">photo_camera</Icon>
             <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch QR Scanner'}</span>
@@ -677,59 +658,74 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* ==================== METRIC SECTIONS TABBED CONTAINER (FOR SUPER ADMIN & MANAGER) ==================== */}
       {(userRole === 'superadmin' || userRole === 'admin') && (
-        <div className="bg-surface-container-lowest border border-outline-variant/70 dark:border-outline-variant/60 rounded-xl shadow-2xs overflow-hidden">
-          {/* Clean Compact Tab Bar */}
-          <div className="bg-surface-container/35 dark:bg-surface-container-high/20 border-b border-outline-variant/70 dark:border-outline-variant/60 flex items-center gap-1.5 p-2 flex-wrap">
-            {[
-              {
-                id: 'payments' as const,
-                label: isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts',
-                count: paymentMetrics.total,
-                badgeColor:
-                  paymentMetrics.expiringSoonCount + paymentMetrics.expiredCount > 0
-                    ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                    : 'bg-surface-container-highest text-secondary',
-              },
-              {
-                id: 'permits' as const,
-                label: isAmharic ? 'የአባላት አስተዳደር ሁኔታ' : 'Permit Status',
-                count: registrations.length,
-                badgeColor: 'bg-surface-container-highest text-secondary',
-              },
-              {
-                id: 'patrol' as const,
-                label: isAmharic ? 'የመስክ ቁጥጥር' : 'Patrol & Inspection',
-                count: totalLogsCount,
-                badgeColor: 'bg-surface-container-highest text-secondary',
-              },
-            ].map((tab) => {
-              const isActive = activeMetricsTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveMetricsTab(tab.id)}
-                  className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
-                    isActive
-                      ? 'bg-primary text-white font-extrabold shadow-2xs'
-                      : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
-                  }`}
-                >
-                  <span className="tracking-tight">{tab.label}</span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
-                      isActive && tab.id === 'payments' && paymentMetrics.expiringSoonCount + paymentMetrics.expiredCount > 0
-                        ? 'bg-amber-500/30 text-amber-200'
-                        : isActive
-                        ? 'bg-white/20 text-white'
-                        : tab.badgeColor
+        <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
+          {/* CONTAINER HEADER (MATCHING TABLES PAGE CONTAINER STYLE) */}
+          <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+                <Icon className="material-symbols-outlined text-[20px]">
+                  {activeMetricsTab === 'payments' ? 'payments' : activeMetricsTab === 'permits' ? 'analytics' : 'policy'}
+                </Icon>
+              </div>
+              <div>
+                <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                  {activeMetricsTab === 'payments' && (isAmharic ? 'የክፍያ ደረሰኞች ቁጥጥር' : 'Payment Receipts & Compliance')}
+                  {activeMetricsTab === 'permits' && (isAmharic ? 'የአባላት አስተዳደር ሁኔታ' : 'Permit Status Breakdown')}
+                  {activeMetricsTab === 'patrol' && (isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub')}
+                </h3>
+                <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                  {activeMetricsTab === 'payments' && (isAmharic ? 'የ1 ወር ክፍያ ደረሰኞች የጊዜ ገደብና አጠቃላይ ስታቲስቲክስ' : '1-month payment receipt status, validation & expiry tracking')}
+                  {activeMetricsTab === 'permits' && (isAmharic ? 'የፀደቁ፣ በመጠባበቅ ላይ ያሉ እና ውድቅ የተደረጉ የተሽከርካሪ መረጃዎች ዝርዝር' : 'Permit approval distribution and registration pipeline')}
+                  {activeMetricsTab === 'patrol' && (isAmharic ? 'የአሁኑ የፓትሮል መረጃዎችና የፍተሻ ስታቲስቲክስ' : 'Real-time patrol and permit inspection metrics')}
+                </p>
+              </div>
+            </div>
+
+            {/* Clean Compact Tab Bar Integrated into Header */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {[
+                {
+                  id: 'payments' as const,
+                  label: isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts',
+                  count: paymentMetrics.total,
+                },
+                {
+                  id: 'permits' as const,
+                  label: isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status',
+                  count: registrations.length,
+                },
+                {
+                  id: 'patrol' as const,
+                  label: isAmharic ? 'የመስክ ቁጥጥር' : 'Patrol & Inspection',
+                  count: totalLogsCount,
+                },
+              ].map((tab) => {
+                const isActive = activeMetricsTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveMetricsTab(tab.id)}
+                    className={`group relative flex items-center gap-1.5 px-3 py-1.5 min-h-[32px] text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md touch-manipulation active:scale-95 ${
+                      isActive
+                        ? 'bg-primary text-white font-extrabold shadow-2xs'
+                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
                     }`}
                   >
-                    {tab.count}
-                  </span>
-                </button>
-              );
-            })}
+                    <span>{tab.label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                        isActive
+                          ? 'bg-white/25 text-white'
+                          : 'bg-surface-container-highest text-secondary'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Merged Content Area */}
@@ -737,21 +733,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* TAB CONTENT: 1. Payment Receipts Metrics */}
             {activeMetricsTab === 'payments' && (
               <div className="space-y-3.5">
-                <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                      <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
-                    </div>
-                    <div>
-                      <h3 className="text-xs font-black text-on-surface uppercase tracking-wider flex items-center gap-2">
-                        <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
-                      </h3>
-                      <p className="text-[10px] text-secondary font-medium">
-                        {isAmharic ? 'የ1 ወር ክፍያ ደረሰኞች የጊዜ ገደብና አጠቃላይ ስታቲስቲክስ' : '1-month payment receipt status, validation & expiry tracking'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                   {/* Total Receipts */}
@@ -844,22 +825,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* TAB CONTENT: 3. Field Officer Patrol & Inspection Hub */}
             {activeMetricsTab === 'patrol' && (
               <div className="space-y-3.5">
-                <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center shrink-0">
-                      <Icon className="material-symbols-outlined text-[20px]">policy</Icon>
-                    </div>
-                    <div>
-                      <h2 className="font-black text-xs sm:text-sm text-on-surface uppercase tracking-wider">
-                        {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
-                      </h2>
-                      <p className="text-[10px] text-secondary font-medium">
-                        {isAmharic ? 'የአሁኑ የፓትሮል መረጃዎችና የፍተሻ ስታቲስቲክስ' : 'Real-time patrol and permit inspection metrics'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
                   <button
                     type="button"

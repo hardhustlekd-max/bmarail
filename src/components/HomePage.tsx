@@ -1851,7 +1851,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               </nav>
 
               {/* Right Controls (UNIFIED MENU TOGGLE BUTTON & NOTIFICATION BELL) */}
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {/* Mobile Notification Bell Icon Button */}
                 <div className="relative" ref={mobileNotificationRef}>
                   <button
@@ -1860,15 +1860,15 @@ export const HomePage: React.FC<HomePageProps> = ({
                       setIsNotificationOpen(!isNotificationOpen);
                       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
                     }}
-                    className={`w-9 h-9 flex items-center justify-center rounded-md border transition-all cursor-pointer shrink-0 shadow-2xs relative ${
+                    className={`w-10 h-10 min-w-[42px] min-h-[42px] flex items-center justify-center rounded-lg border transition-all cursor-pointer shrink-0 shadow-2xs relative touch-manipulation active:scale-90 ${
                       isNotificationOpen
                         ? 'bg-yellow-500 text-[#0B1E48] border-yellow-400 font-black'
-                        : 'bg-white/10 border-white/20 text-white hover:bg-white/20 active:scale-95'
+                        : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
                     }`}
                     title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                     aria-label="Notifications"
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">notifications</Icon>
+                    <Icon className="material-symbols-outlined text-[22px]">notifications</Icon>
                     {unreadNotificationCount > 0 && (
                       <span className="bg-rose-500 text-white text-[10px] font-black min-w-[18px] h-4.5 px-1 rounded-full flex items-center justify-center absolute -top-1.5 -right-1.5 shadow-2xs border-2 border-[#0B1E48] animate-pulse">
                         {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
@@ -1886,9 +1886,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                     if (isNotificationOpen) setIsNotificationOpen(false);
                   }}
                   aria-label="Toggle Navigation Menu"
-                  className="w-9 h-9 flex items-center justify-center rounded-md bg-white/10 border border-white/20 text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer shrink-0 shadow-2xs"
+                  className="w-10 h-10 min-w-[42px] min-h-[42px] flex items-center justify-center rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 active:scale-90 touch-manipulation transition-all cursor-pointer shrink-0 shadow-2xs"
                 >
-                  <Icon className="material-symbols-outlined text-[22px]">
+                  <Icon className="material-symbols-outlined text-[24px]">
                     {isMobileMenuOpen ? 'close' : 'menu'}
                   </Icon>
                 </button>
@@ -1977,19 +1977,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                       setActivePage('dashboard');
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                       activePage === 'dashboard'
                         ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                         : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'dashboard' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                    <div className="flex items-center gap-3">
+                      <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'dashboard' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                         space_dashboard
                       </Icon>
-                      <span className="font-extrabold">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
+                      <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
                     </div>
-                    <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                    <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                   </button>
 
                   {/* CLERK SPECIFIC MOBILE DRAWER - MATCHING QUICK ACTIONS */}
@@ -2002,19 +2002,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('forms');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'forms'
                             ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'forms' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                        <div className="flex items-center gap-3">
+                          <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'forms' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             how_to_reg
                           </Icon>
-                          <span className="font-extrabold">{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
+                          <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
                         </div>
-                        <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                       </button>
 
                       {/* 2. Submission Correction */}
@@ -2024,19 +2024,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('today_submissions_adjust');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'today_submissions_adjust'
                             ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'today_submissions_adjust' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                        <div className="flex items-center gap-3">
+                          <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'today_submissions_adjust' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             edit_note
                           </Icon>
-                          <span className="font-extrabold">{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
+                          <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
                         </div>
-                        <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                       </button>
 
                       {/* 3. Scan QR Code */}
@@ -2046,19 +2046,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('scan');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'scan'
                             ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'scan' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                        <div className="flex items-center gap-3">
+                          <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'scan' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             qr_code_scanner
                           </Icon>
-                          <span className="font-extrabold">{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
+                          <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
                         </div>
-                        <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                       </button>
 
                       {/* 4. Optional: View Submissions */}
@@ -2069,19 +2069,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                             setActivePage('tables');
                             setIsMobileMenuOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                          className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                             activePage === 'tables'
                               ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                          <div className="flex items-center gap-3">
+                            <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               folder_open
                             </Icon>
-                            <span className="font-extrabold">{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
+                            <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
                           </div>
-                          <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                          <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                         </button>
                       )}
 
@@ -2094,19 +2094,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                             setActivePage('tables');
                             setIsMobileMenuOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                          className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                             activePage === 'tables'
                               ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                          <div className="flex items-center gap-3">
+                            <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               verified
                             </Icon>
-                            <span className="font-extrabold">{isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Registry'}</span>
+                            <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Registry'}</span>
                           </div>
-                          <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                          <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                         </button>
                       )}
                     </>
@@ -2121,19 +2121,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                             setActivePage('forms');
                             setIsMobileMenuOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                          className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                             activePage === 'forms'
                               ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'forms' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                          <div className="flex items-center gap-3">
+                            <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'forms' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               how_to_reg
                             </Icon>
-                            <span className="font-extrabold">{isAmharic ? 'ምዝገባ' : 'Registration'}</span>
+                            <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ምዝገባ' : 'Registration'}</span>
                           </div>
-                          <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                          <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                         </button>
                       )}
 
@@ -2145,19 +2145,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                             setActivePage('tables');
                             setIsMobileMenuOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                          className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                             activePage === 'tables'
                               ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                          <div className="flex items-center gap-3">
+                            <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'tables' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               table_chart
                             </Icon>
-                            <span className="font-extrabold">{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Database'}</span>
+                            <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Database'}</span>
                           </div>
-                          <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                          <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                         </button>
                       )}
 
@@ -2170,19 +2170,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                             setActivePage('inspection_report');
                             setIsMobileMenuOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                          className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                             activePage === 'inspection_report'
                               ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'inspection_report' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                          <div className="flex items-center gap-3">
+                            <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'inspection_report' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                               analytics
                             </Icon>
-                            <span className="font-extrabold">{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
+                            <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
                           </div>
-                          <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                          <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                         </button>
                       )}
 
@@ -2193,19 +2193,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('scan');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'scan'
                             ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                             : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'scan' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                        <div className="flex items-center gap-3">
+                          <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'scan' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                             qr_code_scanner
                           </Icon>
-                          <span className="font-extrabold">{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
+                          <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
                         </div>
-                        <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                       </button>
 
                       {/* Unlawful Motors (Manager & Super Admin) */}
@@ -2216,19 +2216,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                             setActivePage('unregistered_list');
                             setIsMobileMenuOpen(false);
                           }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                          className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                             activePage === 'unregistered_list'
                               ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                               : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'unregistered_list' ? 'text-[#0B1E48]' : 'text-red-400'}`}>
+                          <div className="flex items-center gap-3">
+                            <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'unregistered_list' ? 'text-[#0B1E48]' : 'text-red-400'}`}>
                               no_drinks
                             </Icon>
-                            <span className="font-extrabold">{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}</span>
+                            <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}</span>
                           </div>
-                          <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                          <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                         </button>
                       )}
                     </>
@@ -2236,7 +2236,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                   {/* Separate Super Admin Functions Menu */}
                   {(userRole === 'superadmin') && (
-                    <div className="pt-3 mt-3 border-t border-white/15 space-y-1">
+                    <div className="pt-3 mt-3 border-t border-white/15 space-y-1.5">
                       <p className="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider px-1 mb-1.5 flex items-center gap-1">
                         <Icon className="material-symbols-outlined text-[14px]">admin_panel_settings</Icon>
                         <span>{isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin'}</span>
@@ -2248,13 +2248,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('superadmin_users');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center gap-3 p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'superadmin_users' || activePage === 'superadmin'
                             ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
-                        <Icon className="material-symbols-outlined text-[18px]">manage_accounts</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">manage_accounts</Icon>
                         <span>{isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions'}</span>
                       </button>
 
@@ -2264,13 +2264,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('superadmin_subcities');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center gap-3 p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'superadmin_subcities'
                             ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
-                        <Icon className="material-symbols-outlined text-[18px]">location_city</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">location_city</Icon>
                         <span>{isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance'}</span>
                       </button>
 
@@ -2280,13 +2280,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('superadmin_permits');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center gap-3 p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'superadmin_permits'
                             ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
-                        <Icon className="material-symbols-outlined text-[18px]">verified</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">verified</Icon>
                         <span>{isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules'}</span>
                       </button>
 
@@ -2296,13 +2296,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                           setActivePage('superadmin_maintenance');
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full flex items-center gap-2.5 p-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                        className={`w-full flex items-center gap-3 p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                           activePage === 'superadmin_maintenance'
                             ? 'bg-amber-400 text-[#0B1E48] font-black shadow-sm'
                             : 'bg-purple-950/40 border border-purple-500/30 text-purple-200 hover:bg-purple-900/40'
                         }`}
                       >
-                        <Icon className="material-symbols-outlined text-[18px]">database</Icon>
+                        <Icon className="material-symbols-outlined text-[20px]">database</Icon>
                         <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
                       </button>
                     </div>
@@ -2316,19 +2316,19 @@ export const HomePage: React.FC<HomePageProps> = ({
                         setActivePage('settings');
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                      className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
                         activePage === 'settings'
                           ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
                           : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5">
-                        <Icon className={`material-symbols-outlined text-[20px] ${activePage === 'settings' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                      <div className="flex items-center gap-3">
+                        <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'settings' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
                           settings
                         </Icon>
-                        <span className="font-extrabold">{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
+                        <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
                       </div>
-                      <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                      <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
                     </button>
                   </div>
                 </div>
@@ -2345,12 +2345,10 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={onToggleLang}
-                    className="flex items-center justify-between px-3 py-2 rounded-md bg-white/10 border border-white/20 text-xs font-bold text-white hover:bg-white/20 transition-colors cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] rounded-lg bg-white/10 border border-white/20 text-xs font-bold text-white hover:bg-white/20 active:scale-95 touch-manipulation transition-all cursor-pointer"
                   >
-                    <div className="flex items-center gap-1.5">
-                      <Icon className="material-symbols-outlined text-[18px]">translate</Icon>
-                      <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
-                    </div>
+                    <Icon className="material-symbols-outlined text-[18px]">translate</Icon>
+                    <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
                   </button>
 
                   {/* Theme Toggle */}
@@ -2358,14 +2356,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <button
                       type="button"
                       onClick={onToggleTheme}
-                      className="flex items-center justify-between px-3 py-2 rounded-md bg-white/10 border border-white/20 text-xs font-bold text-white hover:bg-white/20 transition-colors cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 px-3 py-2.5 min-h-[44px] rounded-lg bg-white/10 border border-white/20 text-xs font-bold text-white hover:bg-white/20 active:scale-95 touch-manipulation transition-all cursor-pointer"
                     >
-                      <div className="flex items-center gap-1.5">
-                        <Icon className="material-symbols-outlined text-[18px]">
-                          {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
-                        </Icon>
-                        <span>{currentTheme === 'dark' ? 'Light' : 'Dark'}</span>
-                      </div>
+                      <Icon className="material-symbols-outlined text-[18px]">
+                        {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
+                      </Icon>
+                      <span>{currentTheme === 'dark' ? 'Light' : 'Dark'}</span>
                     </button>
                   )}
                 </div>
@@ -2377,9 +2373,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                     setIsMobileMenuOpen(false);
                     setIsLogoutModalOpen(true);
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-[#132A5E] hover:bg-[#1A387C] border border-[#2A4E9B] text-white rounded-md text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                  className="w-full flex items-center justify-center gap-2 px-3 py-3 min-h-[46px] bg-[#132A5E] hover:bg-[#1A387C] active:scale-[0.98] border border-[#2A4E9B] text-white rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer shadow-xs touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[18px] text-amber-400">logout</Icon>
+                  <Icon className="material-symbols-outlined text-[20px] text-amber-400">logout</Icon>
                   <span>{isAmharic ? 'ውጣ' : 'Sign Out'}</span>
                 </button>
               </div>

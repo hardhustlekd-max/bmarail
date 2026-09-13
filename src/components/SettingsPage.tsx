@@ -3,6 +3,11 @@ import { Icon } from './ui/Icon';
 import { Language, UserRole, APP_LOGO } from '../types';
 import { changeOnlineUserPassword, SYSTEM_ROLE_CREDENTIALS } from '../services/authService';
 import { updateSystemUserInDb, saveSettingsToDb, subscribeSettings } from '../services/dbService';
+import {
+  recordCrash,
+  getSavedCrashReports,
+  clearSavedCrashReports,
+} from '../utils/crashReporter';
 
 interface SettingsPageProps {
   userBadgeId: string;
@@ -612,6 +617,86 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
               </form>
 
+            </div>
+
+            {/* System Diagnostics & Crash Reporting Card */}
+            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 sm:p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+                    <Icon className="material-symbols-outlined text-[20px]">monitor_heart</Icon>
+                  </div>
+                  <div>
+                    <h3 className="text-xs sm:text-sm font-black text-on-surface">
+                      {isAmharic ? 'የሲስተም ጤናና የስህተት ሪፖርት' : 'System Health & Crash Diagnostics'}
+                    </h3>
+                    <p className="text-[11px] text-outline">
+                      {isAmharic
+                        ? 'የስርዓት ስህተቶችን መቆጣጠሪያና ሪፖርት ማውጫ'
+                        : 'Real-time crash capture, memory tracking, and telemetry'}
+                    </p>
+                  </div>
+                </div>
+
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                  {isAmharic ? 'ንቁ (Active)' : 'Active Monitor'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const reports = getSavedCrashReports();
+                    if (reports.length > 0) {
+                      recordCrash(
+                        new Error(
+                          isAmharic
+                            ? `የቅርብ ጊዜ የስህተት ሪፖርት ፍተሻ (${reports.length} ተመዝግቧል)`
+                            : `Diagnostic Review: ${reports.length} recorded crash logs`
+                        ),
+                        { type: 'manual_report' }
+                      );
+                    } else {
+                      recordCrash(
+                        new Error(
+                          isAmharic
+                            ? 'የሲስተም ጤና መደበኛ ነው (ምንም ስህተት አልተገኘም)'
+                            : 'System Health Check: All runtime monitors nominal'
+                        ),
+                        { type: 'manual_report' }
+                      );
+                    }
+                  }}
+                  className="min-h-[42px] px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 touch-manipulation"
+                >
+                  <Icon className="material-symbols-outlined text-[16px] text-primary">
+                    bug_report
+                  </Icon>
+                  <span>{isAmharic ? 'የስህተት ሪፖርት ክፈት' : 'View Crash Diagnostics'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Test simulated exception to verify real-time popup capture
+                    recordCrash(
+                      new Error(
+                        isAmharic
+                          ? 'የሙከራ የስርዓት ስህተት ማሳወቂያ (Test Exception Notification)'
+                          : 'Test Simulated Runtime Exception (Diagnostics Verified)'
+                      ),
+                      { type: 'manual_report' }
+                    );
+                  }}
+                  className="min-h-[42px] px-3 py-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-bold border border-rose-200 dark:border-rose-900/60 flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 touch-manipulation"
+                >
+                  <Icon className="material-symbols-outlined text-[16px] text-rose-500">
+                    notifications_active
+                  </Icon>
+                  <span>{isAmharic ? 'ማሳወቂያውን ሞክር (Test Popup)' : 'Test Crash Popup'}</span>
+                </button>
+              </div>
             </div>
 
             {/* Quick Logout Card (Using non-red theme) */}

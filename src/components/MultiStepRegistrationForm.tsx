@@ -1107,12 +1107,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div
                   key={item.id}
                   onClick={() => handleStepClick(item.id)}
-                  className="flex flex-col items-center justify-center relative z-10 cursor-pointer group select-none px-0.5"
+                  className="flex flex-col items-center justify-center relative z-10 cursor-pointer group select-none px-1 py-1 min-h-[48px] min-w-[48px] touch-manipulation active:scale-95"
                   title={`${item.label} - ${item.subLabel}`}
                 >
                   {/* Step Circle */}
                   <div
-                    className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center text-[10px] font-black transition-all duration-150 ${
+                    className={`w-7 h-7 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center text-[11px] sm:text-[10px] font-black transition-all duration-150 ${
                       isActive
                         ? 'bg-surface-container-lowest border-2 border-primary ring-2 ring-primary/20 text-primary shadow-xs'
                         : isCompleted
@@ -1121,7 +1121,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     }`}
                   >
                     {isCompleted ? (
-                      <Icon className="material-symbols-outlined text-[13px] font-black">check</Icon>
+                      <Icon className="material-symbols-outlined text-[14px] font-black">check</Icon>
                     ) : (
                       <span>{item.id}</span>
                     )}
@@ -1462,7 +1462,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep2}
-                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="w-full sm:w-auto bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.98] text-white font-black min-h-[46px] py-3 px-6 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ሞተር' : 'Next: Motor Specifications'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -1799,7 +1799,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(1)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-2.5 px-4 rounded-md text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ባለቤት' : 'Back: Owner'}</span>
@@ -1808,7 +1808,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep3}
-                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.98] text-white font-black min-h-[46px] py-3 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-all touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ዶክመንት' : 'Next: Documents'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -1905,7 +1905,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(2)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-2.5 px-4 rounded-md text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ሞተር' : 'Back: Motor'}</span>
@@ -1914,7 +1914,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep4}
-                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.98] text-white font-black min-h-[46px] py-3 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-all touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ክፍያ' : 'Next: Payment Details'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -2018,12 +2018,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     </div>
                   </div>
 
-                  {/* Step 4 Action Buttons */}
+                  {/* Step 4 Action buttons */}
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => setCurrentStep(3)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-2.5 px-4 rounded-md text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ዶክመንት' : 'Back: Documents'}</span>
@@ -2032,7 +2032,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={handleGoToStep5}
-                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.99] text-white font-bold py-2.5 px-6 rounded-md text-xs flex items-center gap-2 shadow-md cursor-pointer transition-all"
+                      className="bg-[#0B1E48] hover:bg-[#071330] active:scale-[0.98] text-white font-black min-h-[46px] py-3 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer transition-all touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ አረጋግጥ' : 'Next: Review & Confirm'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
@@ -2240,7 +2240,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(4)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-2.5 px-4 rounded-md text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ክፍያ' : 'Back: Payment'}</span>
@@ -2249,9 +2249,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <button
                       type="submit"
                       disabled={!isDataConfirmed || isSubmitting}
-                      className={`py-3 px-7 rounded-md font-black text-xs flex items-center gap-2 transition-all shadow-md cursor-pointer ${
+                      className={`min-h-[46px] py-3 px-5 sm:px-7 rounded-lg font-black text-xs sm:text-sm flex items-center gap-2 transition-all shadow-md touch-manipulation ${
                         isDataConfirmed && !isSubmitting
-                          ? 'bg-[#0B1E48] hover:bg-[#071330] text-white active:scale-[0.99] cursor-pointer'
+                          ? 'bg-[#0B1E48] hover:bg-[#071330] text-white active:scale-[0.98] cursor-pointer'
                           : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed shadow-none'
                       }`}
                     >

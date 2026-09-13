@@ -1001,5 +1001,64 @@ input[type="tel"].border-none {
   animation: navbarProgress 1.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
+/* ==========================================================================
+   MOBILE & TOUCH SCREEN OPTIMIZATIONS
+   ========================================================================== */
+
+/* Remove 300ms tap delay and ensure responsive instant touches */
+html, body {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior-y: contain;
+}
+
+/* Allow text selection where needed */
+input, textarea, [contenteditable="true"], .select-text {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Button & interactive touch targets */
+button, [role="button"], a, select, input[type="checkbox"], input[type="radio"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Active feedback for touch interaction */
+.touch-press {
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+.touch-press:active {
+  transform: scale(0.96);
+  opacity: 0.88;
+}
+
+/* Smooth iOS momentum scrolling on all scroll containers */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe Area Insets for modern notch and rounded phones */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.mb-safe {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Prevent auto-zooming on iPhone/iPad Safari when focusing inputs */
+@media screen and (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+
 
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LoginPage } from './components/LoginPage';
 import { HomePage } from './components/HomePage';
+import { CrashNotificationModal } from './components/CrashNotificationModal';
 import { Language, UserRole } from './types';
 import {
   getStoredAuthSession,
@@ -156,6 +157,9 @@ export default function App() {
           onLoginSuccess={handleLoginSuccess}
         />
       )}
+
+      {/* Global Crash Report & Runtime Error Popup Notification */}
+      <CrashNotificationModal currentLang={lang} />
     </div>
   );
 }

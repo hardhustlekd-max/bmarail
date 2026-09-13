@@ -709,7 +709,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <button
                         type="button"
                         onClick={onClose}
-                        className="flex items-center gap-1.5 sm:gap-2 text-white hover:text-white/80 active:scale-95 transition-all cursor-pointer drop-shadow-md select-none group"
+                        className="flex items-center gap-1.5 sm:gap-2 text-white hover:text-white/80 active:scale-95 transition-all cursor-pointer drop-shadow-md select-none group min-h-[44px] min-w-[44px] touch-manipulation"
                         title={isAmharic ? 'ተመለስ' : 'Back'}
                       >
                         <Icon className="material-symbols-outlined text-[28px] sm:text-[32px] leading-none text-white transition-transform group-hover:-translate-x-0.5">
@@ -798,19 +798,19 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     </div>
 
                     {/* Bottom Action Buttons Row with Opaque Dark Background & Blur */}
-                    <div className="w-full bg-black/70 backdrop-blur-md border border-white/15 rounded-lg p-3 sm:p-4 flex items-center justify-evenly shadow-2xl">
+                    <div className="w-full bg-black/70 backdrop-blur-md border border-white/15 rounded-xl p-3 sm:p-4 flex items-center justify-evenly shadow-2xl">
                       {/* 1. Search Button */}
                       <button
                         type="button"
                         onClick={() => setShowTopMenu(!showTopMenu)}
-                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           showTopMenu
-                            ? 'bg-primary text-white shadow-primary/40 ring-2 ring-primary/50'
+                            ? 'bg-primary text-white shadow-primary/40 ring-4 ring-primary/50'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
                         }`}
                         title={isAmharic ? 'ፈልግ' : 'Search'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px]">search</Icon>
+                        <Icon className="material-symbols-outlined text-[26px]">search</Icon>
                       </button>
 
                       {/* 2. Photo Gallery Upload */}
@@ -822,24 +822,24 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                             fileInputRef.current.click();
                           }
                         }}
-                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-95 flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ምስል ስካን' : 'Select Photo'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px]">image</Icon>
+                        <Icon className="material-symbols-outlined text-[26px]">image</Icon>
                       </button>
 
                       {/* 3. Flashlight / Torch Toggle */}
                       <button
                         type="button"
                         onClick={handleToggleTorch}
-                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all active:scale-95 flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           isTorchOn
-                            ? 'bg-amber-400 text-amber-950 shadow-amber-400/40 ring-2 ring-amber-300/60'
+                            ? 'bg-amber-400 text-amber-950 shadow-amber-400/40 ring-4 ring-amber-300/60'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
                         }`}
                         title={isAmharic ? 'ፍላሽ' : 'Flashlight'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px]">
+                        <Icon className="material-symbols-outlined text-[26px]">
                           {isTorchOn ? 'flashlight_on' : 'flashlight_off'}
                         </Icon>
                       </button>
@@ -848,10 +848,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <button
                         type="button"
                         onClick={() => setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'))}
-                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-95 flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ካሜራ ቀይር' : 'Switch Camera'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px]">cameraswitch</Icon>
+                        <Icon className="material-symbols-outlined text-[26px]">cameraswitch</Icon>
                       </button>
                     </div>
                   </div>
@@ -984,10 +984,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <button
                     type="button"
                     onClick={handleRescan}
-                    className="w-9 h-9 rounded-md bg-white/20 hover:bg-white/30 text-white transition-colors cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white active:scale-95 touch-manipulation transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
                     title={isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}
                   >
-                    <Icon className="material-symbols-outlined text-[22px] font-bold">chevron_left</Icon>
+                    <Icon className="material-symbols-outlined text-[24px] font-bold">chevron_left</Icon>
                   </button>
 
                   {/* Center Verification Status Pill matching the uploaded screenshot */}
@@ -1010,14 +1010,14 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowNotesSection(!showNotesSection)}
-                    className={`w-9 h-9 rounded-md transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm ${
+                    className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm active:scale-95 touch-manipulation ${
                       showNotesSection
                         ? 'bg-white text-slate-900 border border-white font-bold'
                         : 'bg-white/20 hover:bg-white/30 text-white border border-white/40'
                     }`}
                     title={isAmharic ? 'ማስታወሻ ጨምር' : 'Add Inspection Note'}
                   >
-                    <Icon className="material-symbols-outlined text-[20px] font-bold">
+                    <Icon className="material-symbols-outlined text-[22px] font-bold">
                       {showNotesSection ? 'edit_note' : 'note_add'}
                     </Icon>
                   </button>
@@ -1599,23 +1599,23 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   </div>
 
                   {/* Action Buttons: Scan Again / Back */}
-                  <div className="pt-2 pb-6 flex items-center gap-3">
+                  <div className="pt-2 pb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                     <button
                       type="button"
                       onClick={handleRescan}
-                      className="flex-1 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold py-3 px-4 rounded-md text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer border border-outline-variant/60 shadow-xs"
+                      className="flex-1 bg-surface-container-high hover:bg-surface-container-highest active:scale-[0.98] text-on-surface font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer border border-outline-variant/60 shadow-xs touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">qr_code_scanner</Icon>
+                      <Icon className="material-symbols-outlined text-[20px]">qr_code_scanner</Icon>
                       <span>{isAmharic ? 'ሌላ QR ኮድ ቃኝ' : 'Scan Next QR'}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setShowNotesSection(!showNotesSection)}
-                      className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold py-3 px-4 rounded-md text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+                      className="bg-primary/10 hover:bg-primary/20 active:scale-[0.98] text-primary border border-primary/30 font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">edit_note</Icon>
-                      <span>{isAmharic ? 'ማስታወሻ' : 'Notes'}</span>
+                      <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
+                      <span>{isAmharic ? 'ማስታወሻ ጨምር' : 'Add Notes'}</span>
                     </button>
                   </div>
                 </div>

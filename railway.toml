@@ -1,0 +1,39 @@
+# Railway Deployment Configuration
+# https://docs.railway.com/reference/config-as-code
+# Applied automatically across all redeployments and service instances
+
+"$schema" = "https://railway.com/railway.schema.json"
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm run build"
+watchPatterns = [
+  "src/**",
+  "server.ts",
+  "package.json",
+  "vite.config.ts",
+  "index.html"
+]
+
+[deploy]
+startCommand = "npm run start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+healthcheckPath = "/api/health"
+healthcheckTimeout = 120
+
+# ------------------------------------------------------------------
+# Hardware Resource Restrictions: 1 vCPU & 0.5 GB (512MB) RAM
+# Configured to enforce across every automated redeployment & container
+# ------------------------------------------------------------------
+numReplicas = 1
+cpu = "1"
+cpus = 1
+memory = "512MB"
+ram = "512MB"
+
+[deploy.resources]
+cpu = 1
+cpus = 1
+memory = "512MB"
+ram = "512MB"

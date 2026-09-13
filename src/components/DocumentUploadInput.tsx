@@ -220,7 +220,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative border-2 border-dashed rounded-md p-3 text-center transition-all cursor-pointer min-h-[110px] flex flex-col items-center justify-center space-y-1 group ${
+          className={`relative border-2 border-dashed rounded-lg p-3.5 sm:p-3 text-center transition-all cursor-pointer min-h-[120px] flex flex-col items-center justify-center space-y-1.5 group touch-manipulation active:scale-[0.98] ${
             hasError
               ? 'border-red-500 bg-red-50/70 dark:bg-red-950/30 ring-2 ring-red-500/30'
               : isDraggingOver
@@ -246,22 +246,22 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
             </div>
           ) : (
             <>
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${
                 hasError
                   ? 'bg-red-500/10 text-red-600 dark:text-red-400'
                   : 'bg-[#0B1E48]/10 text-[#0B1E48]'
               }`}>
-                <Icon className="material-symbols-outlined text-[20px]">
+                <Icon className="material-symbols-outlined text-[22px]">
                   {hasError ? 'warning' : 'add_a_photo'}
                 </Icon>
               </div>
-              <p className={`text-xs font-bold ${hasError ? 'text-red-600 dark:text-red-400' : 'text-[#0B1E48]'}`}>
+              <p className={`text-xs font-black ${hasError ? 'text-red-600 dark:text-red-400' : 'text-[#0B1E48]'}`}>
                 {hasError
                   ? isAmharic ? 'እባክዎ ሰነዱን ይጫኑ' : 'Please upload document'
                   : isAmharic ? 'ፎቶ/ምስል ይጫኑ' : 'Upload Photo'}
               </p>
               <p className={`text-[10px] ${hasError ? 'text-red-500 font-semibold' : 'text-secondary'}`}>
-                {isAmharic ? 'ለማያያዝ እዚህ ይጫኑ' : 'Click to select picture'}
+                {isAmharic ? 'በካሜራ ለማንሳት ወይም ፋይል ለመምረጥ እዚህ ይጫኑ' : 'Tap here to capture with camera or select file'}
               </p>
             </>
           )}
@@ -305,51 +305,59 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                     e.stopPropagation();
                     setShowZoom(true);
                   }}
-                  className="bg-primary hover:bg-primary-hover text-white px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform hover:scale-105"
+                  className="bg-primary hover:bg-primary-hover text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform active:scale-95 touch-manipulation"
                   title={isAmharic ? 'አጉላ' : 'Zoom Image'}
                 >
-                  <Icon className="material-symbols-outlined text-[14px]">zoom_in</Icon>
+                  <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                   <span>{isAmharic ? 'አጉላ' : 'Zoom'}</span>
                 </button>
                 <button
                   type="button"
                   onClick={triggerSelect}
-                  className="bg-white/90 hover:bg-white text-slate-900 px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform hover:scale-105"
+                  className="bg-white/90 hover:bg-white text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform active:scale-95 touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[14px]">edit</Icon>
+                  <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
                   <span>{isAmharic ? 'ቀይር' : 'Change'}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="bg-red-600 hover:bg-red-500 text-white px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform hover:scale-105"
+                  className="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform active:scale-95 touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
+                  <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
                   <span>{isAmharic ? 'ሰርዝ' : 'Remove'}</span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* Footer Bar */}
-          <div className="px-2.5 py-1.5 bg-surface-container/60 border-t border-outline-variant flex items-center justify-between text-[10px]">
-            <span className="text-secondary truncate max-w-[120px]">{label}</span>
-            <div className="flex items-center gap-2">
+          {/* Touch-Friendly Footer Bar on Mobile */}
+          <div className="px-2.5 py-2 bg-surface-container/70 border-t border-outline-variant flex items-center justify-between gap-1 text-[11px]">
+            <span className="text-secondary font-medium truncate max-w-[110px] sm:max-w-[140px]">{label}</span>
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => setShowZoom(true)}
-                className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+                className="text-primary font-bold px-2 py-1.5 rounded-md hover:bg-primary/10 active:scale-95 transition-all cursor-pointer flex items-center gap-1 min-h-[36px] touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[12px]">zoom_in</Icon>
+                <Icon className="material-symbols-outlined text-[15px]">zoom_in</Icon>
                 <span>{isAmharic ? 'አጉላ' : 'Zoom'}</span>
               </button>
               <button
                 type="button"
                 onClick={triggerSelect}
-                className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-0.5"
+                className="text-[#0B1E48] dark:text-blue-400 font-bold px-2 py-1.5 rounded-md hover:bg-[#0B1E48]/10 active:scale-95 transition-all cursor-pointer flex items-center gap-1 min-h-[36px] touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[12px]">photo_camera</Icon>
+                <Icon className="material-symbols-outlined text-[15px]">photo_camera</Icon>
                 <span>{isAmharic ? 'ቀይር' : 'Change'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="text-rose-600 font-bold px-1.5 py-1.5 rounded-md hover:bg-rose-500/10 active:scale-95 transition-all cursor-pointer flex items-center gap-0.5 min-h-[36px] touch-manipulation"
+                title={isAmharic ? 'ሰርዝ' : 'Remove'}
+              >
+                <Icon className="material-symbols-outlined text-[15px]">delete</Icon>
               </button>
             </div>
           </div>
