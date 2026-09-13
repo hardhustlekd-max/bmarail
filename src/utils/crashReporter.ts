@@ -230,10 +230,15 @@ export function initGlobalCrashHandlers(): void {
   globalHandlersInitialized = true;
 
   window.addEventListener('error', (event) => {
-    // Filter out benign websocket errors if any
+    // Filter out benign websocket errors, extension scripts, and resize observer
     if (
-      event.message?.includes('failed to connect to websocket') ||
-      event.message?.includes('ResizeObserver loop')
+      !event.message ||
+      event.message.includes('failed to connect to websocket') ||
+      event.message.includes('ResizeObserver loop') ||
+      event.message.includes('Script error.') ||
+      event.message.includes('extension') ||
+      event.filename?.includes('extension') ||
+      event.filename?.includes('chrome-extension')
     ) {
       return;
     }
@@ -244,8 +249,18 @@ export function initGlobalCrashHandlers(): void {
   });
 
   window.addEventListener('unhandledrejection', (event) => {
-    // Filter out harmless aborted network or websocket rejections
-    if (event.reason?.name === 'AbortError') return;
+    // Filter out harmless aborted network, offline, or websocket rejections
+    const reasonMsg = String(event.reason?.message || event.reason || '');
+    if (
+      event.reason?.name === 'AbortError' ||
+      reasonMsg.includes('Failed to fetch') ||
+      reasonMsg.includes('NetworkError') ||
+      reasonMsg.includes('Load failed') ||
+      reasonMsg.includes('The user aborted a request')
+    ) {
+      console.warn('[CrashReporter] Filtered benign network rejection:', reasonMsg);
+      return;
+    }
 
     recordCrash(event.reason || 'Unhandled Promise Rejection', {
       type: 'unhandled_rejection',
