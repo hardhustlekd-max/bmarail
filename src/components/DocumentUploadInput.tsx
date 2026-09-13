@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import { uploadDocumentPhoto } from '../services/storageService';
 import { SmartImage } from './SmartImage';
@@ -22,9 +22,19 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
   hasError = false,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [localPreview, setLocalPreview] = useState<string>(photoUrl || '');
   const [isUploading, setIsUploading] = useState(false);
   const [showZoom, setShowZoom] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+
+  // Synchronize local preview when external photoUrl prop updates (e.g. form hydration/reset)
+  useEffect(() => {
+    if (photoUrl && photoUrl.trim() !== '') {
+      setLocalPreview(photoUrl);
+    } else if (!isUploading) {
+      setLocalPreview('');
+    }
+  }, [photoUrl, isUploading]);
 
   const processFile = async (file: File) => {
     if (!file || !file.type.startsWith('image/')) {
@@ -33,28 +43,36 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
 
     setIsUploading(true);
 
-    // Safety timeout: isUploading MUST NOT stay true longer than 3 seconds
+    // 1. Instantly create an object URL and read as Data URL for immediate, unshakeable preview
+    try {
+      const objUrl = URL.createObjectURL(file);
+      setLocalPreview(objUrl);
+    } catch {
+      // ignore
+    }
+
+    const localReader = new FileReader();
+    localReader.onload = () => {
+      if (localReader.result && typeof localReader.result === 'string') {
+        setLocalPreview(localReader.result);
+        onPhotoChange(localReader.result);
+      }
+    };
+    localReader.readAsDataURL(file);
+
+    // Safety timeout: isUploading MUST NOT stay true longer than 3.5 seconds
     const safetyTimer = setTimeout(() => {
       setIsUploading(false);
-    }, 3000);
+    }, 3500);
 
     try {
-      // 1. Instantly read local data URL so the user immediately gets visual confirmation
-      const localReader = new FileReader();
-      localReader.onload = () => {
-        if (localReader.result && typeof localReader.result === 'string') {
-          onPhotoChange(localReader.result);
-        }
-      };
-      localReader.readAsDataURL(file);
-
-      // 2. Process compressed and upload in background
+      // 2. Process compressed image and upload to Railway S3 in background
       const uploadedUrl = await uploadDocumentPhoto(file, 'permits');
       if (uploadedUrl && uploadedUrl.trim() !== '') {
         onPhotoChange(uploadedUrl);
       }
     } catch (err) {
-      console.warn('Document photo upload notice, using local preview:', err);
+      console.warn('Document photo upload notice, preserved local preview:', err);
     } finally {
       clearTimeout(safetyTimer);
       setIsUploading(false);
@@ -94,6 +112,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
+    setLocalPreview('');
     onPhotoChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -106,7 +125,8 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
     }
   };
 
-  const hasPhoto = Boolean(photoUrl && photoUrl.trim() !== '');
+  const displayUrl = localPreview || photoUrl;
+  const hasPhoto = Boolean(displayUrl && displayUrl.trim() !== '');
 
   return (
     <div className="space-y-1.5">
@@ -184,7 +204,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
           {/* Image Preview */}
           <div className="h-28 w-full bg-slate-900 flex items-center justify-center overflow-hidden relative">
             <SmartImage
-              src={photoUrl}
+              src={displayUrl}
               alt={label}
               fallbackIcon="add_a_photo"
               className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-200"
@@ -261,7 +281,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               requireClerkRequest={false}
             >
               <img
-                src={photoUrl}
+                src={displayUrl}
                 alt={label}
                 referrerPolicy="no-referrer"
                 className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg"
