@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Icon } from './ui/Icon';
 import { Language } from '../types';
+import { resolveDisplayImageUrl } from '../utils/imageUrlResolver';
+import { imageLogger } from '../utils/imageLogger';
 
 export interface DocumentViewerItem {
   url: string;
@@ -131,6 +133,29 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
   const thumbnailScrollRef = useRef<HTMLDivElement>(null);
 
   const currentItem: DocumentViewerItem | undefined = validItems[currentIndex];
+
+  // Resolve current item's display URL and handle fallback proxy
+  const [displayUrl, setDisplayUrl] = useState<string>(() =>
+    currentItem ? resolveDisplayImageUrl(currentItem.url).primaryUrl : ''
+  );
+  const [hasTriedProxy, setHasTriedProxy] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!currentItem || !currentItem.url) {
+      setDisplayUrl('');
+      return;
+    }
+    const resolved = resolveDisplayImageUrl(currentItem.url);
+    setDisplayUrl(resolved.primaryUrl);
+    setHasTriedProxy(resolved.primaryUrl === resolved.proxyUrl);
+    setImageLoaded(false);
+    setHasError(false);
+
+    imageLogger.logLoad(currentItem.url, {
+      context: `CarouselModal: ${currentItem.title}`,
+      resolvedUrl: resolved.primaryUrl,
+    });
+  }, [currentItem]);
 
   // Reset transform when changing documents
   const resetTransform = useCallback(() => {
@@ -488,9 +513,29 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             <h4 className="text-base font-bold text-white">
               {isAmharic ? 'ሰነዱን ማሳየት አልተቻለም' : 'Failed to load document'}
             </h4>
-            <p className="text-xs text-white/60 max-w-sm">
+            <p className="text-xs text-white/60 max-w-sm mb-2">
               {isAmharic ? 'ምስሉ አልተገኘም ወይም ተሰርዟል' : 'The image could not be loaded or is corrupted.'}
             </p>
+            {currentItem && (
+              <button
+                type="button"
+                onClick={() => {
+                  setHasError(false);
+                  setImageLoaded(false);
+                  setHasTriedProxy(true);
+                  const sep = currentItem.url.includes('?') ? '&' : '?';
+                  const retryUrl = `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}${sep}_t=${Date.now()}`;
+                  imageLogger.logRetry(currentItem.url, retryUrl, 'Manual user retry in Carousel', {
+                    context: currentItem.title,
+                  });
+                  setDisplayUrl(retryUrl);
+                }}
+                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Icon name="refresh" size={14} />
+                <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry Loading'}</span>
+              </button>
+            )}
           </div>
         )}
 
@@ -503,20 +548,48 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           }}
           className="w-full h-full flex items-center justify-center will-change-transform"
         >
-          <img
-            key={currentItem.url}
-            src={currentItem.url}
-            alt={currentItem.title}
-            referrerPolicy="no-referrer"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => {
-              setImageLoaded(false);
-              setHasError(true);
-            }}
-            className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-200 pointer-events-none select-none ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
+          {displayUrl && (
+            <img
+              key={displayUrl}
+              src={displayUrl}
+              alt={currentItem?.title || 'Document'}
+              referrerPolicy="no-referrer"
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                setImageLoaded(true);
+                setHasError(false);
+                imageLogger.logSuccess(
+                  displayUrl,
+                  { width: img.naturalWidth, height: img.naturalHeight },
+                  undefined,
+                  { context: currentItem?.title }
+                );
+              }}
+              onError={() => {
+                if (!hasTriedProxy && currentItem?.url) {
+                  const resolved = resolveDisplayImageUrl(currentItem.url);
+                  const proxyTarget = resolved.proxyUrl || `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}`;
+                  if (proxyTarget !== displayUrl) {
+                    imageLogger.logRetry(displayUrl, proxyTarget, 'Direct carousel fetch failed, routing via proxy', {
+                      context: currentItem.title,
+                    });
+                    setHasTriedProxy(true);
+                    setDisplayUrl(proxyTarget);
+                    return;
+                  }
+                }
+                imageLogger.logError(displayUrl, 'Carousel image load failure', {
+                  context: currentItem?.title,
+                  originalUrl: currentItem?.url,
+                });
+                setImageLoaded(false);
+                setHasError(true);
+              }}
+              className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-200 pointer-events-none select-none ${
+                imageLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          )}
         </div>
 
         {/* Mobile Swipe Pagination Dots Indicator */}
@@ -545,6 +618,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           >
             {validItems.map((item, idx) => {
               const isActive = idx === currentIndex;
+              const thumbResolved = resolveDisplayImageUrl(item.url);
               return (
                 <button
                   key={`${item.url}-${idx}`}
@@ -559,7 +633,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                 >
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center shrink-0 border border-white/10">
                     <img
-                      src={item.url}
+                      src={thumbResolved.primaryUrl}
                       alt={item.title}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform"

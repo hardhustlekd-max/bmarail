@@ -32,9 +32,9 @@ export interface CompressedImageResult {
 const DEFAULT_OPTIONS: Required<CompressionOptions> = {
   maxWidth: 1400,
   maxHeight: 1400,
-  quality: 0.82,
-  maxBytes: 150 * 1024, // 150 KB target threshold
-  preferredFormat: 'image/webp',
+  quality: 0.85,
+  maxBytes: 180 * 1024, // 180 KB threshold for crisp permits and IDs
+  preferredFormat: 'image/jpeg', // Universal compatibility across all browsers and S3 buckets
   contrastBoost: true,
 };
 
@@ -99,7 +99,11 @@ async function decodeImageSource(
   return new Promise((resolve, reject) => {
     let resolved = false;
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    // Only set crossOrigin for remote http(s) URLs.
+    // Setting crossOrigin on data: or blob: URLs can corrupt canvas or fail in WebKit/Blink.
+    if (typeof source === 'string' && (source.startsWith('http://') || source.startsWith('https://'))) {
+      img.crossOrigin = 'anonymous';
+    }
 
     const timer = setTimeout(() => {
       if (!resolved) {
@@ -229,11 +233,12 @@ export async function compressImageToBlob(
       blob = await exportBlob(currentQuality, targetMime);
     }
 
-    // Ensure blob type is explicitly correct
-    const finalBlob = blob.type === targetMime ? blob : new Blob([blob], { type: targetMime });
+    // Use the actual MIME type emitted by the canvas (e.g. image/jpeg)
+    const actualMime = blob.type || targetMime;
+    const finalBlob = blob;
 
-    // Clean data URL without any whitespace or newlines
-    const rawDataUrl = canvas.toDataURL(targetMime, currentQuality);
+    // Clean data URL with matching format
+    const rawDataUrl = canvas.toDataURL(actualMime, currentQuality);
     const cleanDataUrl = rawDataUrl.replace(/\s+/g, '');
     const objectUrl = URL.createObjectURL(finalBlob);
 
@@ -241,7 +246,10 @@ export async function compressImageToBlob(
       blob: finalBlob,
       dataUrl: cleanDataUrl,
       objectUrl,
-      mimeType: targetMime,
+      mimeType: (actualMime === 'image/webp' || actualMime === 'image/png' ? actualMime : 'image/jpeg') as
+        | 'image/jpeg'
+        | 'image/webp'
+        | 'image/png',
       width: targetW,
       height: targetH,
       sizeBytes: finalBlob.size,

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from './ui/Icon';
+import { resolveDisplayImageUrl, ResolvedImageSources } from '../utils/imageUrlResolver';
+import { imageLogger } from '../utils/imageLogger';
 
-// Global cache for loaded image URLs to avoid repeated loading animations
+// Global cache for successfully loaded image URLs to avoid flicker
 const cachedLoadedUrls = new Set<string>();
 
 interface SmartImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -20,68 +22,122 @@ export const SmartImage: React.FC<SmartImageProps> = ({
   isGrayscale = false,
   ...props
 }) => {
-  const [currentSrc, setCurrentSrc] = useState<string>(src || '');
-  const [hasTriedProxy, setHasTriedProxy] = useState<boolean>(false);
-  const isDataUrl = Boolean(currentSrc && currentSrc.startsWith('data:'));
-  const isAlreadyCached = Boolean(currentSrc && cachedLoadedUrls.has(currentSrc));
-  const [isLoading, setIsLoading] = useState<boolean>(
-    Boolean(currentSrc && currentSrc.trim() !== '' && !isDataUrl && !isAlreadyCached)
+  const [resolvedSources, setResolvedSources] = useState<ResolvedImageSources>(() =>
+    resolveDisplayImageUrl(src)
   );
+  const [currentSrc, setCurrentSrc] = useState<string>(() => resolveDisplayImageUrl(src).primaryUrl);
+  const [hasTriedProxy, setHasTriedProxy] = useState<boolean>(false);
+  const [hasTriedBust, setHasTriedBust] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(Boolean(src && src.trim() !== ''));
   const [hasError, setHasError] = useState<boolean>(false);
+
   const imgRef = useRef<HTMLImageElement>(null);
+  const loadStartTimeRef = useRef<number>(performance.now());
 
-  // Normalize incoming src and handle internal endpoints
+  // Re-resolve URL whenever src prop changes
   useEffect(() => {
-    if (src && src.trim() !== '') {
-      let resolved = src;
-      // If it's an internal railway URL, route through the storage proxy
-      if (src.includes('.railway.internal') || src.includes('minio:9000') || src.includes('localhost:9000')) {
-        resolved = `/api/storage/proxy?url=${encodeURIComponent(src)}`;
-      }
-      setCurrentSrc(resolved);
-      setHasTriedProxy(false);
-      setHasError(false);
-
-      if (
-        resolved.startsWith('data:') ||
-        resolved.startsWith('blob:') ||
-        cachedLoadedUrls.has(resolved) ||
-        (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0)
-      ) {
-        setIsLoading(false);
-      } else {
-        setIsLoading(true);
-        const timer = setTimeout(() => {
-          setIsLoading(false);
-        }, 1500);
-        return () => clearTimeout(timer);
-      }
-    } else {
+    if (!src || src.trim() === '') {
       setCurrentSrc('');
       setIsLoading(false);
       setHasError(true);
+      return;
     }
-  }, [src]);
+
+    const resolved = resolveDisplayImageUrl(src);
+    setResolvedSources(resolved);
+    setCurrentSrc(resolved.primaryUrl);
+    setHasTriedProxy(resolved.primaryUrl === resolved.proxyUrl);
+    setHasTriedBust(false);
+    setHasError(false);
+    loadStartTimeRef.current = performance.now();
+
+    imageLogger.logLoad(src, {
+      context: alt,
+      resolvedUrl: resolved.primaryUrl,
+    });
+
+    if (
+      resolved.isDataOrBlob ||
+      cachedLoadedUrls.has(resolved.primaryUrl) ||
+      (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0)
+    ) {
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+      // Failsafe timer so loading animation never hangs indefinitely
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [src, alt]);
 
   const handleLoad = () => {
+    const img = imgRef.current;
+    const dims = img ? { width: img.naturalWidth, height: img.naturalHeight } : undefined;
+    const duration = Math.round(performance.now() - loadStartTimeRef.current);
+
     if (currentSrc) {
       cachedLoadedUrls.add(currentSrc);
     }
+
+    imageLogger.logSuccess(currentSrc, dims, duration, { context: alt });
     setIsLoading(false);
     setHasError(false);
   };
 
-  const handleError = () => {
-    // If direct load failed on a remote URL and we haven't tried the backend proxy yet
-    if (!hasTriedProxy && currentSrc && (currentSrc.startsWith('http://') || currentSrc.startsWith('https://')) && !currentSrc.startsWith('/api/storage/proxy')) {
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    // 1. If direct load failed on a cloud URL and we haven't tried the backend proxy yet
+    if (!hasTriedProxy && resolvedSources.proxyUrl && currentSrc !== resolvedSources.proxyUrl) {
+      imageLogger.logRetry(currentSrc, resolvedSources.proxyUrl, 'Direct fetch failed (likely 403 or CORS)', {
+        context: alt,
+      });
       setHasTriedProxy(true);
-      setCurrentSrc(`/api/storage/proxy?url=${encodeURIComponent(currentSrc)}`);
+      setCurrentSrc(resolvedSources.proxyUrl);
       setIsLoading(true);
       return;
     }
 
+    // 2. If proxy was attempted once and failed, attempt a cache-busting timestamp retry
+    if (!hasTriedBust && currentSrc && !currentSrc.startsWith('data:') && !currentSrc.startsWith('blob:')) {
+      setHasTriedBust(true);
+      const sep = currentSrc.includes('?') ? '&' : '?';
+      const bustUrl = `${currentSrc}${sep}_t=${Date.now()}`;
+      imageLogger.logRetry(currentSrc, bustUrl, 'Proxy retry with cache buster', { context: alt });
+      setCurrentSrc(bustUrl);
+      setIsLoading(true);
+      return;
+    }
+
+    // 3. Complete failure after all fallback paths
+    imageLogger.logError(currentSrc, 'Image decode or network error', {
+      context: alt,
+      attemptedUrls: [
+        src || '',
+        resolvedSources.primaryUrl,
+        resolvedSources.proxyUrl || '',
+        currentSrc,
+      ],
+      naturalWidth: imgRef.current?.naturalWidth,
+      naturalHeight: imgRef.current?.naturalHeight,
+    });
+
     setIsLoading(false);
     setHasError(true);
+  };
+
+  const handleManualRetry = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!src) return;
+    setHasError(false);
+    setHasTriedProxy(false);
+    setHasTriedBust(false);
+    setIsLoading(true);
+    loadStartTimeRef.current = performance.now();
+    const sep = src.includes('?') ? '&' : '?';
+    const retryUrl = `/api/storage/proxy?url=${encodeURIComponent(src)}${sep}_t=${Date.now()}`;
+    imageLogger.logRetry(src, retryUrl, 'Manual user retry triggered', { context: alt });
+    setCurrentSrc(retryUrl);
   };
 
   const hasNoSrc = !currentSrc || currentSrc.trim() === '';
@@ -89,26 +145,39 @@ export const SmartImage: React.FC<SmartImageProps> = ({
   if (hasError || hasNoSrc) {
     return (
       <div
-        className={`flex flex-col items-center justify-center bg-surface-container border border-outline-variant/50 text-secondary p-2 text-center select-none ${className}`}
+        className={`flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 p-2 text-center select-none relative group ${className}`}
         id={`fallback-container-${alt.replace(/\s+/g, '-').toLowerCase()}`}
       >
-        <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-outline shadow-2xs mb-0.5">
-          <Icon name={fallbackIcon} size={20} />
+        <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 mb-1">
+          <Icon name={fallbackIcon} size={18} />
         </div>
-        <span className="text-[9px] font-bold tracking-wide uppercase text-secondary/80 max-w-[90%] truncate">
+        <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 max-w-[90%] truncate">
           {alt}
         </span>
+        {src && (
+          <button
+            type="button"
+            onClick={handleManualRetry}
+            title="እንደገና ሞክር / Retry loading image"
+            className="mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-1 cursor-pointer"
+          >
+            <Icon name="refresh" size={10} />
+            <span>እንደገና ሞክር</span>
+          </button>
+        )}
       </div>
     );
   }
 
   return (
-    <div className={`relative overflow-hidden ${className}`} id={`smart-image-wrap-${alt.replace(/\s+/g, '-').toLowerCase()}`}>
-      {/* Soft gradient shimmer when loading */}
+    <div
+      className={`relative overflow-hidden ${className}`}
+      id={`smart-image-wrap-${alt.replace(/\s+/g, '-').toLowerCase()}`}
+    >
+      {/* Loading Shimmer */}
       {isLoading && (
-        <div className="absolute inset-0 z-10 bg-slate-100 dark:bg-slate-900 flex items-center justify-center animate-pulse">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-black/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
-          <Icon name={fallbackIcon} size={24} className="text-outline/40" />
+        <div className="absolute inset-0 z-10 bg-slate-100 dark:bg-slate-800/90 flex items-center justify-center animate-pulse">
+          <Icon name={fallbackIcon} size={20} className="text-slate-400 opacity-60" />
         </div>
       )}
 
@@ -121,7 +190,6 @@ export const SmartImage: React.FC<SmartImageProps> = ({
         onLoad={handleLoad}
         onError={handleError}
         referrerPolicy="no-referrer"
-        crossOrigin="anonymous"
         className={`w-full h-full object-cover transition-all duration-200 ${
           isGrayscale ? 'grayscale' : ''
         } ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
@@ -130,4 +198,3 @@ export const SmartImage: React.FC<SmartImageProps> = ({
     </div>
   );
 };
-

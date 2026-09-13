@@ -8,6 +8,7 @@ import {
   UserRole,
 } from '../types';
 import { DocumentUploadInput } from './DocumentUploadInput';
+import { SmartImage } from './SmartImage';
 import { uploadDocumentPhoto } from '../services/storageService';
 import { savePaymentReceiptToDb } from '../services/dbService';
 import { calculateOneMonthExpiration } from '../utils/paymentUtils';
@@ -2119,7 +2120,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 text-[11px]">
                         <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                           {userPortraitPhoto ? (
-                            <img src={userPortraitPhoto} alt="Portrait" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                            <SmartImage src={userPortraitPhoto} alt="Portrait" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="person" />
                           ) : (
                             <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">person</Icon>
                           )}
@@ -2128,7 +2129,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                         <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                           {nationalIdPhoto ? (
-                            <img src={nationalIdPhoto} alt="ID Front" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                            <SmartImage src={nationalIdPhoto} alt="ID Front" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="badge" />
                           ) : (
                             <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">badge</Icon>
                           )}
@@ -2137,7 +2138,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                         <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                           {nationalIdBackPhoto ? (
-                            <img src={nationalIdBackPhoto} alt="ID Back" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                            <SmartImage src={nationalIdBackPhoto} alt="ID Back" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="badge" />
                           ) : (
                             <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">badge</Icon>
                           )}
@@ -2146,7 +2147,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                         <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                           {drivingLicensePhoto ? (
-                            <img src={drivingLicensePhoto} alt="License" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                            <SmartImage src={drivingLicensePhoto} alt="License" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="card_membership" />
                           ) : (
                             <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">card_membership</Icon>
                           )}
@@ -2155,7 +2156,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                         <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                           {drivingPermitPhoto ? (
-                            <img src={drivingPermitPhoto} alt="Police Permit" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                            <SmartImage src={drivingPermitPhoto} alt="Police Permit" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="menu_book" />
                           ) : (
                             <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">menu_book</Icon>
                           )}
@@ -2164,7 +2165,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                         <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                           {receiptScreenshot ? (
-                            <img src={receiptScreenshot} alt="Receipt" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                            <SmartImage src={receiptScreenshot} alt="Receipt" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="receipt_long" />
                           ) : (
                             <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">receipt_long</Icon>
                           )}

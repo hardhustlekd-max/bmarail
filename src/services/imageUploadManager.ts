@@ -246,9 +246,8 @@ class ImageUploadManager {
    */
   private async executeNetworkUpload(task: QueuedUploadTask): Promise<string> {
     const isBlob = task.source instanceof Blob;
-    const mimeType = isBlob ? (task.source as Blob).type || 'image/webp' : 'image/webp';
-    const isWebp = mimeType.includes('webp');
-    const ext = isWebp ? 'webp' : 'jpg';
+    const mimeType = isBlob ? (task.source as Blob).type || 'image/jpeg' : 'image/jpeg';
+    const ext = mimeType.includes('png') ? 'png' : mimeType.includes('webp') ? 'webp' : 'jpg';
 
     const formData = new FormData();
     formData.append('folder', task.folder);

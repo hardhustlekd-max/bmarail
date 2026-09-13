@@ -28,7 +28,11 @@ import {
   saveBase64Image,
   deleteStoredFile,
   getFileFromStorage,
+  detectImageMagicBytes,
   S3_PUBLIC_DOMAIN,
+  getS3Client,
+  getS3BucketName,
+  generatePresignedGetUrl,
 } from './src/server/storage.ts';
 
 dotenv.config({ override: true });
@@ -36,9 +40,20 @@ dotenv.config({ override: true });
 export const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+// Universal CORS & Preflight middleware for seamless preview and image loading
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // JSON body parser with generous limits for handling documents and portrait photos
-app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Static serving for uploaded files
 const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
@@ -46,6 +61,35 @@ if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath, { recursive: true });
 }
 app.use('/uploads', express.static(uploadsPath));
+
+// Fallback for /uploads/*: If a file is in S3 bucket and not on local disk, stream from S3 (never return index.html)
+app.get('/uploads/*', async (req, res) => {
+  try {
+    const rawPath = req.params[0] || req.url.replace(/^\/uploads\//, '').split('?')[0];
+    const fileKey = decodeURIComponent(rawPath).replace(/^\/+/, '');
+
+    console.log(`[Storage Server /uploads] Request for "${fileKey}". Checking S3/cache...`);
+    const fileInfo = await getFileFromStorage(fileKey);
+    if (fileInfo) {
+      res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      if (fileInfo.buffer) {
+        res.setHeader('Content-Length', fileInfo.buffer.length);
+        return res.send(fileInfo.buffer);
+      }
+      if (fileInfo.localPath) {
+        return res.sendFile(fileInfo.localPath);
+      }
+    }
+
+    console.warn(`[Storage Server /uploads 404] File "${fileKey}" not found in bucket or local cache.`);
+    return res.status(404).json({ error: 'Image file not found in storage bucket or local cache' });
+  } catch (err: any) {
+    console.error('[Storage Server /uploads Error]:', err);
+    return res.status(500).json({ error: 'Failed to retrieve image from storage' });
+  }
+});
 
 // Apply JWT authentication middleware across all incoming requests
 app.use(authenticateToken);
@@ -378,49 +422,48 @@ app.post('/api/storage/upload', uploadMiddleware.single('file') as any, async (r
   }
 });
 
-// GET /api/storage/file/* (Redirects to public domain if configured, or streams from S3/local disk)
+// GET /api/storage/file/* (Streams authenticated S3 buffer or local disk file with CORS)
 app.get('/api/storage/file/*', async (req, res) => {
   try {
-    const rawPath = req.params[0] || (req.url.replace('/api/storage/file/', '').split('?')[0]);
+    const rawPath = req.params[0] || req.url.replace('/api/storage/file/', '').split('?')[0];
     const fileKey = decodeURIComponent(rawPath).replace(/^\/+/, '');
 
     if (!fileKey) {
       return res.status(400).json({ error: 'File key is required' });
     }
 
+    console.log(`[Storage File Route] Requested key: "${fileKey}"`);
     const fileInfo = await getFileFromStorage(fileKey);
     if (!fileInfo) {
-      return res.status(404).json({ error: 'File not found' });
+      console.warn(`[Storage File Route 404] Key "${fileKey}" could not be retrieved from S3 bucket or cache.`);
+      return res.status(404).json({ error: 'File not found in storage bucket or cache' });
     }
 
-    // 1. If public redirect URL is returned (e.g. STORAGE_PUBLIC_DOMAIN / S3_PUBLIC_DOMAIN)
-    if (fileInfo.publicRedirectUrl) {
-      return res.redirect(302, fileInfo.publicRedirectUrl);
+    res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+
+    // 1. If buffer is retrieved (e.g. from authenticated S3)
+    if (fileInfo.buffer) {
+      res.setHeader('Content-Length', fileInfo.buffer.length);
+      console.log(`[Storage File Route 200] Served S3 binary stream for "${fileKey}" (${fileInfo.buffer.length} bytes, ${fileInfo.contentType})`);
+      return res.send(fileInfo.buffer);
     }
 
     // 2. If local disk file exists
     if (fileInfo.localPath) {
+      console.log(`[Storage File Route 200] Served local disk cache for "${fileKey}" (${fileInfo.contentType})`);
       return res.sendFile(fileInfo.localPath);
     }
 
-    // 3. If S3 stream is available
-    if (fileInfo.stream) {
-      res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
-      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-      if (fileInfo.contentLength) {
-        res.setHeader('Content-Length', fileInfo.contentLength);
-      }
-      return (fileInfo.stream as any).pipe(res);
-    }
-
-    res.status(404).json({ error: 'File stream unavailable' });
+    res.status(404).json({ error: 'File data unavailable' });
   } catch (err: any) {
     console.error('[Storage Error] File fetch failed:', err);
     res.status(500).json({ error: 'Failed to retrieve file' });
   }
 });
 
-// GET /api/storage/proxy (Smart redirector/proxy for external or internal image URLs)
+// GET /api/storage/proxy (Smart proxy for external or internal image URLs with CORS)
 app.get('/api/storage/proxy', async (req, res) => {
   try {
     const targetUrl = (req.query.url as string) || (req.query.src as string) || (req.query.key as string);
@@ -428,47 +471,132 @@ app.get('/api/storage/proxy', async (req, res) => {
       return res.status(400).json({ error: 'Target URL or key is required' });
     }
 
-    // Extract fileKey if it points to permits/ or general upload
-    const permitMatch = targetUrl.match(/(?:permits|receipts|reports|uploads)\/[^?#]+/);
-    if (permitMatch) {
-      const fileKey = permitMatch[0].replace(/^uploads\//, '');
-      const fileInfo = await getFileFromStorage(fileKey);
+    console.log(`[Storage Proxy] Incoming proxy request for: "${targetUrl}"`);
+
+    // 1. Attempt S3 bucket key extraction
+    const candidateKeys: string[] = [];
+
+    // Match any standard storage subpaths
+    const subpathMatch = targetUrl.match(/(?:permits|receipts|reports|uploads|portraits|licenses|national_ids|police_permits|documents|evidence|avatars)\/[^?#]+/i);
+    if (subpathMatch) {
+      candidateKeys.push(subpathMatch[0].replace(/^uploads\//i, ''));
+    }
+
+    // If targetUrl is a full HTTP URL, parse pathname
+    if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
+      try {
+        const parsed = new URL(targetUrl);
+        const pathPart = parsed.pathname.replace(/^\/+/, '');
+        if (pathPart) {
+          candidateKeys.push(pathPart);
+          // Also strip bucket name if path starts with bucket name
+          const bucketName = getS3BucketName();
+          if (bucketName && pathPart.startsWith(`${bucketName}/`)) {
+            candidateKeys.push(pathPart.replace(new RegExp(`^${bucketName}\\/`), ''));
+          }
+        }
+      } catch (e) {}
+    } else {
+      candidateKeys.push(targetUrl.replace(/^\/+/, '').replace(/^uploads\//i, ''));
+    }
+
+    // 2. Query storage engine for any extracted candidate keys
+    for (const key of candidateKeys) {
+      const fileInfo = await getFileFromStorage(key);
       if (fileInfo) {
-        if (fileInfo.publicRedirectUrl) return res.redirect(302, fileInfo.publicRedirectUrl);
-        if (fileInfo.localPath) return res.sendFile(fileInfo.localPath);
-        if (fileInfo.stream) {
-          res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
-          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-          return (fileInfo.stream as any).pipe(res);
+        res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        if (fileInfo.buffer) {
+          res.setHeader('Content-Length', fileInfo.buffer.length);
+          console.log(`[Storage Proxy 200] Resolved "${targetUrl}" via S3 key "${key}" (${fileInfo.buffer.length} bytes, ${fileInfo.contentType})`);
+          return res.send(fileInfo.buffer);
+        }
+        if (fileInfo.localPath) {
+          console.log(`[Storage Proxy 200] Resolved "${targetUrl}" via local cache key "${key}"`);
+          return res.sendFile(fileInfo.localPath);
         }
       }
     }
 
-    // If it's a direct public domain redirect
-    if (S3_PUBLIC_DOMAIN && targetUrl.includes('/')) {
-      const parts = targetUrl.split('/');
-      const key = parts.slice(-2).join('/');
-      const domain = S3_PUBLIC_DOMAIN.startsWith('http://') || S3_PUBLIC_DOMAIN.startsWith('https://')
-        ? S3_PUBLIC_DOMAIN
-        : `https://${S3_PUBLIC_DOMAIN}`;
-      return res.redirect(302, `${domain}/${key}`);
-    }
-
-    // Fallback: if targetUrl is absolute HTTP/HTTPS, fetch and stream safely
+    // 3. Fallback: if targetUrl is an external HTTP/HTTPS URL, fetch and stream safely
     if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
-      const remoteRes = await fetch(targetUrl);
-      if (remoteRes.ok && remoteRes.body) {
-        res.setHeader('Content-Type', remoteRes.headers.get('content-type') || 'image/jpeg');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
+      const remoteRes = await fetch(targetUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+        },
+      });
+
+      if (remoteRes.ok) {
         const arrayBuf = await remoteRes.arrayBuffer();
-        return res.send(Buffer.from(arrayBuf));
+        const buffer = Buffer.from(arrayBuf);
+        const magic = detectImageMagicBytes(buffer);
+        const contentType = magic ? magic.mime : remoteRes.headers.get('content-type') || 'image/jpeg';
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Length', buffer.length);
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        console.log(`[Storage Proxy 200] Streamed remote image: "${targetUrl}" (${buffer.length} bytes, ${contentType})`);
+        return res.send(buffer);
+      } else {
+        console.warn(`[Storage Proxy] Remote fetch failed with status ${remoteRes.status} for "${targetUrl}".`);
       }
     }
 
+    console.warn(`[Storage Proxy 404] Could not find or proxy image: "${targetUrl}"`);
     res.status(404).json({ error: 'Could not proxy image' });
   } catch (err: any) {
     console.error('[Storage Proxy Error]:', err);
     res.status(500).json({ error: 'Proxy request failed' });
+  }
+});
+
+// GET /api/storage/diagnostic (Inspect storage health, S3 connection, and probe keys)
+app.get('/api/storage/diagnostic', async (req, res) => {
+  try {
+    const probeKey = req.query.key as string;
+    const s3Client = getS3Client();
+    const s3Bucket = getS3BucketName();
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+
+    let probeResult = null;
+    if (probeKey) {
+      const fileInfo = await getFileFromStorage(probeKey);
+      probeResult = {
+        key: probeKey,
+        found: Boolean(fileInfo),
+        contentType: fileInfo?.contentType,
+        size: fileInfo?.contentLength || fileInfo?.buffer?.length,
+        source: fileInfo?.buffer ? 's3_stream' : fileInfo?.localPath ? 'local_cache' : 'not_found',
+      };
+    }
+
+    let localFilesCount = 0;
+    try {
+      if (fs.existsSync(uploadsDir)) {
+        localFilesCount = fs.readdirSync(uploadsDir).length;
+      }
+    } catch (e) {}
+
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      s3: {
+        configured: Boolean(s3Client),
+        bucket: s3Bucket || 'Not configured',
+        publicDomain: S3_PUBLIC_DOMAIN || 'None (proxied via /api/storage/file)',
+      },
+      localDisk: {
+        exists: fs.existsSync(uploadsDir),
+        path: uploadsDir,
+        fileCount: localFilesCount,
+      },
+      probe: probeResult,
+    });
+  } catch (err: any) {
+    res.status(500).json({ status: 'error', error: err.message || String(err) });
   }
 });
 
