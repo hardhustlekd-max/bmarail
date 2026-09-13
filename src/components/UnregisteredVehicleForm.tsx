@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { Icon } from './ui/Icon';
-import {
-  Language,
-  UserRole,
-  UnregisteredVehicleReport,
-  BAHIR_DAR_SUBCITIES,
-} from '../types';
-import { uploadDocumentPhoto } from '../services/storageService';
+import { Language, UserRole, UnregisteredVehicleReport, BAHIR_DAR_SUBCITIES } from '../types';
+import { imageUploadManager } from '../services/imageUploadManager';
 
 interface UnregisteredVehicleFormProps {
   lang: Language;
@@ -40,25 +35,23 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
     const file = e.target.files?.[0];
     if (file) {
       setIsPhotoUploading(true);
-      const safetyTimer = setTimeout(() => setIsPhotoUploading(false), 3000);
       try {
-        // Fast local preview first
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (reader.result && typeof reader.result === 'string') {
-            setEvidencePhoto(reader.result);
-          }
-        };
-        reader.readAsDataURL(file);
+        const { previewUrl, remoteUrlPromise } = await imageUploadManager.upload(
+          'unreg_evidence',
+          file,
+          'unregistered_evidence'
+        );
+        if (previewUrl) {
+          setEvidencePhoto(previewUrl);
+        }
 
-        const uploadedUrl = await uploadDocumentPhoto(file, 'unregistered_evidence');
+        const uploadedUrl = await remoteUrlPromise;
         if (uploadedUrl) {
           setEvidencePhoto(uploadedUrl);
         }
       } catch (err) {
         console.error('Failed to upload evidence photo:', err);
       } finally {
-        clearTimeout(safetyTimer);
         setIsPhotoUploading(false);
         e.target.value = '';
       }

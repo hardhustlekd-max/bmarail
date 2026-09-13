@@ -250,8 +250,8 @@ export function sanitizePhotoForCache(photo?: string): string {
   ) {
     return photo;
   }
-  // Keep compressed data URLs (< 80KB)
-  if (photo.length < 80 * 1024) {
+  // Keep compressed data URLs (< 250KB) - allows offline compressed WebP and JPEG documents
+  if (photo.length < 250 * 1024) {
     return photo;
   }
   // Strip only massive uncompressed raw Base64 strings to protect localStorage quota

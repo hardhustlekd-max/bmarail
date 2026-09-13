@@ -1839,6 +1839,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       hasError={docErrors.portrait}
                       isAmharic={isAmharic}
                       id="multistep-portrait"
+                      folder="permits/portraits"
                     />
 
                     {/* National ID Front & Back side-by-side */}
@@ -1853,6 +1854,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         hasError={docErrors.natIdFront}
                         isAmharic={isAmharic}
                         id="multistep-natid-front"
+                        folder="permits/national_ids"
                       />
                       <DocumentUploadInput
                         label={isAmharic ? '3. ብሔራዊ መታወቂያ (ጀርባ)' : '3. National ID (Back)'}
@@ -1864,6 +1866,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         hasError={docErrors.natIdBack}
                         isAmharic={isAmharic}
                         id="multistep-natid-back"
+                        folder="permits/national_ids"
                       />
                     </div>
 
@@ -1878,6 +1881,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       hasError={docErrors.license}
                       isAmharic={isAmharic}
                       id="multistep-license"
+                      folder="permits/licenses"
                     />
 
                     {/* Police Permit Scan (Libre) */}
@@ -1891,6 +1895,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       hasError={docErrors.libre}
                       isAmharic={isAmharic}
                       id="multistep-libre"
+                      folder="permits/police_permits"
                     />
                   </div>
 
@@ -2007,6 +2012,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         hasError={receiptScreenshotError}
                         isAmharic={isAmharic}
                         id="multistep-receipt-screenshot"
+                        folder="permits/receipts"
                       />
                     </div>
                   </div>
