@@ -58,10 +58,14 @@ export async function uploadDocumentPhoto(
     formData.append('folder', folder);
 
     if (compressedResult?.blob) {
-      const ext = compressedResult.mimeType === 'image/webp' ? 'webp' : 'jpg';
-      formData.append('file', compressedResult.blob, `capture_${Date.now()}.${ext}`);
+      const isWebp = compressedResult.mimeType === 'image/webp';
+      const ext = isWebp ? 'webp' : 'jpg';
+      const finalBlob = compressedResult.blob.type
+        ? compressedResult.blob
+        : new Blob([compressedResult.blob], { type: isWebp ? 'image/webp' : 'image/jpeg' });
+      formData.append('file', finalBlob, `capture_${Date.now()}.${ext}`);
     } else if (fallbackDataUrl) {
-      formData.append('dataUrl', fallbackDataUrl);
+      formData.append('dataUrl', fallbackDataUrl.replace(/\s+/g, ''));
     }
 
     const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;

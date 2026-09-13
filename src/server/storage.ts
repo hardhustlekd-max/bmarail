@@ -74,6 +74,31 @@ export interface UploadResult {
 }
 
 /**
+ * Normalizes image MIME types to standard IANA media types.
+ * Prevents S3/browser corruption caused by 'image/jpg' or missing headers.
+ */
+export function normalizeImageMimeType(mime?: string, fileName?: string): string {
+  const lower = (mime || '').toLowerCase().trim();
+  if (lower === 'image/jpg' || lower === 'image/pjpeg' || lower === 'jpg' || lower === 'jpeg') {
+    return 'image/jpeg';
+  }
+  if (lower === 'image/webp' || lower === 'webp') {
+    return 'image/webp';
+  }
+  if (lower === 'image/png' || lower === 'png') {
+    return 'image/png';
+  }
+  if (fileName) {
+    const ext = path.extname(fileName).toLowerCase();
+    if (ext === '.jpg' || ext === '.jpeg') return 'image/jpeg';
+    if (ext === '.webp') return 'image/webp';
+    if (ext === '.png') return 'image/png';
+    if (ext === '.pdf') return 'application/pdf';
+  }
+  return lower && lower.includes('/') ? lower : 'image/jpeg';
+}
+
+/**
  * Format the publicly accessible URL for a given file key
  */
 export function getPublicUrlForFileKey(fileKey: string): string {
@@ -100,8 +125,10 @@ export async function saveFile(
 ): Promise<UploadResult> {
   const timestamp = Date.now();
   const randomStr = Math.random().toString(36).substring(2, 9);
-  const cleanExt = path.extname(fileName) || (mimeType.includes('webp') ? '.webp' : mimeType.includes('png') ? '.png' : '.jpg');
-  const safeBaseName = path.basename(fileName, cleanExt).replace(/[^a-zA-Z0-9_-]/g, '_');
+  const normalizedMime = normalizeImageMimeType(mimeType, fileName);
+  const defaultExt = normalizedMime === 'image/webp' ? '.webp' : normalizedMime === 'image/png' ? '.png' : '.jpg';
+  const cleanExt = path.extname(fileName) || defaultExt;
+  const safeBaseName = path.basename(fileName, cleanExt).replace(/[^a-zA-Z0-9_-]/g, '_') || 'file';
   const fileKey = `${folder}/${timestamp}_${randomStr}_${safeBaseName}${cleanExt}`;
   const fileId = `file_${timestamp}_${randomStr}`;
 
@@ -115,7 +142,7 @@ export async function saveFile(
         Bucket: S3_BUCKET,
         Key: fileKey,
         Body: buffer,
-        ContentType: mimeType,
+        ContentType: normalizedMime,
         CacheControl: 'public, max-age=31536000',
       });
       await s3Client.send(command);
@@ -145,7 +172,7 @@ export async function saveFile(
       id: fileId,
       fileName,
       fileKey,
-      mimeType,
+      mimeType: normalizedMime,
       fileSize: buffer.length,
       storageType,
       publicUrl,
@@ -163,7 +190,7 @@ export async function saveFile(
     fileKey,
     storageType,
     size: buffer.length,
-    mimeType,
+    mimeType: normalizedMime,
   };
 }
 
@@ -179,6 +206,7 @@ export async function getFileFromStorage(fileKey: string): Promise<{
   publicRedirectUrl?: string;
 } | null> {
   const cleanKey = fileKey.replace(/^\/+/, '');
+  const inferredMime = normalizeImageMimeType('', cleanKey);
 
   // If public domain is configured, direct the caller to redirect immediately
   if (S3_PUBLIC_DOMAIN) {
@@ -196,9 +224,14 @@ export async function getFileFromStorage(fileKey: string): Promise<{
         Key: cleanKey,
       });
       const response = await s3Client.send(command);
+      const rawType = response.ContentType;
+      const finalContentType = rawType && rawType !== 'application/octet-stream'
+        ? normalizeImageMimeType(rawType, cleanKey)
+        : inferredMime;
+
       return {
         stream: response.Body,
-        contentType: response.ContentType || 'image/jpeg',
+        contentType: finalContentType,
         contentLength: response.ContentLength,
       };
     } catch (s3Err) {
@@ -211,6 +244,7 @@ export async function getFileFromStorage(fileKey: string): Promise<{
   if (fs.existsSync(localFilePath)) {
     return {
       localPath: localFilePath,
+      contentType: inferredMime,
     };
   }
 
@@ -218,7 +252,7 @@ export async function getFileFromStorage(fileKey: string): Promise<{
 }
 
 /**
- * Handle base64 string upload
+ * Handle base64 string upload with sanitize clean-up
  */
 export async function saveBase64Image(
   base64String: string,
@@ -226,21 +260,24 @@ export async function saveBase64Image(
   uploadedBy: string = 'system'
 ): Promise<UploadResult> {
   let mimeType = 'image/jpeg';
-  let rawBase64 = base64String;
+  let rawBase64 = (base64String || '').trim();
 
-  if (base64String.startsWith('data:')) {
-    const match = base64String.match(/^data:([^;]+);base64,(.+)$/);
+  if (rawBase64.startsWith('data:')) {
+    const match = rawBase64.match(/^data:([^;]+);base64,([\s\S]+)$/);
     if (match) {
       mimeType = match[1];
       rawBase64 = match[2];
     }
   }
 
+  // Remove any whitespace, newlines or carriage returns that corrupt JPEG/WebP SOI headers
+  rawBase64 = rawBase64.replace(/\s+/g, '');
   const buffer = Buffer.from(rawBase64, 'base64');
-  const ext = mimeType.split('/')[1] || 'jpg';
+  const normalizedMime = normalizeImageMimeType(mimeType);
+  const ext = normalizedMime === 'image/webp' ? 'webp' : normalizedMime === 'image/png' ? 'png' : 'jpg';
   const fileName = `upload_${Date.now()}.${ext}`;
 
-  return saveFile(buffer, fileName, mimeType, folder, uploadedBy);
+  return saveFile(buffer, fileName, normalizedMime, folder, uploadedBy);
 }
 
 /**
