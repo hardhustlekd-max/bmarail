@@ -2393,53 +2393,8 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           )}
 
-          {/* Left Side: Active Page Title */}
-          <div className="flex items-center gap-3">
-            <h2 className="font-black text-base text-[#0B1E48] tracking-tight flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[#1D61E7] text-[24px]">
-                {activePage === 'dashboard' && 'space_dashboard'}
-                {activePage === 'forms' && 'how_to_reg'}
-                {activePage === 'today_submissions_adjust' && 'edit_note'}
-                {activePage === 'tables' && (tableInitialTab === 'approved' ? 'verified' : 'table_chart')}
-                {activePage === 'inspection_report' && 'analytics'}
-                {activePage === 'report_unregistered' && 'report_problem'}
-                {activePage === 'unregistered_list' && 'no_drinks'}
-                {activePage === 'payment_receipts' && 'receipt_long'}
-                {activePage === 'workstation' && 'badge'}
-                {activePage === 'scan' && 'qr_code_scanner'}
-                {(activePage === 'superadmin_users' || activePage === 'superadmin') && 'manage_accounts'}
-                {activePage === 'superadmin_subcities' && 'location_city'}
-                {activePage === 'superadmin_security' && 'shield'}
-                {activePage === 'superadmin_permits' && 'verified'}
-                {activePage === 'superadmin_maintenance' && 'database'}
-                {activePage === 'superadmin_owners' && 'badge'}
-                {activePage === 'settings' && 'settings'}
-              </Icon>
-              <span>
-                {activePage === 'dashboard' && (isAmharic ? 'ዋና ገፅ' : 'Dashboard')}
-                {activePage === 'forms' && (isAmharic ? 'አዲስ ምዝገባ' : 'New Registration')}
-                {activePage === 'today_submissions_adjust' && (isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction')}
-                {activePage === 'tables' && (
-                  userRole === 'clerk'
-                    ? (tableInitialTab === 'approved' ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry') : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
-                    : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')
-                )}
-                {activePage === 'inspection_report' && (isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report')}
-                {activePage === 'report_unregistered' && (isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle')}
-                {activePage === 'unregistered_list' && (isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry')}
-                {activePage === 'payment_receipts' && (isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts')}
-                {activePage === 'workstation' && (isAmharic ? 'የተጠቃሚ ሚና ስራ ማዕከል' : 'Role Workstation')}
-                {activePage === 'scan' && (isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code')}
-                {(activePage === 'superadmin_users' || activePage === 'superadmin') && (isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions')}
-                {activePage === 'superadmin_subcities' && (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')}
-                {activePage === 'superadmin_security' && (isAmharic ? 'የሴኪዩሪቲ ኦዲት' : 'Security & Audit Logs')}
-                {activePage === 'superadmin_permits' && (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')}
-                {activePage === 'superadmin_maintenance' && (isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance')}
-                {activePage === 'superadmin_owners' && (isAmharic ? 'የተመዘገቡ ባለቤቶች' : 'Registered Owners Directory')}
-                {activePage === 'settings' && (isAmharic ? 'ቅንብሮች' : 'Settings')}
-              </span>
-            </h2>
-          </div>
+          {/* Left Side: Empty flex container to maintain layout balance */}
+          <div className="flex items-center gap-3"></div>
 
           {/* Right Side Tools: Notifications, Mail, Date Dropdown, User Dropdown */}
           <div className="flex items-center gap-2 sm:gap-2.5">
@@ -2725,15 +2680,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                         type="button"
                         onClick={() => setActivePage(item.page as any)}
                         disabled={isLast}
-                        className={`flex items-center gap-1 py-0.5 px-2 rounded-md transition-all text-xs ${
+                        className={`flex items-center py-0.5 px-2 rounded-md transition-all text-xs ${
                           isLast
                             ? 'text-on-surface font-extrabold cursor-default bg-surface-container/60'
                             : 'text-secondary hover:text-on-surface hover:bg-surface-container font-semibold cursor-pointer'
                         }`}
                       >
-                        <Icon className="material-symbols-outlined text-[15px] shrink-0 opacity-80">
-                          {item.icon}
-                        </Icon>
                         <span className="truncate max-w-[130px] sm:max-w-[220px]">{item.label}</span>
                       </button>
                     </li>

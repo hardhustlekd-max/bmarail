@@ -102,28 +102,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header Banner - Icon and Title text only */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-2xs flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center shrink-0">
-            <Icon className="material-symbols-outlined text-[24px]">report_problem</Icon>
-          </div>
-          <h1 className="text-base sm:text-lg font-black text-on-surface uppercase tracking-wide">
-            {isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}
-          </h1>
-        </div>
-        {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-3.5 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer"
-          >
-            {isAmharic ? 'ሰርዝ' : 'Cancel'}
-          </button>
-        )}
-      </div>
-
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
       {/* Success Notification Banner */}
       {successMessage && (
         <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-3 animate-in fade-in duration-200">
@@ -132,17 +111,48 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         </div>
       )}
 
-      {/* Form Content */}
-      <form onSubmit={handleSubmit} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 sm:p-7 shadow-xs space-y-6">
-        <div className="border-b border-outline-variant pb-3 flex items-center justify-between">
-          <h2 className="text-sm font-black text-on-surface uppercase tracking-wider flex items-center gap-2">
-            <Icon className="material-symbols-outlined text-amber-600 text-[20px]">policy</Icon>
-            {isAmharic ? 'የሪፖርት ዝርዝሮች (አማራጭ)' : 'Incident Report Details (All Optional)'}
-          </h2>
-          <span className="text-[11px] font-semibold text-secondary">
-            {isAmharic ? 'ሁሉም መስኮች አማራጭ ናቸው' : 'All fields are optional'}
-          </span>
+      {/* SINGLE UNIFIED CONTAINER (MATCHING TABLES PAGE PATTERN) */}
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
+        {/* CONTAINER SECTION HEADER */}
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">report_problem</Icon>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'ያልተመዘገቡ ወይም ሕገ-ወጥ ሞተሮች የመስክ ሪፖርት ማቅረቢያ ቅጽ'
+                  : 'Unregistered and non-compliant motorcycle incident logging form'}
+              </p>
+            </div>
+          </div>
+
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="px-3.5 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer"
+            >
+              {isAmharic ? 'ሰርዝ' : 'Cancel'}
+            </button>
+          )}
         </div>
+
+        {/* Form Content */}
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
+          <div className="border-b border-outline-variant pb-3 flex items-center justify-between">
+            <h2 className="text-sm font-black text-on-surface uppercase tracking-wider flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-amber-600 text-[20px]">policy</Icon>
+              {isAmharic ? 'የሪፖርት ዝርዝሮች (አማራጭ)' : 'Incident Report Details (All Optional)'}
+            </h2>
+            <span className="text-[11px] font-semibold text-secondary">
+              {isAmharic ? 'ሁሉም መስኮች አማራጭ ናቸው' : 'All fields are optional'}
+            </span>
+          </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Plate Number */}
@@ -322,6 +332,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 };

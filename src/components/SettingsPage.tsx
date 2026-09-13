@@ -185,56 +185,50 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-10">
-      
-      {/* Top Header Card */}
-      <div className="bg-[#0B1E48] text-white rounded-xl p-5 sm:p-6 shadow-md border-b-4 border-yellow-500 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-yellow-400 shrink-0 shadow-xs">
-            <Icon className="material-symbols-outlined text-[28px]">settings</Icon>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px] font-extrabold text-yellow-400 uppercase tracking-wider bg-yellow-500/20 px-2 py-0.5 rounded">
-                {isAmharic ? 'የስርዓት ቅንብሮች' : 'System Settings'}
-              </span>
-              <span className="text-white/40 text-xs">•</span>
-              <span className="text-white/80 font-mono text-[11px] font-bold">
-                {userBadgeId}
-              </span>
+    <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto pb-10">
+      {/* INTEGRATED HEADER CONTAINER (MATCHING TABLES PAGE PATTERN) */}
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">settings</Icon>
             </div>
-            <h1 className="text-lg sm:text-xl font-black tracking-tight text-white flex items-center gap-2">
-              {isAmharic ? 'ቅንብሮች' : 'Settings'}
-            </h1>
-            <p className="text-xs text-yellow-200/90 font-medium mt-0.5">
-              {isAmharic
-                ? 'የይለፍ ቃል ለውጥ፣ የተጠቃሚ መገለጫ እና የስርዓት ምርጫዎችን ያስተዳድሩ'
-                : 'Manage password credentials, profile details, and system preferences'}
-            </p>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'ቅንብሮች' : 'Settings'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'የይለፍ ቃል ለውጥ፣ የተጠቃሚ መገለጫ እና የስርዓት ምርጫዎች'
+                  : 'Manage password credentials, user profile details, and system preferences'}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
-          <span
-            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider shadow-xs ${
-              userRole === 'superadmin'
-                ? 'bg-purple-500/90 text-white border border-purple-400/50'
-                : userRole === 'admin'
-                ? 'bg-blue-500/90 text-white border border-blue-400/50'
-                : userRole === 'officer'
-                ? 'bg-amber-500/90 text-white border border-amber-400/50'
-                : 'bg-emerald-500/90 text-white border border-emerald-400/50'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
-            {userRole === 'superadmin'
-              ? 'Super Admin'
-              : userRole === 'admin'
-              ? 'Manager / Admin'
-              : userRole === 'clerk'
-              ? 'Secretary / Clerk'
-              : 'Field Officer'}
-          </span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span
+              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                userRole === 'superadmin'
+                  ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800'
+                  : userRole === 'admin'
+                  ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
+                  : userRole === 'officer'
+                  ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
+                  : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+              }`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+              <span>
+                {userRole === 'superadmin'
+                  ? 'Super Admin'
+                  : userRole === 'admin'
+                  ? 'Manager / Admin'
+                  : userRole === 'clerk'
+                  ? 'Secretary / Clerk'
+                  : 'Field Officer'}
+              </span>
+            </span>
+          </div>
         </div>
       </div>
 

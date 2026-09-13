@@ -351,42 +351,49 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Page Header & Action Bar */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-[#1D61E7]/10 text-[#1D61E7] border border-[#1D61E7]/20 flex items-center justify-center shrink-0">
-            <Icon className="material-symbols-outlined text-[24px]">receipt_long</Icon>
+    <div className="space-y-4 sm:space-y-5 pb-12">
+      {/* INTEGRATED HEADER CONTAINER (MATCHING TABLES PAGE PATTERN) */}
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">receipt_long</Icon>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'የ1 ወር ክፍያ ደረሰኞች መዝገብ፣ የክፍያ ማረጋገጫ እና የማብቂያ ቀን ቁጥጥር'
+                  : '1-month payment receipt registration, payment verification & validity tracking'}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-base sm:text-lg font-black text-on-surface uppercase tracking-wide">
-              {isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}
-            </h1>
-          </div>
-        </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setIsFormOpen(!isFormOpen);
-            setSubmitError('');
-            setSubmitSuccess('');
-          }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer shrink-0"
-        >
-          <Icon className="material-symbols-outlined text-[18px]">
-            {isFormOpen ? 'close' : 'add_circle'}
-          </Icon>
-          <span>
-            {isFormOpen
-              ? isAmharic
-                ? 'ፎርሙን ዝጋ'
-                : 'Close Form'
-              : isAmharic
-              ? 'አዲስ ደረሰኝ መዝግብ'
-              : 'New Payment Receipt'}
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsFormOpen(!isFormOpen);
+              setSubmitError('');
+              setSubmitSuccess('');
+            }}
+            className="px-3.5 py-1.5 rounded-md bg-primary hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
+          >
+            <Icon className="material-symbols-outlined text-[16px]">
+              {isFormOpen ? 'close' : 'add_circle'}
+            </Icon>
+            <span>
+              {isFormOpen
+                ? isAmharic
+                  ? 'ፎርሙን ዝጋ'
+                  : 'Close Form'
+                : isAmharic
+                ? 'አዲስ ደረሰኝ መዝግብ'
+                : 'New Payment Receipt'}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Global Success Banner */}

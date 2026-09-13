@@ -398,6 +398,34 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
   return (
     <div className="space-y-4 sm:space-y-5">
+      {/* INTEGRATED HEADER CONTAINER (MATCHING TABLES PAGE PATTERN) */}
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">space_dashboard</Icon>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'ዋና ገፅ' : 'Dashboard'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'የባህር ዳር ከተማ አስተዳደር የሞተር ሳይክል ፈቃድና ምዝገባ ማዕከል'
+                  : 'Bahir Dar City motorcycle permits, registrations & inspection command center'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="uppercase font-mono text-[11px]">{userBadgeId}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* BIG HERO SCAN QR CODE BUTTON FOR TRAFFIC OFFICER */}
       {userRole === 'officer' && (
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6 sm:p-8 shadow-sm flex flex-col items-center justify-center text-center space-y-4">

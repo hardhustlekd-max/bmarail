@@ -133,180 +133,182 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
   return (
     <div className="space-y-4">
-      {/* Header Container - Icon and Title text only */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-red-500/10 text-red-600 dark:bg-red-900/30 dark:text-red-400 border border-red-500/20 flex items-center justify-center shrink-0">
-            <Icon className="material-symbols-outlined text-[24px]">no_drinks</Icon>
+      {/* SINGLE UNIFIED CONTAINER (MATCHING TABLES PAGE PATTERN) */}
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
+        {/* CONTAINER SECTION HEADER */}
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 dark:bg-red-900/30 dark:text-red-400 border border-red-500/20 flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">no_drinks</Icon>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? `ጠቅላላ ${unregisteredReports.length} ያልተመዘገቡ ተሽከርካሪ ሪፖርቶች ተመዝግበዋል`
+                  : `Total ${unregisteredReports.length} unregistered vehicle incident logs recorded`}
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-base sm:text-lg font-black text-on-surface uppercase tracking-wide">
-              {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
-            </h1>
-            <p className="text-xs text-secondary font-medium">
-              {isAmharic
-                ? `ጠቅላላ ${unregisteredReports.length} ያልተመዘገቡ ተሽከርካሪ ሪፖርቶች ተመዝግበዋል`
-                : `Total ${unregisteredReports.length} unregistered vehicle incident logs recorded`}
-            </p>
-          </div>
-        </div>
 
-        {onNewReportClick && (
-          <button
-            type="button"
-            onClick={onNewReportClick}
-            className="px-3.5 py-2 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-2 shrink-0 cursor-pointer"
-          >
-            <Icon className="material-symbols-outlined text-[18px]">add_alert</Icon>
-            <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>
-          </button>
-        )}
-      </div>
-
-      {/* Sub-Filter Toolbar Container */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-3 shadow-2xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 w-full max-w-full overflow-hidden">
-        {/* Live Search Input */}
-        <div className="relative w-full lg:w-auto lg:flex-1 min-w-0 max-w-full lg:max-w-md">
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-secondary">
-            <Icon className="material-symbols-outlined text-[18px]">search</Icon>
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder={
-              isAmharic
-                ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ፣ ኦፊሰር ወይም መታወቂያ ፈልግ...'
-                : 'Search plate, driver, location, officer, ID...'
-            }
-            className="w-full pl-9 pr-8 py-2 bg-surface border border-outline-variant rounded-lg text-xs font-semibold text-on-surface placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#1D61E7]/20"
-          />
-          {searchTerm && (
+          {onNewReportClick && (
             <button
               type="button"
-              onClick={() => {
-                setSearchTerm('');
-                setCurrentPage(1);
-              }}
-              className="absolute inset-y-0 right-2.5 flex items-center text-secondary hover:text-on-surface cursor-pointer"
+              onClick={onNewReportClick}
+              className="px-3.5 py-1.5 rounded-md bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 shrink-0 cursor-pointer active:scale-95"
             >
-              <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+              <Icon className="material-symbols-outlined text-[16px]">add_alert</Icon>
+              <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>
             </button>
           )}
         </div>
 
-        {/* Status Filter Tabs in Clean Compact Pill Style & Sub-City Dropdown */}
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto max-w-full shrink-0">
-          <div className="flex items-center gap-1 flex-wrap shrink-0">
-            {[
-              {
-                id: 'all' as const,
-                label: isAmharic ? 'ሁሉም' : 'All',
-                count: unregisteredReports.length,
-                badgeColor: 'bg-surface-container-highest text-secondary',
-              },
-              {
-                id: 'pending' as const,
-                label: isAmharic ? 'አዲስ' : 'Pending',
-                count: pendingCount,
-                badgeColor:
-                  pendingCount > 0
-                    ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                    : 'bg-surface-container-highest text-secondary',
-              },
-              {
-                id: 'under_investigation' as const,
-                label: isAmharic ? 'በምርመራ' : 'Investigation',
-                count: investigationCount,
-                badgeColor:
-                  investigationCount > 0
-                    ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
-                    : 'bg-surface-container-highest text-secondary',
-              },
-              {
-                id: 'resolved' as const,
-                label: isAmharic ? 'የተፈታ' : 'Resolved',
-                count: resolvedCount,
-                badgeColor: 'bg-surface-container-highest text-secondary',
-              },
-              {
-                id: 'registered' as const,
-                label: isAmharic ? 'የተመዘገበ' : 'Registered',
-                count: registeredCount,
-                badgeColor: 'bg-surface-container-highest text-secondary',
-              },
-            ].map((tab) => {
-              const isActive = statusFilter === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => {
-                    setStatusFilter(tab.id);
-                    setCurrentPage(1);
-                  }}
-                  className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
-                    isActive
-                      ? 'bg-primary text-white font-extrabold shadow-2xs'
-                      : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
-                  }`}
-                >
-                  <span className="tracking-tight">{tab.label}</span>
-                  <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+        {/* Sub-Filter Toolbar Container */}
+        <div className="p-2.5 sm:p-3 bg-slate-50/70 dark:bg-slate-900/60 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 w-full max-w-full overflow-hidden border-b border-outline-variant/40 dark:border-slate-800">
+          {/* Live Search Input */}
+          <div className="relative w-full lg:w-auto lg:flex-1 min-w-0 max-w-full lg:max-w-md">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-secondary">
+              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+            </div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder={
+                isAmharic
+                  ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ፣ ኦፊሰር ወይም መታወቂያ ፈልግ...'
+                  : 'Search plate, driver, location, officer, ID...'
+              }
+              className="w-full pl-9 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-semibold text-on-surface placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#1D61E7]/20 shadow-2xs"
+            />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchTerm('');
+                  setCurrentPage(1);
+                }}
+                className="absolute inset-y-0 right-2.5 flex items-center text-secondary hover:text-on-surface cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+              </button>
+            )}
+          </div>
+
+          {/* Status Filter Tabs in Clean Compact Pill Style & Sub-City Dropdown */}
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto max-w-full shrink-0">
+            <div className="flex items-center gap-1 flex-wrap shrink-0">
+              {[
+                {
+                  id: 'all' as const,
+                  label: isAmharic ? 'ሁሉም' : 'All',
+                  count: unregisteredReports.length,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
+                },
+                {
+                  id: 'pending' as const,
+                  label: isAmharic ? 'አዲስ' : 'Pending',
+                  count: pendingCount,
+                  badgeColor:
+                    pendingCount > 0
+                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                      : 'bg-surface-container-highest text-secondary',
+                },
+                {
+                  id: 'under_investigation' as const,
+                  label: isAmharic ? 'በምርመራ' : 'Investigation',
+                  count: investigationCount,
+                  badgeColor:
+                    investigationCount > 0
+                      ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                      : 'bg-surface-container-highest text-secondary',
+                },
+                {
+                  id: 'resolved' as const,
+                  label: isAmharic ? 'የተፈታ' : 'Resolved',
+                  count: resolvedCount,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
+                },
+                {
+                  id: 'registered' as const,
+                  label: isAmharic ? 'የተመዘገበ' : 'Registered',
+                  count: registeredCount,
+                  badgeColor: 'bg-surface-container-highest text-secondary',
+                },
+              ].map((tab) => {
+                const isActive = statusFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setStatusFilter(tab.id);
+                      setCurrentPage(1);
+                    }}
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
                       isActive
-                        ? 'bg-white/20 text-white'
-                        : tab.badgeColor
+                        ? 'bg-primary text-white font-extrabold shadow-2xs'
+                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
                     }`}
                   >
-                    {tab.count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+                    <span className="tracking-tight">{tab.label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                        isActive
+                          ? 'bg-white/20 text-white'
+                          : tab.badgeColor
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-          {/* Sub-City Filter Dropdown */}
-          <select
-            value={subCityFilter}
-            onChange={(e) => {
-              setSubCityFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="px-3 py-2 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs font-bold outline-none cursor-pointer"
-          >
-            <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
-            {BAHIR_DAR_SUBCITIES.map((sc) => (
-              <option key={sc.en} value={sc.en}>
-                {isAmharic ? sc.am : sc.en}
-              </option>
-            ))}
-          </select>
-
-          {/* Reset filter button if filtered */}
-          {(searchTerm || statusFilter !== 'all' || subCityFilter !== 'all') && (
-            <button
-              type="button"
-              onClick={() => {
-                setSearchTerm('');
-                setStatusFilter('all');
-                setSubCityFilter('all');
+            {/* Sub-City Filter Dropdown */}
+            <select
+              value={subCityFilter}
+              onChange={(e) => {
+                setSubCityFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs font-bold outline-none cursor-pointer"
             >
-              <Icon className="material-symbols-outlined text-[16px]">restart_alt</Icon>
-              <span>{isAmharic ? 'አጽዳ' : 'Reset'}</span>
-            </button>
-          )}
-        </div>
-      </div>
+              <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
+              {BAHIR_DAR_SUBCITIES.map((sc) => (
+                <option key={sc.en} value={sc.en}>
+                  {isAmharic ? sc.am : sc.en}
+                </option>
+              ))}
+            </select>
 
-      {/* Reports Data Table & Card Container */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-xs">
+            {/* Reset filter button if filtered */}
+            {(searchTerm || statusFilter !== 'all' || subCityFilter !== 'all') && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('all');
+                  setSubCityFilter('all');
+                  setCurrentPage(1);
+                }}
+                className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">restart_alt</Icon>
+                <span>{isAmharic ? 'አጽዳ' : 'Reset'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Reports Data Table & Card Container */}
+        <div>
         {filteredReports.length === 0 ? (
           <div className="p-12 text-center text-secondary space-y-3">
             <Icon className="material-symbols-outlined text-[48px] text-outline">report_off</Icon>
@@ -530,6 +532,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             </div>
           </>
         )}
+        </div>
       </div>
 
       {/* Detail Modal */}
@@ -664,12 +667,26 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
       {/* Image Zoom Modal */}
       {zoomedImage && (
-        <ZoomableDocumentContainer
-          isOpen={true}
-          onClose={() => setZoomedImage(null)}
-          imageUrl={zoomedImage.url}
-          title={zoomedImage.title}
-        />
+        <div
+          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+          onClick={() => setZoomedImage(null)}
+        >
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
+            <ZoomableDocumentContainer
+              lang={lang}
+              title={zoomedImage.title}
+              onClose={() => setZoomedImage(null)}
+              requireClerkRequest={false}
+            >
+              <img
+                src={zoomedImage.url}
+                alt={zoomedImage.title}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                referrerPolicy="no-referrer"
+              />
+            </ZoomableDocumentContainer>
+          </div>
+        </div>
       )}
     </div>
   );

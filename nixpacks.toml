@@ -1,0 +1,9 @@
+# Nixpacks build configuration
+# Ensures modern Node.js LTS (20.x/22.x) is used during Railway & Nixpacks deployment builds
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "npm-9_x"]
+
+[variables]
+NIXPACKS_NODE_VERSION = "20"
+NODE_VERSION = "20"

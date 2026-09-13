@@ -157,6 +157,7 @@ export interface SystemSettings {
   security2FA: boolean;
   highRiskAlerts: boolean;
   scannerResultTheme?: ScannerResultTheme;
+  updatedAt?: string;
   showClerkPermitStatus?: boolean;
   showClerkSubmissionsAction?: boolean;
   showClerkApprovedVehiclesAction?: boolean;

@@ -1149,21 +1149,39 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
       )}
 
       {/* FORM BODY CONTAINER */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-3.5 sm:p-5 shadow-2xs space-y-3 sm:space-y-4">
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
         
-        {/* Form Header */}
-        <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[18px]">
-                app_registration
-              </Icon>
+        {/* CONTAINER SECTION HEADER (MATCHING RECORDS PAGE STYLE) */}
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">how_to_reg</Icon>
             </div>
-            <h3 className="text-xs sm:text-sm font-black text-on-surface tracking-tight">
-              {isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}
-            </h3>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'የባለቤት እና የተሽከርካሪ መረጃ መመዝገቢያ ባለ 5-ደረጃ ቅጽ'
+                  : '5-step owner & vehicle intake registration form'}
+              </p>
+            </div>
           </div>
+
+          {onViewRegistered && (
+            <button
+              type="button"
+              onClick={onViewRegistered}
+              className="px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
+              <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
+            </button>
+          )}
         </div>
+
+        <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4">
 
         {/* SUCCESS NOTIFICATION BANNER INSIDE FORM (Matching warning alert style) */}
         {isSubmittedSuccessfully && lastSubmittedReg && (
@@ -2269,6 +2287,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
               )}
             </form>
         )}
+        </div>
       </div>
     </div>
   );

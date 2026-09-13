@@ -291,98 +291,6 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
   return (
     <div className="space-y-4">
-      {/* PAGE HEADER (MATCHING TOP NAVBAR: የፍተሻ ሪፖርት / Inspection Report) */}
-      <div className="p-3.5 sm:p-4 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-xs flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
-          </div>
-          <div>
-            <h3 className="font-bold text-sm sm:text-base text-on-surface">
-              {isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}
-            </h3>
-            <p className="hidden sm:block text-[11px] font-normal text-secondary mt-0.5">
-              {isAmharic
-                ? 'የመስክ ፍተሻ፣ የታገዱ እና የተረጋገጡ ተሽከርካሪዎች ታሪክ'
-                : 'Patrol verification logs, field inspections, and status audit records'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 shadow-xs flex flex-col sm:flex-row justify-between items-center gap-3">
-        {/* Search */}
-        <div className="relative w-full sm:w-80">
-          <div className="absolute inset-y-0 left-3 flex items-center justify-center pointer-events-none text-secondary">
-            <Icon className="material-symbols-outlined text-[18px]">search</Icon>
-          </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={isAmharic ? 'በሰሌዳ፣ ስም ወይም ማስታወሻ ፈልግ...' : 'Search plate, owner name, notes...'}
-            className="w-full bg-surface border border-outline-variant rounded-md pl-10 pr-3 py-2 text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
-
-        {/* Status & Category Filter Badges */}
-        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto flex-wrap">
-          <SelectField
-            value={categoryFilter}
-            onChange={(e) => {
-              setCategoryFilter(e.target.value);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="all">{isAmharic ? 'ሁሉም አይነቶች' : 'All Vehicle Types'}</option>
-            <option value="electric">{isAmharic ? 'ኢቪ' : 'Electric (EV)'}</option>
-            <option value="gasoline">{isAmharic ? 'ቤንዚን' : 'Gasoline'}</option>
-          </SelectField>
-
-          {/* Status Filter Tabs in Clean Compact Pill Style */}
-          <div className="flex items-center gap-1 flex-wrap shrink-0">
-            {[
-              {
-                id: 'all' as const,
-                label: isAmharic ? 'ሁሉም' : 'All Logs',
-              },
-              {
-                id: 'verified' as const,
-                label: isAmharic ? 'የተረጋገጡ' : 'Verified',
-              },
-              {
-                id: 'warning' as const,
-                label: isAmharic ? 'ማስጠንቀቂያ' : 'Warning',
-              },
-              {
-                id: 'flagged' as const,
-                label: isAmharic ? 'የተከለከሉ' : 'Flagged',
-              },
-            ].map((tab) => {
-              const isActive = statusFilter === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => {
-                    setStatusFilter(tab.id);
-                    setCurrentPage(1);
-                  }}
-                  className={`group relative flex items-center gap-1 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
-                    isActive
-                      ? 'bg-primary text-white font-extrabold shadow-2xs'
-                      : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
-                  }`}
-                >
-                  <span className="tracking-tight">{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
       {/* Inline QR Scanner (In-Page instead of Modal) */}
       {showInlineScanner && (
         <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-4 shadow-sm space-y-3 animate-in slide-in-from-top-4 duration-200">
@@ -414,8 +322,115 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         </div>
       )}
 
-      {/* Verification Logs Table / Grid */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden shadow-xs">
+      {/* SINGLE UNIFIED CONTAINER (MATCHING TABLES PAGE PATTERN) */}
+      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
+        {/* CONTAINER SECTION HEADER */}
+        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+                {isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}
+              </h3>
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+                {isAmharic
+                  ? 'የመስክ ፍተሻ፣ የታገዱ እና የተረጋገጡ ተሽከርካሪዎች ታሪክ'
+                  : 'Patrol verification logs, field inspections, and status audit records'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {!showInlineScanner && (
+              <button
+                type="button"
+                onClick={() => setShowInlineScanner(true)}
+                className="px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
+                <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch Scanner'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Filter and Search Bar */}
+        <div className="p-2.5 sm:p-3 bg-slate-50/70 dark:bg-slate-900/60 flex flex-col sm:flex-row justify-between items-center gap-3 border-b border-outline-variant/40 dark:border-slate-800">
+          {/* Search */}
+          <div className="relative w-full sm:w-80">
+            <div className="absolute inset-y-0 left-3 flex items-center justify-center pointer-events-none text-secondary">
+              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+            </div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={isAmharic ? 'በሰሌዳ፣ ስም ወይም ማስታወሻ ፈልግ...' : 'Search plate, owner name, notes...'}
+              className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full pl-10 pr-3 py-1.5 text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-2xs"
+            />
+          </div>
+
+          {/* Status & Category Filter Badges */}
+          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto flex-wrap">
+            <SelectField
+              value={categoryFilter}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="all">{isAmharic ? 'ሁሉም አይነቶች' : 'All Vehicle Types'}</option>
+              <option value="electric">{isAmharic ? 'ኢቪ' : 'Electric (EV)'}</option>
+              <option value="gasoline">{isAmharic ? 'ቤንዚን' : 'Gasoline'}</option>
+            </SelectField>
+
+            {/* Status Filter Tabs in Clean Compact Pill Style */}
+            <div className="flex items-center gap-1 flex-wrap shrink-0">
+              {[
+                {
+                  id: 'all' as const,
+                  label: isAmharic ? 'ሁሉም' : 'All Logs',
+                },
+                {
+                  id: 'verified' as const,
+                  label: isAmharic ? 'የተረጋገጡ' : 'Verified',
+                },
+                {
+                  id: 'warning' as const,
+                  label: isAmharic ? 'ማስጠንቀቂያ' : 'Warning',
+                },
+                {
+                  id: 'flagged' as const,
+                  label: isAmharic ? 'የተከለከሉ' : 'Flagged',
+                },
+              ].map((tab) => {
+                const isActive = statusFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setStatusFilter(tab.id);
+                      setCurrentPage(1);
+                    }}
+                    className={`group relative flex items-center gap-1 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                      isActive
+                        ? 'bg-primary text-white font-extrabold shadow-2xs'
+                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                    }`}
+                  >
+                    <span className="tracking-tight">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Verification Logs Table / Grid */}
+        <div>
         {filteredLogs.length === 0 ? (
           <div className="p-10 text-center space-y-2">
             <Icon className="material-symbols-outlined text-outline text-[44px]">manage_search</Icon>
@@ -582,6 +597,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
             </div>
           </>
         )}
+        </div>
       </div>
 
       {/* MODAL 1: DETAILED SCANNED VEHICLE INSPECTION */}
