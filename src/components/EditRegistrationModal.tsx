@@ -369,6 +369,25 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
           {/* TAB 1: OWNER INFO */}
           {activeTab === 'owner' && (
             <div className="space-y-4">
+              {/* Permanent Member ID Display (Preserved and never regenerated on edits) */}
+              <div className="p-3 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-[18px] text-primary">badge</Icon>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                      {isAmharic ? 'የአባል ቋሚ መለያ ቁጥር (Member ID)' : 'Permanent Member ID'}
+                    </span>
+                    <span className="font-mono font-black text-sm text-slate-900 dark:text-white">
+                      {registration.id}
+                    </span>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
+                  <Icon className="material-symbols-outlined text-[13px]">lock</Icon>
+                  <span>{isAmharic ? 'የማይለወጥ / ቋሚ' : 'Preserved'}</span>
+                </span>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1">
                   <label className="font-bold text-slate-700 dark:text-slate-300 block">

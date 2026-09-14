@@ -363,11 +363,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
-                {isAmharic
-                  ? 'የ1 ወር ክፍያ ደረሰኞች መዝገብ፣ የክፍያ ማረጋገጫ እና የማብቂያ ቀን ቁጥጥር'
-                  : '1-month payment receipt registration, payment verification & validity tracking'}
-              </p>
             </div>
           </div>
 

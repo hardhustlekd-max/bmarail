@@ -230,13 +230,15 @@ export function initGlobalCrashHandlers(): void {
   globalHandlersInitialized = true;
 
   window.addEventListener('error', (event) => {
-    // Filter out benign websocket errors, extension scripts, and resize observer
+    // Filter out benign websocket errors, extension scripts, network resource errors, and resize observer
+    const msg = String(event.message || '');
     if (
-      !event.message ||
-      event.message.includes('failed to connect to websocket') ||
-      event.message.includes('ResizeObserver loop') ||
-      event.message.includes('Script error.') ||
-      event.message.includes('extension') ||
+      !msg ||
+      msg.includes('failed to connect to websocket') ||
+      msg.includes('ResizeObserver') ||
+      msg.includes('Script error.') ||
+      msg.includes('extension') ||
+      msg.includes('favicon') ||
       event.filename?.includes('extension') ||
       event.filename?.includes('chrome-extension')
     ) {
@@ -249,16 +251,31 @@ export function initGlobalCrashHandlers(): void {
   });
 
   window.addEventListener('unhandledrejection', (event) => {
-    // Filter out harmless aborted network, offline, or websocket rejections
-    const reasonMsg = String(event.reason?.message || event.reason || '');
+    // Filter out harmless network drops, offline fallbacks, audio/camera permission, and websocket rejections
+    const reason = event.reason;
+    const reasonMsg = String(reason?.message || reason || '');
+    const reasonName = String(reason?.name || '');
+
     if (
-      event.reason?.name === 'AbortError' ||
+      reasonName === 'AbortError' ||
+      reasonName === 'NotAllowedError' ||
+      reasonName === 'SecurityError' ||
       reasonMsg.includes('Failed to fetch') ||
       reasonMsg.includes('NetworkError') ||
+      reasonMsg.includes('Network request failed') ||
+      reasonMsg.includes('fetch failed') ||
       reasonMsg.includes('Load failed') ||
-      reasonMsg.includes('The user aborted a request')
+      reasonMsg.includes('The user aborted a request') ||
+      reasonMsg.includes('websocket') ||
+      reasonMsg.includes('WebSocket') ||
+      reasonMsg.includes('ResizeObserver') ||
+      reasonMsg.includes('permission') ||
+      reasonMsg.includes('Permission') ||
+      reasonMsg.includes('offline') ||
+      reasonMsg.includes('cancelled') ||
+      reasonMsg.includes('canceled')
     ) {
-      console.warn('[CrashReporter] Filtered benign network rejection:', reasonMsg);
+      console.warn('[CrashReporter] Filtered benign rejection:', reasonMsg || reasonName);
       return;
     }
 

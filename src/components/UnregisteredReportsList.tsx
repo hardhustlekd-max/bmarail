@@ -145,11 +145,6 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
-                {isAmharic
-                  ? `ጠቅላላ ${unregisteredReports.length} ያልተመዘገቡ ተሽከርካሪ ሪፖርቶች ተመዝግበዋል`
-                  : `Total ${unregisteredReports.length} unregistered vehicle incident logs recorded`}
-              </p>
             </div>
           </div>
 

@@ -159,9 +159,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string | null>(null);
   const [capturedFrameSrc, setCapturedFrameSrc] = useState<string | null>(null);
   const [isProcessingScan, setIsProcessingScan] = useState(false);
-  const [expandedVehicleSpecs, setExpandedVehicleSpecs] = useState(false);
-  const [expandedDocs, setExpandedDocs] = useState(false);
-  const [expandedDigitalId, setExpandedDigitalId] = useState(false);
   const [showNotesSection, setShowNotesSection] = useState(false);
   const [showDigitalIdModal, setShowDigitalIdModal] = useState(false);
   const [showTopMenu, setShowTopMenu] = useState(false);
@@ -268,9 +265,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       setUploadedImageSrc(null);
       setCapturedFrameSrc(null);
       setIsProcessingScan(false);
-      setExpandedVehicleSpecs(false);
-      setExpandedDocs(false);
-      setExpandedDigitalId(false);
     }
   }, [isOpen, autoStart]);
 
@@ -634,9 +628,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     setCurrentLog(null);
     setSearchPlate('');
     setVerificationNotes('');
-    setExpandedVehicleSpecs(false);
-    setExpandedDocs(false);
-    setExpandedDigitalId(false);
     setShowNotesSection(false);
     setCarouselModal(null);
     setUploadedImageSrc(null);
@@ -1298,8 +1289,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                     dlPhoto,
                                     `${scannedRegResult.fullName} — ${isAmharic ? 'የመንጃ ፍቃድ' : 'Driver License'}`
                                   );
-                                } else {
-                                  setExpandedVehicleSpecs(true);
                                 }
                               }}
                               className={`flex items-center gap-2 p-1.5 rounded-lg border min-w-0 transition-all ${
@@ -1339,8 +1328,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                     ppPhoto,
                                     `${scannedRegResult.fullName} — ${isAmharic ? 'የፖሊስ የመንቀሳቀሻ ፈቃድ' : 'Police Permit'}`
                                   );
-                                } else {
-                                  setExpandedVehicleSpecs(true);
                                 }
                               }}
                               className={`flex items-center gap-2 p-1.5 rounded-lg border min-w-0 transition-all ${
@@ -1375,219 +1362,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         );
                       })()}
                     </div>
-
-                    {/* Action Button at bottom: 'ዝርዝር መረጃ' */}
-                    <div className="pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setExpandedVehicleSpecs((prev) => !prev)}
-                        className={`w-full ${activeTheme.actionButton} active:scale-[0.99] font-black py-2.5 px-3 rounded-md text-center shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer text-xs`}
-                      >
-                        <Icon className="material-symbols-outlined text-[18px]">
-                          {expandedVehicleSpecs ? 'expand_less' : 'description'}
-                        </Icon>
-                        <span>{isAmharic ? (expandedVehicleSpecs ? 'መረጃዎችን ደብቅ' : 'ዝርዝር መረጃ') : (expandedVehicleSpecs ? 'Hide Details' : 'Detailed Documents & Info')}</span>
-                      </button>
-                    </div>
                   </div>
-
-                  {/* =========================================================
-                      EXPANDABLE DETAILS & DOCUMENT ATTACHMENTS (When expanded)
-                      ========================================================= */}
-                  <AnimatePresence>
-                    {expandedVehicleSpecs && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
-                        className="overflow-hidden space-y-4"
-                      >
-                        {/* Document Credentials */}
-                        <div className={`${activeTheme.cardBg} border-2 rounded-lg p-4 sm:p-5 shadow-sm space-y-3`}>
-                          <div className="flex items-center justify-between">
-                            <h4 className={`font-bold text-xs sm:text-sm ${activeTheme.headingText} flex items-center gap-2`}>
-                              <Icon className={`material-symbols-outlined ${activeTheme.sectionIconColor} text-[20px]`}>folder_shared</Icon>
-                              <span>{isAmharic ? 'የአባልነት ማስረጃዎች እና ሰነዶች' : 'Member Credentials & Documents'}</span>
-                            </h4>
-                            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold">{isAmharic ? 'ለማጉላት ይጫኑ' : 'Click to zoom'}</span>
-                          </div>
-
-                          {(() => {
-                            const policePermitPhoto =
-                              scannedRegResult.drivingPermitPhoto ||
-                              (scannedRegResult as any).driving_permit_photo ||
-                              (scannedRegResult as any).policePermitPhoto ||
-                              (scannedRegResult as any).policePermit || '';
-
-                            const drivingLicensePhoto =
-                              scannedRegResult.drivingLicensePhoto ||
-                              (scannedRegResult as any).driving_license_photo ||
-                              (scannedRegResult as any).driverLicensePhoto ||
-                              (scannedRegResult as any).licensePhoto || '';
-
-                            const nationalIdPhoto =
-                              scannedRegResult.nationalIdPhoto ||
-                              (scannedRegResult as any).national_id_photo || '';
-
-                            const nationalIdBackPhoto =
-                              scannedRegResult.nationalIdBackPhoto ||
-                              (scannedRegResult as any).national_id_back_photo || '';
-
-                            return (
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                                {/* Police Permit Card - Increased Height & Prominent */}
-                                {policePermitPhoto ? (
-                                  <div
-                                    onClick={() => openDocumentCarousel(
-                                      policePermitPhoto,
-                                      `${scannedRegResult.fullName} — ${isAmharic ? 'የፖሊስ የመንቀሳቀሻ ፈቃድ' : 'Police Permit'}`
-                                    )}
-                                    className={`group cursor-pointer ${activeTheme.docCardBg} hover:brightness-105 border ${activeTheme.docCardBorder} p-3 rounded-lg text-center space-y-2 transition-all shadow-xs ${
-                                      !isSuperAdmin && !drivingLicensePhoto ? 'sm:col-span-2' : ''
-                                    }`}
-                                  >
-                                    <div className="relative h-64 sm:h-72 rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center">
-                                      <SmartImage
-                                        src={policePermitPhoto}
-                                        alt="Police Permit"
-                                        fallbackIcon="menu_book"
-                                        className="w-full h-full object-cover group-hover:scale-103 transition-transform"
-                                      />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                        <Icon className="material-symbols-outlined text-[28px]">zoom_in</Icon>
-                                      </div>
-                                    </div>
-                                    <span className={`text-xs sm:text-sm font-black ${activeTheme.headingText} block truncate`}>
-                                      {isAmharic ? 'የፖሊስ ፈቃድ' : 'Police Permit'}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <div className={`bg-slate-50/80 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700 p-3 rounded-lg text-center space-y-2 ${
-                                    !isSuperAdmin && !drivingLicensePhoto ? 'sm:col-span-2' : ''
-                                  }`}>
-                                    <div className="h-64 sm:h-72 rounded-lg bg-slate-200/50 dark:bg-slate-900/50 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 gap-2">
-                                      <Icon className="material-symbols-outlined text-[40px] text-slate-400">local_police</Icon>
-                                      <span className="text-xs font-bold">{isAmharic ? 'ሰነድ አልተያያዘም' : 'No permit attached'}</span>
-                                    </div>
-                                    <span className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 block truncate">
-                                      {isAmharic ? 'የፖሊስ ፈቃድ (የለም)' : 'Police Permit (None)'}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {/* Driver License Card */}
-                                {drivingLicensePhoto ? (
-                                  <div
-                                    onClick={() => openDocumentCarousel(
-                                      drivingLicensePhoto,
-                                      `${scannedRegResult.fullName} — ${isAmharic ? 'የመንጃ ፍቃድ' : 'Driver License'}`
-                                    )}
-                                    className={`group cursor-pointer ${activeTheme.docCardBg} hover:brightness-105 border ${activeTheme.docCardBorder} p-3 rounded-lg text-center space-y-2 transition-all shadow-xs`}
-                                  >
-                                    <div className="relative h-64 sm:h-72 rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center">
-                                      <SmartImage
-                                        src={drivingLicensePhoto}
-                                        alt="Driver License"
-                                        fallbackIcon="card_membership"
-                                        className="w-full h-full object-cover group-hover:scale-103 transition-transform"
-                                      />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                        <Icon className="material-symbols-outlined text-[28px]">zoom_in</Icon>
-                                      </div>
-                                    </div>
-                                    <span className={`text-xs sm:text-sm font-black ${activeTheme.headingText} block truncate`}>
-                                      {isAmharic ? 'የመንጃ ፍቃድ' : 'Driver License'}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <div className="bg-slate-50/80 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700 p-3 rounded-lg text-center space-y-2">
-                                    <div className="h-64 sm:h-72 rounded-lg bg-slate-200/50 dark:bg-slate-900/50 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 gap-2">
-                                      <Icon className="material-symbols-outlined text-[40px] text-slate-400">card_membership</Icon>
-                                      <span className="text-xs font-bold">{isAmharic ? 'ሰነድ አልተያያዘም' : 'No license attached'}</span>
-                                    </div>
-                                    <span className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 block truncate">
-                                      {isAmharic ? 'የመንጃ ፍቃድ (የለም)' : 'Driver License (None)'}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {/* National ID (Front) - Visible ONLY for SuperAdmin */}
-                                {isSuperAdmin && nationalIdPhoto && (
-                                  <div
-                                    onClick={() => openDocumentCarousel(
-                                      nationalIdPhoto,
-                                      `${scannedRegResult.fullName} — ${isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID (Front)'}`
-                                    )}
-                                    className={`group cursor-pointer ${activeTheme.docCardBg} hover:brightness-105 border ${activeTheme.docCardBorder} p-2.5 rounded-md text-center space-y-1.5 transition-all`}
-                                  >
-                                    <div className="relative h-48 sm:h-56 rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center">
-                                      <SmartImage
-                                        src={nationalIdPhoto}
-                                        alt="National ID Front"
-                                        fallbackIcon="badge"
-                                        className="w-full h-full object-cover group-hover:scale-103 transition-transform"
-                                      />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                        <Icon className="material-symbols-outlined text-[24px]">zoom_in</Icon>
-                                      </div>
-                                    </div>
-                                    <span className={`text-xs font-bold ${activeTheme.headingText} block truncate`}>
-                                      {isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID (Front)'}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {/* National ID (Back) - Visible ONLY for SuperAdmin */}
-                                {isSuperAdmin && nationalIdBackPhoto && (
-                                  <div
-                                    onClick={() => openDocumentCarousel(
-                                      nationalIdBackPhoto,
-                                      `${scannedRegResult.fullName} — ${isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}`
-                                    )}
-                                    className={`group cursor-pointer ${activeTheme.docCardBg} hover:brightness-105 border ${activeTheme.docCardBorder} p-2.5 rounded-md text-center space-y-1.5 transition-all`}
-                                  >
-                                    <div className="relative h-48 sm:h-56 rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center">
-                                      <SmartImage
-                                        src={nationalIdBackPhoto}
-                                        alt="National ID Back"
-                                        fallbackIcon="badge"
-                                        className="w-full h-full object-cover group-hover:scale-103 transition-transform"
-                                      />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                        <Icon className="material-symbols-outlined text-[24px]">zoom_in</Icon>
-                                      </div>
-                                    </div>
-                                    <span className={`text-xs font-bold ${activeTheme.headingText} block truncate`}>
-                                      {isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}
-                                    </span>
-                                  </div>
-                                )}
-
-                                {/* Digital ID Card Preview (Motorcyclists Association ID) - Visible ONLY for SuperAdmin */}
-                                {isSuperAdmin && (
-                                  <div
-                                    onClick={() => setShowDigitalIdModal(true)}
-                                    className={`group cursor-pointer ${activeTheme.docCardBg} hover:brightness-105 border ${activeTheme.docCardBorder} p-2.5 rounded-md text-center space-y-1.5 transition-all sm:col-span-2`}
-                                  >
-                                    <div className="relative rounded-md overflow-hidden bg-slate-950 flex items-center justify-center p-2 border border-slate-800">
-                                      <QRCodeCard registration={scannedRegResult} lang={lang} />
-                                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                        <Icon className="material-symbols-outlined text-[28px]">zoom_in</Icon>
-                                      </div>
-                                    </div>
-                                    <span className={`text-xs font-black ${activeTheme.headingText} block`}>
-                                      {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ (SuperAdmin ብቻ)' : 'Motorcyclists Association ID (SuperAdmin Only)'}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
 
                   {/* Municipal Copyright Footer matching Attachment Screenshots */}
                   <div className="pt-3 pb-1 text-center text-[10px] sm:text-[11px] font-medium opacity-80">
@@ -1692,7 +1467,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       )}
 
       {/* DIGITAL ID LIGHTBOX MODAL (SuperAdmin Only) */}
-      {showDigitalIdModal && isSuperAdmin && (
+      {showDigitalIdModal && isSuperAdmin && scannedRegResult && scannedRegResult !== 'not_found' && (
         <div
           className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => setShowDigitalIdModal(false)}

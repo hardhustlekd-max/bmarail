@@ -272,7 +272,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
   userBadgeId,
 }) => {
   const isAmharic = lang === 'am';
-  const isSuperAdmin = userRole === 'superadmin' || userRole === 'super_admin';
+  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const [hideFromOtherUsers, setHideFromOtherUsers] = useState<boolean>(false);
 
   // 5-Step state matching the verification workflow:

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import { Language, UserRole, SystemUser, SystemSettings } from '../types';
-import { addAuditLogToDb, subscribeSettings, saveSettingsToDb } from '../services/dbService';
+import { addAuditLogToDb, subscribeSettings, saveSettingsToDb, DEFAULT_SETTINGS } from '../services/dbService';
 
 export interface RoleDefinition {
   id: string;
@@ -228,6 +228,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
   const [localSettings, setLocalSettings] = useState<SystemSettings>(() => {
     return (
       propSettings || {
+        ...DEFAULT_SETTINGS,
         registrationFreeze: false,
         maintenanceMode: false,
         emailAlerts: true,

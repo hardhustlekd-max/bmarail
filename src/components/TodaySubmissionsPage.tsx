@@ -16,6 +16,8 @@ import {
 } from '../services/dbService';
 import { SmartImage } from './SmartImage';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
+import { QRCodeCard } from './QRCodeCard';
+import { triggerDocumentPrint } from '../utils/printUtils';
 import {
   FullscreenDocumentCarouselModal,
   buildRegistrationDocumentList,
@@ -281,8 +283,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   };
 
   // 1. Role-specific filtering (clerk only sees their own submissions; hides hidden records for non-superadmin)
+  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const roleFilteredRegs = registrations.filter((reg) => {
-    if (userRole !== 'superadmin' && userRole !== 'super_admin' && reg.hideFromOtherUsers) {
+    if (!isSuperAdmin && reg.hideFromOtherUsers) {
       return false;
     }
     if (userRole === 'clerk') {
@@ -304,7 +307,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
   // Calculate Status Counts based on Date Filter
   const pendingCount = dateFilteredRegs.filter(
-    (r) => r.status === 'pending_approval' || r.status === 'pending'
+    (r) => r.status === 'pending_approval' || (r.status as string) === 'pending'
   ).length;
 
   const approvedCount = dateFilteredRegs.filter(
@@ -319,7 +322,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   const finalFilteredRegs = dateFilteredRegs.filter((reg) => {
     // Status Filter
     if (statusFilter !== 'all') {
-      if (statusFilter === 'pending_approval' && reg.status !== 'pending_approval' && reg.status !== 'pending') {
+      if (statusFilter === 'pending_approval' && reg.status !== 'pending_approval' && (reg.status as string) !== 'pending') {
         return false;
       }
       if (statusFilter === 'approved' && reg.status !== 'approved' && reg.status !== 'printed' && reg.status !== 'ordered_print') {
@@ -369,11 +372,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
-                {isAmharic
-                  ? 'የዛሬ የተመዘገቡ ማመልከቻዎች፣ መረጃዎችን ማረሚያ እና እንደገና ማቅረቢያ'
-                  : 'Registry of today’s submissions, information corrections, and re-submissions'}
-              </p>
             </div>
           </div>
 
@@ -1322,9 +1320,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
-            registration={inspectReg}
+            title={isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Official Digital Permit & QR Badge'}
             onClose={() => setInspectReg(null)}
-          />
+            onPrint={() => triggerDocumentPrint('id-card')}
+          >
+            <QRCodeCard registration={inspectReg} lang={lang} />
+          </ZoomableDocumentContainer>
         </div>
       )}
 

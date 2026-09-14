@@ -133,14 +133,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
   // Helper functions for masking hidden owner details for non-superadmin users
   const getDisplayName = (reg: MotorcycleRegistration) => {
-    if (reg.hideFromOtherUsers && userRole !== 'superadmin' && userRole !== 'super_admin') {
+    if (reg.hideFromOtherUsers && !isSuperAdmin) {
       return isAmharic ? '🔒 [የተደበቀ ባለቤት]' : '🔒 [Hidden Owner]';
     }
     return reg.fullName || '—';
   };
 
   const getDisplayPhone = (reg: MotorcycleRegistration) => {
-    if (reg.hideFromOtherUsers && userRole !== 'superadmin' && userRole !== 'super_admin') {
+    if (reg.hideFromOtherUsers && !isSuperAdmin) {
       return '***-***-****';
     }
     return reg.phone || '—';
@@ -167,7 +167,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   // Role-specific scoped registrations (hidden records excluded from totals & tables except for Super Admin)
   const scopedRegistrations = React.useMemo(() => {
     let list = registrations;
-    if (userRole !== 'superadmin' && userRole !== 'super_admin') {
+    if (!isSuperAdmin) {
       list = list.filter((r) => !r.hideFromOtherUsers);
     }
     if (userRole === 'clerk') {
@@ -178,18 +178,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       });
     }
     return list;
-  }, [registrations, userRole, userBadgeId]);
+  }, [registrations, isSuperAdmin, userRole, userBadgeId]);
 
   const approvedCount = scopedRegistrations.filter(
     (r) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print'
   ).length;
 
   const pendingCount = scopedRegistrations.filter(
-    (r) => r.status === 'pending_approval' || r.status === 'pending'
+    (r) => r.status === 'pending_approval' || (r.status as string) === 'pending'
   ).length;
 
   const expiredCount = scopedRegistrations.filter(
-    (r) => r.status === 'expired' || r.status === 'rejected'
+    (r) => (r.status as string) === 'expired' || r.status === 'rejected'
   ).length;
 
   const filteredRegistrations = scopedRegistrations.filter((r) => {
@@ -198,9 +198,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     if (activeTableTab === 'approved') {
       matchesStatus = r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print';
     } else if (activeTableTab === 'pending') {
-      matchesStatus = r.status === 'pending_approval' || r.status === 'pending';
+      matchesStatus = r.status === 'pending_approval' || (r.status as string) === 'pending';
     } else if (activeTableTab === 'expired') {
-      matchesStatus = r.status === 'expired' || r.status === 'rejected';
+      matchesStatus = (r.status as string) === 'expired' || r.status === 'rejected';
     }
 
     if (!matchesStatus) return false;
@@ -402,15 +402,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
                   : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
-                {isAmharic
-                  ? 'የፀደቁ፣ በመጠባበቅ ላይ ያሉ እና ውድቅ የተደረጉ የተሽከርካሪ መረጃዎች ዝርዝር'
-                  : 'Registry and verification records of all motorcycle permits'}
-              </p>
             </div>
           </div>
 
-          {showHiddenControls && (userRole === 'superadmin' || userRole === 'super_admin') && (
+          {showHiddenControls && isSuperAdmin && (
             <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-full text-xs font-black shadow-2xs animate-pulse">
               <Icon className="material-symbols-outlined text-[16px]">visibility_off</Icon>
               <span>
@@ -433,7 +428,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               value={regSearchQuery}
               onChange={(e) => {
                 const val = e.target.value;
-                const isSuperUser = userRole === 'superadmin' || userRole === 'super_admin';
+                const isSuperUser = isSuperAdmin;
                 if (isSuperUser && val.toLowerCase().includes('super1212')) {
                   setShowHiddenControls(true);
                   const cleaned = val.replace(/super1212/gi, '').trim();
@@ -626,7 +621,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   className="font-black text-sm text-slate-900 dark:text-white hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors text-left truncate max-w-[220px] flex items-center gap-1 cursor-pointer"
                                 >
                                   <span className="truncate">{getDisplayName(reg)}</span>
-                                  {reg.hideFromOtherUsers && (userRole === 'superadmin' || userRole === 'super_admin') && (
+                                  {reg.hideFromOtherUsers && isSuperAdmin && (
                                     <span className="px-1 py-0.2 rounded text-[9px] font-extrabold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 shrink-0">
                                       🔒
                                     </span>
@@ -682,7 +677,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             {/* Actions */}
                             <td className="px-4 py-2.5 align-middle h-16 text-right">
                               <div className="flex items-center justify-end gap-1.5">
-                                {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'super_admin') && reg.status === 'pending_approval' && (
+                                {(userRole === 'admin' || isSuperAdmin) && reg.status === 'pending_approval' && (
                                   <>
                                     <button
                                       type="button"
@@ -717,7 +712,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   </button>
                                 )}
 
-                                {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'super_admin') && (
+                                {(userRole === 'admin' || isSuperAdmin) && (
                                   <button
                                     type="button"
                                     onClick={() => setSelectedRegForQR(reg)}
@@ -766,7 +761,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   </>
                                 )}
 
-                                {showHiddenControls && (userRole === 'superadmin' || userRole === 'super_admin') && (() => {
+                                {showHiddenControls && isSuperAdmin && (() => {
                                   const isSuperUserRegistered = !reg.registeredBy || 
                                     reg.registeredBy.toLowerCase() === 'superadmin' || 
                                     reg.registeredBy.toLowerCase() === 'super_admin' || 
@@ -1119,7 +1114,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 </button>
                               )}
 
-                              {showHiddenControls && (userRole === 'superadmin' || userRole === 'super_admin') && (() => {
+                              {showHiddenControls && isSuperAdmin && (() => {
                                 const isSuperUserRegistered = !reg.registeredBy || 
                                   reg.registeredBy.toLowerCase() === 'superadmin' || 
                                   reg.registeredBy.toLowerCase() === 'super_admin' || 
@@ -1162,7 +1157,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 );
                               })()}
 
-                              {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'super_admin') && (
+                              {(userRole === 'admin' || isSuperAdmin) && (
                                 <button
                                   type="button"
                                   onClick={() => setSelectedRegForQR(reg)}
@@ -1195,7 +1190,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 </>
                               )}
 
-                              {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'super_admin') && reg.status === 'pending_approval' && (
+                              {(userRole === 'admin' || isSuperAdmin) && reg.status === 'pending_approval' && (
                                 <>
                                   <button
                                     type="button"
@@ -1487,7 +1482,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         <span>{isAmharic ? compliance.labelAm : compliance.labelEn}</span>
                       </span>
 
-                      {userRole !== 'officer' && isTaskAllowed(userRole, 1) && (
+                      {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
                         <button
                           type="button"
                           onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
@@ -1745,7 +1740,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   </button>
                 )}
 
-                {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'super_admin') && (
+                {(userRole === 'admin' || isSuperAdmin) && (
                   <button
                     type="button"
                     onClick={() => {
@@ -1790,7 +1785,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   </>
                 )}
 
-                {userRole !== 'officer' && isTaskAllowed(userRole, 1) && (
+                {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
                   <button
                     type="button"
                     onClick={() => handleOpenRenewalModal(selectedRegForDetails)}

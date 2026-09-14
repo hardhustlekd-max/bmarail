@@ -197,11 +197,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'ቅንብሮች' : 'Settings'}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
-                {isAmharic
-                  ? 'የይለፍ ቃል ለውጥ፣ የተጠቃሚ መገለጫ እና የስርዓት ምርጫዎች'
-                  : 'Manage password credentials, user profile details, and system preferences'}
-              </p>
             </div>
           </div>
 

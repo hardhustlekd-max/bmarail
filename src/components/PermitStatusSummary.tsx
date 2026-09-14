@@ -31,11 +31,10 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       count: pendingCount,
       percentage: Math.round((pendingCount / totalCount) * 100),
       icon: 'pending_actions',
-      badgeBg: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-300/50',
-      iconGradient: 'from-amber-500 to-orange-500',
-      cardBg: 'bg-gradient-to-br from-amber-500/5 via-surface-container/30 to-surface-container/10',
-      border: 'border-amber-500/30 hover:border-amber-500/80',
-      progressBg: 'bg-gradient-to-r from-amber-500 to-orange-500',
+      badgeBg: 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700',
+      border: 'border-amber-200 dark:border-amber-900/60',
+      bg: 'bg-amber-50/40 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30',
+      textClass: 'text-amber-700 dark:text-amber-400',
       description: isAmharic ? 'ማፅደቂያ የሚጠበቁ' : 'Awaiting review',
     },
     {
@@ -44,11 +43,10 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       count: approvedCount,
       percentage: Math.round((approvedCount / totalCount) * 100),
       icon: 'verified',
-      badgeBg: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-300/50',
-      iconGradient: 'from-emerald-500 to-teal-600',
-      cardBg: 'bg-gradient-to-br from-emerald-500/5 via-surface-container/30 to-surface-container/10',
-      border: 'border-emerald-500/30 hover:border-emerald-500/80',
-      progressBg: 'bg-gradient-to-r from-emerald-500 to-teal-600',
+      badgeBg: 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700',
+      border: 'border-emerald-200 dark:border-emerald-900/60',
+      bg: 'bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/30',
+      textClass: 'text-emerald-700 dark:text-emerald-400',
       description: isAmharic ? 'የተረጋገጡ' : 'Verified & active',
     },
     {
@@ -57,11 +55,10 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       count: rejectedCount,
       percentage: Math.round((rejectedCount / totalCount) * 100),
       icon: 'cancel',
-      badgeBg: 'bg-red-500/15 text-red-700 dark:text-red-300 border-red-300/50',
-      iconGradient: 'from-red-500 to-rose-600',
-      cardBg: 'bg-gradient-to-br from-red-500/5 via-surface-container/30 to-surface-container/10',
-      border: 'border-red-500/30 hover:border-red-500/80',
-      progressBg: 'bg-gradient-to-r from-red-500 to-rose-600',
+      badgeBg: 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-700',
+      border: 'border-rose-200 dark:border-rose-900/60',
+      bg: 'bg-rose-50/40 dark:bg-rose-950/20 hover:bg-rose-50 dark:hover:bg-rose-950/30',
+      textClass: 'text-rose-700 dark:text-rose-400',
       description: isAmharic ? 'ውድቅ የተደረጉ' : 'Failed eligibility',
     },
     {
@@ -70,11 +67,10 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       count: registrations.length,
       percentage: 100,
       icon: 'assessment',
-      badgeBg: 'bg-primary/15 text-primary border-primary/30',
-      iconGradient: 'from-blue-600 to-indigo-600',
-      cardBg: 'bg-gradient-to-br from-blue-500/5 via-surface-container/30 to-surface-container/10',
-      border: 'border-primary/30 hover:border-primary',
-      progressBg: 'bg-gradient-to-r from-blue-600 to-indigo-600',
+      badgeBg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700',
+      border: 'border-slate-200 dark:border-slate-800',
+      bg: 'bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800/70',
+      textClass: 'text-blue-700 dark:text-blue-400',
       description: isAmharic ? 'ሁሉም ምዝገባዎች' : 'All registrations',
     },
   ];
@@ -85,18 +81,18 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       className={
         borderless
           ? 'space-y-4'
-          : 'bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-4 sm:p-5 shadow-sm space-y-4'
+          : 'bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-4 sm:p-5 shadow-xs space-y-4'
       }
     >
-      {/* Header Bar with Live Pulse */}
+      {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-md bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
-            <Icon className="material-symbols-outlined text-[22px]">analytics</Icon>
+          <div className="w-9 h-9 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+            <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-black text-xs sm:text-sm text-on-surface uppercase tracking-wider">
+              <h3 className="font-extrabold text-xs sm:text-sm text-on-surface uppercase tracking-wider">
                 {isAmharic ? 'የአባላት አስተዳደር ሁኔታ' : 'Permit Status Breakdown'}
               </h3>
             </div>
@@ -107,41 +103,22 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
         </div>
       </div>
 
-      {/* Breakdown Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+      {/* Breakdown Grid - 4 cards horizontal without wrap & without overflow */}
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
         {statusCards.map((card) => {
-          // Define card specific colors matching Clerk's color scheme style but matching status
-          const borderClass = 
-            card.key === 'pending_approval' ? 'border-amber-200/80 dark:border-amber-800/50' :
-            card.key === 'approved' ? 'border-emerald-200/80 dark:border-emerald-800/50' :
-            card.key === 'rejected' ? 'border-red-200/80 dark:border-red-800/50' :
-            'border-blue-200/80 dark:border-blue-800/50';
-
-          const bgClass = 
-            card.key === 'pending_approval' ? 'from-amber-500/5 via-surface-container/30 to-transparent' :
-            card.key === 'approved' ? 'from-emerald-500/5 via-surface-container/30 to-transparent' :
-            card.key === 'rejected' ? 'from-red-500/5 via-surface-container/30 to-transparent' :
-            'from-blue-500/5 via-surface-container/30 to-transparent';
-
-          const textClass = 
-            card.key === 'pending_approval' ? 'text-amber-600 dark:text-amber-400' :
-            card.key === 'approved' ? 'text-emerald-600 dark:text-emerald-400' :
-            card.key === 'rejected' ? 'text-red-600 dark:text-red-400' :
-            'text-blue-600 dark:text-blue-400';
-
           return (
             <div
               key={card.key}
               onClick={() => onSelectStatusFilter && onSelectStatusFilter(card.key)}
-              className={`p-2.5 sm:p-3 rounded-lg border ${borderClass} bg-gradient-to-br ${bgClass} transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md cursor-pointer group`}
+              className={`p-1.5 sm:p-3 rounded-lg border ${card.border} ${card.bg} transition-colors cursor-pointer group min-w-0 overflow-hidden`}
             >
-              <div className={`flex justify-between items-center ${textClass} mb-1`}>
-                <span className="text-[10px] font-black uppercase tracking-wider text-on-surface">
+              <div className={`flex justify-between items-center ${card.textClass} mb-0.5 sm:mb-1`}>
+                <span className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-on-surface truncate">
                   {card.label}
                 </span>
-                <Icon className="material-symbols-outlined text-[16px] group-hover:scale-110 transition-transform duration-200">{card.icon}</Icon>
+                <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] shrink-0">{card.icon}</Icon>
               </div>
-              <p className="text-xl sm:text-2xl font-black text-on-surface">{card.count}</p>
+              <p className="text-base sm:text-2xl font-black text-on-surface tracking-tight leading-tight">{card.count}</p>
             </div>
           );
         })}

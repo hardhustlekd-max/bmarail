@@ -24,15 +24,18 @@ export interface MotorcycleRegistration {
   phone: string;
   userPortraitPhoto?: string;
   userPortraitThumbnail?: string;
+  ownerPhoto?: string;
   nationalIdPhoto: string;
   nationalIdBackPhoto?: string;
   drivingLicensePhoto: string;
   drivingPermitPhoto: string;
   vehicleCategory: VehicleCategory;
+  serviceCategory?: string;
   motorBrand?: string;
   motorModel?: string;
   chassisNumber?: string;
   engineOrSerialNo: string;
+  engineNumber?: string;
   plateNumber: string;
   registrationDate: string;
   status: 'pending_approval' | 'approved' | 'rejected' | 'ordered_print' | 'printed';
@@ -54,8 +57,10 @@ export interface OfficerAssignment {
   subCity: string;
   locationName: string;
   shift: 'morning' | 'afternoon' | 'night';
-  status: 'active' | 'off_duty';
+  status: 'active' | 'off_duty' | 'inactive';
   assignedLocation?: string;
+  assignedZone?: string;
+  assignedSubcity?: string;
   phone?: string;
   shiftHours?: string;
   assignedDate?: string;
@@ -75,9 +80,13 @@ export interface PrintBatchOrder {
 export interface VerificationLog {
   id: string;
   scannedAt: string;
+  timestamp?: string;
   plateNumber: string;
   fullName: string;
+  driverName?: string;
   phone: string;
+  badgeId?: string;
+  notes?: string;
   vehicleCategory: VehicleCategory;
   engineOrSerialNo: string;
   permitStatus: 'pending_approval' | 'approved' | 'rejected' | 'ordered_print' | 'printed';
@@ -148,16 +157,18 @@ export type ScannerResultTheme =
   | 'modern_clean';
 
 export interface SystemSettings {
-  officerName: string;
-  department: string;
-  subCityOffice: string;
-  defaultPrinter: string;
-  cardStockType: string;
-  calendarSystem: 'ethiopian' | 'gregorian';
-  autoPrintQR: boolean;
-  emailAlerts: boolean;
-  security2FA: boolean;
-  highRiskAlerts: boolean;
+  officerName?: string;
+  department?: string;
+  subCityOffice?: string;
+  defaultPrinter?: string;
+  cardStockType?: string;
+  calendarSystem?: 'ethiopian' | 'gregorian';
+  autoPrintQR?: boolean;
+  emailAlerts?: boolean;
+  security2FA?: boolean;
+  highRiskAlerts?: boolean;
+  registrationFreeze?: boolean;
+  maintenanceMode?: boolean;
   scannerResultTheme?: ScannerResultTheme;
   updatedAt?: string;
   showClerkPermitStatus?: boolean;
@@ -186,5 +197,6 @@ export interface PaymentReceipt {
   notes?: string;
   enteredBy: string;
   createdAt: string;
+  status?: string;
 }
 

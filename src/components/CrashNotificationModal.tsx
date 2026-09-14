@@ -82,7 +82,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
     >
       <div className="w-full max-w-xl bg-surface-container-lowest dark:bg-slate-900 border-2 border-rose-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header Alert Strip */}
-        <div className="bg-gradient-to-r from-rose-600 via-rose-700 to-red-800 text-white px-5 py-4 flex items-center justify-between shadow-md">
+        <div className="bg-rose-700 text-white px-5 py-4 flex items-center justify-between border-b border-rose-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0 shadow-inner">
               <Icon className="material-symbols-outlined text-[26px] text-white">

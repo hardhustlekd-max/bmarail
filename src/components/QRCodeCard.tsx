@@ -19,6 +19,7 @@ export const autoCapitalize = (str?: string): string => {
 };
 
 export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) => {
+  if (!registration) return null;
   const isAmharic = lang === 'am';
   const [printError, setPrintError] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);

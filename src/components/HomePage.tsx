@@ -672,11 +672,12 @@ export const HomePage: React.FC<HomePageProps> = ({
     const list: NotificationItem[] = [];
 
     // RBAC Permission checks based on user's active role and permission matrix
-    const isSuperAdmin = userRole === 'superadmin' || userRole === 'super_admin' || userRole === 'role-superadmin';
-    const isManager = userRole === 'admin' || userRole === 'role-manager';
-    const isOfficer = userRole === 'officer' || userRole === 'role-officer';
-    const isClerk = userRole === 'clerk' || userRole === 'role-secretary';
-    const isItSpecialist = userRole === 'it_specialist' || userRole === 'role-it';
+    const roleStr = userRole as string;
+    const isSuperAdmin = roleStr === 'superadmin' || roleStr === 'super_admin' || roleStr === 'role-superadmin';
+    const isManager = roleStr === 'admin' || roleStr === 'role-manager';
+    const isOfficer = roleStr === 'officer' || roleStr === 'role-officer';
+    const isClerk = roleStr === 'clerk' || roleStr === 'role-secretary';
+    const isItSpecialist = roleStr === 'it_specialist' || roleStr === 'role-it';
 
     // 1. Pending registration applications (Clerk review, Manager review, Superadmin review)
     // Field officers who only patrol must NOT receive clerical registration review alerts
@@ -1602,7 +1603,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </button>
 
                 {/* Unlawful Motors Link (Manager & Super Admin) */}
-                {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'super_admin') && (
+                {(userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
                   <button
                     type="button"
                     onClick={() => setActivePage('unregistered_list')}
@@ -1850,9 +1851,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                 )}
               </nav>
 
-              {/* Right Controls (UNIFIED MENU TOGGLE BUTTON & NOTIFICATION BELL) */}
-              <div className="flex items-center gap-2 shrink-0">
-                {/* Mobile Notification Bell Icon Button */}
+              {/* Right Controls (BORDERLESS MENU TOGGLE BUTTON & NOTIFICATION BELL FOR MOBILE) */}
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                {/* Mobile Notification Bell Icon Button (Container removed for sleek mobile appearance) */}
                 <div className="relative" ref={mobileNotificationRef}>
                   <button
                     type="button"
@@ -1860,24 +1861,24 @@ export const HomePage: React.FC<HomePageProps> = ({
                       setIsNotificationOpen(!isNotificationOpen);
                       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
                     }}
-                    className={`w-10 h-10 min-w-[42px] min-h-[42px] flex items-center justify-center rounded-lg border transition-all cursor-pointer shrink-0 shadow-2xs relative touch-manipulation active:scale-90 ${
+                    className={`p-1.5 flex items-center justify-center transition-colors cursor-pointer shrink-0 relative touch-manipulation active:scale-90 ${
                       isNotificationOpen
-                        ? 'bg-yellow-500 text-[#0B1E48] border-yellow-400 font-black'
-                        : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                        ? 'text-yellow-400'
+                        : 'text-white hover:text-yellow-400'
                     }`}
                     title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                     aria-label="Notifications"
                   >
-                    <Icon className="material-symbols-outlined text-[22px]">notifications</Icon>
+                    <Icon className="material-symbols-outlined text-[26px]">notifications</Icon>
                     {unreadNotificationCount > 0 && (
-                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[18px] h-4.5 px-1 rounded-full flex items-center justify-center absolute -top-1.5 -right-1.5 shadow-2xs border-2 border-[#0B1E48] animate-pulse">
+                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[17px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-0.5 -right-0.5 shadow-2xs border border-[#0B1E48] animate-pulse">
                         {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                       </span>
                     )}
                   </button>
                 </div>
 
-                {/* Mobile Drawer Menu Toggle */}
+                {/* Mobile Drawer Menu Toggle (Container removed for sleek mobile appearance) */}
                 <button
                   ref={mobileMenuButtonRef}
                   type="button"
@@ -1886,9 +1887,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                     if (isNotificationOpen) setIsNotificationOpen(false);
                   }}
                   aria-label="Toggle Navigation Menu"
-                  className="w-10 h-10 min-w-[42px] min-h-[42px] flex items-center justify-center rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 active:scale-90 touch-manipulation transition-all cursor-pointer shrink-0 shadow-2xs"
+                  className="p-1.5 flex items-center justify-center text-white hover:text-yellow-400 active:scale-90 touch-manipulation transition-colors cursor-pointer shrink-0"
                 >
-                  <Icon className="material-symbols-outlined text-[24px]">
+                  <Icon className="material-symbols-outlined text-[28px]">
                     {isMobileMenuOpen ? 'close' : 'menu'}
                   </Icon>
                 </button>
@@ -1943,7 +1944,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             >
               <div className="space-y-4">
                 {/* Mobile Simple Ethiopian Calendar Date & Time Widget */}
-                <div className="bg-gradient-to-r from-white/10 to-white/5 border border-yellow-500/30 rounded-lg p-3 text-white space-y-2 shadow-inner">
+                <div className="bg-white/5 border border-yellow-500/20 rounded-lg p-3 text-white space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-yellow-400 font-extrabold text-xs">
                       <Icon className="material-symbols-outlined text-[18px]">calendar_month</Icon>
@@ -2209,7 +2210,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </button>
 
                       {/* Unlawful Motors (Manager & Super Admin) */}
-                      {(userRole === 'admin' || userRole === 'superadmin' || userRole === 'super_admin') && (
+                      {(userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
                         <button
                           type="button"
                           onClick={() => {
@@ -2661,7 +2662,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <main className={
           activePage === 'scan'
             ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
-            : "flex-1 overflow-y-auto w-full max-w-7xl md:max-w-[1600px] px-3 sm:px-4 md:px-6 pt-1.5 sm:pt-2 md:pt-2 pb-16 md:pb-8 mx-auto min-h-0"
+            : "flex-1 overflow-y-auto w-full max-w-7xl md:max-w-[1600px] px-3 sm:px-4 md:px-6 pt-1.5 sm:pt-2 md:pt-2 pb-6 md:pb-8 mx-auto min-h-0 flex flex-col justify-between"
         }>
           {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (
@@ -2737,7 +2738,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   userBadgeId={userBadgeId}
                   registrations={registrations}
                   onNavigateToNewRegistration={() => setActivePage('forms')}
-                  onShowToast={(msg, type) => addToast(msg, type === 'warning' ? 'error' : type)}
+                  onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
                 />
               )}
 
@@ -2756,7 +2757,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onRejectRegistration={handleRejectRegistration}
                   onAddVerificationLog={handleAddVerificationLog}
                   initialTableTab={tableInitialTab}
-                  onShowToast={(msg, type) => addToast(msg, type === 'warning' ? 'error' : type)}
+                  onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
                 />
               )}
 
@@ -2822,7 +2823,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     activePage === 'superadmin_subcities'
                       ? 'subcities'
                       : activePage === 'superadmin_owners'
-                      ? 'owners'
+                      ? 'permits'
                       : activePage === 'superadmin_permits'
                       ? 'permits'
                       : activePage === 'superadmin_maintenance'
@@ -2861,40 +2862,42 @@ export const HomePage: React.FC<HomePageProps> = ({
               )}
             </>
           )}
+
+          {/* Modern, elegant system footer containing language and theme selectors */}
+          {activePage !== 'scan' && (
+            <footer className="w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 rounded-lg">
+              <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
+                {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኛች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Motorcyclists Association Permit Governance System. All rights reserved.'}
+              </div>
+              
+              <div className="flex items-center gap-3">
+                {/* Language Selector */}
+                <button
+                  type="button"
+                  onClick={onToggleLang}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
+                >
+                  <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">translate</Icon>
+                  <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
+                </button>
+
+                {/* Theme Selector */}
+                {onToggleTheme && (
+                  <button
+                    type="button"
+                    onClick={onToggleTheme}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">
+                      {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
+                    </Icon>
+                    <span>{currentTheme === 'dark' ? (isAmharic ? 'ብርሃን (Light)' : 'Light Mode') : (isAmharic ? 'ጨለማ (Dark)' : 'Dark Mode')}</span>
+                  </button>
+                )}
+              </div>
+            </footer>
+          )}
         </main>
-
-        {/* Modern, elegant system footer containing language and theme selectors */}
-        <footer className="w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
-          <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
-            {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኛች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Motorcyclists Association Permit Governance System. All rights reserved.'}
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {/* Language Selector */}
-            <button
-              type="button"
-              onClick={onToggleLang}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
-            >
-              <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">translate</Icon>
-              <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
-            </button>
-
-            {/* Theme Selector */}
-            {onToggleTheme && (
-              <button
-                type="button"
-                onClick={onToggleTheme}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
-              >
-                <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">
-                  {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
-                </Icon>
-                <span>{currentTheme === 'dark' ? (isAmharic ? 'ብርሃን (Light)' : 'Light Mode') : (isAmharic ? 'ጨለማ (Dark)' : 'Dark Mode')}</span>
-              </button>
-            )}
-          </div>
-        </footer>
       </div>
 
       {/* Floating Toast Notification Stack */}

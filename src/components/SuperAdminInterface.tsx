@@ -41,7 +41,7 @@ import { formatEthiopianDateTime } from '../utils/ethiopianCalendar';
 interface SuperAdminInterfaceProps {
   currentLang: Language;
   currentUserBadgeId: string;
-  initialTab?: 'users' | 'subcities' | 'permits' | 'maintenance';
+  initialTab?: 'users' | 'subcities' | 'permits' | 'maintenance' | 'security';
   onShowToast?: (msg: string, type?: 'success' | 'warning' | 'info') => void;
 }
 
@@ -54,7 +54,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const isAmharic = currentLang === 'am';
 
   // State
-  const [activeTab, setActiveTab] = useState<'users' | 'subcities' | 'permits' | 'maintenance'>(
+  const [activeTab, setActiveTab] = useState<'users' | 'subcities' | 'permits' | 'maintenance' | 'security'>(
     initialTab as any
   );
 
@@ -100,7 +100,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [newBadgeId, setNewBadgeId] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newRole, setNewRole] = useState<UserRole>('clerk');
-  const [newSubCity, setNewSubCity] = useState(BAHIR_DAR_SUBCITIES[0].en);
+  const [newSubCity, setNewSubCity] = useState<string>(BAHIR_DAR_SUBCITIES[0].en);
   const [newPassword, setNewPassword] = useState('DefaultPass123!');
 
   // Security Toggles State
@@ -152,6 +152,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     subcities: 13,
     permits: 11,
     maintenance: 12,
+    security: 12,
   };
 
   const currentTaskId = TAB_TASK_MAP[activeTab] || 14;
@@ -1150,11 +1151,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   {isAmharic ? 'የባህር ዳር ክፍለ ከተሞች አስተዳደር እና ቁጥጥር' : 'Bahir Dar Sub-City Governance & Permit Freeze'}
                 </h3>
               </div>
-              <p className="text-xs text-outline mt-1 font-medium">
-                {isAmharic
-                  ? 'የእያንዳንዱን 6ቱ የባህር ዳር ክፍለ ከተሞች ምዝገባ ይቆጣጠሩ፣ የሞተር ብዛት ይመልከቱ ወይም ምዝገባ በጊዜያዊነት ያግዱ'
-                  : 'Monitor permit volumes across all 6 Bahir Dar sub-cities and toggle registration freeze states in real-time.'}
-              </p>
             </div>
             <div className="flex items-center gap-2 self-start sm:self-auto">
               <span className="px-3 py-1.5 rounded-md bg-surface-container text-xs font-bold text-on-surface border border-outline-variant">
@@ -1429,11 +1425,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 <h3 className="font-extrabold text-base text-on-surface">
                   {isAmharic ? 'የሞተር ብስክሌቶች ፈቃድ የበላይ ውሳኔ' : 'Master Registration Approvals & Overrides'}
                 </h3>
-                <p className="text-xs text-outline">
-                  {isAmharic
-                    ? 'በዋና አስተዳዳሪ ደረጃ የሚደረጉ የጅምላ ማጽደቂያዎችና ውሳኔዎች'
-                    : 'Execute master bulk actions and force override status on any registration.'}
-                </p>
               </div>
 
               <button
@@ -1446,28 +1437,28 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </div>
 
             {/* Quick Master Summary */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-              <div className="p-3 rounded-md bg-surface-container text-center">
-                <div className="text-xs text-outline">{isAmharic ? 'የሚጠብቁ' : 'Pending Review'}</div>
-                <div className="text-xl font-black text-amber-600">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-3 pt-2">
+              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የሚጠብቁ' : 'Pending'}</div>
+                <div className="text-base sm:text-2xl font-black text-amber-600 tracking-tight leading-tight">
                   {registrations.filter((r) => r.status === 'pending_approval').length}
                 </div>
               </div>
-              <div className="p-3 rounded-md bg-surface-container text-center">
-                <div className="text-xs text-outline">{isAmharic ? 'የጸደቁ' : 'Approved'}</div>
-                <div className="text-xl font-black text-emerald-600">
+              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የጸደቁ' : 'Approved'}</div>
+                <div className="text-base sm:text-2xl font-black text-emerald-600 tracking-tight leading-tight">
                   {registrations.filter((r) => r.status === 'approved').length}
                 </div>
               </div>
-              <div className="p-3 rounded-md bg-surface-container text-center">
-                <div className="text-xs text-outline">{isAmharic ? 'የተከለከሉ' : 'Rejected'}</div>
-                <div className="text-xl font-black text-red-600">
+              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የተከለከሉ' : 'Rejected'}</div>
+                <div className="text-base sm:text-2xl font-black text-red-600 tracking-tight leading-tight">
                   {registrations.filter((r) => r.status === 'rejected').length}
                 </div>
               </div>
-              <div className="p-3 rounded-md bg-surface-container text-center">
-                <div className="text-xs text-outline">{isAmharic ? 'የታተሙ' : 'Printed'}</div>
-                <div className="text-xl font-black text-blue-600">
+              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የታተሙ' : 'Printed'}</div>
+                <div className="text-base sm:text-2xl font-black text-blue-600 tracking-tight leading-tight">
                   {registrations.filter((r) => r.status === 'printed').length}
                 </div>
               </div>
@@ -1487,11 +1478,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   <Icon className="material-symbols-outlined text-[#1D61E7] text-[22px]">database</Icon>
                   {isAmharic ? 'የዳታቤዝ ሁኔታና የቀጥታ ማመሳሰያ (Database & Cloud Sync)' : 'Database Health & Cloud Sync'}
                 </h3>
-                <p className="text-xs text-outline mt-0.5">
-                  {isAmharic
-                    ? 'ከፋየርቤዝ ክላውድ (Firestore) እና ከአካባቢያዊ መሸጎጫ (IndexedDB) ጋር ያለው የቀጥታ ሁኔታ'
-                    : 'Real-time synchronization status with Firebase Firestore and persistent IndexedDB storage.'}
-                </p>
               </div>
 
               <button
@@ -1512,44 +1498,44 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </div>
 
             {/* Live Health Indicators */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3 rounded-lg bg-surface-container border border-outline-variant/60">
-                <div className="flex items-center gap-1.5 text-xs text-outline mb-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span className="font-bold">{isAmharic ? 'የዳታቤዝ ግንኙነት' : 'Cloud Status'}</span>
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ግንኙነት' : 'Cloud'}</span>
                 </div>
-                <div className="text-sm font-black text-emerald-600">
-                  {isAmharic ? 'የተገናኘ (Live)' : 'Connected'}
-                </div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-surface-container border border-outline-variant/60">
-                <div className="flex items-center gap-1.5 text-xs text-outline mb-1">
-                  <Icon className="material-symbols-outlined text-[16px] text-blue-500">two_wheeler</Icon>
-                  <span className="font-bold">{isAmharic ? 'የተመዘገቡ ሞተሮች' : 'Total Vehicles'}</span>
-                </div>
-                <div className="text-sm font-black text-on-surface">
-                  {registrations.length} {isAmharic ? 'ተሽከርካሪዎች' : 'records'}
+                <div className="text-xs sm:text-base font-black text-emerald-600 truncate">
+                  {isAmharic ? 'የተገናኘ' : 'Live'}
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-surface-container border border-outline-variant/60">
-                <div className="flex items-center gap-1.5 text-xs text-outline mb-1">
-                  <Icon className="material-symbols-outlined text-[16px] text-purple-500">badge</Icon>
-                  <span className="font-bold">{isAmharic ? 'የሲስተም ተጠቃሚዎች' : 'System Users'}</span>
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
+                  <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] text-blue-500 shrink-0">two_wheeler</Icon>
+                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ሞተሮች' : 'Vehicles'}</span>
                 </div>
-                <div className="text-sm font-black text-on-surface">
-                  {users.length} {isAmharic ? 'አባላት' : 'users'}
+                <div className="text-xs sm:text-base font-black text-on-surface truncate">
+                  {registrations.length}
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-surface-container border border-outline-variant/60">
-                <div className="flex items-center gap-1.5 text-xs text-outline mb-1">
-                  <Icon className="material-symbols-outlined text-[16px] text-amber-500">history</Icon>
-                  <span className="font-bold">{isAmharic ? 'የኦዲት መዝገቦች' : 'Audit Logs'}</span>
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
+                  <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] text-purple-500 shrink-0">badge</Icon>
+                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ተጠቃሚዎች' : 'Users'}</span>
                 </div>
-                <div className="text-sm font-black text-on-surface">
-                  {auditLogs.length} {isAmharic ? 'ክስተቶች' : 'events'}
+                <div className="text-xs sm:text-base font-black text-on-surface truncate">
+                  {users.length}
+                </div>
+              </div>
+
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
+                  <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] text-amber-500 shrink-0">history</Icon>
+                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ኦዲት' : 'Logs'}</span>
+                </div>
+                <div className="text-xs sm:text-base font-black text-on-surface truncate">
+                  {auditLogs.length}
                 </div>
               </div>
             </div>

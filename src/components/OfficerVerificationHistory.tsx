@@ -75,7 +75,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
       (r.engineOrSerialNo && r.engineOrSerialNo.trim() !== '' && r.engineOrSerialNo.toLowerCase() === log.engineOrSerialNo?.toLowerCase())
     ));
 
-    if (isHidden && userRole !== 'superadmin' && userRole !== 'super_admin' && userRole !== 'officer' && userRole !== 'admin') {
+    if (isHidden && userRole !== 'superadmin' && (userRole as string) !== 'super_admin' && userRole !== 'officer' && userRole !== 'admin') {
       return false;
     }
 
@@ -334,11 +334,6 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
-                {isAmharic
-                  ? 'የመስክ ፍተሻ፣ የታገዱ እና የተረጋገጡ ተሽከርካሪዎች ታሪክ'
-                  : 'Patrol verification logs, field inspections, and status audit records'}
-              </p>
             </div>
           </div>
 
