@@ -731,16 +731,29 @@ app.post('/api/registrations', async (req, res) => {
 
 app.post('/api/registrations/status', async (req, res) => {
   try {
-    const { id, status, rejectionReason } = req.body;
+    const { id, ...otherFields } = req.body;
     if (!id) {
       return res.status(400).json({ error: 'Missing registration ID' });
     }
-    const updates: Record<string, any> = { status };
-    if (rejectionReason !== undefined) {
-      updates.rejectionReason = rejectionReason;
+    await dbUpdateFields('motorcycle_registrations', id, otherFields);
+    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: id, data: otherFields });
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/registrations/update', async (req, res) => {
+  try {
+    const { id, updates } = req.body;
+    const targetId = id || updates?.id;
+    if (!targetId) {
+      return res.status(400).json({ error: 'Missing registration ID' });
     }
-    await dbUpdateFields('motorcycle_registrations', id, updates);
-    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: id, data: updates });
+    const cleanUpdates = updates ? { ...updates } : { ...req.body };
+    delete cleanUpdates.id;
+    await dbUpdateFields('motorcycle_registrations', targetId, cleanUpdates);
+    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: targetId, data: cleanUpdates });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });

@@ -229,20 +229,20 @@ export const SelectField = ({
   className?: string;
   id?: string;
 }) => (
-  <div className={`relative inline-flex items-center shrink-0 min-h-[44px] ${className}`}>
+  <div className={`relative inline-flex items-center shrink-0 ${className}`}>
     <select
       id={id}
       value={value}
       onChange={onChange}
       style={{ WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none' }}
-      className="w-full min-h-[44px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-lg pl-3.5 pr-9 py-2.5 font-bold text-xs sm:text-sm shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary/20 hover:shadow-xs transition-all cursor-pointer"
+      className="w-full min-h-[38px] sm:min-h-[40px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-lg pl-3 pr-8 py-1.5 sm:py-2 font-bold text-xs shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary/20 hover:shadow-xs transition-all cursor-pointer"
     >
       {children}
     </select>
-    <div className="absolute right-2.5 inset-y-0 flex items-center justify-center pointer-events-none select-none text-secondary">
+    <div className="absolute right-2 inset-y-0 flex items-center justify-center pointer-events-none select-none text-secondary">
       <Icon
         name="keyboard_arrow_down"
-        size={20}
+        size={18}
       />
     </div>
   </div>

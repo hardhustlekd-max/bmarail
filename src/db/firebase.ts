@@ -156,8 +156,8 @@ export async function updateDocumentFields(collectionName: string, docId: string
   let payload: any = { id: docId, ...updates };
 
   if (collectionName === FIREBASE_COLLECTIONS.REGISTRATIONS) {
-    url = updates.status !== undefined ? '/api/registrations/status' : '/api/registrations';
-    payload = { id: docId, ...updates };
+    url = '/api/registrations/update';
+    payload = { id: docId, updates };
   } else if (collectionName === FIREBASE_COLLECTIONS.OFFICERS) {
     url = '/api/officers/update';
     payload = { id: docId, updates };
