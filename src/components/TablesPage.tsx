@@ -722,7 +722,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     type="button"
                                     onClick={() => setSelectedRegForQR(reg)}
                                     className="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-[11px] rounded-lg transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
-                                    title={isAmharic ? 'የሞተረኞች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}
+                                    title={isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}
                                   >
                                     <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
                                     <span className="hidden xl:inline">{isAmharic ? 'መታወቂያ' : 'Association ID'}</span>
@@ -1756,7 +1756,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     className="px-3.5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-extrabold rounded-md text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
                   >
                     <Icon className="material-symbols-outlined text-[18px]">badge</Icon>
-                    <span>{isAmharic ? 'የሞተረኞች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}</span>
+                    <span>{isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}</span>
                   </button>
                 )}
 

@@ -435,7 +435,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Synchronize browser document.title throughout the app to reflect the top navbar title in Amharic
   useEffect(() => {
-    document.title = `${currentNavbarTitleAmharic} | የባህር ዳር ማዘጋጃ ቤት`;
+    document.title = `${currentNavbarTitleAmharic} | ባህር ዳር ሞተረኛች ማህበር`;
   }, [currentNavbarTitleAmharic]);
 
   // Dynamic Breadcrumb navigation calculation matching side menu page titles
@@ -1354,7 +1354,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
             <div className="min-w-0">
               <h1 id="desktop-header-text" className="font-black text-xs text-white tracking-tight leading-tight truncate">
-                {isAmharic ? 'ባህርዳር ሞተረኞች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
+                {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
               </h1>
             </div>
           </div>
@@ -1766,7 +1766,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div className="min-w-0">
                   <h1 id="header-text" className="font-extrabold text-xs sm:text-sm text-white tracking-tight leading-tight truncate">
-                    {isAmharic ? 'ባህርዳር ሞተረኞች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
+                    {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
                   </h1>
                 </div>
               </div>
@@ -2866,7 +2866,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         {/* Modern, elegant system footer containing language and theme selectors */}
         <footer className="w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-auto">
           <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
-            {isAmharic ? '© 2016 የግንቦት 12 የባህር ዳር ክፍለ ከተሞች ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Sub-City Permit Governance System. All rights reserved.'}
+            {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኛች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Motorcyclists Association Permit Governance System. All rights reserved.'}
           </div>
           
           <div className="flex items-center gap-3">

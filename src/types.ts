@@ -1,5 +1,7 @@
 export const APP_LOGO = '/logo.png';
 export const APP_FLAG = '/flag.jpg';
+export const APP_TITLE_AM = 'ባህር ዳር ሞተረኛች ማህበር';
+export const APP_TITLE_EN = 'BAHIR DAR MOTORCYCLISTS ASSOCIATION';
 
 export const BAHIR_DAR_SUBCITIES = [
   { en: 'Fasilo', am: 'ፋሲሎ' },

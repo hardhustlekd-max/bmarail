@@ -411,8 +411,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               </h3>
               <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
                 {isAmharic
-                  ? 'የባህር ዳር ከተማ አስተዳደር የሞተር ሳይክል ፈቃድና ምዝገባ ማዕከል'
-                  : 'Bahir Dar City motorcycle permits, registrations & inspection command center'}
+                  ? 'ባህር ዳር ሞተረኛች ማህበር የሞተር ሳይክል ፈቃድና ምዝገባ ማዕከል'
+                  : 'Bahir Dar Motorcyclists Association permits, registrations & inspection command center'}
               </p>
             </div>
           </div>
@@ -1145,7 +1145,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
-            title={isAmharic ? 'የሞተረኞች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}
+            title={isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}
             onClose={() => setSelectedLogForDetails(null)}
           >
             <QRCodeCard

@@ -1,6 +1,6 @@
 {
-  "name": "simpbma",
-  "description": "Simplified Municipal Permit & BMA Authority system with Clerk, Officer, and Admin user roles.",
+  "name": "ባህር ዳር ሞተረኛች ማህበር",
+  "description": "ባህር ዳር ሞተረኛች ማህበር - የሞተር ሳይክል ፈቃድና ምዝገባ ስርዓት",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

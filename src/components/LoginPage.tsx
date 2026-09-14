@@ -80,7 +80,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
           <div className="min-w-0">
             <h1 className="font-black text-xs sm:text-sm text-white tracking-tight leading-tight truncate">
-              {lang === 'am' ? 'ባህርዳር ሞተረኞች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
+              {lang === 'am' ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
             </h1>
           </div>
         </div>
@@ -203,7 +203,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <div className="text-center pt-2 border-t border-outline-variant">
             <p className="text-[11px] text-outline">
               {lang === 'am'
-                ? 'ባህርዳር ሞተረኞች ማህበር • 2026'
+                ? 'ባህር ዳር ሞተረኛች ማህበር • 2026'
                 : 'Bahir Dar Motorcyclists Association • 2026'}
             </p>
           </div>

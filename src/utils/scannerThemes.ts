@@ -173,8 +173,8 @@ export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
     nameAm: 'ክላሲክ ሰማያዊና ባህር ኃይል',
     badgeEn: 'Classic Blue',
     badgeAm: 'ክላሲክ ሰማያዊ',
-    descriptionEn: 'Standard municipal inspection theme with sky blue canvas, deep navy accents, and amber indicators.',
-    descriptionAm: 'የተለመደው የማዘጋጃ ቤት ሰማያዊ ዳራ፣ ጥቁር ሰማያዊ ባጆች እና ወርቃማ አመልካቾች።',
+    descriptionEn: 'Standard association inspection theme with sky blue canvas, deep navy accents, and amber indicators.',
+    descriptionAm: 'የተለመደው የማህበሩ ሰማያዊ ዳራ፣ ጥቁር ሰማያዊ ባጆች እና ወርቃማ አመልካቾች።',
     palette: ['#dbeafe', '#bfdbfe', '#0B1E48', '#f59e0b', '#059669'],
 
     containerBg: 'bg-blue-100 dark:bg-slate-950',

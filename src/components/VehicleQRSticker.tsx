@@ -125,7 +125,7 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
                 {/* Header System Title Text Block */}
                 <div className="flex-1 text-center font-sans leading-none text-[#000000]">
                   <div className="text-[12px] font-black tracking-tight mb-1 font-sans">
-                    ባህርዳር ሞተረኞች ማህበር
+                    ባህር ዳር ሞተረኛች ማህበር
                   </div>
                   <div className="text-[10px] font-extrabold tracking-tight text-black uppercase">
                     BAHIR DAR MOTORCYCLISTS ASSOCIATION
