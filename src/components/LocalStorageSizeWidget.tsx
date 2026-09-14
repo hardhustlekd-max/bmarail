@@ -258,12 +258,9 @@ export const LocalStorageSizeWidget: React.FC<LocalStorageSizeWidgetProps> = ({
             <Icon className="material-symbols-outlined text-[16px]">hard_drive</Icon>
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-xs tracking-tight">
+            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-xs sm:text-sm tracking-tight">
               {lang === 'am' ? 'የሎካል ስቶሬጅ ዳታ መጠን ስሌት' : 'Local Storage Size Calculator'}
             </h3>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-              {lang === 'am' ? 'ዳታቤዝ እና ሚዲያ ፋይሎችን ተነጣጥለው የቀረቡ' : 'Database records & file attachments separated'}
-            </p>
           </div>
         </div>
 

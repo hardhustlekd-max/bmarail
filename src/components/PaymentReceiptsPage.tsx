@@ -408,94 +408,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         </div>
       )}
 
-      {/* EXPIRATION METRICS DASHBOARD CARDS */}
-      {canViewKPIs && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
-          {/* Total Receipts */}
-          <button
-            type="button"
-            onClick={() => setStatusFilter('all')}
-            className={`p-2.5 sm:p-3 rounded-lg border text-left transition-all cursor-pointer ${
-              statusFilter === 'all'
-                ? 'bg-[#1D61E7] text-white border-blue-600 shadow-md ring-2 ring-blue-400'
-                : 'bg-surface-container-lowest border-outline-variant hover:border-blue-300 text-on-surface'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-wider opacity-80">
-                {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
-              </span>
-              <Icon className="material-symbols-outlined text-[18px] opacity-80">payments</Icon>
-            </div>
-            <div className="text-xl sm:text-2xl font-black mt-1">{metrics.total}</div>
-          </button>
 
-          {/* Active Receipts */}
-          <button
-            type="button"
-            onClick={() => setStatusFilter('active')}
-            className={`p-2.5 sm:p-3 rounded-lg border text-left transition-all cursor-pointer ${
-              statusFilter === 'active'
-                ? 'bg-emerald-600 text-white border-emerald-700 shadow-md ring-2 ring-emerald-400'
-                : 'bg-emerald-500/5 dark:bg-emerald-950/30 border-emerald-500/30 hover:border-emerald-500 text-emerald-900 dark:text-emerald-200'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-wider opacity-90">
-                {isAmharic ? 'ትክክለኛ (ህጋዊ)' : 'Active (Valid)'}
-              </span>
-              <Icon className="material-symbols-outlined text-[18px] text-emerald-500">verified</Icon>
-            </div>
-            <div className="text-xl sm:text-2xl font-black mt-1 text-emerald-700 dark:text-emerald-300">
-              {metrics.activeCount}
-            </div>
-          </button>
-
-          {/* Expiring Soon Receipts */}
-          <button
-            type="button"
-            onClick={() => setStatusFilter('expiring_soon')}
-            className={`p-2.5 sm:p-3 rounded-lg border text-left transition-all cursor-pointer ${
-              statusFilter === 'expiring_soon'
-                ? 'bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-400'
-                : 'bg-amber-500/5 dark:bg-amber-950/30 border-amber-500/30 hover:border-amber-500 text-amber-900 dark:text-amber-200'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-wider opacity-90">
-                {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring Soon'}
-              </span>
-              <Icon className="material-symbols-outlined text-[18px] text-amber-500 animate-pulse">
-                alarm
-              </Icon>
-            </div>
-            <div className="text-xl sm:text-2xl font-black mt-1 text-amber-700 dark:text-amber-300">
-              {metrics.expiringSoonCount}
-            </div>
-          </button>
-
-          {/* Expired Receipts */}
-          <button
-            type="button"
-            onClick={() => setStatusFilter('expired')}
-            className={`p-2.5 sm:p-3 rounded-lg border text-left transition-all cursor-pointer ${
-              statusFilter === 'expired'
-                ? 'bg-rose-600 text-white border-rose-700 shadow-md ring-2 ring-rose-400'
-                : 'bg-rose-500/5 dark:bg-rose-950/30 border-rose-500/30 hover:border-rose-500 text-rose-900 dark:text-rose-200'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-wider opacity-90">
-                {isAmharic ? 'ጊዜው ያለፈበት' : 'Expired'}
-              </span>
-              <Icon className="material-symbols-outlined text-[18px] text-rose-500">cancel</Icon>
-            </div>
-            <div className="text-xl sm:text-2xl font-black mt-1 text-rose-700 dark:text-rose-300">
-              {metrics.expiredCount}
-            </div>
-          </button>
-        </div>
-      )}
 
       {/* PAYMENT RECEIPT ENTRY FORM CARD */}
       {isFormOpen && (
@@ -890,14 +803,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         </form>
       )}
 
-      {/* TABLE SECTION TOOLBAR & FILTERS */}
+      {/* TABLE SECTION CONTAINED IN UNIFIED CARD PATTERN */}
       {canViewTable && (
-        <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 shadow-2xs space-y-4">
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
-            {/* Live Search Input */}
+        <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
+          {/* SEARCH & STATUS FILTER TOOLBAR */}
+          <div className="p-3.5 sm:p-4 bg-slate-50/70 dark:bg-slate-900/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-outline-variant/40 dark:border-slate-800">
+            {/* Search Bar */}
             <div className="relative flex-1 min-w-0 max-w-md">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-secondary">
-                <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
+                <Icon className="material-symbols-outlined text-[16px]">search</Icon>
               </div>
               <input
                 type="text"
@@ -908,51 +822,41 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
                     : 'Search receipt #, owner name, or plate...'
                 }
-                className="w-full pl-9 pr-8 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
+                className="w-full pl-8 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-2xs"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-2.5 flex items-center text-secondary hover:text-on-surface"
+                  className="absolute inset-y-0 right-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                  <Icon className="material-symbols-outlined text-[15px]">close</Icon>
                 </button>
               )}
             </div>
 
-            {/* Status Filter Tabs in Clean Compact Pill Style */}
-            <div className="flex items-center gap-1 flex-wrap shrink-0">
+            {/* Filter Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
               {[
                 {
                   id: 'all' as const,
                   label: isAmharic ? 'ሁሉም' : 'All',
                   count: metrics.total,
-                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'active' as const,
                   label: isAmharic ? 'ትክክለኛ' : 'Active',
                   count: metrics.activeCount,
-                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'expiring_soon' as const,
                   label: isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring Soon',
                   count: metrics.expiringSoonCount,
-                  badgeColor:
-                    metrics.expiringSoonCount > 0
-                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                      : 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'expired' as const,
                   label: isAmharic ? 'ጊዜው ያለፈበት' : 'Expired',
                   count: metrics.expiredCount,
-                  badgeColor:
-                    metrics.expiredCount > 0
-                      ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
-                      : 'bg-surface-container-highest text-secondary',
                 },
               ].map((tab) => {
                 const isActive = statusFilter === tab.id;
@@ -961,18 +865,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setStatusFilter(tab.id)}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
                       isActive
-                        ? 'bg-primary text-white font-extrabold shadow-2xs'
-                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                        ? 'bg-yellow-500 text-[#0B1E48] shadow-2xs'
+                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                     }`}
                   >
-                    <span className="tracking-tight">{tab.label}</span>
+                    <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-black ${
                         isActive
-                          ? 'bg-white/20 text-white'
-                          : tab.badgeColor
+                          ? 'bg-[#0B1E48]/20 text-[#0B1E48]'
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       {tab.count}
@@ -983,25 +887,26 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           </div>
 
-          {/* PAYMENT RECEIPTS TABLE */}
-          <div className="overflow-x-auto border border-outline-variant/60 rounded-xl">
+          {/* DESKTOP TABLE VIEW (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-surface-container/70 border-b border-outline-variant/70 text-[11px] font-black uppercase text-secondary tracking-wider">
-                  <th className="p-3">{isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt #'}</th>
-                  <th className="p-3">{isAmharic ? 'የባለቤት ስም & ሰሌዳ' : 'Owner & Vehicle'}</th>
-                  <th className="p-3">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
-                  <th className="p-3">{isAmharic ? 'የ1 ወር ማብቂያ ቀን & ሁኔታ' : 'Expiration & Status'}</th>
-                  <th className="p-3">{isAmharic ? 'መጠን (ብር)' : 'Amount'}</th>
-                  <th className="p-3 text-center">{isAmharic ? 'ስክሪንሾት' : 'Proof'}</th>
-                  <th className="p-3">{isAmharic ? 'መዝጋቢ' : 'Clerk'}</th>
-                  <th className="p-3 text-right">{isAmharic ? 'ተግባራት' : 'Actions'}</th>
+                <tr className="bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider font-extrabold border-b border-slate-200 dark:border-slate-700">
+                  <th className="px-4 py-3.5 text-center w-12">#</th>
+                  <th className="px-4 py-3.5">{isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt #'}</th>
+                  <th className="px-4 py-3.5">{isAmharic ? 'የባለቤት ስም & ሰሌዳ' : 'Owner & Vehicle'}</th>
+                  <th className="px-4 py-3.5">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
+                  <th className="px-4 py-3.5">{isAmharic ? 'የ1 ወር ማብቂያ ቀን & ሁኔታ' : 'Expiration & Status'}</th>
+                  <th className="px-4 py-3.5">{isAmharic ? 'መጠን (ብር)' : 'Amount'}</th>
+                  <th className="px-4 py-3.5 text-center">{isAmharic ? 'ማረጋገጫ ፎቶ' : 'Proof'}</th>
+                  <th className="px-4 py-3.5">{isAmharic ? 'መዝጋቢ' : 'Clerk'}</th>
+                  <th className="px-4 py-3.5 text-right">{isAmharic ? 'ተግባራት' : 'Actions'}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline-variant/40 text-xs font-medium text-on-surface">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
                 {filteredReceipts.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-secondary">
+                    <td colSpan={9} className="p-12 text-center text-slate-500 dark:text-slate-400">
                       <div className="flex flex-col items-center justify-center space-y-2">
                         <Icon className="material-symbols-outlined text-[36px] text-slate-400">
                           find_in_page
@@ -1015,16 +920,21 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     </td>
                   </tr>
                 ) : (
-                  filteredReceipts.map((rc) => {
+                  filteredReceipts.map((rc, idx) => {
                     const { status, daysRemaining } = getPaymentReceiptStatus(rc.expirationDate);
 
                     return (
                       <tr
                         key={rc.id}
-                        className="hover:bg-surface-container/30 transition-colors"
+                        className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
                       >
+                        {/* Index */}
+                        <td className="px-4 py-3 text-center font-mono font-bold text-slate-400">
+                          {idx + 1}
+                        </td>
+
                         {/* Receipt Number */}
-                        <td className="p-3 font-mono font-black text-on-surface">
+                        <td className="px-4 py-3 font-mono font-black text-on-surface">
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 font-bold">
                             <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
                             <span>{rc.receiptNumber}</span>
@@ -1032,11 +942,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </td>
 
                         {/* Owner & Vehicle Details */}
-                        <td className="p-3 space-y-0.5">
-                          <div className="font-extrabold text-on-surface">{rc.ownerName}</div>
-                          <div className="flex items-center gap-2 text-[11px] text-secondary">
+                        <td className="px-4 py-3">
+                          <div className="font-black text-slate-900 dark:text-white">{rc.ownerName}</div>
+                          <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                             {rc.plateNumber && (
-                              <span className="font-mono font-bold bg-surface-container px-1.5 py-0.5 rounded border border-outline-variant text-on-surface">
+                              <span className="font-mono font-bold bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200">
                                 {rc.plateNumber}
                               </span>
                             )}
@@ -1045,13 +955,17 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </td>
 
                         {/* Payment Date */}
-                        <td className="p-3 font-medium whitespace-nowrap">
-                          <div className="font-bold">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</div>
+                        <td className="px-4 py-3 font-medium whitespace-nowrap">
+                          <div className="font-bold text-slate-800 dark:text-slate-200">
+                            {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
+                          </div>
                         </td>
 
                         {/* Expiration Date & Status Badge */}
-                        <td className="p-3 whitespace-nowrap">
-                          <div className="font-mono font-bold text-on-surface">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</div>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="font-mono font-bold text-slate-900 dark:text-white">
+                            {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
+                          </div>
                           <div className="mt-1">
                             {status === 'active' && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
@@ -1079,17 +993,17 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </td>
 
                         {/* Amount */}
-                        <td className="p-3 font-extrabold whitespace-nowrap">
+                        <td className="px-4 py-3 font-black whitespace-nowrap text-slate-900 dark:text-white">
                           {rc.amount || '500 ETB'}
                         </td>
 
                         {/* Proof Screenshot Thumbnail */}
-                        <td className="p-3 text-center">
+                        <td className="px-4 py-3 text-center">
                           {rc.receiptScreenshot ? (
                             <button
                               type="button"
                               onClick={() => setPreviewReceipt(rc)}
-                              className="inline-block relative w-10 h-10 rounded-lg overflow-hidden border border-outline-variant shadow-2xs hover:scale-105 transition-transform cursor-pointer group"
+                              className="inline-block relative w-10 h-10 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shadow-2xs hover:scale-105 transition-transform cursor-pointer group bg-black"
                               title={isAmharic ? 'ስክሪንሾት በትልቅ መጠን ይመልከቱ' : 'View screenshot'}
                             >
                               <img
@@ -1109,14 +1023,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </td>
 
                         {/* Entered By Clerk */}
-                        <td className="p-3 whitespace-nowrap">
+                        <td className="px-4 py-3 whitespace-nowrap">
                           <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
                             {rc.enteredBy}
                           </span>
                         </td>
 
                         {/* Actions */}
-                        <td className="p-3 text-right whitespace-nowrap">
+                        <td className="px-4 py-3 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-1.5">
                             {rc.receiptScreenshot && (
                               <button
@@ -1144,6 +1058,142 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* MOBILE CARD VIEW (< md) */}
+          <div className="block md:hidden divide-y divide-slate-200 dark:divide-slate-800">
+            {filteredReceipts.length === 0 ? (
+              <div className="p-10 text-center text-slate-500 dark:text-slate-400 space-y-1.5">
+                <Icon className="material-symbols-outlined text-[36px] text-slate-400 dark:text-slate-600 mx-auto block">find_in_page</Icon>
+                <p className="font-bold text-xs text-slate-700 dark:text-slate-200">
+                  {isAmharic ? 'ምንም የተመዘገበ የክፍያ ደረሰኝ አልተገኘም።' : 'No payment receipts found matching criteria.'}
+                </p>
+              </div>
+            ) : (
+              filteredReceipts.map((rc) => {
+                const { status, daysRemaining } = getPaymentReceiptStatus(rc.expirationDate);
+
+                return (
+                  <div
+                    key={rc.id}
+                    className="p-3.5 sm:p-4 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors space-y-3"
+                  >
+                    {/* Top Header Row: Receipt # & Status Badge */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 font-mono font-black text-xs">
+                        <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
+                        <span>{rc.receiptNumber}</span>
+                      </span>
+
+                      <div>
+                        {status === 'active' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
+                            <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
+                            <span>
+                              {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
+                            </span>
+                          </span>
+                        )}
+                        {status === 'expiring_soon' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse">
+                            <Icon className="material-symbols-outlined text-[12px]">alarm</Icon>
+                            <span>
+                              {isAmharic ? 'ሊያልቅ ነው' : 'Expiring Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
+                            </span>
+                          </span>
+                        )}
+                        {status === 'expired' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-800">
+                            <Icon className="material-symbols-outlined text-[12px]">error</Icon>
+                            <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Owner & Plate Information */}
+                    <div>
+                      <h4 className="font-black text-sm text-slate-900 dark:text-white">
+                        {rc.ownerName}
+                      </h4>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {rc.plateNumber && (
+                          <span className="font-mono font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200">
+                            {rc.plateNumber}
+                          </span>
+                        )}
+                        {rc.phone && <span>{rc.phone}</span>}
+                      </div>
+                    </div>
+
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-lg text-xs border border-slate-200/60 dark:border-slate-700/60">
+                      <div>
+                        <span className="block text-[10px] uppercase font-bold text-slate-400">
+                          {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200">
+                          {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="block text-[10px] uppercase font-bold text-slate-400">
+                          {isAmharic ? 'የ1 ወር ማብቂያ' : 'Expiration Date'}
+                        </span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                          {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="block text-[10px] uppercase font-bold text-slate-400">
+                          {isAmharic ? 'መጠን' : 'Amount'}
+                        </span>
+                        <span className="font-black text-slate-900 dark:text-white">
+                          {rc.amount || '500 ETB'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="block text-[10px] uppercase font-bold text-slate-400">
+                          {isAmharic ? 'መዝጋቢ' : 'Clerk'}
+                        </span>
+                        <span className="font-bold text-slate-700 dark:text-slate-300">
+                          {rc.enteredBy}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Actions & Proof Preview Footer */}
+                    <div className="flex items-center justify-between pt-1">
+                      {rc.receiptScreenshot ? (
+                        <button
+                          type="button"
+                          onClick={() => setPreviewReceipt(rc)}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 cursor-pointer"
+                        >
+                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                          <span>{isAmharic ? 'ማረጋገጫ ፎቶ እይ' : 'View Proof Image'}</span>
+                        </button>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 italic">
+                          {isAmharic ? 'ምንም ፎቶ የለም' : 'No Proof Image'}
+                        </span>
+                      )}
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setDeleteConfirmId(rc.id)}
+                          className="px-2.5 py-1 rounded-md bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 text-xs font-bold hover:bg-rose-100 cursor-pointer flex items-center gap-1"
+                        >
+                          <Icon className="material-symbols-outlined text-[15px]">delete</Icon>
+                          <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       )}

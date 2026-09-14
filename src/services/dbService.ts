@@ -718,8 +718,19 @@ async function safeJsonFetch(url: string, options?: RequestInit): Promise<any> {
   return body;
 }
 
-// --- REAL-TIME FIRESTORE LISTENER SUBSCRIPTIONS ---
+// --- REAL-TIME LIVE SYNC (SSE + CROSS-TAB BROADCAST + FAST POLLING) ---
 let areLiveListenersActive = false;
+let crossTabChannel: BroadcastChannel | null = null;
+let realtimeEventSource: EventSource | null = null;
+
+export function broadcastCrossTabSync(collection: string, action: string, id?: string, data?: any) {
+  try {
+    if (crossTabChannel) {
+      crossTabChannel.postMessage({ collection, action, id, data, timestamp: Date.now() });
+    }
+  } catch (e) {}
+}
+
 export function initLiveFirestoreListeners(): () => void {
   // 1. Immediate 0ms render from fast LocalStorage cache
   loadStateFromLocalStorage();
@@ -727,7 +738,110 @@ export function initLiveFirestoreListeners(): () => void {
   // 2. Asynchronous, non-blocking hydration of rich images and full dataset from IndexedDB
   hydrateFromIndexedDb();
 
-  return () => {};
+  if (typeof window === 'undefined' || areLiveListenersActive) {
+    return () => {};
+  }
+  areLiveListenersActive = true;
+
+  // 3. Cross-Tab Broadcast Channel (0ms Instant Synchronization between tabs)
+  try {
+    if ('BroadcastChannel' in window) {
+      crossTabChannel = new BroadcastChannel('bma_permit_cross_tab_sync');
+      crossTabChannel.onmessage = (event) => {
+        const msg = event.data;
+        if (!msg || !msg.collection) return;
+
+        if (msg.collection === 'motorcycle_registrations') {
+          syncRegistrations(true).catch(() => {});
+        } else if (msg.collection === 'officer_assignments') {
+          syncOfficers(true).catch(() => {});
+        } else if (msg.collection === 'print_batch_orders') {
+          syncPrintOrders(true).catch(() => {});
+        } else if (msg.collection === 'unregistered_vehicle_reports') {
+          syncUnregisteredReports(true).catch(() => {});
+        } else if (msg.collection === 'verification_logs') {
+          syncVerifications(true).catch(() => {});
+        } else if (msg.collection === 'payment_receipts') {
+          syncPaymentReceipts(true).catch(() => {});
+        } else if (msg.collection === 'system_settings') {
+          syncSettings(true).catch(() => {});
+        } else if (msg.collection === 'system_reset') {
+          loadStateFromLocalStorage();
+        }
+      };
+    }
+  } catch (e) {
+    console.warn('[Realtime] BroadcastChannel init notice:', e);
+  }
+
+  // 4. Server-Sent Events (SSE) Real-Time Stream for multi-user instant hot reload
+  const connectSSE = () => {
+    try {
+      if (typeof EventSource !== 'undefined') {
+        if (realtimeEventSource) {
+          realtimeEventSource.close();
+        }
+        realtimeEventSource = new EventSource('/api/realtime/events');
+        realtimeEventSource.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (!data || !data.collection) return;
+
+            if (data.collection === 'motorcycle_registrations') {
+              syncRegistrations(true).catch(() => {});
+            } else if (data.collection === 'officer_assignments') {
+              syncOfficers(true).catch(() => {});
+            } else if (data.collection === 'print_batch_orders') {
+              syncPrintOrders(true).catch(() => {});
+            } else if (data.collection === 'unregistered_vehicle_reports') {
+              syncUnregisteredReports(true).catch(() => {});
+            } else if (data.collection === 'verification_logs') {
+              syncVerifications(true).catch(() => {});
+            } else if (data.collection === 'payment_receipts') {
+              syncPaymentReceipts(true).catch(() => {});
+            } else if (data.collection === 'system_settings') {
+              syncSettings(true).catch(() => {});
+            } else if (data.collection === 'system_reset') {
+              if (data.data?.systemResetEpoch) {
+                applySystemResetLocally(data.data.systemResetEpoch, data.data.lastSystemResetAt);
+              } else {
+                syncAllCollectionsWithDb(true).catch(() => {});
+              }
+            }
+          } catch {}
+        };
+        realtimeEventSource.onerror = () => {
+          // Reconnect after brief pause
+          if (realtimeEventSource) {
+            realtimeEventSource.close();
+            realtimeEventSource = null;
+          }
+          setTimeout(connectSSE, 5000);
+        };
+      }
+    } catch (sseErr) {
+      console.warn('[Realtime] SSE Connection notice:', sseErr);
+    }
+  };
+  connectSSE();
+
+  // 5. Active background hot-sync fallback (every 4.5 seconds)
+  const pollInterval = setInterval(() => {
+    syncAllCollectionsWithDb(false).catch(() => {});
+  }, 4500);
+
+  return () => {
+    if (pollInterval) clearInterval(pollInterval);
+    if (realtimeEventSource) {
+      realtimeEventSource.close();
+      realtimeEventSource = null;
+    }
+    if (crossTabChannel) {
+      crossTabChannel.close();
+      crossTabChannel = null;
+    }
+    areLiveListenersActive = false;
+  };
 }
 
 // Auto-initialize real-time listeners in browser
@@ -868,12 +982,18 @@ export async function updateRegistrationInDb(
     async () => {
       const index = inMemory.registrations.findIndex((r) => r.id === id);
       if (index >= 0) {
-        inMemory.registrations[index] = {
-          ...inMemory.registrations[index],
+        const existing = inMemory.registrations[index];
+        const updatedRecord: MotorcycleRegistration = {
+          ...existing,
           ...updates,
+          id: existing.id, // Strictly preserve original member registration ID
+          qrCodeData: existing.qrCodeData || updates.qrCodeData || `https://enforcement.gov.et/verify/${existing.id}`,
         };
+        inMemory.registrations[index] = updatedRecord;
         notifyRegistrations();
+        asyncUpsertSingleRegistration(updatedRecord);
         saveStateToLocalStorage();
+        broadcastCrossTabSync('motorcycle_registrations', 'upsert', id, updatedRecord);
         lastSyncTime = new Date();
         isCloudConnected = true;
         setGlobalFirestoreError(null);

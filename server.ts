@@ -141,8 +141,55 @@ app.use((req, res, next) => {
 })();
 
 // ============================================================================
-// 1. HEALTH & SYSTEM STATUS
+// 1. HEALTH, REALTIME SSE STREAM & SYSTEM STATUS
 // ============================================================================
+const sseClients = new Set<express.Response>();
+
+export function broadcastSseChange(event: {
+  collection: string;
+  action: 'upsert' | 'delete' | 'clear';
+  docId?: string;
+  data?: any;
+}) {
+  const payload = `data: ${JSON.stringify({ ...event, timestamp: Date.now() })}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(payload);
+    } catch (e) {
+      sseClients.delete(client);
+    }
+  }
+}
+
+app.get('/api/realtime/events', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+  });
+  res.write(': connected\n\n');
+  sseClients.add(res);
+
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(': ping\n\n');
+    } catch (e) {
+      clearInterval(heartbeat);
+      sseClients.delete(res);
+    }
+  }, 25000);
+
+  req.on('close', () => {
+    clearInterval(heartbeat);
+    sseClients.delete(res);
+  });
+});
+
+app.get('/api/sync/events', (req, res) => {
+  res.redirect('/api/realtime/events');
+});
+
 app.get('/api/health', async (req, res) => {
   try {
     const isPoolReady = Boolean(getDbPool());
@@ -151,6 +198,7 @@ app.get('/api/health', async (req, res) => {
       service: 'bma-permit-railway-backend',
       database: isPoolReady ? 'postgresql' : 'in-memory-development',
       storage: process.env.STORAGE_BUCKET ? 's3-railway-bucket' : 'local-disk',
+      realtimeClients: sseClients.size,
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
@@ -673,6 +721,7 @@ app.post('/api/registrations', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing registration ID' });
     }
     await dbUpsert('motorcycle_registrations', reg.id, reg);
+    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: reg.id, data: reg });
     res.json({ success: true });
   } catch (err: any) {
     console.error('[PostgreSQL] Save registration failed:', err);
@@ -691,6 +740,7 @@ app.post('/api/registrations/status', async (req, res) => {
       updates.rejectionReason = rejectionReason;
     }
     await dbUpdateFields('motorcycle_registrations', id, updates);
+    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: id, data: updates });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
@@ -701,6 +751,7 @@ app.delete('/api/registrations/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await dbDelete('motorcycle_registrations', id);
+    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'delete', docId: id });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
@@ -713,6 +764,7 @@ app.post('/api/registrations/bulk-delete', async (req, res) => {
     if (Array.isArray(ids)) {
       for (const id of ids) {
         await dbDelete('motorcycle_registrations', id);
+        broadcastSseChange({ collection: 'motorcycle_registrations', action: 'delete', docId: id });
       }
     }
     res.json({ success: true });
@@ -740,6 +792,7 @@ app.post('/api/officers', async (req, res) => {
       return res.status(400).json({ error: 'Missing officer ID' });
     }
     await dbUpsert('officer_assignments', officer.id, officer);
+    broadcastSseChange({ collection: 'officer_assignments', action: 'upsert', docId: officer.id, data: officer });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
@@ -753,6 +806,7 @@ app.post('/api/officers/update', async (req, res) => {
       return res.status(400).json({ error: 'Missing officer ID' });
     }
     await dbUpdateFields('officer_assignments', id, updates);
+    broadcastSseChange({ collection: 'officer_assignments', action: 'upsert', docId: id, data: updates });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -762,6 +816,7 @@ app.post('/api/officers/update', async (req, res) => {
 app.delete('/api/officers/:id', async (req, res) => {
   try {
     await dbDelete('officer_assignments', req.params.id);
+    broadcastSseChange({ collection: 'officer_assignments', action: 'delete', docId: req.params.id });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -787,6 +842,7 @@ app.post('/api/print-orders', async (req, res) => {
       return res.status(400).json({ error: 'Missing print order ID' });
     }
     await dbUpsert('print_batch_orders', order.id, order);
+    broadcastSseChange({ collection: 'print_batch_orders', action: 'upsert', docId: order.id, data: order });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -802,6 +858,7 @@ app.post('/api/print-orders/status', async (req, res) => {
     const updates: Record<string, any> = { status };
     if (notes !== undefined) updates.notes = notes;
     await dbUpdateFields('print_batch_orders', id, updates);
+    broadcastSseChange({ collection: 'print_batch_orders', action: 'upsert', docId: id, data: updates });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -827,6 +884,7 @@ app.post('/api/unregistered-reports', async (req, res) => {
       return res.status(400).json({ error: 'Missing report ID' });
     }
     await dbUpsert('unregistered_vehicle_reports', report.id, report);
+    broadcastSseChange({ collection: 'unregistered_vehicle_reports', action: 'upsert', docId: report.id, data: report });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -840,6 +898,7 @@ app.post('/api/unregistered-reports/status', async (req, res) => {
       return res.status(400).json({ error: 'Missing report ID' });
     }
     await dbUpdateFields('unregistered_vehicle_reports', id, { status, resolutionNotes });
+    broadcastSseChange({ collection: 'unregistered_vehicle_reports', action: 'upsert', docId: id, data: { status, resolutionNotes } });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -865,6 +924,7 @@ app.post('/api/verification-logs', async (req, res) => {
       return res.status(400).json({ error: 'Missing verification log ID' });
     }
     await dbUpsert('verification_logs', log.id, log);
+    broadcastSseChange({ collection: 'verification_logs', action: 'upsert', docId: log.id, data: log });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -887,6 +947,7 @@ app.post('/api/payment-receipts', async (req, res) => {
       return res.status(400).json({ error: 'Missing receipt ID' });
     }
     await dbUpsert('payment_receipts', receipt.id, receipt);
+    broadcastSseChange({ collection: 'payment_receipts', action: 'upsert', docId: receipt.id, data: receipt });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -896,6 +957,7 @@ app.post('/api/payment-receipts', async (req, res) => {
 app.delete('/api/payment-receipts/:id', async (req, res) => {
   try {
     await dbDelete('payment_receipts', req.params.id);
+    broadcastSseChange({ collection: 'payment_receipts', action: 'delete', docId: req.params.id });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -916,6 +978,7 @@ app.post('/api/audit-logs', async (req, res) => {
     const log = req.body;
     const id = log.id || `audit_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     await dbUpsert('system_audit_logs', id, { ...log, id });
+    broadcastSseChange({ collection: 'system_audit_logs', action: 'upsert', docId: id, data: { ...log, id } });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -940,12 +1003,13 @@ app.post('/api/notifications/state', async (req, res) => {
     if (!userScopeId) {
       return res.status(400).json({ error: 'Missing userScopeId' });
     }
-    await dbUpsert('notification_states', userScopeId, {
+    const data = {
       userScopeId,
       readIds: readIds || [],
       lastReadAt: lastReadAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+    };
+    await dbUpsert('notification_states', userScopeId, data);
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -964,7 +1028,9 @@ app.get('/api/settings', async (req, res) => {
 app.post('/api/settings', async (req, res) => {
   try {
     const settings = req.body;
-    await dbUpsert('system_settings', 'global_config', { id: 'global_config', ...settings });
+    const data = { id: 'global_config', ...settings };
+    await dbUpsert('system_settings', 'global_config', data);
+    broadcastSseChange({ collection: 'system_settings', action: 'upsert', docId: 'global_config', data });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -990,12 +1056,15 @@ app.post('/api/reset-database', async (req, res) => {
     const resetEpoch = req.body?.systemResetEpoch ? Number(req.body.systemResetEpoch) : Date.now();
     const resetIso = req.body?.lastSystemResetAt || new Date().toISOString();
 
-    await dbUpsert('system_settings', 'global_config', {
+    const data = {
       id: 'global_config',
       systemResetEpoch: resetEpoch,
       lastSystemResetAt: resetIso,
-    });
+    };
+    await dbUpsert('system_settings', 'global_config', data);
     await ensureDefaultUsers();
+
+    broadcastSseChange({ collection: 'system_reset', action: 'clear', data });
 
     res.json({
       success: true,
@@ -1018,6 +1087,7 @@ app.post('/api/reset-data', async (req, res) => {
       dbClearTable('payment_receipts'),
       dbClearTable('system_audit_logs'),
     ]);
+    broadcastSseChange({ collection: 'system_reset', action: 'clear' });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

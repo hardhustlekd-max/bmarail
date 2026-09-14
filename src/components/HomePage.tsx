@@ -1354,7 +1354,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
             </div>
             <div className="min-w-0">
-              <h1 id="desktop-header-text" className="font-black text-xs text-white tracking-tight leading-tight truncate">
+              <h1 id="desktop-header-text" className={`text-white leading-tight truncate whitespace-nowrap ${isAmharic ? 'font-black text-sm lg:text-[15px]' : 'font-black text-xs lg:text-sm tracking-tight'}`}>
                 {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
               </h1>
             </div>
@@ -1371,14 +1371,14 @@ export const HomePage: React.FC<HomePageProps> = ({
                   setActivePage('superadmin_owners' as any);
                 }
               }}
-              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs lg:text-[13px] font-bold transition-all cursor-pointer whitespace-nowrap truncate ${
                 activePage === 'dashboard'
                   ? 'bg-[#1D61E7] text-white font-black shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-white/10'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[20px]">space_dashboard</Icon>
-              <span>{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
+              <Icon className="material-symbols-outlined text-[18px] shrink-0">space_dashboard</Icon>
+              <span className="truncate">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
             </button>
 
             {/* CLERK SPECIFIC SIDE MENU - EXACTLY MATCHING QUICK ACTIONS */}
@@ -1389,13 +1389,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('forms')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'forms'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">how_to_reg</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">how_to_reg</Icon>
                     <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
                   </button>
                 )}
@@ -1405,13 +1405,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('today_submissions_adjust')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'today_submissions_adjust'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">edit_note</Icon>
                     <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
                   </button>
                 )}
@@ -1421,13 +1421,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('scan')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'scan'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">qr_code_scanner</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">qr_code_scanner</Icon>
                     <span>{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
                   </button>
                 )}
@@ -1437,13 +1437,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('payment_receipts')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'payment_receipts'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px] text-emerald-400">receipt_long</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] text-emerald-400 shrink-0">receipt_long</Icon>
                     <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
                   </button>
                 )}
@@ -1453,13 +1453,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('tables')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'tables'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">folder_open</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">folder_open</Icon>
                     <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
                   </button>
                 )}
@@ -1472,13 +1472,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                       setTableInitialTab('approved');
                       setActivePage('tables');
                     }}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'tables'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">verified</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">verified</Icon>
                     <span>{isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Registry'}</span>
                   </button>
                 )}
@@ -1491,13 +1491,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                       setInspectionInitialFilter('all');
                       setActivePage('inspection_report');
                     }}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'inspection_report'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">analytics</Icon>
                     <span>{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
                   </button>
                 )}
@@ -1510,13 +1510,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('forms')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'forms'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">how_to_reg</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">how_to_reg</Icon>
                     <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
                   </button>
                 )}
@@ -1526,13 +1526,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('payment_receipts')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'payment_receipts'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px] text-emerald-400">receipt_long</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] text-emerald-400 shrink-0">receipt_long</Icon>
                     <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
                   </button>
                 )}
@@ -1542,13 +1542,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('tables')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'tables'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">table_chart</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">table_chart</Icon>
                     <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables'}</span>
                   </button>
                 )}
@@ -1561,13 +1561,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                       setInspectionInitialFilter('all');
                       setActivePage('inspection_report');
                     }}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'inspection_report'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">analytics</Icon>
                     <span>{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
                   </button>
                 )}
@@ -1577,13 +1577,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('scan')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'scan'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">qr_code_scanner</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] shrink-0">qr_code_scanner</Icon>
                     <span>{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
                   </button>
                 )}
@@ -1592,13 +1592,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <button
                   type="button"
                   onClick={() => setActivePage('report_unregistered')}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'report_unregistered'
                       ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="material-symbols-outlined text-[20px] text-amber-400">report_problem</Icon>
+                  <Icon className="material-symbols-outlined text-[18px] text-amber-400 shrink-0">report_problem</Icon>
                   <span>{isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}</span>
                 </button>
 
@@ -1607,13 +1607,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('unregistered_list')}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                       activePage === 'unregistered_list'
                         ? 'bg-[#1D61E7] text-white font-black shadow-md'
                         : 'text-slate-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px] text-red-400">no_drinks</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] text-red-400 shrink-0">no_drinks</Icon>
                     <span>{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}</span>
                   </button>
                 )}
@@ -1623,8 +1623,8 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Super Admin Dedicated Governance Links (SUPER ADMIN ONLY) */}
             {(userRole === 'superadmin') && (
               <div className="pt-2 mt-2 border-t border-white/15 space-y-1">
-                <p className="text-[10px] font-black text-[#60A5FA] uppercase tracking-wider px-3 mb-1 flex items-center gap-1">
-                  <Icon className="material-symbols-outlined text-[14px]">admin_panel_settings</Icon>
+                <p className="text-[10px] font-black text-[#60A5FA] uppercase tracking-wider px-3 mb-1 flex items-center gap-1.5">
+                  <Icon className="material-symbols-outlined text-[13px] shrink-0">admin_panel_settings</Icon>
                   <span>{isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin'}</span>
                 </p>
 
@@ -1632,13 +1632,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <button
                   type="button"
                   onClick={() => setActivePage('superadmin_users')}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_users' || activePage === 'superadmin'
                       ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="material-symbols-outlined text-[18px]">manage_accounts</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] shrink-0">manage_accounts</Icon>
                   <span>{isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions'}</span>
                 </button>
 
@@ -1646,13 +1646,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <button
                   type="button"
                   onClick={() => setActivePage('superadmin_subcities')}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_subcities'
                       ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="material-symbols-outlined text-[18px]">location_city</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] shrink-0">location_city</Icon>
                   <span>{isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance'}</span>
                 </button>
 
@@ -1660,13 +1660,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <button
                   type="button"
                   onClick={() => setActivePage('superadmin_permits')}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_permits'
                       ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="material-symbols-outlined text-[18px]">verified</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] shrink-0">verified</Icon>
                   <span>{isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules'}</span>
                 </button>
 
@@ -1674,13 +1674,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <button
                   type="button"
                   onClick={() => setActivePage('superadmin_maintenance')}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                  className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
                     activePage === 'superadmin_maintenance'
                       ? 'bg-[#1D61E7] text-white font-black shadow-md'
                       : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Icon className="material-symbols-outlined text-[18px]">database</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] shrink-0">database</Icon>
                   <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
                 </button>
               </div>
@@ -1694,13 +1694,13 @@ export const HomePage: React.FC<HomePageProps> = ({
                   setActivePage('settings');
                   setIsMobileMenuOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
                   activePage === 'settings'
                     ? 'bg-[#1D61E7] text-white font-black shadow-md'
                     : 'text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <Icon className="material-symbols-outlined text-[20px]">settings</Icon>
+                <Icon className="material-symbols-outlined text-[18px] shrink-0">settings</Icon>
                 <span>{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
               </button>
             </div>
@@ -1730,9 +1730,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             <button
               type="button"
               onClick={() => setIsLogoutModalOpen(true)}
-              className="w-full bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] font-extrabold text-xs py-2.5 rounded-md flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98"
+              className="w-full bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] font-extrabold text-xs py-2 rounded-md flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98"
             >
-              <Icon className="material-symbols-outlined text-[18px] text-amber-400">logout</Icon>
+              <Icon className="material-symbols-outlined text-[16px] text-amber-400 shrink-0">logout</Icon>
               <span>{isAmharic ? 'ወጣ (Logout)' : 'Logout'}</span>
             </button>
           </div>
@@ -1766,7 +1766,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
                 </div>
                 <div className="min-w-0">
-                  <h1 id="header-text" className="font-extrabold text-xs sm:text-sm text-white tracking-tight leading-tight truncate">
+                  <h1 id="header-text" className={`text-white leading-tight truncate whitespace-nowrap ${isAmharic ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
                     {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
                   </h1>
                 </div>
@@ -1869,7 +1869,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                     aria-label="Notifications"
                   >
-                    <Icon className="material-symbols-outlined text-[26px]">notifications</Icon>
+                    <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">notifications</Icon>
                     {unreadNotificationCount > 0 && (
                       <span className="bg-rose-500 text-white text-[10px] font-black min-w-[17px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-0.5 -right-0.5 shadow-2xs border border-[#0B1E48] animate-pulse">
                         {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
@@ -1889,7 +1889,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   aria-label="Toggle Navigation Menu"
                   className="p-1.5 flex items-center justify-center text-white hover:text-yellow-400 active:scale-90 touch-manipulation transition-colors cursor-pointer shrink-0"
                 >
-                  <Icon className="material-symbols-outlined text-[28px]">
+                  <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">
                     {isMobileMenuOpen ? 'close' : 'menu'}
                   </Icon>
                 </button>
@@ -1967,7 +1967,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 {/* Mobile Main Navigation Links */}
                 <div className="space-y-1">
-                  <p className="text-[10px] font-extrabold text-yellow-400/80 uppercase tracking-wider px-1 mb-1.5">
+                  <p className="text-[10px] font-extrabold text-yellow-400/80 uppercase tracking-wider px-1 mb-2">
                     {isAmharic ? 'ዋና ክፍሎች' : 'Navigation Pages'}
                   </p>
 
@@ -2943,8 +2943,8 @@ export const HomePage: React.FC<HomePageProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-[#0B1E48] text-amber-400 flex items-center justify-center shrink-0 border border-yellow-500/40 shadow-xs">
-                <Icon className="material-symbols-outlined text-[26px]">logout</Icon>
+              <div className="w-10 h-10 rounded-xl bg-[#0B1E48] text-amber-400 flex items-center justify-center shrink-0 border border-yellow-500/40 shadow-xs">
+                <Icon className="material-symbols-outlined text-[20px]">logout</Icon>
               </div>
               <div>
                 <h3 className="text-base font-black text-on-surface tracking-tight">

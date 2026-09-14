@@ -29,17 +29,21 @@
 }
 
 /* Material Symbols & SVG Icon Rules */
-.material-symbols-outlined,
-.material-symbols-rounded,
-.material-symbols-sharp,
-.material-icons,
-.material-icons-outlined,
-.material-icons-round,
-.material-icons-sharp,
-.prefix-icon,
-[data-icon] {
+:where(
+  .material-symbols-outlined,
+  .material-symbols-rounded,
+  .material-symbols-sharp,
+  .material-icons,
+  .material-icons-outlined,
+  .material-icons-round,
+  .material-icons-sharp,
+  .prefix-icon,
+  [data-icon]
+) {
   width: 1em;
   height: 1em;
+  max-width: 100%;
+  max-height: 100%;
   display: inline-block;
   vertical-align: middle;
   flex-shrink: 0;

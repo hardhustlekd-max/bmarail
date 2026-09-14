@@ -92,13 +92,10 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-extrabold text-xs sm:text-sm text-on-surface uppercase tracking-wider">
+              <h3 className="font-black text-sm sm:text-base text-on-surface uppercase tracking-wider">
                 {isAmharic ? 'የአባላት አስተዳደር ሁኔታ' : 'Permit Status Breakdown'}
               </h3>
             </div>
-            <p className="text-[11px] text-secondary font-medium mt-0.5">
-              {isAmharic ? 'የሁሉም ፈቃዶች ሁኔታና ብዛት ማጠቃለያ' : 'Real-time state overview of all permit applications'}
-            </p>
           </div>
         </div>
       </div>
@@ -110,15 +107,15 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
             <div
               key={card.key}
               onClick={() => onSelectStatusFilter && onSelectStatusFilter(card.key)}
-              className={`p-1.5 sm:p-3 rounded-lg border ${card.border} ${card.bg} transition-colors cursor-pointer group min-w-0 overflow-hidden`}
+              className={`p-2 sm:p-3 rounded-lg border ${card.border} ${card.bg} transition-colors cursor-pointer group min-w-0 overflow-hidden`}
             >
-              <div className={`flex justify-between items-center ${card.textClass} mb-0.5 sm:mb-1`}>
-                <span className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className={`flex justify-between items-center ${card.textClass} mb-1`}>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
                   {card.label}
                 </span>
-                <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] shrink-0">{card.icon}</Icon>
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">{card.icon}</Icon>
               </div>
-              <p className="text-base sm:text-2xl font-black text-on-surface tracking-tight leading-tight">{card.count}</p>
+              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{card.count}</p>
             </div>
           );
         })}

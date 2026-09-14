@@ -455,7 +455,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     if (isProcessingRef.current) return;
     isProcessingRef.current = true;
 
-    // Show active scanning processing animation
     setIsProcessingScan(true);
 
     if (imageOverride) {
@@ -467,33 +466,24 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       }
     }
 
-    // Perform deep query against both local cache and live Firestore permit database
+    // Perform query against both local cache and live Firestore permit database
     const match = await lookupRegistrationInDb(cleanData, registrations);
 
-    // Scanning delay (850ms) so scanning laser beam animation plays over captured camera/image frame
-    setTimeout(() => {
-      setIsProcessingScan(false);
-      if (match) {
-        playScanFeedback(true);
-        setScanFlash('success');
-        autoSaveLog(match);
-        setTimeout(() => {
-          setScannedRegResult(match);
-          setIsScanning(false);
-          setScanFlash(null);
-          isProcessingRef.current = false;
-        }, 450);
-      } else {
-        playScanFeedback(false);
-        setScanFlash('not_found');
-        setTimeout(() => {
-          setScannedRegResult('not_found');
-          setIsScanning(false);
-          setScanFlash(null);
-          isProcessingRef.current = false;
-        }, 450);
-      }
-    }, 850);
+    setIsProcessingScan(false);
+    if (match) {
+      playScanFeedback(true);
+      autoSaveLog(match);
+      setScannedRegResult(match);
+      setIsScanning(false);
+      setScanFlash(null);
+      isProcessingRef.current = false;
+    } else {
+      playScanFeedback(false);
+      setScannedRegResult('not_found');
+      setIsScanning(false);
+      setScanFlash(null);
+      isProcessingRef.current = false;
+    }
   };
 
   const handleScanResult = (result: any) => {

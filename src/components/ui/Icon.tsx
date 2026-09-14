@@ -45,18 +45,24 @@ export const Icon: React.FC<IconProps> = ({
     ? (typeof size === 'number' ? `${size}px` : size)
     : undefined;
 
-  const finalWidth = width || calculatedSize || '24px';
-  const finalHeight = height || calculatedSize || '24px';
+  const finalWidth = width || calculatedSize;
+  const finalHeight = height || calculatedSize;
+
+  const combinedStyle: React.CSSProperties = {
+    ...(finalWidth ? { width: finalWidth } : {}),
+    ...(finalHeight ? { height: finalHeight } : {}),
+    ...style,
+  };
 
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      height={finalHeight}
-      width={finalWidth}
+      height={finalHeight || '1em'}
+      width={finalWidth || '1em'}
       viewBox="0 -960 960 960"
       fill="currentColor"
       className={`material-symbols-outlined inline-block shrink-0 align-middle ${className}`}
-      style={style}
+      style={combinedStyle}
       aria-hidden="true"
       {...props}
     >
