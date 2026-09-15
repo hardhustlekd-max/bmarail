@@ -9,19 +9,31 @@
         "fullName": { "type": "string", "description": "Full name of the motor owner" },
         "phone": { "type": "string", "description": "Contact phone number" },
         "userPortraitPhoto": { "type": "string", "description": "Portrait photo URL or base64" },
+        "userPortraitThumbnail": { "type": "string", "description": "Thumbnail preview of user portrait" },
+        "ownerPhoto": { "type": "string", "description": "Owner identity photo" },
         "nationalIdPhoto": { "type": "string", "description": "National ID photo URL or base64" },
+        "nationalIdBackPhoto": { "type": "string", "description": "National ID back photo URL or base64" },
         "drivingLicensePhoto": { "type": "string", "description": "Driving license photo URL or base64" },
         "drivingPermitPhoto": { "type": "string", "description": "Driving permit photo URL or base64" },
         "vehicleCategory": { "type": "string", "description": "Category (electric or gas_under_110cc)" },
+        "serviceCategory": { "type": "string", "description": "Service category (private, delivery, commercial)" },
         "motorBrand": { "type": "string", "description": "Motor brand name" },
         "motorModel": { "type": "string", "description": "Motor model" },
+        "chassisNumber": { "type": "string", "description": "Chassis frame number" },
         "engineOrSerialNo": { "type": "string", "description": "Engine or chassis serial number" },
+        "engineNumber": { "type": "string", "description": "Engine serial number" },
         "plateNumber": { "type": "string", "description": "Vehicle plate number" },
         "registrationDate": { "type": "string", "description": "Registration date string" },
         "status": { "type": "string", "description": "Approval and print status" },
         "qrCodeData": { "type": "string", "description": "QR hash or encoded identifier" },
         "registeredBy": { "type": "string", "description": "Clerk or user that registered the vehicle" },
-        "rejectionReason": { "type": "string", "description": "Reason for rejection if rejected" }
+        "rejectionReason": { "type": "string", "description": "Reason for rejection if rejected" },
+        "subCity": { "type": "string", "description": "Sub city or administrative zone" },
+        "bloodGroup": { "type": "string", "description": "Owner blood group" },
+        "hideFromOtherUsers": { "type": "boolean", "description": "Flag to restrict visibility from regular clerks" },
+        "receiptNumber": { "type": "string", "description": "Bank or treasury receipt number for initial registration" },
+        "paymentAmount": { "type": "string", "description": "Payment amount paid for registration" },
+        "receiptScreenshot": { "type": "string", "description": "Receipt screenshot image URL or base64" }
       },
       "required": ["id", "fullName", "phone", "vehicleCategory", "engineOrSerialNo", "plateNumber", "status"]
     },
@@ -35,9 +47,13 @@
         "badgeId": { "type": "string", "description": "Officer badge ID" },
         "subCity": { "type": "string", "description": "Sub-city or district" },
         "locationName": { "type": "string", "description": "Checkpoint or location name" },
-        "shift": { "type": "string", "description": "Shift period" },
-        "status": { "type": "string", "description": "Officer active status" },
+        "shift": { "type": "string", "description": "Shift period (morning, afternoon, night)" },
+        "status": { "type": "string", "description": "Officer active status (active, off_duty, inactive)" },
+        "assignedLocation": { "type": "string", "description": "Detailed assigned location" },
+        "assignedZone": { "type": "string", "description": "Zone classification" },
+        "assignedSubcity": { "type": "string", "description": "Subcity assignment" },
         "phone": { "type": "string", "description": "Officer contact phone" },
+        "shiftHours": { "type": "string", "description": "Operating hours of shift" },
         "assignedDate": { "type": "string", "description": "Assigned date" }
       },
       "required": ["id", "officerName", "badgeId", "status"]
@@ -50,8 +66,9 @@
         "id": { "type": "string", "description": "Batch order ID" },
         "orderDate": { "type": "string", "description": "Order placement date" },
         "totalItems": { "type": "number", "description": "Number of permits in batch" },
-        "registrationIds": { "type": "array", "items": { "type": "string" }, "description": "List of registration IDs" },
-        "status": { "type": "string", "description": "Printing status" },
+        "totalCount": { "type": "number", "description": "Total count alias" },
+        "registrationIds": { "type": "string", "description": "List of registration IDs" },
+        "status": { "type": "string", "description": "Printing status (pending, in_printing, completed)" },
         "notes": { "type": "string", "description": "Printing press notes" },
         "updatedAt": { "type": "string", "description": "Last updated timestamp" }
       },
@@ -64,9 +81,13 @@
       "properties": {
         "id": { "type": "string", "description": "Log entry ID" },
         "scannedAt": { "type": "string", "description": "Scan timestamp" },
+        "timestamp": { "type": "string", "description": "ISO timestamp of verification scan" },
         "plateNumber": { "type": "string", "description": "Scanned plate number" },
         "fullName": { "type": "string", "description": "Owner full name" },
+        "driverName": { "type": "string", "description": "Driver name if different from owner" },
         "phone": { "type": "string", "description": "Owner phone" },
+        "badgeId": { "type": "string", "description": "Officer badge identifier" },
+        "notes": { "type": "string", "description": "Field notes" },
         "vehicleCategory": { "type": "string", "description": "Vehicle category" },
         "engineOrSerialNo": { "type": "string", "description": "Engine or serial number" },
         "permitStatus": { "type": "string", "description": "Permit status" },
@@ -75,7 +96,11 @@
         "officerBadgeId": { "type": "string", "description": "Badge ID of checking officer" },
         "locationName": { "type": "string", "description": "Location of check" },
         "userPortraitPhoto": { "type": "string", "description": "Driver portrait photo" },
-        "nationalIdPhoto": { "type": "string", "description": "National ID photo" }
+        "nationalIdPhoto": { "type": "string", "description": "National ID photo" },
+        "drivingLicensePhoto": { "type": "string", "description": "Driving license photo" },
+        "drivingPermitPhoto": { "type": "string", "description": "Driving permit photo" },
+        "nationalIdBackPhoto": { "type": "string", "description": "National ID back photo" },
+        "registrationId": { "type": "string", "description": "Linked registration ID" }
       },
       "required": ["id", "scannedAt", "plateNumber", "fullName", "verificationStatus"]
     },
@@ -90,13 +115,28 @@
         "subCityOffice": { "type": "string", "description": "Sub city office" },
         "defaultPrinter": { "type": "string", "description": "Default printer name" },
         "cardStockType": { "type": "string", "description": "Card stock type" },
-        "calendarSystem": { "type": "string", "description": "Calendar system" },
+        "calendarSystem": { "type": "string", "description": "Calendar system (ethiopian or gregorian)" },
         "autoPrintQR": { "type": "boolean", "description": "Auto print QR code" },
         "emailAlerts": { "type": "boolean", "description": "Email alerts enabled" },
         "security2FA": { "type": "boolean", "description": "2FA security enabled" },
-        "highRiskAlerts": { "type": "boolean", "description": "High risk alerts enabled" }
+        "highRiskAlerts": { "type": "boolean", "description": "High risk alerts enabled" },
+        "themeMode": { "type": "string", "description": "Theme mode (light or dark)" },
+        "registrationFreeze": { "type": "boolean", "description": "System registration lock status" },
+        "maintenanceMode": { "type": "boolean", "description": "Maintenance mode lock status" },
+        "scannerResultTheme": { "type": "string", "description": "Color theme palette for field verification result screen" },
+        "showClerkPermitStatus": { "type": "boolean", "description": "Show permit status column to clerks" },
+        "showClerkSubmissionsAction": { "type": "boolean", "description": "Show clerk submission quick action" },
+        "showClerkApprovedVehiclesAction": { "type": "boolean", "description": "Show clerk approved vehicles quick action" },
+        "showClerkPaymentKPIs": { "type": "boolean", "description": "Show payment KPIs to clerks" },
+        "showClerkPaymentRecordsTable": { "type": "boolean", "description": "Show payment records table to clerks" },
+        "clerkPaymentKPIPermission": { "type": "string", "description": "Clerk permission for payment KPIs (allow, hide)" },
+        "clerkPaymentTablePermission": { "type": "string", "description": "Clerk permission for payment records table (allow, hide)" },
+        "frozenSubCities": { "type": "string", "description": "JSON map of frozen sub-cities" },
+        "systemResetEpoch": { "type": "number", "description": "Timestamp epoch of last system wipe/reset" },
+        "lastSystemResetAt": { "type": "string", "description": "Formatted date string of last system reset" },
+        "updatedAt": { "type": "string", "description": "Timestamp of settings update" }
       },
-      "required": ["id", "officerName", "department"]
+      "required": ["id"]
     },
     "unregistered_reports": {
       "title": "Unregistered Vehicle Reports",
@@ -110,13 +150,16 @@
         "driverPhone": { "type": "string", "description": "Driver contact phone" },
         "vehicleCategory": { "type": "string", "description": "Vehicle category" },
         "engineOrSerialNo": { "type": "string", "description": "Engine or serial number" },
+        "chassisNumber": { "type": "string", "description": "Chassis or frame serial number" },
+        "motorBrand": { "type": "string", "description": "Brand manufacturer of motor" },
         "subCity": { "type": "string", "description": "Sub city district" },
         "locationName": { "type": "string", "description": "Incident checkpoint or street location" },
         "officerBadgeId": { "type": "string", "description": "Reporting officer badge ID" },
         "officerName": { "type": "string", "description": "Reporting officer full name" },
         "notes": { "type": "string", "description": "Officer field notes and incident details" },
         "evidencePhoto": { "type": "string", "description": "Vehicle or scene evidence photo URL" },
-        "status": { "type": "string", "description": "Report resolution status" }
+        "status": { "type": "string", "description": "Report resolution status" },
+        "resolutionNotes": { "type": "string", "description": "Notes from resolution process" }
       },
       "required": ["id", "reportedAt", "vehicleCategory", "subCity", "officerBadgeId", "notes"]
     },
@@ -133,13 +176,103 @@
         "phone": { "type": "string", "description": "Owner contact phone" },
         "paymentDate": { "type": "string", "description": "Date of payment" },
         "expirationDate": { "type": "string", "description": "Calculated expiration date (1 month after payment date)" },
-        "amount": { "type": "string", "description": "Payment amount in Birr" },
+        "amount": { "type": "number", "description": "Payment amount in Birr" },
         "receiptScreenshot": { "type": "string", "description": "Image data URL or screenshot photo of payment receipt" },
         "notes": { "type": "string", "description": "Clerk remarks or treasury notes" },
         "enteredBy": { "type": "string", "description": "Clerk badge ID or user name" },
+        "status": { "type": "string", "description": "Receipt status (valid, expired, flagged)" },
         "createdAt": { "type": "string", "description": "Record creation timestamp" }
       },
       "required": ["id", "receiptNumber", "ownerName", "paymentDate", "expirationDate", "enteredBy"]
+    },
+    "system_users": {
+      "title": "System Users",
+      "description": "Clerk, officer, admin and superadmin user accounts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "User identifier" },
+        "uid": { "type": "string", "description": "Authentication UID" },
+        "badgeId": { "type": "string", "description": "Badge ID" },
+        "email": { "type": "string", "description": "User email address" },
+        "role": { "type": "string", "description": "User role (clerk, officer, admin, superadmin)" },
+        "fullName": { "type": "string", "description": "User full name" },
+        "subCity": { "type": "string", "description": "Sub-city of assignment" },
+        "status": { "type": "string", "description": "Account status (active, disabled, suspended)" },
+        "createdAt": { "type": "string", "description": "Account creation timestamp" },
+        "lastLoginAt": { "type": "string", "description": "Timestamp of last login" }
+      },
+      "required": ["id", "badgeId", "email", "role", "fullName", "status"]
+    },
+    "system_audit_logs": {
+      "title": "System Audit Logs",
+      "description": "System action tracking and audit records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Audit log identifier" },
+        "timestamp": { "type": "string", "description": "Action timestamp" },
+        "actorBadgeId": { "type": "string", "description": "Actor badge ID" },
+        "actorRole": { "type": "string", "description": "Role of the actor" },
+        "action": { "type": "string", "description": "Action performed" },
+        "details": { "type": "string", "description": "Action details" },
+        "ipAddress": { "type": "string", "description": "Client IP address" },
+        "severity": { "type": "string", "description": "Severity (info, warning, critical)" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "timestamp", "actorBadgeId", "actorRole", "action", "details"]
+    },
+    "notification_states": {
+      "title": "Notification States",
+      "description": "Per-user notification read status tracking",
+      "type": "object",
+      "properties": {
+        "userScopeId": { "type": "string", "description": "User or role scope identifier" },
+        "readIds": { "type": "string", "description": "JSON array of read notification IDs" },
+        "lastReadAt": { "type": "string", "description": "Timestamp of last read action" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["userScopeId"]
+    }
+  },
+  "firestore": {
+    "/motorcycle_registrations/{registrationId}": {
+      "schema": "motorcycle_registrations",
+      "description": "Collection of all motorcycle permit registration records"
+    },
+    "/officer_assignments/{officerId}": {
+      "schema": "officer_assignments",
+      "description": "Collection of officer field duty assignments"
+    },
+    "/print_batch_orders/{orderId}": {
+      "schema": "print_batch_orders",
+      "description": "Collection of batch print jobs sent to printing press"
+    },
+    "/verification_logs/{logId}": {
+      "schema": "verification_logs",
+      "description": "Collection of QR scan verifications conducted by patrol officers"
+    },
+    "/system_settings/{settingId}": {
+      "schema": "system_settings",
+      "description": "Global and municipal system configuration documents"
+    },
+    "/unregistered_reports/{reportId}": {
+      "schema": "unregistered_reports",
+      "description": "Collection of field incident reports on unregistered motor vehicles"
+    },
+    "/payment_receipts/{receiptId}": {
+      "schema": "payment_receipts",
+      "description": "Collection of municipal permit fee payment receipts"
+    },
+    "/system_users/{userId}": {
+      "schema": "system_users",
+      "description": "Collection of authenticated municipal staff user accounts"
+    },
+    "/system_audit_logs/{logId}": {
+      "schema": "system_audit_logs",
+      "description": "Collection of operational audit and security log entries"
+    },
+    "/notification_states/{userScopeId}": {
+      "schema": "notification_states",
+      "description": "Collection of user notification read markers"
     }
   }
 }

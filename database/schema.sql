@@ -1,7 +1,7 @@
 -- ============================================================================
--- RAILWAY POSTGRESQL DATABASE SCHEMA
+-- RAILWAY / POSTGRESQL PRODUCTION DATABASE SCHEMA
 -- Application: Bahir Dar Municipal Motorcycle Permit & BMA Authority System
--- Replaces: Firebase Firestore & Firebase Storage
+-- Supports: Direct Cloud SQL / PostgreSQL, Docker / Railway Deployments & Local Sync
 -- ============================================================================
 
 -- Enable UUID extension if available
@@ -38,15 +38,18 @@ CREATE TABLE IF NOT EXISTS motorcycle_registrations (
     phone VARCHAR(50) NOT NULL,
     user_portrait_photo TEXT,
     user_portrait_thumbnail TEXT,
+    owner_photo TEXT,
     national_id_photo TEXT NOT NULL,
     national_id_back_photo TEXT,
     driving_license_photo TEXT NOT NULL,
     driving_permit_photo TEXT NOT NULL,
     vehicle_category VARCHAR(50) NOT NULL DEFAULT 'electric' CHECK (vehicle_category IN ('electric', 'gas_under_110cc')),
+    service_category VARCHAR(100),
     motor_brand VARCHAR(100),
     motor_model VARCHAR(100),
     chassis_number VARCHAR(100),
     engine_or_serial_no VARCHAR(100) NOT NULL,
+    engine_number VARCHAR(100),
     plate_number VARCHAR(50) NOT NULL,
     registration_date VARCHAR(50) NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'pending_approval' CHECK (status IN ('pending_approval', 'approved', 'rejected', 'ordered_print', 'printed')),
@@ -69,6 +72,7 @@ CREATE INDEX IF NOT EXISTS idx_registrations_status ON motorcycle_registrations(
 CREATE INDEX IF NOT EXISTS idx_registrations_sub_city ON motorcycle_registrations(sub_city);
 CREATE INDEX IF NOT EXISTS idx_registrations_registered_by ON motorcycle_registrations(registered_by);
 CREATE INDEX IF NOT EXISTS idx_registrations_registration_date ON motorcycle_registrations(registration_date);
+CREATE INDEX IF NOT EXISTS idx_registrations_receipt_number ON motorcycle_registrations(receipt_number);
 
 -- ----------------------------------------------------------------------------
 -- 3. OFFICER ASSIGNMENTS
@@ -80,8 +84,10 @@ CREATE TABLE IF NOT EXISTS officer_assignments (
     sub_city VARCHAR(100) NOT NULL,
     location_name VARCHAR(255) NOT NULL,
     shift VARCHAR(50) NOT NULL DEFAULT 'morning' CHECK (shift IN ('morning', 'afternoon', 'night')),
-    status VARCHAR(50) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'off_duty')),
+    status VARCHAR(50) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'off_duty', 'inactive')),
     assigned_location VARCHAR(255),
+    assigned_zone VARCHAR(100),
+    assigned_subcity VARCHAR(100),
     phone VARCHAR(50),
     shift_hours VARCHAR(100),
     assigned_date VARCHAR(50),
@@ -117,9 +123,13 @@ CREATE INDEX IF NOT EXISTS idx_print_batch_orders_order_date ON print_batch_orde
 CREATE TABLE IF NOT EXISTS verification_logs (
     id VARCHAR(128) PRIMARY KEY,
     scanned_at VARCHAR(50) NOT NULL,
+    timestamp VARCHAR(50),
     plate_number VARCHAR(50) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
+    driver_name VARCHAR(255),
     phone VARCHAR(50) NOT NULL,
+    badge_id VARCHAR(100),
+    notes TEXT,
     vehicle_category VARCHAR(50) NOT NULL DEFAULT 'electric',
     engine_or_serial_no VARCHAR(100) NOT NULL,
     permit_status VARCHAR(50) NOT NULL DEFAULT 'pending_approval',
@@ -140,6 +150,7 @@ CREATE INDEX IF NOT EXISTS idx_verification_logs_plate_number ON verification_lo
 CREATE INDEX IF NOT EXISTS idx_verification_logs_officer_badge ON verification_logs(officer_badge_id);
 CREATE INDEX IF NOT EXISTS idx_verification_logs_scanned_at ON verification_logs(scanned_at);
 CREATE INDEX IF NOT EXISTS idx_verification_logs_status ON verification_logs(verification_status);
+CREATE INDEX IF NOT EXISTS idx_verification_logs_registration_id ON verification_logs(registration_id);
 
 -- ----------------------------------------------------------------------------
 -- 6. UNREGISTERED VEHICLE REPORTS
@@ -186,6 +197,7 @@ CREATE TABLE IF NOT EXISTS payment_receipts (
     receipt_screenshot TEXT,
     notes TEXT,
     entered_by VARCHAR(100) NOT NULL,
+    status VARCHAR(50) DEFAULT 'valid',
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -193,6 +205,7 @@ CREATE TABLE IF NOT EXISTS payment_receipts (
 CREATE INDEX IF NOT EXISTS idx_payment_receipts_receipt_number ON payment_receipts(receipt_number);
 CREATE INDEX IF NOT EXISTS idx_payment_receipts_plate_number ON payment_receipts(plate_number);
 CREATE INDEX IF NOT EXISTS idx_payment_receipts_payment_date ON payment_receipts(payment_date);
+CREATE INDEX IF NOT EXISTS idx_payment_receipts_owner_reg ON payment_receipts(owner_registration_id);
 
 -- ----------------------------------------------------------------------------
 -- 8. SYSTEM GLOBAL CONFIGURATION & SETTINGS
@@ -209,7 +222,10 @@ CREATE TABLE IF NOT EXISTS system_settings (
     email_alerts BOOLEAN DEFAULT TRUE,
     security_2fa BOOLEAN DEFAULT TRUE,
     high_risk_alerts BOOLEAN DEFAULT TRUE,
-    scanner_result_theme VARCHAR(100) DEFAULT 'deep_cobalt_navy',
+    theme_mode VARCHAR(50) DEFAULT 'light',
+    registration_freeze BOOLEAN DEFAULT FALSE,
+    maintenance_mode BOOLEAN DEFAULT FALSE,
+    scanner_result_theme VARCHAR(100) DEFAULT 'warm_ivory_cream',
     show_clerk_permit_status BOOLEAN DEFAULT FALSE,
     show_clerk_submissions_action BOOLEAN DEFAULT FALSE,
     show_clerk_approved_vehicles_action BOOLEAN DEFAULT FALSE,
@@ -270,3 +286,4 @@ CREATE TABLE IF NOT EXISTS file_uploads (
 
 CREATE INDEX IF NOT EXISTS idx_file_uploads_folder ON file_uploads(folder);
 CREATE INDEX IF NOT EXISTS idx_file_uploads_key ON file_uploads(file_key);
+
