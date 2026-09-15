@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LoginPage } from './components/LoginPage';
 import { HomePage } from './components/HomePage';
 import { CrashNotificationModal } from './components/CrashNotificationModal';
+import { AutoLogoutManager, INACTIVITY_TIMEOUT_MS } from './components/AutoLogoutManager';
 import { Language, UserRole } from './types';
 import {
   getStoredAuthSession,
@@ -11,6 +12,11 @@ import {
   getStoredTheme,
   saveTheme,
   saveActivePage,
+  getStoredLastActivity,
+  saveStoredLastActivity,
+  clearStoredLastActivity,
+  getStoredSessionExpiredReason,
+  saveStoredSessionExpiredReason,
 } from './utils/storage';
 import {
   ensureOnlineAuth,
@@ -81,9 +87,36 @@ export default function App() {
   };
 
   const savedSession = getStoredAuthSession();
-  const [isLoggedIn, setIsLoggedIn] = useState(savedSession?.isLoggedIn ?? false);
-  const [userBadgeId, setUserBadgeId] = useState(savedSession?.userBadgeId ?? '');
-  const [userRole, setUserRole] = useState<UserRole>(savedSession?.userRole ?? 'clerk');
+  const initialLastActivity = getStoredLastActivity();
+  const isSessionExpiredOnBoot =
+    Boolean(savedSession?.isLoggedIn) &&
+    Date.now() - initialLastActivity >= INACTIVITY_TIMEOUT_MS;
+
+  // Clear stale session on boot if user was away for more than 15 minutes
+  if (isSessionExpiredOnBoot && savedSession) {
+    saveAuthSession(null);
+    clearStoredLastActivity();
+  }
+
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    savedSession?.isLoggedIn && !isSessionExpiredOnBoot ? true : false
+  );
+  const [userBadgeId, setUserBadgeId] = useState(
+    savedSession && !isSessionExpiredOnBoot ? savedSession.userBadgeId : ''
+  );
+  const [userRole, setUserRole] = useState<UserRole>(
+    savedSession && !isSessionExpiredOnBoot ? savedSession.userRole : 'clerk'
+  );
+  const [sessionExpiredMessage, setSessionExpiredMessage] = useState<string | null>(
+    () => {
+      if (isSessionExpiredOnBoot) {
+        return getStoredLang() === 'am'
+          ? 'የስራ ክፍለ ጊዜዎ ከ15 ደቂቃ እንቅስቃሴ አልባነት በኋላ ለደህንነት ሲባል ተዘግቷል። እባክዎ እንደገና ይግቡ።'
+          : 'Your session was cleared after 15 minutes of inactivity for security. Please sign in again.';
+      }
+      return getStoredSessionExpiredReason();
+    }
+  );
 
   // Restore state and authentication session on load
   useEffect(() => {
@@ -95,7 +128,8 @@ export default function App() {
       console.warn('App mount sync notice:', err);
     });
 
-    if (savedSession?.isLoggedIn) {
+    if (savedSession?.isLoggedIn && !isSessionExpiredOnBoot) {
+      saveStoredLastActivity(Date.now());
       loginOnlineUser(savedSession.userRole, savedSession.userBadgeId).catch(() => {
         ensureOnlineAuth();
       });
@@ -116,6 +150,9 @@ export default function App() {
     setUserBadgeId(badgeId);
     setUserRole(role);
     setIsLoggedIn(true);
+    setSessionExpiredMessage(null);
+    saveStoredSessionExpiredReason(null);
+    saveStoredLastActivity(Date.now());
     saveAuthSession({
       isLoggedIn: true,
       userBadgeId: badgeId,
@@ -127,18 +164,32 @@ export default function App() {
     syncCriticalStartup().catch(() => {});
   };
 
-  const handleLogout = () => {
+  const handleLogout = (reason: 'inactivity' | 'manual' = 'manual') => {
     // Ensure all records in memory are saved to local storage before session changes
     saveStateToLocalStorage();
     saveActivePage('dashboard');
     setIsLoggedIn(false);
     setUserBadgeId('');
     saveAuthSession(null);
+    clearStoredLastActivity();
     logoutOnlineUser();
+
+    if (reason === 'inactivity') {
+      const message =
+        lang === 'am'
+          ? 'የስራ ክፍለ ጊዜዎ ከ15 ደቂቃ እንቅስቃሴ አልባነት በኋላ ለደህንነት ሲባል ተዘግቷል። እባክዎ እንደገና ይግቡ።'
+          : 'Your session was cleared after 15 minutes of inactivity for security. Please sign in again.';
+      setSessionExpiredMessage(message);
+      saveStoredSessionExpiredReason(message);
+    } else {
+      setSessionExpiredMessage(null);
+      saveStoredSessionExpiredReason(null);
+    }
   };
 
   const handleSwitchRole = (newRole: UserRole) => {
     setUserRole(newRole);
+    saveStoredLastActivity(Date.now());
     saveAuthSession({
       isLoggedIn: true,
       userBadgeId,
@@ -157,16 +208,24 @@ export default function App() {
       data-system-lang={lang}
     >
       {isLoggedIn ? (
-        <HomePage
-          userBadgeId={userBadgeId}
-          userRole={userRole}
-          currentLang={lang}
-          currentTheme={theme}
-          onToggleLang={toggleLanguage}
-          onToggleTheme={toggleTheme}
-          onLogout={handleLogout}
-          onSwitchRole={handleSwitchRole}
-        />
+        <>
+          <HomePage
+            userBadgeId={userBadgeId}
+            userRole={userRole}
+            currentLang={lang}
+            currentTheme={theme}
+            onToggleLang={toggleLanguage}
+            onToggleTheme={toggleTheme}
+            onLogout={() => handleLogout('manual')}
+            onSwitchRole={handleSwitchRole}
+          />
+          {/* 15-Minute Inactivity Auto-Logout Security Watcher & Warning Dialog */}
+          <AutoLogoutManager
+            isAmharic={lang === 'am'}
+            onAutoLogout={() => handleLogout('inactivity')}
+            onManualLogout={() => handleLogout('manual')}
+          />
+        </>
       ) : (
         <LoginPage
           currentLang={lang}
@@ -174,6 +233,11 @@ export default function App() {
           onToggleLang={toggleLanguage}
           onToggleTheme={toggleTheme}
           onLoginSuccess={handleLoginSuccess}
+          sessionExpiredMessage={sessionExpiredMessage}
+          onClearSessionExpiredMessage={() => {
+            setSessionExpiredMessage(null);
+            saveStoredSessionExpiredReason(null);
+          }}
         />
       )}
 

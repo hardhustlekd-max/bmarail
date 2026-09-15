@@ -1171,7 +1171,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
             <button
               type="button"
               onClick={onViewRegistered}
-              className="px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+              className="hidden sm:flex px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
             >
               <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
               <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
@@ -2074,7 +2074,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <span className="text-xs font-black text-slate-900 dark:text-white">
                         {isAmharic ? 'የተሞላው መረጃ ማጠቃለያ:' : 'Summary of Registration Details:'}
                       </span>
-                      <div className="flex items-center gap-2">
+                      <div className="hidden sm:flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => setCurrentStep(1)}

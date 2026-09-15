@@ -1019,8 +1019,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         </div>
 
                         {/* Collapsible Mobile Body Drawer */}
-                        {isExpanded && (
-                          <div className="mt-3.5 pt-3.5 border-t border-slate-200 dark:border-slate-800 space-y-3.5 bg-slate-50/80 dark:bg-slate-800/40 p-3.5 rounded-md border border-slate-200/80 dark:border-slate-700/80">
+                        <div className={`collapsible-grid ${isExpanded ? 'expanded' : ''}`}>
+                          <div className="collapsible-grid-inner">
+                            <div className="mt-3.5 pt-3.5 border-t border-slate-200 dark:border-slate-800 space-y-3.5 bg-slate-50/80 dark:bg-slate-800/40 p-3.5 rounded-md border border-slate-200/80 dark:border-slate-700/80 mb-1">
                             {/* Status Text Badge Header */}
                             <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/80 dark:border-slate-700/80">
                               <span className="text-xs font-extrabold text-slate-600 dark:text-slate-300">
@@ -1263,9 +1264,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               )}
                             </div>
                           </div>
-                        )}
+                        </div>
                       </div>
-                    );
+                    </div>
+                  );
                   })
                 )}
               </div>
@@ -1690,46 +1692,48 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 </div>
 
                                 {/* Expandable Details */}
-                                {isExpanded && (
-                                  <div className="p-3 pt-0 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] space-y-2.5 animate-in slide-in-from-top-1 duration-150">
-                                    <div className="grid grid-cols-2 gap-2 pt-2.5">
-                                      <div>
-                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
-                                        <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
+                                <div className={`collapsible-grid ${isExpanded ? 'expanded' : ''}`}>
+                                  <div className="collapsible-grid-inner">
+                                    <div className="p-3 pt-0 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] space-y-2.5">
+                                      <div className="grid grid-cols-2 gap-2 pt-2.5">
+                                        <div>
+                                          <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
+                                          <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
+                                          <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
+                                        </div>
                                       </div>
-                                      <div>
-                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
-                                        <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
+
+                                      <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                                        {rc.receiptScreenshot ? (
+                                          <button
+                                            type="button"
+                                            onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
+                                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-black underline cursor-pointer flex items-center gap-1 py-1"
+                                          >
+                                            <Icon className="material-symbols-outlined text-[14px]">image</Icon>
+                                            <span>{isAmharic ? 'ሰነድ እይ' : 'View Slip'}</span>
+                                          </button>
+                                        ) : (
+                                          <span className="text-slate-400 italic">{isAmharic ? 'ምስል አልተያያዘም' : 'No Slip Screenshot'}</span>
+                                        )}
+
+                                        {isSuperAdmin && (
+                                          <button
+                                            type="button"
+                                            onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
+                                            className="text-rose-600 hover:text-rose-800 dark:text-rose-400 font-black cursor-pointer flex items-center gap-1 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-1 rounded border border-rose-200/50 dark:border-rose-900/50 hover:bg-rose-100 transition-colors"
+                                          >
+                                            <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
+                                            <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
+                                          </button>
+                                        )}
                                       </div>
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
-                                      {rc.receiptScreenshot ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
-                                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-black underline cursor-pointer flex items-center gap-1 py-1"
-                                        >
-                                          <Icon className="material-symbols-outlined text-[14px]">image</Icon>
-                                          <span>{isAmharic ? 'ሰነድ እይ' : 'View Slip'}</span>
-                                        </button>
-                                      ) : (
-                                        <span className="text-slate-400 italic">{isAmharic ? 'ምስል አልተያያዘም' : 'No Slip Screenshot'}</span>
-                                      )}
-
-                                      {isSuperAdmin && (
-                                        <button
-                                          type="button"
-                                          onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
-                                          className="text-rose-600 hover:text-rose-800 dark:text-rose-400 font-black cursor-pointer flex items-center gap-1 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-1 rounded border border-rose-200/50 dark:border-rose-900/50 hover:bg-rose-100 transition-colors"
-                                        >
-                                          <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
-                                          <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
-                                        </button>
-                                      )}
                                     </div>
                                   </div>
-                                )}
+                                </div>
                               </div>
                             );
                           })}

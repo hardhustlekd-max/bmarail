@@ -10,6 +10,8 @@ interface LoginPageProps {
   onToggleLang?: () => void;
   onToggleTheme?: () => void;
   onLoginSuccess?: (badgeId: string, role: UserRole) => void;
+  sessionExpiredMessage?: string | null;
+  onClearSessionExpiredMessage?: () => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({
@@ -18,6 +20,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   onToggleLang,
   onToggleTheme,
   onLoginSuccess,
+  sessionExpiredMessage,
+  onClearSessionExpiredMessage,
 }) => {
   const [badgeId, setBadgeId] = useState('');
   const [password, setPassword] = useState('');
@@ -101,6 +105,32 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 : 'Enter your badge ID and password to sign in'}
             </p>
           </div>
+
+          {sessionExpiredMessage && (
+            <div className="p-3 rounded-lg text-xs bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 dark:border-amber-800 text-amber-800 dark:text-amber-300 flex items-start gap-2.5 animate-in fade-in">
+              <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
+                alarm
+              </Icon>
+              <div className="flex-1 min-w-0">
+                <span className="block font-black text-xs text-amber-950 dark:text-amber-200">
+                  {lang === 'am' ? 'የስራ ክፍለ-ጊዜ ማብቂያ' : 'Session Expired for Security'}
+                </span>
+                <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-amber-800/90 dark:text-amber-300/90">
+                  {sessionExpiredMessage}
+                </span>
+              </div>
+              {onClearSessionExpiredMessage && (
+                <button
+                  type="button"
+                  onClick={onClearSessionExpiredMessage}
+                  className="text-amber-600 hover:text-amber-800 dark:text-amber-400 p-0.5 rounded cursor-pointer shrink-0"
+                  title={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                </button>
+              )}
+            </div>
+          )}
 
           {authError && (
             <div className="p-2.5 rounded-lg text-xs font-bold bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 flex items-center gap-2 animate-in fade-in">

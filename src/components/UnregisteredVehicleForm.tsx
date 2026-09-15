@@ -133,7 +133,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
             <button
               type="button"
               onClick={onCancel}
-              className="px-3.5 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer"
+              className="hidden sm:inline-flex px-3.5 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer"
             >
               {isAmharic ? 'ሰርዝ' : 'Cancel'}
             </button>

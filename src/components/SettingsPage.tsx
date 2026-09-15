@@ -8,6 +8,10 @@ import {
   getSavedCrashReports,
   clearSavedCrashReports,
 } from '../utils/crashReporter';
+import {
+  extendSessionManually,
+  triggerInactivityPromptPreview,
+} from './AutoLogoutManager';
 
 interface SettingsPageProps {
   userBadgeId: string;
@@ -678,6 +682,51 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     notifications_active
                   </Icon>
                   <span>{isAmharic ? 'ማሳወቂያውን ሞክር (Test Popup)' : 'Test Crash Popup'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Auto-Logout Inactivity Policy Card */}
+            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <Icon className="material-symbols-outlined text-[20px]">alarm</Icon>
+                  </div>
+                  <div>
+                    <span className="text-xs font-black text-on-surface block">
+                      {isAmharic ? 'የስራ ክፍለ-ጊዜ ደህንነት (Auto-Logout Policy)' : 'Session Security (Auto-Logout Policy)'}
+                    </span>
+                    <span className="text-[11px] text-outline block mt-0.5 leading-relaxed">
+                      {isAmharic
+                        ? 'ከ15 ደቂቃ በፊት "በመለያዬ እንዳለሁ አቆየኝ" የሚል ማስጠንቀቂያ ይቀርባል፤ ክፍለ ጊዜውን ሳያቋርጡ ለማራዘም ያስችላል።'
+                        : 'Prompts you with "Keep me logged in" before the 15-minute inactivity timer triggers, allowing you to extend your session.'}
+                    </span>
+                  </div>
+                </div>
+                <span className="px-2.5 py-1 rounded-md text-[11px] font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 whitespace-nowrap shrink-0">
+                  15 {isAmharic ? 'ደቂቃ' : 'min'}
+                </span>
+              </div>
+
+              {/* Quick actions for testing and manual extension */}
+              <div className="pt-2 border-t border-outline-variant/60 flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => triggerInactivityPromptPreview()}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:bg-surface-container border border-outline-variant transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <Icon className="material-symbols-outlined text-[16px] text-amber-500">preview</Icon>
+                  <span>{isAmharic ? 'ማስጠንቀቂያውን ሞክር (Preview Prompt)' : 'Preview Prompt'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => extendSessionManually()}
+                  className="px-3 py-1.5 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">lock_reset</Icon>
+                  <span>{isAmharic ? 'ክፍለ ጊዜውን አራዝም (+15 ደቂቃ)' : 'Extend Session (+15 min)'}</span>
                 </button>
               </div>
             </div>

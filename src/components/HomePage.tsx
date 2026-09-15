@@ -1489,138 +1489,140 @@ export const HomePage: React.FC<HomePageProps> = ({
                 )}
               </button>
 
-              {expandedGroups.registrations && !isCollapsed && (
-                <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 animate-in fade-in duration-150">
-                  {userRole === 'clerk' ? (
-                    <>
-                      {(settings.showClerkNewRegistrationAction ?? true) && isTaskViewable(userRole, 1) && (
-                        <button
-                          type="button"
-                          onClick={() => setActivePage('forms')}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'forms'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] shrink-0">how_to_reg</Icon>
-                          <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
-                        </button>
-                      )}
+              <div className={`collapsible-grid ${expandedGroups.registrations && !isCollapsed ? 'expanded' : ''}`}>
+                <div className="collapsible-grid-inner">
+                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 py-0.5">
+                    {userRole === 'clerk' ? (
+                      <>
+                        {(settings.showClerkNewRegistrationAction ?? true) && isTaskViewable(userRole, 1) && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('forms')}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'forms'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] shrink-0">how_to_reg</Icon>
+                            <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
+                          </button>
+                        )}
 
-                      {(settings.showClerkEditSubmissionAction ?? true) && isTaskViewable(userRole, 2) && (
-                        <button
-                          type="button"
-                          onClick={() => setActivePage('today_submissions_adjust')}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'today_submissions_adjust'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] shrink-0">edit_note</Icon>
-                          <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
-                        </button>
-                      )}
+                        {(settings.showClerkEditSubmissionAction ?? true) && isTaskViewable(userRole, 2) && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('today_submissions_adjust')}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'today_submissions_adjust'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] shrink-0">edit_note</Icon>
+                            <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
+                          </button>
+                        )}
 
-                      {(settings.showClerkPaymentReceiptsAction ?? true) && (isTaskViewable(userRole, 15) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 1)) && (
-                        <button
-                          type="button"
-                          onClick={() => setActivePage('payment_receipts')}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'payment_receipts'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] text-emerald-400 shrink-0">receipt_long</Icon>
-                          <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
-                        </button>
-                      )}
+                        {(settings.showClerkPaymentReceiptsAction ?? true) && (isTaskViewable(userRole, 15) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 1)) && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('payment_receipts')}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'payment_receipts'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] text-emerald-400 shrink-0">receipt_long</Icon>
+                            <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
+                          </button>
+                        )}
 
-                      {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 8) && (
-                        <button
-                          type="button"
-                          onClick={() => setActivePage('tables')}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'tables'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] shrink-0">folder_open</Icon>
-                          <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
-                        </button>
-                      )}
+                        {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 8) && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('tables')}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'tables'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] shrink-0">folder_open</Icon>
+                            <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
+                          </button>
+                        )}
 
-                      {settings.showClerkApprovedVehiclesAction && isTaskViewable(userRole, 8) && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setTableInitialTab('approved');
-                            setActivePage('tables');
-                          }}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'tables'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] shrink-0">verified</Icon>
-                          <span>{isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Registry'}</span>
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {userRole !== 'officer' && isTaskViewable(userRole, 1) && (
-                        <button
-                          type="button"
-                          onClick={() => setActivePage('forms')}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'forms'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] shrink-0">how_to_reg</Icon>
-                          <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
-                        </button>
-                      )}
+                        {settings.showClerkApprovedVehiclesAction && isTaskViewable(userRole, 8) && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTableInitialTab('approved');
+                              setActivePage('tables');
+                            }}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'tables'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] shrink-0">verified</Icon>
+                            <span>{isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Registry'}</span>
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {userRole !== 'officer' && isTaskViewable(userRole, 1) && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('forms')}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'forms'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] shrink-0">how_to_reg</Icon>
+                            <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
+                          </button>
+                        )}
 
-                      {userRole !== 'officer' && isTaskViewable(userRole, 1) && (
-                        <button
-                          type="button"
-                          onClick={() => setActivePage('payment_receipts')}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'payment_receipts'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] text-emerald-400 shrink-0">receipt_long</Icon>
-                          <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
-                        </button>
-                      )}
+                        {userRole !== 'officer' && isTaskViewable(userRole, 1) && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('payment_receipts')}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'payment_receipts'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] text-emerald-400 shrink-0">receipt_long</Icon>
+                            <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
+                          </button>
+                        )}
 
-                      {userRole !== 'officer' && isTaskViewable(userRole, 8) && (
-                        <button
-                          type="button"
-                          onClick={() => setActivePage('tables')}
-                          className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                            activePage === 'tables'
-                              ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                              : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                          }`}
-                        >
-                          <Icon className="material-symbols-outlined text-[17px] shrink-0">table_chart</Icon>
-                          <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables'}</span>
-                        </button>
-                      )}
-                    </>
-                  )}
+                        {userRole !== 'officer' && isTaskViewable(userRole, 8) && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('tables')}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                              activePage === 'tables'
+                                ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[17px] shrink-0">table_chart</Icon>
+                            <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables'}</span>
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* GROUP 3: VERIFICATION & PATROL (Expandable Accordion Submenu) */}
@@ -1644,72 +1646,74 @@ export const HomePage: React.FC<HomePageProps> = ({
                 )}
               </button>
 
-              {expandedGroups.verification && !isCollapsed && (
-                <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 animate-in fade-in duration-150">
-                  {isTaskViewable(userRole, 5) && (
-                    <button
-                      type="button"
-                      onClick={() => setActivePage('scan')}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'scan'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[17px] shrink-0">qr_code_scanner</Icon>
-                      <span>{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
-                    </button>
-                  )}
+              <div className={`collapsible-grid ${expandedGroups.verification && !isCollapsed ? 'expanded' : ''}`}>
+                <div className="collapsible-grid-inner">
+                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 py-0.5">
+                    {isTaskViewable(userRole, 5) && (
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('scan')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'scan'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[17px] shrink-0">qr_code_scanner</Icon>
+                        <span>{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
+                      </button>
+                    )}
 
-                  {isTaskViewable(userRole, 10) && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setInspectionInitialFilter('all');
-                        setActivePage('inspection_report');
-                      }}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'inspection_report'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[17px] shrink-0">analytics</Icon>
-                      <span>{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
-                    </button>
-                  )}
+                    {isTaskViewable(userRole, 10) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInspectionInitialFilter('all');
+                          setActivePage('inspection_report');
+                        }}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'inspection_report'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[17px] shrink-0">analytics</Icon>
+                        <span>{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
+                      </button>
+                    )}
 
-                  {userRole !== 'clerk' && (
-                    <button
-                      type="button"
-                      onClick={() => setActivePage('report_unregistered')}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'report_unregistered'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[17px] text-amber-400 shrink-0">report_problem</Icon>
-                      <span>{isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered'}</span>
-                    </button>
-                  )}
+                    {userRole !== 'clerk' && (
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('report_unregistered')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'report_unregistered'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[17px] text-amber-400 shrink-0">report_problem</Icon>
+                        <span>{isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered'}</span>
+                      </button>
+                    )}
 
-                  {userRole !== 'clerk' && (userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
-                    <button
-                      type="button"
-                      onClick={() => setActivePage('unregistered_list')}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'unregistered_list'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[17px] text-red-400 shrink-0">no_drinks</Icon>
-                      <span>{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors'}</span>
-                    </button>
-                  )}
+                    {userRole !== 'clerk' && (userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('unregistered_list')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'unregistered_list'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[17px] text-red-400 shrink-0">no_drinks</Icon>
+                        <span>{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors'}</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* GROUP 4: SUPER ADMIN GOVERNANCE (Expandable Accordion Submenu) */}
@@ -1734,61 +1738,63 @@ export const HomePage: React.FC<HomePageProps> = ({
                   )}
                 </button>
 
-                {expandedGroups.superadmin && !isCollapsed && (
-                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-purple-400/40 ml-3 animate-in fade-in duration-150">
-                    <button
-                      type="button"
-                      onClick={() => setActivePage('superadmin_users')}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'superadmin_users' || activePage === 'superadmin'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[16px] shrink-0">manage_accounts</Icon>
-                      <span>{isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions'}</span>
-                    </button>
+                <div className={`collapsible-grid ${expandedGroups.superadmin && !isCollapsed ? 'expanded' : ''}`}>
+                  <div className="collapsible-grid-inner">
+                    <div className="mt-1 space-y-1 pl-2 border-l-2 border-purple-400/40 ml-3 py-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('superadmin_users')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'superadmin_users' || activePage === 'superadmin'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[16px] shrink-0">manage_accounts</Icon>
+                        <span>{isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions'}</span>
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setActivePage('superadmin_subcities')}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'superadmin_subcities'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[16px] shrink-0">location_city</Icon>
-                      <span>{isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance'}</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('superadmin_subcities')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'superadmin_subcities'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[16px] shrink-0">location_city</Icon>
+                        <span>{isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance'}</span>
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setActivePage('superadmin_permits')}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'superadmin_permits'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[16px] shrink-0">verified</Icon>
-                      <span>{isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules'}</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('superadmin_permits')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'superadmin_permits'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[16px] shrink-0">verified</Icon>
+                        <span>{isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules'}</span>
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setActivePage('superadmin_maintenance')}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                        activePage === 'superadmin_maintenance'
-                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                      }`}
-                    >
-                      <Icon className="material-symbols-outlined text-[16px] shrink-0">database</Icon>
-                      <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('superadmin_maintenance')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                          activePage === 'superadmin_maintenance'
+                            ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[16px] shrink-0">database</Icon>
+                        <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
+                      </button>
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             )}
 
@@ -1813,25 +1819,27 @@ export const HomePage: React.FC<HomePageProps> = ({
                 )}
               </button>
 
-              {expandedGroups.settings && !isCollapsed && (
-                <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 animate-in fade-in duration-150">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActivePage('settings');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
-                      activePage === 'settings'
-                        ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
-                        : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                    }`}
-                  >
-                    <Icon className="material-symbols-outlined text-[17px] shrink-0">tune</Icon>
-                    <span>{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
-                  </button>
+              <div className={`collapsible-grid ${expandedGroups.settings && !isCollapsed ? 'expanded' : ''}`}>
+                <div className="collapsible-grid-inner">
+                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 py-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActivePage('settings');
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-blue-600 ${
+                        activePage === 'settings'
+                          ? 'bg-[#1D61E7] text-white font-black shadow-md border-l-2 border-yellow-400'
+                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                      }`}
+                    >
+                      <Icon className="material-symbols-outlined text-[17px] shrink-0">tune</Icon>
+                      <span>{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
+                    </button>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </nav>
 
@@ -2065,90 +2073,94 @@ export const HomePage: React.FC<HomePageProps> = ({
         )}
 
         {/* Mobile Backdrop & Right Slide-Out Drawer Menu (Positioned BELOW top header) */}
-        {isMobileMenuOpen && (
+        <div
+          className={`fixed top-[53px] sm:top-[57px] inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-md md:hidden flex justify-end side-menu-backdrop ${
+            isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={() => setIsMobileMenuOpen(false)}
+          onPointerDown={() => setIsMobileMenuOpen(false)}
+          onTouchStart={() => setIsMobileMenuOpen(false)}
+        >
+          {/* Right Slide-Out Drawer Panel (Reduced Width for Mobile UI) */}
           <div
-            className="fixed top-[53px] sm:top-[57px] inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-md transition-opacity duration-300 animate-in fade-in md:hidden flex justify-end"
-            onClick={() => setIsMobileMenuOpen(false)}
-            onPointerDown={() => setIsMobileMenuOpen(false)}
-            onTouchStart={() => setIsMobileMenuOpen(false)}
+            ref={mobileDrawerRef}
+            className={`relative w-64 sm:w-72 max-w-[78vw] h-full bg-[#0B1E48] text-white border-l border-yellow-500/30 shadow-2xl flex flex-col justify-between overflow-y-auto p-4 sm:p-5 side-menu-drawer ${
+              isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
           >
-            {/* Right Slide-Out Drawer Panel (Reduced Width for Mobile UI) */}
-            <div
-              ref={mobileDrawerRef}
-              className="relative w-64 sm:w-72 max-w-[78vw] h-full bg-[#0B1E48] text-white border-l border-yellow-500/30 shadow-2xl flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-300 ease-out p-4 sm:p-5"
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-            >
-              <div className="space-y-4">
-                {/* Mobile Simple Ethiopian Calendar Date & Time Widget */}
-                <div className="bg-white/5 border border-yellow-500/20 rounded-lg p-3 text-white space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-yellow-400 font-extrabold text-xs">
-                      <Icon className="material-symbols-outlined text-[18px]">calendar_month</Icon>
-                      <span>{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
-                    </div>
-                    <span className="text-[10px] bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded font-black">
-                      {isAmharic ? ethDate.weekdayAm : ethDate.weekdayEn}
-                    </span>
+            <div className="space-y-4">
+              {/* Mobile Simple Ethiopian Calendar Date & Time Widget */}
+              <div className="bg-white/5 border border-yellow-500/20 rounded-lg p-3 text-white space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-yellow-400 font-extrabold text-xs">
+                    <Icon className="material-symbols-outlined text-[18px]">calendar_month</Icon>
+                    <span>{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
                   </div>
-                  <div className="flex items-center justify-between text-[11px] text-slate-300 pt-1.5 border-t border-white/10 font-mono">
-                    <div className="flex items-center gap-1.5 text-amber-300 font-bold">
-                      <Icon className="material-symbols-outlined text-[15px]">schedule</Icon>
-                      <span>{isAmharic ? ethDate.timeAm : ethDate.timeEn}</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-extrabold">
-                      GMT+3
-                    </span>
-                  </div>
+                  <span className="text-[10px] bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded font-black">
+                    {isAmharic ? ethDate.weekdayAm : ethDate.weekdayEn}
+                  </span>
                 </div>
+                <div className="flex items-center justify-between text-[11px] text-slate-300 pt-1.5 border-t border-white/10 font-mono">
+                  <div className="flex items-center gap-1.5 text-amber-300 font-bold">
+                    <Icon className="material-symbols-outlined text-[15px]">schedule</Icon>
+                    <span>{isAmharic ? ethDate.timeAm : ethDate.timeEn}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-extrabold">
+                    GMT+3
+                  </span>
+                </div>
+              </div>
 
-                {/* Mobile Main Navigation Links */}
-                <div className="space-y-1">
-                  <p className="text-[10px] font-extrabold text-yellow-400/80 uppercase tracking-wider px-1 mb-2">
-                    {isAmharic ? 'ዋና ክፍሎች' : 'Navigation Pages'}
-                  </p>
+              {/* Mobile Main Navigation Links */}
+              <div className="space-y-1">
+                <p className="text-[10px] font-extrabold text-yellow-400/80 uppercase tracking-wider px-1 mb-2">
+                  {isAmharic ? 'ዋና ክፍሎች' : 'Navigation Pages'}
+                </p>
 
-                  {/* Dashboard */}
+                {/* Dashboard */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActivePage('dashboard');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] active:bg-blue-600 ${
+                    activePage === 'dashboard'
+                      ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
+                      : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'dashboard' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
+                      space_dashboard
+                    </Icon>
+                    <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
+                  </div>
+                  <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
+                </button>
+
+                {/* Expandable Group: Registrations & Permits */}
+                <div className="pt-2">
                   <button
                     type="button"
-                    onClick={() => {
-                      setActivePage('dashboard');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between p-3 min-h-[46px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] active:bg-blue-600 ${
-                      activePage === 'dashboard'
-                        ? 'bg-yellow-500 text-[#0B1E48] shadow-sm font-black'
-                        : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
-                    }`}
+                    onClick={() => toggleGroup('registrations')}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-white/10 text-xs font-black uppercase text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
                   >
-                    <div className="flex items-center gap-3">
-                      <Icon className={`material-symbols-outlined text-[22px] ${activePage === 'dashboard' ? 'text-[#0B1E48]' : 'text-yellow-400'}`}>
-                        space_dashboard
-                      </Icon>
-                      <span className="font-extrabold text-sm sm:text-xs">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>
+                    <div className="flex items-center gap-2">
+                      <Icon className="material-symbols-outlined text-[20px] text-yellow-400">assignment</Icon>
+                      <span>{isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}</span>
                     </div>
-                    <Icon className="material-symbols-outlined text-[20px]">chevron_right</Icon>
+                    <Icon className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${expandedGroups.registrations ? 'rotate-180 text-yellow-400' : 'text-slate-400'}`}>
+                      expand_more
+                    </Icon>
                   </button>
 
-                  {/* Expandable Group: Registrations & Permits */}
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleGroup('registrations')}
-                      className="w-full flex items-center justify-between p-2.5 rounded-lg bg-white/5 border border-white/10 text-xs font-black uppercase text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Icon className="material-symbols-outlined text-[20px] text-yellow-400">assignment</Icon>
-                        <span>{isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}</span>
-                      </div>
-                      <Icon className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${expandedGroups.registrations ? 'rotate-180 text-yellow-400' : 'text-slate-400'}`}>
-                        expand_more
-                      </Icon>
-                    </button>
-
-                    {expandedGroups.registrations && (
-                      <div className="mt-1 space-y-1 pl-2 border-l-2 border-yellow-500/30 ml-2 animate-in fade-in duration-150">
+                  <div className={`collapsible-grid ${expandedGroups.registrations ? 'expanded' : ''}`}>
+                    <div className="collapsible-grid-inner">
+                      <div className="mt-1 space-y-1 pl-2 border-l-2 border-yellow-500/30 ml-2 py-0.5">
                         {userRole === 'clerk' ? (
                           <>
                             {(settings.showClerkNewRegistrationAction ?? true) && (
@@ -2324,7 +2336,9 @@ export const HomePage: React.FC<HomePageProps> = ({
                           </>
                         )}
                       </div>
-                    )}
+                    </div>
+                  </div>
+                </div>
                   </div>
 
                   {/* Expandable Group: Verification & Patrol */}
@@ -2343,92 +2357,94 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </Icon>
                     </button>
 
-                    {expandedGroups.verification && (
-                      <div className="mt-1 space-y-1 pl-2 border-l-2 border-yellow-500/30 ml-2 animate-in fade-in duration-150">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setActivePage('scan');
-                            setIsMobileMenuOpen(false);
-                          }}
-                          className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                            activePage === 'scan'
-                              ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
-                              : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className="material-symbols-outlined text-[20px] text-yellow-400">qr_code_scanner</Icon>
-                            <span>{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
-                          </div>
-                          <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                        </button>
-
-                        {isTaskViewable(userRole, 10) && (
+                    <div className={`collapsible-grid ${expandedGroups.verification ? 'expanded' : ''}`}>
+                      <div className="collapsible-grid-inner">
+                        <div className="mt-1 space-y-1 pl-2 border-l-2 border-yellow-500/30 ml-2 py-0.5">
                           <button
                             type="button"
                             onClick={() => {
-                              setInspectionInitialFilter('all');
-                              setActivePage('inspection_report');
+                              setActivePage('scan');
                               setIsMobileMenuOpen(false);
                             }}
                             className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'inspection_report'
+                              activePage === 'scan'
                                 ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
                                 : 'text-slate-200 hover:bg-white/10 hover:text-white'
                             }`}
                           >
                             <div className="flex items-center gap-2.5">
-                              <Icon className="material-symbols-outlined text-[20px] text-amber-400">analytics</Icon>
-                              <span>{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
+                              <Icon className="material-symbols-outlined text-[20px] text-yellow-400">qr_code_scanner</Icon>
+                              <span>{isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}</span>
                             </div>
                             <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
                           </button>
-                        )}
 
-                        {userRole !== 'clerk' && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActivePage('report_unregistered');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'report_unregistered'
-                                ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
-                                : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className="material-symbols-outlined text-[20px] text-amber-400">report_problem</Icon>
-                              <span>{isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered'}</span>
-                            </div>
-                            <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                          </button>
-                        )}
+                          {isTaskViewable(userRole, 10) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setInspectionInitialFilter('all');
+                                setActivePage('inspection_report');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'inspection_report'
+                                  ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
+                                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-amber-400">analytics</Icon>
+                                <span>{isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
+                          )}
 
-                        {(userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActivePage('unregistered_list');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'unregistered_list'
-                                ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
-                                : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className="material-symbols-outlined text-[20px] text-red-400">no_drinks</Icon>
-                              <span>{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors'}</span>
-                            </div>
-                            <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                          </button>
-                        )}
+                          {userRole !== 'clerk' && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivePage('report_unregistered');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'report_unregistered'
+                                  ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
+                                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-amber-400">report_problem</Icon>
+                                <span>{isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
+                          )}
+
+                          {(userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivePage('unregistered_list');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'unregistered_list'
+                                  ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
+                                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-red-400">no_drinks</Icon>
+                                <span>{isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {/* Expandable Group: Super Admin (Visible if superadmin) */}
@@ -2448,85 +2464,87 @@ export const HomePage: React.FC<HomePageProps> = ({
                         </Icon>
                       </button>
 
-                      {expandedGroups.superadmin && (
-                        <div className="mt-1 space-y-1 pl-2 border-l-2 border-purple-400/40 ml-2 animate-in fade-in duration-150">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActivePage('superadmin_users');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'superadmin_users' || activePage === 'superadmin'
-                                ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
-                                : 'text-purple-100 hover:bg-purple-900/30'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className="material-symbols-outlined text-[20px] text-amber-300">manage_accounts</Icon>
-                              <span>{isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions'}</span>
-                            </div>
-                            <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                          </button>
+                      <div className={`collapsible-grid ${expandedGroups.superadmin ? 'expanded' : ''}`}>
+                        <div className="collapsible-grid-inner">
+                          <div className="mt-1 space-y-1 pl-2 border-l-2 border-purple-400/40 ml-2 py-0.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivePage('superadmin_users');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'superadmin_users' || activePage === 'superadmin'
+                                  ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
+                                  : 'text-purple-100 hover:bg-purple-900/30'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-amber-300">manage_accounts</Icon>
+                                <span>{isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
 
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActivePage('superadmin_subcities');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'superadmin_subcities'
-                                ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
-                                : 'text-purple-100 hover:bg-purple-900/30'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className="material-symbols-outlined text-[20px] text-amber-300">location_city</Icon>
-                              <span>{isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance'}</span>
-                            </div>
-                            <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                          </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivePage('superadmin_subcities');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'superadmin_subcities'
+                                  ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
+                                  : 'text-purple-100 hover:bg-purple-900/30'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-amber-300">location_city</Icon>
+                                <span>{isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
 
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActivePage('superadmin_permits');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'superadmin_permits'
-                                ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
-                                : 'text-purple-100 hover:bg-purple-900/30'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className="material-symbols-outlined text-[20px] text-amber-300">verified</Icon>
-                              <span>{isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules'}</span>
-                            </div>
-                            <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                          </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivePage('superadmin_permits');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'superadmin_permits'
+                                  ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
+                                  : 'text-purple-100 hover:bg-purple-900/30'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-amber-300">verified</Icon>
+                                <span>{isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
 
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActivePage('superadmin_maintenance');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'superadmin_maintenance'
-                                ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
-                                : 'text-purple-100 hover:bg-purple-900/30'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2.5">
-                              <Icon className="material-symbols-outlined text-[20px] text-amber-300">database</Icon>
-                              <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
-                            </div>
-                            <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                          </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivePage('superadmin_maintenance');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'superadmin_maintenance'
+                                  ? 'bg-amber-400 text-[#0B1E48] font-black shadow-xs'
+                                  : 'text-purple-100 hover:bg-purple-900/30'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-amber-300">database</Icon>
+                                <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
+                          </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                   )}
 
@@ -2554,7 +2572,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                     </button>
                   </div>
                 </div>
-              </div>
 
               {/* Drawer Bottom Actions */}
               <div className="space-y-3 pt-3 border-t border-white/15">
@@ -2604,7 +2621,6 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             </div>
           </div>
-        )}
 
         {/* DESKTOP TOP BAR (hidden md:flex) */}
         <header className="hidden md:flex items-center justify-between px-4 sm:px-6 py-3 bg-white text-slate-900 sticky top-0 z-40 shadow-2xs relative overflow-hidden">
@@ -2618,8 +2634,37 @@ export const HomePage: React.FC<HomePageProps> = ({
           {/* Left Side: Empty flex container to maintain layout balance */}
           <div className="flex items-center gap-3"></div>
 
-          {/* Right Side Tools: Notifications, Mail, Date Dropdown, User Dropdown */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Right Side Tools: Language, Theme, Notifications, Date Dropdown, User Dropdown */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Desktop Language Selector Toggle */}
+            {onToggleLang && (
+              <button
+                type="button"
+                onClick={onToggleLang}
+                className="h-9 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-extrabold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95 select-none"
+                title={isAmharic ? 'ወደ እንግሊዝኛ ቀይር' : 'Switch to Amharic'}
+                aria-label="Toggle Language"
+              >
+                <Icon className="material-symbols-outlined text-[17px] text-primary dark:text-sky-400">translate</Icon>
+                <span className="font-bold">{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
+              </button>
+            )}
+
+            {/* Desktop Theme Selector Toggle */}
+            {onToggleTheme && (
+              <button
+                type="button"
+                onClick={onToggleTheme}
+                className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 select-none"
+                title={currentTheme === 'dark' ? (isAmharic ? 'ወደ ብርሃን ገጽታ ቀይር' : 'Switch to Light Mode') : (isAmharic ? 'ወደ ጨለማ ገጽታ ቀይር' : 'Switch to Dark Mode')}
+                aria-label="Toggle Dark Mode"
+              >
+                <Icon className="material-symbols-outlined text-[19px] text-amber-600 dark:text-amber-400">
+                  {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
+                </Icon>
+              </button>
+            )}
+
             {/* Notification Bell Icon Button with dynamic unread badge */}
             <div className="relative" ref={notificationDropdownRef}>
               <button
@@ -2920,7 +2965,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           {isCurrentPageBlocked ? (
             renderBlockedPageUI()
           ) : (
-            <>
+            <div key={activePage} className="animate-page-enter flex-1 flex flex-col min-h-0">
               {/* PAGE 1: UNIVERSAL DASHBOARD OVERVIEW */}
               {activePage === 'dashboard' && (
                 <MunicipalDashboardOverview
@@ -3087,12 +3132,12 @@ export const HomePage: React.FC<HomePageProps> = ({
                   onLogoutClick={() => setIsLogoutModalOpen(true)}
                 />
               )}
-            </>
+            </div>
           )}
 
           {/* Modern, elegant system footer containing language and theme selectors */}
           {activePage !== 'scan' && (
-            <footer className="w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 rounded-lg">
+            <footer className="app-grounded-footer w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 rounded-lg">
               <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
                 {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኛች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Motorcyclists Association Permit Governance System. All rights reserved.'}
               </div>

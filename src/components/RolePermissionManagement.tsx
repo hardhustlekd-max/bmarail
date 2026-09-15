@@ -839,7 +839,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               <button
                 type="button"
                 onClick={onOpenUsersTable}
-                className="text-xs font-bold text-[#1D61E7] hover:underline flex items-center gap-1 cursor-pointer"
+                className="hidden sm:flex text-xs font-bold text-[#1D61E7] hover:underline items-center gap-1 cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[16px]">manage_accounts</Icon>
                 <span>{isAmharic ? 'የተጠቃሚዎች አካውንት ዝርዝር ክፈት' : 'Open User Accounts List'}</span>
@@ -896,7 +896,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
           </div>
 
           {/* Quick Preset Buttons */}
-          <div className="flex items-center gap-1.5 self-start md:self-auto flex-wrap">
+          <div className="hidden sm:flex items-center gap-1.5 self-start md:self-auto flex-wrap">
             <button
               type="button"
               onClick={() => handleBatchClerkPreset('all')}

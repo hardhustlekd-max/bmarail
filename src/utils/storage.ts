@@ -7,12 +7,15 @@ export const KEYS = {
   ACTIVE_PAGE: 'bd_motor_active_page',
   APP_STATE: 'bd_motor_app_state_cache',
   LAST_ACK_RESET_EPOCH: 'bd_motor_last_ack_reset_epoch',
+  LAST_ACTIVITY: 'bd_motor_last_activity',
+  SESSION_EXPIRED_REASON: 'bd_motor_session_expired_reason',
 };
 
 export interface AuthSession {
   isLoggedIn: boolean;
   userBadgeId: string;
   userRole: UserRole;
+  lastActiveTimestamp?: number;
 }
 
 export function getStoredItem<T>(key: string, defaultValue: T): T {
@@ -109,5 +112,44 @@ export function getStoredActivePage(): string {
 
 export function saveActivePage(page: string): void {
   setStoredItem(KEYS.ACTIVE_PAGE, page);
+}
+
+export function getStoredLastActivity(): number {
+  if (typeof window === 'undefined') return Date.now();
+  try {
+    const raw = localStorage.getItem(KEYS.LAST_ACTIVITY);
+    const parsed = raw ? parseInt(raw, 10) : NaN;
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : Date.now();
+  } catch {
+    return Date.now();
+  }
+}
+
+export function saveStoredLastActivity(time: number = Date.now()): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(KEYS.LAST_ACTIVITY, String(time));
+  } catch (e) {
+    console.warn('Error saving last activity:', e);
+  }
+}
+
+export function clearStoredLastActivity(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(KEYS.LAST_ACTIVITY);
+  } catch (e) {}
+}
+
+export function getStoredSessionExpiredReason(): string | null {
+  return getStoredItem<string | null>(KEYS.SESSION_EXPIRED_REASON, null);
+}
+
+export function saveStoredSessionExpiredReason(reason: string | null): void {
+  if (reason) {
+    setStoredItem(KEYS.SESSION_EXPIRED_REASON, reason);
+  } else {
+    removeStoredItem(KEYS.SESSION_EXPIRED_REASON);
+  }
 }
 

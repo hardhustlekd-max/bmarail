@@ -29,7 +29,7 @@ export const PageTitle = ({
         )}
       </div>
     </div>
-    {action && <div className="shrink-0 flex items-center gap-2">{action}</div>}
+    {action && <div className="hidden sm:flex shrink-0 items-center gap-2">{action}</div>}
   </div>
 );
 

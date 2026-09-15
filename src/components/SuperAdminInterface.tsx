@@ -742,7 +742,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {activeTab === 'users' && (
-            <div className="flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start flex-wrap">
+            <div className="hidden sm:flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start flex-wrap">
               {[
                 {
                   id: 'matrix' as const,
@@ -1517,7 +1517,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 type="button"
                 onClick={handleForceSyncDatabase}
                 disabled={isSyncingLiveDb}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0B1E48] hover:bg-[#162B5B] text-white rounded-md text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                className="hidden sm:inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0B1E48] hover:bg-[#162B5B] text-white rounded-md text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
               >
                 <Icon className={`material-symbols-outlined text-[18px] ${isSyncingLiveDb ? 'animate-spin' : ''}`}>
                   sync
@@ -1665,7 +1665,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <button
                   type="button"
                   onClick={handleExportAuditTrail}

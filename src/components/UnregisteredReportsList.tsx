@@ -157,7 +157,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             <button
               type="button"
               onClick={onNewReportClick}
-              className="px-3.5 py-1.5 rounded-md bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 shrink-0 cursor-pointer active:scale-95"
+              className="hidden sm:flex px-3.5 py-1.5 rounded-md bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-2xs items-center gap-1.5 shrink-0 cursor-pointer active:scale-95"
             >
               <Icon className="material-symbols-outlined text-[16px]">add_alert</Icon>
               <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>

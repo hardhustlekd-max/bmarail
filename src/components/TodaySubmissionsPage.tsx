@@ -385,7 +385,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             <button
               type="button"
               onClick={onNavigateToNewRegistration}
-              className="px-3.5 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-[#0B1E48] font-extrabold text-xs rounded-md shadow-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+              className="hidden sm:flex px-3.5 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-[#0B1E48] font-extrabold text-xs rounded-md shadow-xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
             >
               <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
               <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
