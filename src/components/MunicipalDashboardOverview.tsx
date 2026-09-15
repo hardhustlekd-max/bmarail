@@ -12,7 +12,14 @@ import {
   SystemUser,
   SystemSettings,
 } from '../types';
-import { subscribeSystemUsers, subscribeSettings, DEFAULT_SETTINGS, getPermissionState } from '../services/dbService';
+import {
+  subscribeSystemUsers,
+  subscribeSettings,
+  DEFAULT_SETTINGS,
+  getPermissionState,
+  isTaskAllowed,
+  isTaskViewable,
+} from '../services/dbService';
 import { getPaymentReceiptStatus } from '../utils/paymentUtils';
 import { QRCodeCard } from './QRCodeCard';
 import { SharedScannerModal } from './SharedScannerModal';
@@ -235,43 +242,58 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           icon: string;
           badge: string;
           iconBg: string;
-        }> = [
-          {
+        }> = [];
+
+        // 1. New Registration Quick Action
+        if ((settings.showClerkNewRegistrationAction ?? true) && isTaskAllowed('clerk', 1)) {
+          clerkActions.push({
             key: 'new_registration',
             title: isAmharic ? 'አዲስ ምዝገባ' : 'New Registration',
             subtitle: isAmharic ? 'የባለቤትና ሞተር ቅጽ' : 'Register Motor & Owner',
             icon: 'how_to_reg',
             badge: isAmharic ? 'ቅጽ' : 'Form',
             iconBg: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
-          },
-          {
+          });
+        }
+
+        // 2. Submission Correction Quick Action
+        if ((settings.showClerkEditSubmissionAction ?? true) && isTaskAllowed('clerk', 2)) {
+          clerkActions.push({
             key: 'today_submissions_adjust',
             title: isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction',
             subtitle: isAmharic ? 'የዛሬ ማመልከቻዎችን ማረም' : 'Edit today submissions',
             icon: 'edit_note',
             badge: `${todaySubmissionsCount} ${isAmharic ? 'የዛሬ' : 'Today'}`,
             iconBg: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
-          },
-          {
+          });
+        }
+
+        // 3. Scan QR Code Quick Action
+        if ((settings.showClerkQrScanAction ?? true) && isTaskAllowed('clerk', 5)) {
+          clerkActions.push({
             key: 'quick_verify',
             title: isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code',
             subtitle: isAmharic ? 'በካሜራ ፈቃድ አረጋግጥ' : 'Instant camera verify',
             icon: 'qr_code_scanner',
             badge: isAmharic ? 'ፍተሻ' : 'Scanner',
             iconBg: 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300',
-          },
-          {
+          });
+        }
+
+        // 4. Payment Receipts Entry Quick Action
+        if ((settings.showClerkPaymentReceiptsAction ?? true) && (isTaskAllowed('clerk', 15) || isTaskAllowed('clerk', 16))) {
+          clerkActions.push({
             key: 'payment_receipts',
             title: isAmharic ? 'የክፍያ ደረሰኝ መዝግብ' : 'Add Payment Receipts',
             subtitle: isAmharic ? 'የ1 ወር ክፍያ ደረሰኝ ማስገቢያ ቅጽ' : 'Open receipt entry form',
             icon: 'receipt_long',
             badge: isAmharic ? 'አዲስ' : 'New Form',
             iconBg: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300',
-          },
-        ];
+          });
+        }
 
-        // Only visible when toggle is ON in Super Admin
-        if (settings.showClerkSubmissionsAction) {
+        // 5. View Submissions Quick Action
+        if (settings.showClerkSubmissionsAction && isTaskViewable('clerk', 8)) {
           clerkActions.push({
             key: 'view_submissions',
             title: isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions',
@@ -282,8 +304,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           });
         }
 
-        // Only visible when toggle is ON in Super Admin
-        if (settings.showClerkApprovedVehiclesAction) {
+        // 6. Approved Motor Registry Quick Action
+        if (settings.showClerkApprovedVehiclesAction && isTaskViewable('clerk', 8)) {
           clerkActions.push({
             key: 'approved_vehicles',
             title: isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry',

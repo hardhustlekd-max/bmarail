@@ -134,6 +134,10 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   showClerkPermitStatus: false,
   showClerkSubmissionsAction: false,
   showClerkApprovedVehiclesAction: false,
+  showClerkNewRegistrationAction: true,
+  showClerkEditSubmissionAction: true,
+  showClerkQrScanAction: true,
+  showClerkPaymentReceiptsAction: true,
   showClerkPaymentKPIs: false,
   showClerkPaymentRecordsTable: false,
   clerkPaymentKPIPermission: 'allow',
@@ -2040,16 +2044,25 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
   if (userRole === 'clerk') {
     const kpiState = (settings.clerkPaymentKPIPermission || (settings.showClerkPaymentKPIs ? 'allow' : 'deny')) as 'allow' | 'view_only' | 'deny';
     const tableState = (settings.clerkPaymentTablePermission || (settings.showClerkPaymentRecordsTable ? 'allow' : 'deny')) as 'allow' | 'view_only' | 'deny';
+    const canRegister = (settings.showClerkNewRegistrationAction ?? true) ? 'allow' : 'deny';
+    const canEditSubmissions = (settings.showClerkEditSubmissionAction ?? true) ? 'allow' : 'deny';
+    const canQrScan = (settings.showClerkQrScanAction ?? true) ? 'allow' : 'deny';
+    const canReceipts = (settings.showClerkPaymentReceiptsAction ?? true) ? 'allow' : 'deny';
+    const canSubmissions = settings.showClerkSubmissionsAction ? 'allow' : 'deny';
+    const canApproved = settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny';
+    const canPermitStatus = settings.showClerkPermitStatus ? 'allow' : 'deny';
 
     return {
-      '1': 'allow',
-      '2': settings.showClerkSubmissionsAction ? 'allow' : 'deny',
-      '3': settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny',
-      '4': settings.showClerkPermitStatus ? 'allow' : 'deny',
-      '5': kpiState,
-      '8': settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny',
-      '9': 'deny',
-      '10': settings.showClerkPermitStatus ? 'allow' : 'deny',
+      '1': canRegister,
+      '2': canEditSubmissions,
+      '3': canEditSubmissions,
+      '4': canRegister,
+      '5': canQrScan,
+      '6': 'allow',
+      '7': 'allow',
+      '8': (settings.showClerkSubmissionsAction || settings.showClerkApprovedVehiclesAction) ? 'allow' : 'deny',
+      '9': canPermitStatus,
+      '10': canPermitStatus,
       '11': 'deny',
       '12': 'deny',
       '13': 'deny',
@@ -2057,16 +2070,19 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       '15': kpiState,
       '16': tableState,
       canViewDashboard: 'allow',
-      canRegister: 'allow',
-      canViewSubmissions: settings.showClerkSubmissionsAction ? 'allow' : 'deny',
-      canApproveVehicles: settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny',
-      canViewPermitStatus: settings.showClerkPermitStatus ? 'allow' : 'deny',
+      canRegister: canRegister,
+      canEditSubmissions: canEditSubmissions,
+      canQrScan: canQrScan,
+      canAddReceipts: canReceipts,
+      canViewSubmissions: canSubmissions,
+      canApproveVehicles: canApproved,
+      canViewPermitStatus: canPermitStatus,
       canViewPaymentKPIs: kpiState,
       canViewPaymentRecordsTable: tableState,
       canManageSettings: 'deny',
       canAssignOfficers: 'deny',
       canPrintBatch: 'deny',
-      canVerifyVehicles: 'deny',
+      canVerifyVehicles: canQrScan,
       canExportExcel: 'deny',
     };
   }

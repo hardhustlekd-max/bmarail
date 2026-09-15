@@ -195,7 +195,16 @@ interface RolePermissionManagementProps {
   users?: SystemUser[];
   settings?: SystemSettings;
   onToggleClerkSetting?: (
-    key: 'showClerkPermitStatus' | 'showClerkSubmissionsAction' | 'showClerkApprovedVehiclesAction'
+    key:
+      | 'showClerkPermitStatus'
+      | 'showClerkSubmissionsAction'
+      | 'showClerkApprovedVehiclesAction'
+      | 'showClerkNewRegistrationAction'
+      | 'showClerkEditSubmissionAction'
+      | 'showClerkQrScanAction'
+      | 'showClerkPaymentReceiptsAction'
+      | 'showClerkPaymentKPIs'
+      | 'showClerkPaymentRecordsTable'
   ) => void;
   onShowToast?: (msg: string, type?: 'success' | 'warning' | 'info') => void;
   onOpenUsersTable?: () => void;
@@ -237,6 +246,12 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
         showClerkPermitStatus: false,
         showClerkSubmissionsAction: false,
         showClerkApprovedVehiclesAction: false,
+        showClerkNewRegistrationAction: true,
+        showClerkEditSubmissionAction: true,
+        showClerkQrScanAction: true,
+        showClerkPaymentReceiptsAction: true,
+        showClerkPaymentKPIs: false,
+        showClerkPaymentRecordsTable: false,
         frozenSubCities: {},
       }
     );
@@ -256,17 +271,33 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
   const currentSettings = propSettings || localSettings;
 
   const handleToggleClerk = async (
-    key: 'showClerkPermitStatus' | 'showClerkSubmissionsAction' | 'showClerkApprovedVehiclesAction'
+    key:
+      | 'showClerkPermitStatus'
+      | 'showClerkSubmissionsAction'
+      | 'showClerkApprovedVehiclesAction'
+      | 'showClerkNewRegistrationAction'
+      | 'showClerkEditSubmissionAction'
+      | 'showClerkQrScanAction'
+      | 'showClerkPaymentReceiptsAction'
+      | 'showClerkPaymentKPIs'
+      | 'showClerkPaymentRecordsTable'
   ) => {
     if (propOnToggleClerkSetting) {
       propOnToggleClerkSetting(key);
       return;
     }
 
-    const newVal = !currentSettings[key];
+    const currentVal =
+      key === 'showClerkNewRegistrationAction' ||
+      key === 'showClerkEditSubmissionAction' ||
+      key === 'showClerkQrScanAction' ||
+      key === 'showClerkPaymentReceiptsAction'
+        ? (currentSettings[key] ?? true)
+        : (currentSettings[key] ?? false);
+    const newVal = !currentVal;
     const updated = { ...currentSettings, [key]: newVal };
     setLocalSettings(updated);
-    await saveSettingsToDb(updated);
+    const saveRes = await saveSettingsToDb(updated);
     await addAuditLogToDb({
       actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
       actorRole: 'superadmin',
@@ -275,12 +306,95 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       severity: 'info',
     });
     if (onShowToast) {
-      onShowToast(
-        isAmharic
-          ? `የፀሀፊ ታይነት ቅንብር ${newVal ? 'በርቷል (ተፈቅዷል)' : 'ጠፍቷል (ተደብቋል)'}`
-          : `Clerk dashboard visibility setting ${newVal ? 'ENABLED' : 'DISABLED'}`,
-        'success'
-      );
+      if (saveRes && !saveRes.success && saveRes.error) {
+        onShowToast(
+          isAmharic ? `የዳታቤዝ ማስጠንቀቂያ፡ ${saveRes.error}` : `Database notice: ${saveRes.error}`,
+          'warning'
+        );
+      } else {
+        onShowToast(
+          isAmharic
+            ? `የፀሀፊ ፈጣን አቋራጭ ቅንብር ${newVal ? 'በርቷል (ተፈቅዷል)' : 'ጠፍቷል (ተደብቋል)'}`
+            : `Clerk action control ${newVal ? 'ENABLED' : 'DISABLED'}`,
+          'success'
+        );
+      }
+    }
+  };
+
+  const handleBatchClerkPreset = async (preset: 'all' | 'standard' | 'none') => {
+    let patch: Partial<SystemSettings> = {};
+    if (preset === 'all') {
+      patch = {
+        showClerkNewRegistrationAction: true,
+        showClerkEditSubmissionAction: true,
+        showClerkQrScanAction: true,
+        showClerkPaymentReceiptsAction: true,
+        showClerkSubmissionsAction: true,
+        showClerkApprovedVehiclesAction: true,
+        showClerkPermitStatus: true,
+        showClerkPaymentKPIs: true,
+        showClerkPaymentRecordsTable: true,
+      };
+    } else if (preset === 'standard') {
+      patch = {
+        showClerkNewRegistrationAction: true,
+        showClerkEditSubmissionAction: true,
+        showClerkQrScanAction: true,
+        showClerkPaymentReceiptsAction: true,
+        showClerkSubmissionsAction: false,
+        showClerkApprovedVehiclesAction: false,
+        showClerkPermitStatus: false,
+        showClerkPaymentKPIs: false,
+        showClerkPaymentRecordsTable: false,
+      };
+    } else {
+      patch = {
+        showClerkNewRegistrationAction: false,
+        showClerkEditSubmissionAction: false,
+        showClerkQrScanAction: false,
+        showClerkPaymentReceiptsAction: false,
+        showClerkSubmissionsAction: false,
+        showClerkApprovedVehiclesAction: false,
+        showClerkPermitStatus: false,
+        showClerkPaymentKPIs: false,
+        showClerkPaymentRecordsTable: false,
+      };
+    }
+
+    const updated = { ...currentSettings, ...patch };
+    setLocalSettings(updated);
+    const saveRes = await saveSettingsToDb(updated);
+    await addAuditLogToDb({
+      actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
+      actorRole: 'superadmin',
+      action: 'CLERK_PERMISSIONS_PRESET_APPLIED',
+      details: `Super Admin applied Clerk Quick Actions preset: ${preset}`,
+      severity: 'info',
+    });
+
+    if (onShowToast) {
+      if (saveRes && !saveRes.success && saveRes.error) {
+        onShowToast(
+          isAmharic ? `የዳታቤዝ ማስጠንቀቂያ፡ ${saveRes.error}` : `Database notice: ${saveRes.error}`,
+          'warning'
+        );
+      } else {
+        onShowToast(
+          isAmharic
+            ? preset === 'all'
+              ? 'ሁሉም የፀሀፊ ፈጣን አቋራጮችና ስታቲስቲክስ በርተዋል'
+              : preset === 'standard'
+              ? 'መሰረታዊ የፀሀፊ የስራ አቋራጮች ብቻ ተፈቅደዋል'
+              : 'ሁሉም የፀሀፊ ፈጣን አቋራጮች ተገድበዋል'
+            : preset === 'all'
+            ? 'All Clerk Quick Actions & Metrics ENABLED'
+            : preset === 'standard'
+            ? 'Standard Clerical Quick Actions ENABLED'
+            : 'All Clerk Quick Actions RESTRICTED',
+          'success'
+        );
+      }
     }
   };
 
@@ -755,103 +869,350 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
         </div>
 
-      {/* ================= CLERK DASHBOARD & FEATURE VISIBILITY GOVERNANCE ================= */}
-      <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-lg border border-blue-200/80 dark:border-blue-900/50 shadow-xs space-y-3.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/60 pb-3">
+      {/* ================= CLERK RBAC MATRIX & QUICK ACTIONS GOVERNANCE CENTER ================= */}
+      <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-lg border border-blue-200/80 dark:border-blue-900/50 shadow-xs space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
           <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-[22px] text-blue-600 shrink-0">badge</Icon>
+            <div className="w-10 h-10 rounded-lg bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-[24px]">tune</Icon>
+            </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="text-xs sm:text-sm font-black text-on-surface uppercase tracking-wider">
-                  {isAmharic ? 'የፀሀፊ ዳሽቦርድና የፈቃድ መረጃ ታይነት ቁጥጥር' : 'Clerk Dashboard & Feature Visibility Governance'}
+                  {isAmharic
+                    ? 'የፀሀፊ ፈጣን አቋራጮችና የዳሽቦርድ መቆጣጠሪያ ማትሪክስ (Clerk RBAC Controls)'
+                    : 'Clerk Quick Actions & Dashboard RBAC Matrix'}
                 </h3>
                 <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-black">
-                  {isAmharic ? 'የፀሀፊ ሚና (Clerk RBAC)' : 'Clerk Role RBAC'}
+                  {isAmharic ? 'የፀሀፊ ሚና (Clerk / Secretary)' : 'Clerk Role'}
                 </span>
               </div>
               <p className="text-[10px] text-secondary font-medium">
                 {isAmharic
-                  ? 'በነባሪነት የተደበቁትን የፈቃድ ሁኔታዎችና አቋራጮች ለፀሀፊ ሚና ለማብራት ወይም ለማጥፋት'
-                  : 'Control visibility of permit status and action shortcuts on the Clerk dashboard (hidden by default)'}
+                  ? 'በፀሀፊ ዳሽቦርድ ላይ የሚታዩ 6ቱን ፈጣን አቋራጮች እና 3ቱን የስታቲስቲክስ መረጃዎች ራሱን በቻለ ማትሪክስ መቆጣጠር'
+                  : 'Control all 6 Quick Action shortcuts and 3 Metric Panels on the Clerk Dashboard with granular RBAC toggles.'}
               </p>
+            </div>
+          </div>
+
+          {/* Quick Preset Buttons */}
+          <div className="flex items-center gap-1.5 self-start md:self-auto flex-wrap">
+            <button
+              type="button"
+              onClick={() => handleBatchClerkPreset('all')}
+              className="px-2.5 py-1.5 rounded-md bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[14px]">done_all</Icon>
+              <span>{isAmharic ? 'ሁሉንም ፍቀድ' : 'Enable All'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleBatchClerkPreset('standard')}
+              className="px-2.5 py-1.5 rounded-md bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-300/80 dark:border-blue-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[14px]">auto_fix_high</Icon>
+              <span>{isAmharic ? 'መሰረታዊ ብቻ' : 'Standard Clerk'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleBatchClerkPreset('none')}
+              className="px-2.5 py-1.5 rounded-md bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 border border-rose-300/80 dark:border-rose-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[14px]">block</Icon>
+              <span>{isAmharic ? 'ሁሉንም አግድ' : 'Restrict All'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ================= 6 QUICK ACTION CARDS ================= */}
+        <div>
+          <div className="text-[11px] font-black text-on-surface uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Icon className="material-symbols-outlined text-[16px] text-amber-500">flash_on</Icon>
+            <span>{isAmharic ? 'የፈጣን አቋራጭ ቁልፎች ቁጥጥር (6 Quick Action Controls)' : 'Quick Action Shortcut Controls (6 Actions)'}</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* Quick Action 1: New Registration Form */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">how_to_reg</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'አዲስ ምዝገባ ቅጽ' : 'New Registration Form'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'አዲስ የሞተርና የባለቤት ምዝገባ መክፈቻ' : 'Allow new vehicle registration flow'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkNewRegistrationAction')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  (currentSettings.showClerkNewRegistrationAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    (currentSettings.showClerkNewRegistrationAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Quick Action 2: Submission Correction */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'የዛሬ ማመልከቻዎችን ማስተካከል' : 'Allow same-day submission adjustments'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkEditSubmissionAction')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  (currentSettings.showClerkEditSubmissionAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    (currentSettings.showClerkEditSubmissionAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Quick Action 3: QR Code Scanner */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">qr_code_scanner</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'የQR ኮድ ፈጣን ፍተሻ' : 'QR Scanner Shortcut'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'የሞተር ፈቃድ ካሜራ ፍተሻ' : 'Allow direct QR scanning tool'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkQrScanAction')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  (currentSettings.showClerkQrScanAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    (currentSettings.showClerkQrScanAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Quick Action 4: Payment Receipts Entry */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">receipt_long</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'የክፍያ ደረሰኝ መዝገብ' : 'Payment Receipts Entry'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'ወርሃዊ የክፍያ ደረሰኝ ማስገባት' : 'Allow registering monthly payment slips'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkPaymentReceiptsAction')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  (currentSettings.showClerkPaymentReceiptsAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    (currentSettings.showClerkPaymentReceiptsAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Quick Action 5: Submissions Review */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">list_alt</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions Action'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'የቀረቡ ማመልከቻዎች ዝርዝር ቁልፍ' : 'Show View Submissions button'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkSubmissionsAction')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  currentSettings.showClerkSubmissionsAction ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    currentSettings.showClerkSubmissionsAction ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Quick Action 6: Approved Vehicles */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">verified</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Vehicles Action'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'የፀደቁ ተሽከርካሪዎች ማህደር ቁልፍ' : 'Show Approved Vehicles button'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkApprovedVehiclesAction')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  currentSettings.showClerkApprovedVehiclesAction ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    currentSettings.showClerkApprovedVehiclesAction ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          {/* Toggle 1: Permit Status */}
-          <div className="p-3.5 rounded-md border border-outline-variant/80 bg-surface-container/40 flex items-center justify-between gap-3">
-            <div className="space-y-0.5">
-              <div className="font-extrabold text-xs text-on-surface">
-                {isAmharic ? 'የፈቃድ ሁኔታና ስታቲስቲክስ' : 'Show Permit Status & Metrics'}
-              </div>
-              <div className="text-[10px] text-secondary">
-                {isAmharic ? 'በፀሀፊ ዳሽቦርድ ላይ የፈቃድ ማጠቃለያ ካርዶች እንዲታዩ ይፈቅዳል' : 'Display permit metrics cards on clerk dashboard'}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleToggleClerk('showClerkPermitStatus')}
-              className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                currentSettings.showClerkPermitStatus ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
-              }`}
-            >
-              <span
-                className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                  currentSettings.showClerkPermitStatus ? 'translate-x-5' : 'translate-x-0.5'
-                }`}
-              />
-            </button>
+        {/* ================= 3 DASHBOARD METRIC & TABLE WIDGETS ================= */}
+        <div className="pt-2 border-t border-outline-variant/50">
+          <div className="text-[11px] font-black text-on-surface uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Icon className="material-symbols-outlined text-[16px] text-blue-500">analytics</Icon>
+            <span>{isAmharic ? 'የዳሽቦርድ ስታቲስቲክስና ሰንጠረዥ ታይነት ቁጥጥር' : 'Dashboard Metrics & Table Visibility Controls'}</span>
           </div>
 
-          {/* Toggle 2: View Submissions Quick Action */}
-          <div className="p-3.5 rounded-md border border-outline-variant/80 bg-surface-container/40 flex items-center justify-between gap-3">
-            <div className="space-y-0.5">
-              <div className="font-extrabold text-xs text-on-surface">
-                {isAmharic ? '"የቀረቡ ማመልከቻዎች" አቋራጭ' : "Show 'View Submissions' Action"}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Widget 1: Permit Status & Counts */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">pie_chart</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'የፈቃድ ሁኔታ ካርዶች' : 'Permit Status Metrics'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'የነቃ፣ በመጠባበቅ ላይ ያለ ማጠቃለያ' : 'Display permit metric breakdown'}
+                  </div>
+                </div>
               </div>
-              <div className="text-[10px] text-secondary">
-                {isAmharic ? 'በፀሀፊ አቋራጭ ላይ የቀረቡ ማመልከቻዎች ቁልፍ እንዲታይ ይፈቅዳል' : "Allow 'View Submissions' in clerk quick actions"}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleToggleClerk('showClerkSubmissionsAction')}
-              className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                currentSettings.showClerkSubmissionsAction ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
-              }`}
-            >
-              <span
-                className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                  currentSettings.showClerkSubmissionsAction ? 'translate-x-5' : 'translate-x-0.5'
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkPermitStatus')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  currentSettings.showClerkPermitStatus ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
-              />
-            </button>
-          </div>
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    currentSettings.showClerkPermitStatus ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
 
-          {/* Toggle 3: Approved Vehicles Quick Action */}
-          <div className="p-3.5 rounded-md border border-outline-variant/80 bg-surface-container/40 flex items-center justify-between gap-3">
-            <div className="space-y-0.5">
-              <div className="font-extrabold text-xs text-on-surface">
-                {isAmharic ? '"የፀደቁ ተሽከርካሪዎች" አቋራጭ' : "Show 'Approved Vehicles' Action"}
+            {/* Widget 2: Payment Receipts KPIs */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'የክፍያ ስታቲስቲክስ ካርዶች' : 'Payment KPI Metrics'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'የተሰበሰበ ጠቅላላ ገቢና ቆጣሪ' : 'Show collected revenue & counts'}
+                  </div>
+                </div>
               </div>
-              <div className="text-[10px] text-secondary">
-                {isAmharic ? 'በፀሀፊ አቋራጭ ላይ የፀደቁ ተሽከርካሪዎች ማህደር እንዲታይ ይፈቅዳል' : "Allow 'Approved Vehicles' in clerk quick actions"}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => handleToggleClerk('showClerkApprovedVehiclesAction')}
-              className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                currentSettings.showClerkApprovedVehiclesAction ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
-              }`}
-            >
-              <span
-                className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                  currentSettings.showClerkApprovedVehiclesAction ? 'translate-x-5' : 'translate-x-0.5'
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkPaymentKPIs')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  currentSettings.showClerkPaymentKPIs ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
-              />
-            </button>
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    currentSettings.showClerkPaymentKPIs ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Widget 3: Payment Records History Table */}
+            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 font-black">
+                  <Icon className="material-symbols-outlined text-[20px]">table_chart</Icon>
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="font-extrabold text-xs text-on-surface truncate">
+                    {isAmharic ? 'የክፍያ መዝገቦች ሰንጠረዥ' : 'Payment Records Table'}
+                  </div>
+                  <div className="text-[10px] text-secondary truncate">
+                    {isAmharic ? 'የደረሰኞች ሙሉ ሰንጠረዥ ማየት' : 'Allow access to full payments table'}
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggleClerk('showClerkPaymentRecordsTable')}
+                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+                  currentSettings.showClerkPaymentRecordsTable ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                }`}
+              >
+                <span
+                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
+                    currentSettings.showClerkPaymentRecordsTable ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       </div>

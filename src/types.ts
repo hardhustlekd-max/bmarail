@@ -175,6 +175,10 @@ export interface SystemSettings {
   showClerkPermitStatus?: boolean;
   showClerkSubmissionsAction?: boolean;
   showClerkApprovedVehiclesAction?: boolean;
+  showClerkNewRegistrationAction?: boolean;
+  showClerkEditSubmissionAction?: boolean;
+  showClerkQrScanAction?: boolean;
+  showClerkPaymentReceiptsAction?: boolean;
   showClerkPaymentKPIs?: boolean;
   showClerkPaymentRecordsTable?: boolean;
   clerkPaymentKPIPermission?: 'allow' | 'view_only' | 'deny';

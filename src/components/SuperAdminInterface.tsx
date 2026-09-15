@@ -357,9 +357,21 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   };
 
   const handleToggleClerkSetting = async (
-    key: 'showClerkPermitStatus' | 'showClerkSubmissionsAction' | 'showClerkApprovedVehiclesAction'
+    key:
+      | 'showClerkPermitStatus'
+      | 'showClerkSubmissionsAction'
+      | 'showClerkApprovedVehiclesAction'
+      | 'showClerkNewRegistrationAction'
+      | 'showClerkEditSubmissionAction'
+      | 'showClerkQrScanAction'
+      | 'showClerkPaymentReceiptsAction'
+      | 'showClerkPaymentKPIs'
+      | 'showClerkPaymentRecordsTable'
   ) => {
-    const newVal = !settings[key];
+    const currentVal = key === 'showClerkNewRegistrationAction' || key === 'showClerkEditSubmissionAction' || key === 'showClerkQrScanAction' || key === 'showClerkPaymentReceiptsAction'
+      ? (settings[key] ?? true)
+      : (settings[key] ?? false);
+    const newVal = !currentVal;
     const updatedSettings: SystemSettings = {
       ...settings,
       [key]: newVal,
@@ -382,8 +394,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       } else {
         onShowToast(
           isAmharic
-            ? `የፀሀፊ ታይነት ቅንብር ${newVal ? 'በርቷል (ተፈቅዷል)' : 'ጠፍቷል (ተደብቋል)'}`
-            : `Clerk dashboard visibility setting ${newVal ? 'ENABLED' : 'DISABLED'}`,
+            ? `የፀሀፊ ፈጣን አቋራጭ ቅንብር ${newVal ? 'በርቷል (ተፈቅዷል)' : 'ጠፍቷል (ተደብቋል)'}`
+            : `Clerk action control ${newVal ? 'ENABLED' : 'DISABLED'}`,
           'success'
         );
       }

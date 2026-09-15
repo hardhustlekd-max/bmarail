@@ -1493,7 +1493,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 animate-in fade-in duration-150">
                   {userRole === 'clerk' ? (
                     <>
-                      {isTaskViewable(userRole, 1) && (
+                      {(settings.showClerkNewRegistrationAction ?? true) && isTaskViewable(userRole, 1) && (
                         <button
                           type="button"
                           onClick={() => setActivePage('forms')}
@@ -1508,7 +1508,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         </button>
                       )}
 
-                      {isTaskViewable(userRole, 2) && (
+                      {(settings.showClerkEditSubmissionAction ?? true) && isTaskViewable(userRole, 2) && (
                         <button
                           type="button"
                           onClick={() => setActivePage('today_submissions_adjust')}
@@ -1523,7 +1523,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         </button>
                       )}
 
-                      {isTaskViewable(userRole, 1) && (
+                      {(settings.showClerkPaymentReceiptsAction ?? true) && (isTaskViewable(userRole, 15) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 1)) && (
                         <button
                           type="button"
                           onClick={() => setActivePage('payment_receipts')}
@@ -2151,62 +2151,68 @@ export const HomePage: React.FC<HomePageProps> = ({
                       <div className="mt-1 space-y-1 pl-2 border-l-2 border-yellow-500/30 ml-2 animate-in fade-in duration-150">
                         {userRole === 'clerk' ? (
                           <>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActivePage('forms');
-                                setIsMobileMenuOpen(false);
-                              }}
-                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                                activePage === 'forms'
-                                  ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
-                                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2.5">
-                                <Icon className="material-symbols-outlined text-[20px] text-amber-400">how_to_reg</Icon>
-                                <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
-                              </div>
-                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                            </button>
+                            {(settings.showClerkNewRegistrationAction ?? true) && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActivePage('forms');
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                  activePage === 'forms'
+                                    ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
+                                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <Icon className="material-symbols-outlined text-[20px] text-amber-400">how_to_reg</Icon>
+                                  <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
+                                </div>
+                                <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                              </button>
+                            )}
 
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActivePage('today_submissions_adjust');
-                                setIsMobileMenuOpen(false);
-                              }}
-                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                                activePage === 'today_submissions_adjust'
-                                  ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
-                                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2.5">
-                                <Icon className="material-symbols-outlined text-[20px] text-amber-400">edit_note</Icon>
-                                <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
-                              </div>
-                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                            </button>
+                            {(settings.showClerkEditSubmissionAction ?? true) && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActivePage('today_submissions_adjust');
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                  activePage === 'today_submissions_adjust'
+                                    ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
+                                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <Icon className="material-symbols-outlined text-[20px] text-amber-400">edit_note</Icon>
+                                  <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
+                                </div>
+                                <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                              </button>
+                            )}
 
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActivePage('payment_receipts');
-                                setIsMobileMenuOpen(false);
-                              }}
-                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                                activePage === 'payment_receipts'
-                                  ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
-                                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2.5">
-                                <Icon className="material-symbols-outlined text-[20px] text-emerald-400">receipt_long</Icon>
-                                <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
-                              </div>
-                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                            </button>
+                            {(settings.showClerkPaymentReceiptsAction ?? true) && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setActivePage('payment_receipts');
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                  activePage === 'payment_receipts'
+                                    ? 'bg-yellow-500 text-[#0B1E48] font-black shadow-xs'
+                                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <Icon className="material-symbols-outlined text-[20px] text-emerald-400">receipt_long</Icon>
+                                  <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
+                                </div>
+                                <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                              </button>
+                            )}
 
                             {settings.showClerkSubmissionsAction && (
                               <button
