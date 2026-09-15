@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import {
   getDbPool,
   initializeDatabaseSchema,
+  isDatabaseConnected,
   dbGetAll,
   dbGetById,
   dbUpsert,
@@ -192,11 +193,11 @@ app.get('/api/sync/events', (req, res) => {
 
 app.get('/api/health', async (req, res) => {
   try {
-    const isPoolReady = Boolean(getDbPool());
+    const isConnected = isDatabaseConnected();
     res.json({
       status: 'ok',
       service: 'bma-permit-railway-backend',
-      database: isPoolReady ? 'postgresql' : 'in-memory-development',
+      database: isConnected ? 'postgresql-connected' : 'resilient-in-memory',
       storage: process.env.STORAGE_BUCKET ? 's3-railway-bucket' : 'local-disk',
       realtimeClients: sseClients.size,
       timestamp: new Date().toISOString(),
@@ -1043,11 +1044,33 @@ app.post('/api/settings', async (req, res) => {
   try {
     const settings = req.body;
     const data = { id: 'global_config', ...settings };
-    await dbUpsert('system_settings', 'global_config', data);
+    const result = await dbUpsert('system_settings', 'global_config', data);
     broadcastSseChange({ collection: 'system_settings', action: 'upsert', docId: 'global_config', data });
-    res.json({ success: true });
+
+    if (!result.success) {
+      return res.status(400).json({
+        success: false,
+        target: result.target,
+        error: result.error,
+        message: `Database write error: ${result.error}`,
+      });
+    }
+
+    res.json({
+      success: true,
+      target: result.target,
+      database: isDatabaseConnected() ? 'postgresql' : 'in-memory',
+      message: result.target === 'postgresql'
+        ? 'Settings saved successfully to PostgreSQL database'
+        : (result.error || 'Settings saved to resilient local storage'),
+      settings: data,
+    });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      success: false,
+      error: err.message,
+      message: `Failed to save settings: ${err.message}`,
+    });
   }
 });
 

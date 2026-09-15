@@ -326,7 +326,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       frozenSubCities: updated,
     };
     setSettings(updatedSettings);
-    await saveSettingsToDb(updatedSettings);
+    const saveRes = await saveSettingsToDb(updatedSettings);
 
     const subCityObj = BAHIR_DAR_SUBCITIES.find((s) => s.en.toLowerCase() === subCityEn.toLowerCase());
     const displayName = isAmharic ? (subCityObj?.am || subCityEn) : (subCityObj?.en || subCityEn);
@@ -340,12 +340,19 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     });
 
     if (onShowToast) {
-      onShowToast(
-        isAmharic
-          ? `${displayName} ክፍለ ከተማ የፈቃድ ምዝገባ ${isFrozen ? 'ታግዷል (Frozen)' : 'ተከፍቷል (Active)'}`
-          : `Sub-city ${displayName} permit registration is now ${isFrozen ? 'FROZEN' : 'ACTIVE'}`,
-        isFrozen ? 'warning' : 'success'
-      );
+      if (saveRes && !saveRes.success && saveRes.error) {
+        onShowToast(
+          isAmharic ? `የዳታቤዝ ስህተት፡ ${saveRes.error}` : `Database notice: ${saveRes.error}`,
+          'warning'
+        );
+      } else {
+        onShowToast(
+          isAmharic
+            ? `${displayName} ክፍለ ከተማ የፈቃድ ምዝገባ ${isFrozen ? 'ታግዷል (Frozen)' : 'ተከፍቷል (Active)'}`
+            : `Sub-city ${displayName} permit registration is now ${isFrozen ? 'FROZEN' : 'ACTIVE'}`,
+          isFrozen ? 'warning' : 'success'
+        );
+      }
     }
   };
 
@@ -358,7 +365,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       [key]: newVal,
     };
     setSettings(updatedSettings);
-    await saveSettingsToDb(updatedSettings);
+    const saveRes = await saveSettingsToDb(updatedSettings);
     await addAuditLogToDb({
       actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
       actorRole: 'superadmin',
@@ -367,12 +374,19 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       severity: 'info',
     });
     if (onShowToast) {
-      onShowToast(
-        isAmharic
-          ? `የፀሀፊ ታይነት ቅንብር ${newVal ? 'በርቷል (ተፈቅዷል)' : 'ጠፍቷል (ተደብቋል)'}`
-          : `Clerk dashboard visibility setting ${newVal ? 'ENABLED' : 'DISABLED'}`,
-        'success'
-      );
+      if (saveRes && !saveRes.success && saveRes.error) {
+        onShowToast(
+          isAmharic ? `የዳታቤዝ ስህተት፡ ${saveRes.error}` : `Database notice: ${saveRes.error}`,
+          'warning'
+        );
+      } else {
+        onShowToast(
+          isAmharic
+            ? `የፀሀፊ ታይነት ቅንብር ${newVal ? 'በርቷል (ተፈቅዷል)' : 'ጠፍቷል (ተደብቋል)'}`
+            : `Clerk dashboard visibility setting ${newVal ? 'ENABLED' : 'DISABLED'}`,
+          'success'
+        );
+      }
     }
   };
 
@@ -387,7 +401,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         updatedAt: new Date().toISOString(),
       };
       setSettings(updatedSettings);
-      await saveSettingsToDb(updatedSettings);
+      const saveRes = await saveSettingsToDb(updatedSettings);
       await addAuditLogToDb({
         actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
         actorRole: 'superadmin',
@@ -396,18 +410,25 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         severity: 'info',
       });
       if (onShowToast) {
-        onShowToast(
-          isAmharic
-            ? `የስካነር ውጤት ገጽ ገጽታ ወደ "${SCANNER_THEMES[themeKey]?.nameAm || themeKey}" ተቀይሯል!`
-            : `Scanner result page theme globally set to "${SCANNER_THEMES[themeKey]?.nameEn || themeKey}"!`,
-          'success'
-        );
+        if (saveRes && !saveRes.success && saveRes.error) {
+          onShowToast(
+            isAmharic ? `የዳታቤዝ ማስጠንቀቂያ፡ ${saveRes.error}` : `Database notice: ${saveRes.error}`,
+            'warning'
+          );
+        } else {
+          onShowToast(
+            isAmharic
+              ? `የስካነር ውጤት ገጽ ገጽታ ወደ "${SCANNER_THEMES[themeKey]?.nameAm || themeKey}" ተቀይሯል!`
+              : `Scanner result page theme globally set to "${SCANNER_THEMES[themeKey]?.nameEn || themeKey}"!`,
+            'success'
+          );
+        }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to save scanner theme:', err);
       if (onShowToast) {
         onShowToast(
-          isAmharic ? 'የስካነር ገጽታ መቀየር አልተሳካም' : 'Failed to change scanner theme',
+          isAmharic ? `የስካነር ገጽታ መቀየር አልተሳካም፡ ${err?.message || ''}` : `Failed to change scanner theme: ${err?.message || ''}`,
           'warning'
         );
       }

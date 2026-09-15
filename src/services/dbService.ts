@@ -1530,7 +1530,9 @@ export function subscribeSettings(
   };
 }
 
-export async function saveSettingsToDb(settingsUpdates: Partial<SystemSettings>): Promise<void> {
+export async function saveSettingsToDb(
+  settingsUpdates: Partial<SystemSettings>
+): Promise<{ success: boolean; database?: string; target?: string; message?: string; error?: string }> {
   return trackGlobalAction(
     async () => {
       const mergedSettings: SystemSettings = {
@@ -1545,12 +1547,43 @@ export async function saveSettingsToDb(settingsUpdates: Partial<SystemSettings>)
       broadcastCrossTabSync('system_settings', 'upsert', 'global_config', mergedSettings);
 
       try {
-        await safeJsonFetch('/api/settings', {
+        const response = await safeJsonFetch<{
+          success: boolean;
+          database?: string;
+          target?: string;
+          message?: string;
+          error?: string;
+        }>('/api/settings', {
           method: 'POST',
           body: JSON.stringify(mergedSettings),
         });
-      } catch (err) {
+
+        if (response && response.success === false) {
+          console.error('[Database Error] Failed to persist settings to DB:', response.error || response.message);
+          return {
+            success: false,
+            target: response.target || 'postgresql',
+            database: response.database || 'postgresql',
+            error: response.error,
+            message: response.message || response.error,
+          };
+        }
+
+        return {
+          success: true,
+          target: response?.target || (isCloudConnected ? 'postgresql' : 'in-memory'),
+          database: response?.database || (isCloudConnected ? 'postgresql' : 'in-memory'),
+          message: response?.message || 'Settings saved successfully',
+        };
+      } catch (err: any) {
         console.warn('Backend API save settings notice:', err);
+        return {
+          success: false,
+          target: 'in-memory',
+          database: 'in-memory',
+          error: err?.message || String(err),
+          message: err?.message || 'Failed to reach backend server',
+        };
       }
     },
     'ቅንብሩ እየተቀመጠ ነው...',
