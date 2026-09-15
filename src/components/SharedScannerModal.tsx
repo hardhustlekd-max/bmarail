@@ -251,6 +251,53 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     }
   };
 
+  // Synthesize a highly realistic dual-phase mechanical camera shutter click ("ch-click")
+  const playShutterSound = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      
+      const playClick = (time: number, duration: number, peakGain: number) => {
+        // Create 1-channel buffer of white noise
+        const bufferSize = ctx.sampleRate * duration;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        
+        const noiseNode = ctx.createBufferSource();
+        noiseNode.buffer = buffer;
+        
+        // Metallic filter to mimic metal shutter blades
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1400, time);
+        filter.Q.setValueAtTime(3, time);
+        
+        const gainNode = ctx.createGain();
+        gainNode.gain.setValueAtTime(peakGain, time);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration - 0.005);
+        
+        noiseNode.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        noiseNode.start(time);
+        noiseNode.stop(time + duration);
+      };
+
+      const now = ctx.currentTime;
+      // Phase 1: Shutter open click
+      playClick(now, 0.05, 0.35);
+      // Phase 2: Shutter close click after a very short mechanical delay (60ms)
+      playClick(now + 0.06, 0.08, 0.28);
+    } catch (e) {
+      console.warn('Shutter sound failed:', e);
+    }
+  };
+
 // Fullscreen forced request removed per user preference.
 
   // Reset and start camera scanner whenever modal/page is opened
@@ -455,6 +502,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     if (isProcessingRef.current) return;
     isProcessingRef.current = true;
 
+    // Play shutter sound instantly upon capturing a valid QR code
+    playShutterSound();
     setIsProcessingScan(true);
 
     if (imageOverride) {
@@ -466,8 +515,14 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       }
     }
 
+    const startTime = Date.now();
     // Perform query against both local cache and live Firestore permit database
     const match = await lookupRegistrationInDb(cleanData, registrations);
+    const elapsed = Date.now() - startTime;
+    const minDelay = 1000; // 1 second database scanning simulation animation delay
+    if (elapsed < minDelay) {
+      await new Promise((resolve) => setTimeout(resolve, minDelay - elapsed));
+    }
 
     setIsProcessingScan(false);
     if (match) {
@@ -496,8 +551,15 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     e.preventDefault();
     if (!searchPlate.trim()) return;
 
+    playShutterSound();
     setIsProcessingScan(true);
+    const startTime = Date.now();
     const found = await lookupRegistrationInDb(searchPlate.trim(), registrations);
+    const elapsed = Date.now() - startTime;
+    const minDelay = 1000;
+    if (elapsed < minDelay) {
+      await new Promise((resolve) => setTimeout(resolve, minDelay - elapsed));
+    }
     setIsProcessingScan(false);
 
     if (found) {
@@ -671,13 +733,35 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                 {/* Dark Vignette Overlay for Camera Feed */}
                 <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />
 
-                {/* Top Active Scanning Status Badge (Shown only for live camera processing, disabled for image upload scanning) */}
-                {isProcessingScan && !uploadedImageSrc && (
-                  <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-white font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md">
-                    <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
-                    <span>
-                      {isAmharic ? 'QR ኮድ በመተንተን እና በመቃኘት ላይ...' : 'Capturing & Processing QR Code...'}
-                    </span>
+                {/* Full-screen immersive Database Verification and Loading Animation */}
+                {isProcessingScan && (
+                  <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md z-[50] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-200 pointer-events-auto">
+                    <div className="relative w-32 h-32 flex items-center justify-center">
+                      {/* Outer spinning ring with dashes */}
+                      <div className="absolute inset-0 rounded-full border-4 border-dashed border-primary animate-spin duration-1500" />
+                      {/* Inner spinning gradient ring */}
+                      <div className="absolute inset-2 rounded-full border-4 border-t-emerald-500 border-r-transparent border-b-primary border-l-transparent animate-spin duration-700" />
+                      {/* Pulsing center background with database lookup icon */}
+                      <div className="absolute inset-5 rounded-full bg-slate-900 border-2 border-primary/30 flex items-center justify-center shadow-inner">
+                        <Icon className="material-symbols-outlined text-[42px] text-primary animate-bounce">database</Icon>
+                      </div>
+                      {/* Glowing radar sweeping light effect */}
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/20 via-transparent to-transparent animate-spin duration-1000" />
+                    </div>
+                    <div className="mt-8 space-y-3 max-w-sm">
+                      <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/40 px-3.5 py-1 rounded-full text-primary font-black text-[10px] tracking-wider uppercase animate-pulse">
+                        <Icon className="material-symbols-outlined text-[14px] animate-spin">progress_activity</Icon>
+                        <span>{isAmharic ? 'የመዝገብ ፍተሻ' : 'Secure Verification'}</span>
+                      </div>
+                      <h3 className="text-sm sm:text-base font-black text-white tracking-widest uppercase">
+                        {isAmharic ? 'መረጃ ከዳታቤዝ ላይ በመፈለግ ላይ...' : 'QUERYING VEHICLE REGISTRY...'}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-slate-400 font-bold leading-relaxed">
+                        {isAmharic 
+                          ? 'እባክዎ የዲጂታል ፈቃዱን ትክክለኛነት እና ሁኔታ ከማዘጋጃ ቤቱ መዝገብ ላይ እስኪጣራ ድረስ ይጠብቁ።' 
+                          : 'Checking digital permit authenticity, motorcycle ownership status, and active city council authorizations...'}
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -891,7 +975,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           </div>
         </div>
       ) : scannedRegResult === 'not_found' ? (
-        <div className="bg-transparent p-4 sm:p-6 m-0 rounded-none border-0 text-xs sm:text-sm shadow-none space-y-3 animate-in fade-in duration-150 flex flex-col h-full max-h-full overflow-hidden justify-center">
+        <div className="flex-1 w-full bg-transparent p-4 sm:p-6 m-0 rounded-none border-0 text-xs sm:text-sm shadow-none space-y-3 animate-in fade-in duration-150 flex flex-col h-full max-h-full overflow-hidden justify-center">
           {/* Top Status Header Bar inside the container */}
           <div className="flex items-center justify-between gap-2 w-full">
             <div className="flex-1 flex items-center justify-between bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 text-red-950 dark:text-red-300 rounded-md px-3.5 py-1.5 shadow-2xs">
@@ -934,7 +1018,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           </div>
         </div>
       ) : (
-        <div className={`${activeTheme.containerBg} p-0 m-0 text-xs sm:text-sm flex flex-col h-full max-h-full overflow-hidden shadow-none animate-in fade-in duration-150`}>
+        <div className={`flex-1 w-full ${activeTheme.containerBg} p-0 m-0 text-xs sm:text-sm flex flex-col h-full max-h-full overflow-hidden shadow-none animate-in fade-in duration-150`}>
           {(() => {
             const statusLower = (scannedRegResult.status || '').toLowerCase();
             const isApproved = statusLower === 'approved' || statusLower === 'printed' || statusLower === 'ordered_print';
@@ -954,7 +1038,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             return (
               <>
                 {/* TOP HEADER STATUS BAR WITH VERIFICATION BADGE */}
-                <div className={`flex items-center justify-between py-3.5 px-4 shrink-0 border-b-2 z-10 shadow-sm transition-all ${
+                <div className={`flex items-center justify-between py-3.5 px-4 shrink-0 border-b-2 z-10 shadow-sm transition-colors duration-200 ${
                   isApproved 
                     ? activeTheme.headerApproved 
                     : isExpired || isPending 
