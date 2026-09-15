@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
-import { updateRegistrationInDb, deleteRegistrationFromDb, isTaskAllowed, getPermissionState, savePaymentReceiptToDb } from '../services/dbService';
+import { updateRegistrationInDb, deleteRegistrationFromDb, isTaskAllowed, getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
 import {
   Language,
   UserRole,
@@ -29,6 +29,7 @@ import {
 } from './FullscreenDocumentCarouselModal';
 import { EditRegistrationModal } from './EditRegistrationModal';
 import { triggerDocumentPrint } from '../utils/printUtils';
+import { LoadingSpinner } from './ui/Skeleton';
 
 interface TablesPageProps {
   lang: Language;
@@ -39,11 +40,13 @@ interface TablesPageProps {
   verificationLogs?: VerificationLog[];
   paymentReceipts?: PaymentReceipt[];
   onSavePaymentReceipt?: (receipt: PaymentReceipt) => void;
+  onDeletePaymentReceipt?: (id: string) => void;
   onApproveRegistration: (id: string) => void;
   onRejectRegistration: (id: string, reason: string) => void;
   onAddVerificationLog?: (log: VerificationLog) => void;
   initialTableTab?: 'approved' | 'pending' | 'expired';
   onShowToast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
+  isLoading?: boolean;
 }
 
 export const TablesPage: React.FC<TablesPageProps> = ({
@@ -55,13 +58,19 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   verificationLogs = [],
   paymentReceipts = [],
   onSavePaymentReceipt,
+  onDeletePaymentReceipt,
   onApproveRegistration,
   onRejectRegistration,
   onAddVerificationLog,
   initialTableTab,
   onShowToast,
+  isLoading = false,
 }) => {
   const isAmharic = lang === 'am';
+
+  if (isLoading) {
+    return null;
+  }
 
   const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const hasTaskEditPermission = isTaskAllowed(userRole, 2);
@@ -69,6 +78,36 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const canEditRegistration = isSuperAdmin || (hasTaskEditPermission && !isReadOnly);
 
   const [editingRegistration, setEditingRegistration] = useState<MotorcycleRegistration | null>(null);
+  const [expandedReceipts, setExpandedReceipts] = useState<Record<string, boolean>>({});
+
+  const toggleReceiptExpand = (rcId: string) => {
+    setExpandedReceipts((prev) => ({
+      ...prev,
+      [rcId]: !prev[rcId],
+    }));
+  };
+
+  const handleDeleteReceiptClick = async (receiptId: string) => {
+    if (!window.confirm(isAmharic ? 'እርግጠኛ ነዎት ይህንን የክፍያ ደረሰኝ መሰረዝ ይፈልጋሉ?' : 'Are you sure you want to delete this payment receipt?')) {
+      return;
+    }
+    try {
+      if (onDeletePaymentReceipt) {
+        await onDeletePaymentReceipt(receiptId);
+      } else {
+        await deletePaymentReceiptFromDb(receiptId);
+        onShowToast?.(
+          isAmharic ? 'የክፍያ ደረሰኝ በተሳካ ሁኔታ ተሰርዟል።' : 'Payment receipt deleted successfully.',
+          'success'
+        );
+      }
+    } catch (err: any) {
+      onShowToast?.(
+        isAmharic ? 'ደረሰኙን ለመሰረዝ አልተቻለም።' : 'Failed to delete payment receipt.',
+        'error'
+      );
+    }
+  };
 
   const renderStatusBadge = (status?: string, alwaysShowText: boolean = false) => {
     const textClass = alwaysShowText ? 'inline' : 'hidden sm:inline';
@@ -391,9 +430,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         {/* CONTAINER HEADER (MATCHING PERMIT STATUS BREAKDOWN CARD HEADER) */}
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">table_chart</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">table_chart</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {userRole === 'clerk'
@@ -1539,30 +1576,104 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         {isAmharic ? 'ምንም የተመዘገበ ተከታታይ የክፍያ ደረሰኝ የለም።' : 'No periodic payment receipts recorded yet for this member.'}
                       </div>
                     ) : (
-                      <div className="overflow-x-auto rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-                        <table className="w-full text-left text-xs">
-                          <thead className="bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase">
-                            <tr>
-                              <th className="px-2.5 py-1.5">#</th>
-                              <th className="px-2.5 py-1.5">{isAmharic ? 'ደረሰኝ ቁጥር' : 'Receipt No'}</th>
-                              <th className="px-2.5 py-1.5">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
-                              <th className="px-2.5 py-1.5">{isAmharic ? 'የሚያበቃበት' : 'Valid Until'}</th>
-                              <th className="px-2.5 py-1.5">{isAmharic ? 'መጠን' : 'Amount'}</th>
-                              <th className="px-2.5 py-1.5">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                              <th className="px-2.5 py-1.5">{isAmharic ? 'ሰነድ' : 'Slip'}</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-medium text-[11px]">
-                            {matchedReceipts.map((rc, idx) => {
-                              const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
-                              return (
-                                <tr key={rc.id || idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                  <td className="px-2.5 py-1.5 font-mono text-slate-400">{idx + 1}</td>
-                                  <td className="px-2.5 py-1.5 font-mono font-bold text-slate-900 dark:text-white">{rc.receiptNumber}</td>
-                                  <td className="px-2.5 py-1.5 font-mono">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</td>
-                                  <td className="px-2.5 py-1.5 font-mono">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</td>
-                                  <td className="px-2.5 py-1.5 font-bold">{rc.amount ? `${rc.amount} ETB` : '—'}</td>
-                                  <td className="px-2.5 py-1.5">
+                      <div className="space-y-3">
+                        {/* Desktop & Tablet Table (Hidden on small mobile screens) */}
+                        <div className="hidden sm:block overflow-x-auto rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                          <table className="w-full text-left text-xs">
+                            <thead className="bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase">
+                              <tr>
+                                <th className="px-2.5 py-1.5">#</th>
+                                <th className="px-2.5 py-1.5">{isAmharic ? 'ደረሰኝ ቁጥር' : 'Receipt No'}</th>
+                                <th className="px-2.5 py-1.5">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
+                                <th className="px-2.5 py-1.5">{isAmharic ? 'የሚያበቃበት' : 'Valid Until'}</th>
+                                <th className="px-2.5 py-1.5">{isAmharic ? 'መጠን' : 'Amount'}</th>
+                                <th className="px-2.5 py-1.5">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                                <th className="px-2.5 py-1.5">{isAmharic ? 'ሰነድ' : 'Slip'}</th>
+                                {isSuperAdmin && <th className="px-2.5 py-1.5 text-center">{isAmharic ? 'አማራጮች' : 'Actions'}</th>}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-medium text-[11px]">
+                              {matchedReceipts.map((rc, idx) => {
+                                const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
+                                return (
+                                  <tr key={rc.id || idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                    <td className="px-2.5 py-1.5 font-mono text-slate-400">{idx + 1}</td>
+                                    <td className="px-2.5 py-1.5 font-mono font-bold text-slate-900 dark:text-white">{rc.receiptNumber}</td>
+                                    <td className="px-2.5 py-1.5 font-mono">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</td>
+                                    <td className="px-2.5 py-1.5 font-mono">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</td>
+                                    <td className="px-2.5 py-1.5 font-bold">{rc.amount ? `${rc.amount} ETB` : '—'}</td>
+                                    <td className="px-2.5 py-1.5">
+                                      <span className={`px-1.5 py-0.2 text-[10px] font-bold rounded ${
+                                        rcStatus.status === 'active'
+                                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                          : rcStatus.status === 'expiring_soon'
+                                          ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                                          : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                                      }`}>
+                                        {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
+                                      </span>
+                                    </td>
+                                    <td className="px-2.5 py-1.5">
+                                      {rc.receiptScreenshot ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
+                                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-bold underline cursor-pointer flex items-center gap-0.5"
+                                        >
+                                          <Icon className="material-symbols-outlined text-[13px]">image</Icon>
+                                          <span>{isAmharic ? 'እይ' : 'View'}</span>
+                                        </button>
+                                      ) : (
+                                        <span className="text-slate-400 italic">—</span>
+                                      )}
+                                    </td>
+                                    {isSuperAdmin && (
+                                      <td className="px-2.5 py-1.5 text-center">
+                                        <button
+                                          type="button"
+                                          onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
+                                          className="text-rose-600 hover:text-rose-800 dark:text-rose-400 font-bold cursor-pointer inline-flex items-center gap-0.5 p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                                          title={isAmharic ? 'ደረሰኝ ሰርዝ' : 'Delete Receipt'}
+                                        >
+                                          <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
+                                        </button>
+                                      </td>
+                                    )}
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Mobile Expandable Receipts View (Visible on mobile screens only) */}
+                        <div className="sm:hidden space-y-2">
+                          {matchedReceipts.map((rc, idx) => {
+                            const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
+                            const isExpanded = !!expandedReceipts[rc.id || ''];
+                            return (
+                              <div
+                                key={rc.id || idx}
+                                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md overflow-hidden transition-all duration-150 shadow-2xs"
+                              >
+                                {/* Header (Always Visible, Clickable to Expand) */}
+                                <div
+                                  onClick={() => rc.id && toggleReceiptExpand(rc.id)}
+                                  className="p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/20 select-none"
+                                >
+                                  <div className="space-y-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[10px] font-mono text-slate-400">#{idx + 1}</span>
+                                      <span className="text-xs font-black text-slate-900 dark:text-white font-mono truncate">
+                                        {rc.receiptNumber}
+                                      </span>
+                                    </div>
+                                    <div className="text-[11px] font-bold text-slate-800 dark:text-slate-300">
+                                      {rc.amount ? `${rc.amount} ETB` : '—'}
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-2.5 shrink-0">
                                     <span className={`px-1.5 py-0.2 text-[10px] font-bold rounded ${
                                       rcStatus.status === 'active'
                                         ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
@@ -1572,26 +1683,57 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     }`}>
                                       {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
                                     </span>
-                                  </td>
-                                  <td className="px-2.5 py-1.5">
-                                    {rc.receiptScreenshot ? (
-                                      <button
-                                        type="button"
-                                        onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
-                                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-bold underline cursor-pointer flex items-center gap-0.5"
-                                      >
-                                        <Icon className="material-symbols-outlined text-[13px]">image</Icon>
-                                        <span>{isAmharic ? 'እይ' : 'View'}</span>
-                                      </button>
-                                    ) : (
-                                      <span className="text-slate-400 italic">—</span>
-                                    )}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                                    <Icon className={`material-symbols-outlined text-slate-500 transition-transform duration-200 text-[18px] ${isExpanded ? 'rotate-180' : ''}`}>
+                                      keyboard_arrow_down
+                                    </Icon>
+                                  </div>
+                                </div>
+
+                                {/* Expandable Details */}
+                                {isExpanded && (
+                                  <div className="p-3 pt-0 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] space-y-2.5 animate-in slide-in-from-top-1 duration-150">
+                                    <div className="grid grid-cols-2 gap-2 pt-2.5">
+                                      <div>
+                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
+                                        <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
+                                        <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                                      {rc.receiptScreenshot ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
+                                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-black underline cursor-pointer flex items-center gap-1 py-1"
+                                        >
+                                          <Icon className="material-symbols-outlined text-[14px]">image</Icon>
+                                          <span>{isAmharic ? 'ሰነድ እይ' : 'View Slip'}</span>
+                                        </button>
+                                      ) : (
+                                        <span className="text-slate-400 italic">{isAmharic ? 'ምስል አልተያያዘም' : 'No Slip Screenshot'}</span>
+                                      )}
+
+                                      {isSuperAdmin && (
+                                        <button
+                                          type="button"
+                                          onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
+                                          className="text-rose-600 hover:text-rose-800 dark:text-rose-400 font-black cursor-pointer flex items-center gap-1 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-1 rounded border border-rose-200/50 dark:border-rose-900/50 hover:bg-rose-100 transition-colors"
+                                        >
+                                          <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
+                                          <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -24,6 +24,7 @@ import {
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
 import { checkDuplicateRegistration } from '../utils/validation';
+import { LoadingSpinner } from './ui/Skeleton';
 
 interface TodaySubmissionsPageProps {
   lang: Language;
@@ -32,6 +33,7 @@ interface TodaySubmissionsPageProps {
   registrations: MotorcycleRegistration[];
   onNavigateToNewRegistration?: () => void;
   onShowToast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
+  isLoading?: boolean;
 }
 
 export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
@@ -41,8 +43,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   registrations,
   onNavigateToNewRegistration,
   onShowToast,
+  isLoading = false,
 }) => {
   const isAmharic = lang === 'am';
+
+  if (isLoading) {
+    return null;
+  }
+
   const isReadOnly = getPermissionState(userRole, 2) === 'view_only';
 
   // Search & Filter State
@@ -365,9 +373,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         {/* CONTAINER SECTION HEADER (MATCHING RECORDS PAGE STYLE) */}
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">edit_note</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
@@ -492,7 +498,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setStatusFilter(tab.id);
                       setPage(1);
                     }}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all duration-200 active:scale-105 cursor-pointer whitespace-nowrap select-none rounded-md ${
                       isActive
                         ? 'bg-primary text-white font-extrabold shadow-2xs'
                         : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'

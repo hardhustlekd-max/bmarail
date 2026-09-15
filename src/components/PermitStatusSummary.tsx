@@ -1,12 +1,14 @@
 import React from 'react';
 import { Icon } from './ui/Icon';
 import { Language, MotorcycleRegistration } from '../types';
+import { PermitStatusSummarySkeleton } from './ui/Skeleton';
 
 interface PermitStatusSummaryProps {
   registrations: MotorcycleRegistration[];
   lang: Language;
   onSelectStatusFilter?: (status: string) => void;
   borderless?: boolean;
+  isLoading?: boolean;
 }
 
 export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
@@ -14,7 +16,12 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
   lang,
   onSelectStatusFilter,
   borderless = false,
+  isLoading = false,
 }) => {
+  if (isLoading) {
+    return <PermitStatusSummarySkeleton />;
+  }
+
   const isAmharic = lang === 'am';
 
   // Calculate counts for each permit status
@@ -87,9 +94,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-            <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
-          </div>
+          <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">analytics</Icon>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-black text-sm sm:text-base text-on-surface uppercase tracking-wider">
@@ -107,13 +112,13 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
             <div
               key={card.key}
               onClick={() => onSelectStatusFilter && onSelectStatusFilter(card.key)}
-              className={`p-2 sm:p-3 rounded-lg border ${card.border} ${card.bg} transition-colors cursor-pointer group min-w-0 overflow-hidden`}
+              className={`p-2 sm:p-3 rounded-lg border ${card.border} ${card.bg} hover:shadow-md hover:border-primary/40 active:scale-105 active:bg-[#1D61E7]/25 dark:active:bg-[#1D61E7]/40 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
             >
               <div className={`flex justify-between items-center ${card.textClass} mb-1`}>
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-primary transition-colors">
                   {card.label}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">{card.icon}</Icon>
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">{card.icon}</Icon>
               </div>
               <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{card.count}</p>
             </div>

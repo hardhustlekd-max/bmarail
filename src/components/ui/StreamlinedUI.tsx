@@ -17,11 +17,7 @@ export const PageTitle = ({
 }) => (
   <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-outline-variant/60 ${className}`}>
     <div className="flex items-center gap-3.5">
-      {icon && (
-        <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0 shadow-2xs">
-          <Icon name={icon} size={24} />
-        </div>
-      )}
+      {icon && <Icon name={icon} size={26} className="text-primary shrink-0" />}
       <div className="min-w-0">
         <h1 className="text-lg sm:text-xl lg:text-2xl font-black text-on-surface tracking-tight leading-tight truncate">
           {title}
@@ -56,9 +52,7 @@ export const SectionToggle = ({
     className="w-full min-h-[48px] flex items-center justify-between py-2 px-1 cursor-pointer text-left group transition-colors rounded-lg hover:bg-surface-container/30"
   >
     <div className="flex items-center gap-2.5 min-w-0">
-      <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-        <Icon name={icon} size={18} />
-      </div>
+      <Icon name={icon} size={20} className="text-primary shrink-0" />
       <h4 className="font-extrabold text-sm text-on-surface flex items-center gap-2 truncate">
         <span>{title}</span>
       </h4>
@@ -235,14 +229,14 @@ export const SelectField = ({
       value={value}
       onChange={onChange}
       style={{ WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none' }}
-      className="w-full min-h-[38px] sm:min-h-[40px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-lg pl-3 pr-8 py-1.5 sm:py-2 font-bold text-xs shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary/20 hover:shadow-xs transition-all cursor-pointer"
+      className="w-full min-h-[32px] sm:min-h-[34px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-md pl-2.5 pr-7 py-1 font-bold text-xs shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary/20 hover:shadow-xs transition-all cursor-pointer"
     >
       {children}
     </select>
-    <div className="absolute right-2 inset-y-0 flex items-center justify-center pointer-events-none select-none text-secondary">
+    <div className="absolute right-1.5 inset-y-0 flex items-center justify-center pointer-events-none select-none text-secondary">
       <Icon
         name="keyboard_arrow_down"
-        size={18}
+        size={16}
       />
     </div>
   </div>

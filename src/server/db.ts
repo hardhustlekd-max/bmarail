@@ -196,11 +196,13 @@ export async function dbUpsert(tableName: string, id: string, data: Record<strin
  * Update partial document fields
  */
 export async function dbUpdateFields(tableName: string, id: string, updates: Record<string, any>): Promise<void> {
-  // Update in memory
-  if (memoryStore[tableName] && memoryStore[tableName].has(id)) {
-    const current = memoryStore[tableName].get(id);
-    memoryStore[tableName].set(id, { ...current, ...updates });
+  // Always update or initialize in-memory store
+  if (!memoryStore[tableName]) {
+    memoryStore[tableName] = new Map();
   }
+  const current = memoryStore[tableName].get(id) || {};
+  const merged = { ...current, ...updates, id };
+  memoryStore[tableName].set(id, merged);
 
   const pool = getDbPool();
   if (!pool) return;
@@ -208,15 +210,27 @@ export async function dbUpdateFields(tableName: string, id: string, updates: Rec
   try {
     const pgUpdates = normalizeRowToPg(tableName, updates);
     const keys = Object.keys(pgUpdates).filter((k) => k !== 'id');
-    if (keys.length === 0) return;
+    if (keys.length === 0) {
+      await dbUpsert(tableName, id, merged);
+      return;
+    }
 
     const setClauses = keys.map((k, i) => `${k} = $${i + 2}`).join(', ');
     const values = [id, ...keys.map((k) => pgUpdates[k])];
 
     const sql = `UPDATE ${tableName} SET ${setClauses}, updated_at = CURRENT_TIMESTAMP WHERE id = $1`;
-    await pool.query(sql, values);
+    const res = await pool.query(sql, values);
+    if (res.rowCount === 0) {
+      // Row did not exist in PostgreSQL yet, perform full upsert
+      await dbUpsert(tableName, id, merged);
+    }
   } catch (err: any) {
     console.error(`[PostgreSQL] dbUpdateFields error on ${tableName}:`, err.message);
+    try {
+      await dbUpsert(tableName, id, merged);
+    } catch (upsertErr) {
+      console.error(`[PostgreSQL] dbUpsert fallback error on ${tableName}:`, upsertErr);
+    }
   }
 }
 

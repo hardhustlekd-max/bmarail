@@ -65,15 +65,15 @@ export interface ScannerThemeConfig {
 }
 
 export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
-  // ATTACHMENT 1 EXACT MATCH (20260909_154449.jpg)
+  // DEEP COBALT NAVY
   deep_cobalt_navy: {
     id: 'deep_cobalt_navy',
-    nameEn: 'Deep Cobalt Navy (From Attachment 1)',
-    nameAm: 'ጥቁር ኮባልት ሰማያዊ (ከፎቶ 1 የተወሰደ)',
-    badgeEn: 'Attachment 1 Exact',
-    badgeAm: 'ፎቶ 1 ትክክለኛ',
-    descriptionEn: 'Exact replica of Attachment 1: deep royal/cobalt blue canvas, midnight navy cards, gold circle indicators, and crisp white typography.',
-    descriptionAm: 'የአባሪ 1 ትክክለኛ ገጽታ፡ ጥቁር ኮባልት ሰማያዊ ዳራ፣ ጥቁር ሰማያዊ ካርዶች፣ ወርቃማ ክብ አርማዎች እና ንጹህ ነጭ ጽሁፍ።',
+    nameEn: 'Deep Cobalt Navy',
+    nameAm: 'ጥቁር ኮባልት ሰማያዊ',
+    badgeEn: 'Cobalt Theme',
+    badgeAm: 'ኮባልት ገጽታ',
+    descriptionEn: 'Deep royal/cobalt blue canvas, midnight navy cards, gold circle indicators, and crisp white typography.',
+    descriptionAm: 'ጥቁር ኮባልት ሰማያዊ ዳራ፣ ጥቁር ሰማያዊ ካርዶች፣ ወርቃማ ክብ አርማዎች እና ንጹህ ነጭ ጽሁፍ።',
     palette: ['#0a1c44', '#0f295e', '#122e6b', '#fbbf24', '#22c55e'],
 
     containerBg: 'bg-[#0b1e48]',
@@ -99,15 +99,15 @@ export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
     footerText: 'text-blue-300/80',
   },
 
-  // ATTACHMENT 2 EXACT MATCH (20260909_154017.jpg)
+  // WARM IVORY CREAM (DEFAULT THEME)
   warm_ivory_cream: {
     id: 'warm_ivory_cream',
-    nameEn: 'Warm Ivory & Crisp White (From Attachment 2)',
-    nameAm: 'ሞቃት አይቮሪ ክሬም እና ነጭ (ከፎቶ 2 የተወሰደ)',
-    badgeEn: 'Attachment 2 Exact',
-    badgeAm: 'ፎቶ 2 ትክክለኛ',
-    descriptionEn: 'Exact replica of Attachment 2: soft light slate canvas, warm ivory cream owner card, and pure white informational tiles.',
-    descriptionAm: 'የአባሪ 2 ትክክለኛ ገጽታ፡ ለስላሳ ስሌት ዳራ፣ ሞቃት አይቮሪ የባለቤት ካርድ እና ንጹህ ነጭ የመረጃ ሳጥኖች።',
+    nameEn: 'Warm Ivory & Crisp White',
+    nameAm: 'ሞቃት አይቮሪ ክሬም እና ነጭ',
+    badgeEn: 'Warm Ivory Theme',
+    badgeAm: 'አይቮሪ ገጽታ',
+    descriptionEn: 'Soft light slate canvas, warm ivory cream owner card, and pure white informational tiles.',
+    descriptionAm: 'ለስላሳ ስሌት ዳራ፣ ሞቃት አይቮሪ የባለቤት ካርድ እና ንጹህ ነጭ የመረጃ ሳጥኖች።',
     palette: ['#eef2f6', '#fcf8eb', '#ffffff', '#0f172a', '#15803d'],
 
     containerBg: 'bg-[#eef2f6]',
@@ -133,15 +133,15 @@ export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
     footerText: 'text-slate-500',
   },
 
-  // ATTACHMENT 3 EXACT MATCH (20260909_154014.jpg)
+  // SOFT ICE BLUE
   soft_ice_blue: {
     id: 'soft_ice_blue',
-    nameEn: 'Soft Ice Blue & Crisp White (From Attachment 3)',
-    nameAm: 'በረዶ ሰማያዊ እና ነጭ (ከፎቶ 3 የተወሰደ)',
-    badgeEn: 'Attachment 3 Exact',
-    badgeAm: 'ፎቶ 3 ትክክለኛ',
-    descriptionEn: 'Exact replica of Attachment 3: soft light slate canvas, pastel ice-blue owner card with subtle divider, and crisp white tiles.',
-    descriptionAm: 'የአባሪ 3 ትክክለኛ ገጽታ፡ ለስላሳ ስሌት ዳራ፣ ውብ ሰማያዊ የባለቤት ካርድ እና ንጹህ ነጭ የመረጃ ሳጥኖች።',
+    nameEn: 'Soft Ice Blue & Crisp White',
+    nameAm: 'በረዶ ሰማያዊ እና ነጭ',
+    badgeEn: 'Soft Ice Blue Theme',
+    badgeAm: 'በረዶ ሰማያዊ ገጽታ',
+    descriptionEn: 'Soft light slate canvas, pastel ice-blue owner card with subtle divider, and crisp white tiles.',
+    descriptionAm: 'ለስላሳ ስሌት ዳራ፣ ውብ ሰማያዊ የባለቤት ካርድ እና ንጹህ ነጭ የመረጃ ሳጥኖች።',
     palette: ['#eef2f6', '#dbeafe', '#ffffff', '#0f172a', '#15803d'],
 
     containerBg: 'bg-[#eef2f6]',
@@ -333,7 +333,7 @@ export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
   },
 };
 
-export const DEFAULT_SCANNER_THEME: ScannerResultTheme = 'deep_cobalt_navy';
+export const DEFAULT_SCANNER_THEME: ScannerResultTheme = 'warm_ivory_cream';
 
 export function getScannerTheme(themeKey?: string | ScannerResultTheme): ScannerThemeConfig {
   if (themeKey && themeKey in SCANNER_THEMES) {

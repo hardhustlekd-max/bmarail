@@ -190,9 +190,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
       <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">settings</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">settings</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'ቅንብሮች' : 'Settings'}
@@ -413,9 +411,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               
               <div className="border-b border-outline-variant pb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-lg bg-amber-500/10 dark:bg-amber-400/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                    <Icon className="material-symbols-outlined text-[22px]">lock_reset</Icon>
-                  </div>
+                  <Icon className="material-symbols-outlined text-[22px] text-amber-600 dark:text-amber-400 shrink-0">lock_reset</Icon>
                   <div>
                     <h2 className="text-base font-black text-on-surface">
                       {isAmharic ? 'የይለፍ ቃል መቀየሪያ' : 'Change Password'}
@@ -612,9 +608,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 sm:p-5 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-                    <Icon className="material-symbols-outlined text-[20px]">monitor_heart</Icon>
-                  </div>
+                  <Icon className="material-symbols-outlined text-[22px] text-rose-600 dark:text-rose-400 shrink-0">monitor_heart</Icon>
                   <div>
                     <h3 className="text-xs sm:text-sm font-black text-on-surface">
                       {isAmharic ? 'የሲስተም ጤናና የስህተት ሪፖርት' : 'System Health & Crash Diagnostics'}

@@ -146,7 +146,8 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   emailAlerts: true,
   security2FA: true,
   highRiskAlerts: true,
-  scannerResultTheme: 'deep_cobalt_navy',
+  themeMode: 'light',
+  scannerResultTheme: 'warm_ivory_cream',
   showClerkPermitStatus: false,
   showClerkSubmissionsAction: false,
   showClerkApprovedVehiclesAction: false,
@@ -981,23 +982,32 @@ export async function updateRegistrationInDb(
   return trackGlobalAction(
     async () => {
       const index = inMemory.registrations.findIndex((r) => r.id === id);
+      let updatedRecord: MotorcycleRegistration;
       if (index >= 0) {
         const existing = inMemory.registrations[index];
-        const updatedRecord: MotorcycleRegistration = {
+        updatedRecord = {
           ...existing,
           ...updates,
           id: existing.id, // Strictly preserve original member registration ID
           qrCodeData: existing.qrCodeData || updates.qrCodeData || `https://enforcement.gov.et/verify/${existing.id}`,
         };
         inMemory.registrations[index] = updatedRecord;
-        notifyRegistrations();
-        asyncUpsertSingleRegistration(updatedRecord);
-        saveStateToLocalStorage();
-        broadcastCrossTabSync('motorcycle_registrations', 'upsert', id, updatedRecord);
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalFirestoreError(null);
+      } else {
+        updatedRecord = {
+          id,
+          ...updates,
+          qrCodeData: updates.qrCodeData || `https://enforcement.gov.et/verify/${id}`,
+        } as MotorcycleRegistration;
+        inMemory.registrations.unshift(updatedRecord);
       }
+
+      notifyRegistrations();
+      asyncUpsertSingleRegistration(updatedRecord);
+      saveStateToLocalStorage();
+      broadcastCrossTabSync('motorcycle_registrations', 'upsert', id, updatedRecord);
+      lastSyncTime = new Date();
+      isCloudConnected = true;
+      setGlobalFirestoreError(null);
 
       try {
         await updateDocumentFields(FIREBASE_COLLECTIONS.REGISTRATIONS, id, updates);
@@ -1582,16 +1592,24 @@ export function subscribeSettings(
   };
 }
 
-export async function saveSettingsToDb(settings: SystemSettings): Promise<void> {
+export async function saveSettingsToDb(settingsUpdates: Partial<SystemSettings>): Promise<void> {
   return trackGlobalAction(
     async () => {
-      inMemory.settings = { ...settings };
+      const mergedSettings: SystemSettings = {
+        ...DEFAULT_SETTINGS,
+        ...inMemory.settings,
+        ...settingsUpdates,
+        updatedAt: new Date().toISOString(),
+      };
+      inMemory.settings = mergedSettings;
+      saveStateToLocalStorage();
       notifySettings();
+      broadcastCrossTabSync('system_settings', 'upsert', 'global_config', mergedSettings);
 
       try {
         await upsertDocument(FIREBASE_COLLECTIONS.SETTINGS, 'global_config', {
           id: 'global_config',
-          ...settings,
+          ...mergedSettings,
         });
         lastSyncTime = new Date();
         isCloudConnected = true;
@@ -1605,7 +1623,7 @@ export async function saveSettingsToDb(settings: SystemSettings): Promise<void> 
         await safeJsonFetch('/api/settings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(settings),
+          body: JSON.stringify(mergedSettings),
         });
         setGlobalFirestoreError(null);
       } catch (apiErr: any) {
@@ -1788,7 +1806,6 @@ function markCollectionSynced(collectionKey: string) {
 }
 
 export async function syncSettings(force = false): Promise<boolean> {
-  if (!isFirebaseConfigured()) return false;
   if (isSyncThrottled('settings', force)) return true;
 
   try {
@@ -1797,6 +1814,7 @@ export async function syncSettings(force = false): Promise<boolean> {
       const wasReset = checkAndApplySystemResetIfNewer(cloudSettings);
       if (!wasReset) {
         inMemory.settings = { ...DEFAULT_SETTINGS, ...cloudSettings };
+        saveStateToLocalStorage();
         notifySettings();
       }
     }

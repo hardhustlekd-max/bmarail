@@ -21,11 +21,23 @@ import {
   loadStateFromLocalStorage,
   saveStateToLocalStorage,
   syncCriticalStartup,
+  subscribeSettings,
+  saveSettingsToDb,
 } from './services/dbService';
 
 export default function App() {
   const [lang, setLang] = useState<Language>(() => getStoredLang());
   const [theme, setTheme] = useState<'light' | 'dark'>(() => getStoredTheme());
+
+  // Listen to DB settings to apply theme globally in real-time across devices/tabs
+  useEffect(() => {
+    const unsub = subscribeSettings((settings) => {
+      if (settings && settings.themeMode && (settings.themeMode === 'light' || settings.themeMode === 'dark')) {
+        setTheme(settings.themeMode);
+      }
+    });
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -58,7 +70,14 @@ export default function App() {
   }, [lang]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme((prev) => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      saveTheme(next);
+      saveSettingsToDb({ themeMode: next }).catch((err) => {
+        console.warn('Failed to save theme toggle to DB:', err);
+      });
+      return next;
+    });
   };
 
   const savedSession = getStoredAuthSession();

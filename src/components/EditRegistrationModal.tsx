@@ -429,7 +429,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     disabled={!canEdit}
                     value={subCity}
                     onChange={(e) => setSubCity(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   >
                     {BAHIR_DAR_SUBCITIES.map((sc) => (
                       <option key={sc.en} value={sc.en}>
@@ -447,7 +447,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     disabled={!canEdit}
                     value={bloodGroup}
                     onChange={(e) => setBloodGroup(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   >
                     {BLOOD_GROUPS.map((bg) => (
                       <option key={bg} value={bg}>
@@ -488,7 +488,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     disabled={!canEdit}
                     value={vehicleCategory}
                     onChange={(e) => setVehicleCategory(e.target.value as VehicleCategory)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   >
                     <option value="gas_under_110cc">
                       {isAmharic ? 'ቤንዚን ሞተር (ከ110cc በታች)' : 'Gasoline Engine (<= 110cc)'}
@@ -510,7 +510,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     placeholder="e.g. 3-A12345 ወይም 2-54321"
                     value={plateNumber}
                     onChange={(e) => setPlateNumber(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-yellow-400 font-mono font-black text-sm uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-yellow-400 font-mono font-black text-xs sm:text-sm uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   />
                 </div>
               </div>
@@ -524,7 +524,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     disabled={!canEdit}
                     value={motorBrand}
                     onChange={(e) => setMotorBrand(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   >
                     {ETHIOPIAN_MOTOR_BRANDS.map((b) => (
                       <option key={b} value={b}>

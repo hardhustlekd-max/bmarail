@@ -5,6 +5,7 @@ import { calculateOneMonthExpiration, getPaymentReceiptStatus } from '../utils/p
 import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
+import { LoadingSpinner } from './ui/Skeleton';
 
 interface PaymentReceiptsPageProps {
   userBadgeId: string;
@@ -17,6 +18,7 @@ interface PaymentReceiptsPageProps {
   onAddPaymentReceipt?: (receipt: PaymentReceipt) => Promise<void>;
   onDeleteReceipt?: (id: string) => Promise<void>;
   onDeletePaymentReceipt?: (id: string) => Promise<void>;
+  isLoading?: boolean;
 }
 
 export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
@@ -30,8 +32,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   onAddPaymentReceipt,
   onDeleteReceipt,
   onDeletePaymentReceipt,
+  isLoading = false,
 }) => {
   const isAmharic = lang === 'am';
+
+  if (isLoading) {
+    return null;
+  }
 
   // RBAC Permission checks for KPIs and Table
   const canViewKPIs = getPermissionState(userRole, 15) !== 'deny';
@@ -356,9 +363,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">receipt_long</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">receipt_long</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}
@@ -865,7 +870,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setStatusFilter(tab.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all duration-200 active:scale-105 cursor-pointer whitespace-nowrap ${
                       isActive
                         ? 'bg-yellow-500 text-[#0B1E48] shadow-2xs'
                         : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'

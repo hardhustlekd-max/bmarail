@@ -116,9 +116,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         {/* CONTAINER SECTION HEADER */}
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">report_problem</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[22px] text-amber-600 shrink-0">report_problem</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}

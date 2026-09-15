@@ -1779,9 +1779,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                    <Icon className="material-symbols-outlined text-[20px]">palette</Icon>
-                  </div>
+                  <Icon className="material-symbols-outlined text-[22px] text-indigo-700 dark:text-indigo-400 shrink-0">palette</Icon>
                   <h3 className="font-black text-base text-on-surface">
                     {isAmharic ? 'የስካነር ውጤት ገጽ ገጽታ መምረጫ (Scanner Result Themes)' : 'Scanner Result Page Theme Settings'}
                   </h3>
@@ -1799,7 +1797,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   <span>
                     {isAmharic ? 'የአሁኑ ገጽታ:' : 'Active:'}{' '}
                     <strong>
-                      {SCANNER_THEMES[settings.scannerResultTheme as ScannerThemeKey]?.nameEn || 'Deep Cobalt Navy'}
+                      {SCANNER_THEMES[settings.scannerResultTheme as ScannerThemeKey]?.nameEn || 'Warm Ivory & Crisp White'}
                     </strong>
                   </span>
                 </span>
@@ -1810,7 +1808,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
               {(Object.keys(SCANNER_THEMES) as ScannerThemeKey[]).map((themeKey) => {
                 const theme = SCANNER_THEMES[themeKey];
-                const isSelected = (settings.scannerResultTheme || 'deep_cobalt_navy') === themeKey;
+                const isSelected = (settings.scannerResultTheme || 'warm_ivory_cream') === themeKey;
 
                 return (
                   <div
@@ -1839,13 +1837,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                             </div>
                             <span className="text-[10px] font-black tracking-wide">
-                              {themeKey === 'emerald_law'
-                                ? 'AMHARA POLICE'
-                                : themeKey === 'imperial_gold'
-                                ? 'POLICE COMMISSION'
-                                : themeKey === 'deep_cobalt_navy'
-                                ? 'BAHIR DAR MUNICIPAL'
-                                : 'ETHIOPIA POLICE'}
+                              ባህርዳር ሞተረኛች ማህበር
                             </span>
                           </div>
                           <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-white/20 text-white uppercase">

@@ -167,6 +167,7 @@ export interface SystemSettings {
   emailAlerts?: boolean;
   security2FA?: boolean;
   highRiskAlerts?: boolean;
+  themeMode?: 'light' | 'dark';
   registrationFreeze?: boolean;
   maintenanceMode?: boolean;
   scannerResultTheme?: ScannerResultTheme;

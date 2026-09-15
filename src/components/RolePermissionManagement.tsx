@@ -468,161 +468,70 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
   return (
     <div className="space-y-4 font-sans text-on-surface">
-      {/* 2-Column Responsive Layout matching the uploaded design */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+      {/* 1-Column Responsive Full-Width Layout with a Dropdown Selector */}
+      <div className="bg-surface-container-lowest rounded-lg border border-outline-variant/80 shadow-xs overflow-hidden flex flex-col w-full">
         
-        {/* ================= LEFT COLUMN: ROLES LIST (lg:col-span-4 or 5) ================= */}
-        <div className="lg:col-span-4 bg-surface-container-lowest rounded-lg border border-outline-variant/80 shadow-xs overflow-hidden flex flex-col">
-          {/* Left Card Header */}
-          <div className="p-4 border-b border-outline-variant/60 flex items-center justify-between gap-2">
-            <h3 className="text-sm sm:text-base font-extrabold text-on-surface flex items-center gap-1.5">
-              <span>{isAmharic ? 'ሚናዎች (Roles)' : 'Roles'}</span>
-            </h3>
+        {/* Top Bar: Selected Role & Active Status & Create Button */}
+        <div className="p-3.5 sm:p-4 border-b border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container/30">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+            <span className="text-xs sm:text-sm font-bold text-on-surface shrink-0 flex items-center gap-1.5">
+              <Icon className="material-symbols-outlined text-[18px] text-secondary">admin_panel_settings</Icon>
+              <span>{isAmharic ? 'የተመረጠ ሚና:' : 'Selected Role:'}</span>
+            </span>
+
+            {/* Slick Premium Dropdown Selector for All Devices */}
+            <div className="relative w-full sm:w-72">
+              <select
+                value={selectedRoleId}
+                onChange={(e) => setSelectedRoleId(e.target.value)}
+                className="w-full bg-surface-container-lowest border border-outline-variant rounded-md pl-3.5 pr-9 py-2 text-xs font-black text-on-surface cursor-pointer focus:outline-hidden focus:border-[#1D61E7] shadow-2xs hover:border-slate-400 dark:hover:border-slate-600 transition-colors"
+              >
+                {roles.map((r) => (
+                  <option key={r.id} value={r.id} className="font-semibold text-xs">
+                    {r.titleAm} — {r.titleEn}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-slate-400">
+                <Icon className="material-symbols-outlined text-[18px]">keyboard_arrow_down</Icon>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side controls: Status Badge and Create Role Button */}
+          <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 flex-wrap">
+            <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800 px-3 py-1.5 rounded-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-[10px] sm:text-xs font-black text-emerald-700 dark:text-emerald-300">
+                {isAmharic ? 'ንቁ (Active)' : 'Active'}
+              </span>
+            </div>
 
             <button
               type="button"
               onClick={() => setShowNewRoleModal(true)}
-              className="px-3 py-1.5 bg-[#1D61E7] hover:bg-blue-700 active:scale-95 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+              className="px-4 py-1.5 bg-[#1D61E7] hover:bg-blue-700 active:scale-[0.97] text-white rounded-md text-xs font-black transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
             >
               <Icon className="material-symbols-outlined text-[16px]">add</Icon>
-              <span>{isAmharic ? 'አዲስ ሚና ፍጠር' : 'Create Role'}</span>
-            </button>
-          </div>
-
-          {/* Search Input Box */}
-          <div className="p-3 border-b border-outline-variant/50">
-            <div className="relative flex items-center">
-              <input
-                type="text"
-                value={roleSearch}
-                onChange={(e) => setRoleSearch(e.target.value)}
-                placeholder={isAmharic ? 'ሚና ፈልግ...' : 'Search roles...'}
-                className="w-full bg-surface-container/60 border border-outline-variant/80 rounded-md pl-3.5 pr-9 py-2 text-xs font-semibold text-on-surface placeholder:text-slate-400 focus:outline-hidden focus:border-[#1D61E7]"
-              />
-              <button
-                type="button"
-                className="absolute right-2.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-              >
-                <Icon className="material-symbols-outlined text-[18px]">search</Icon>
-              </button>
-            </div>
-          </div>
-
-          {/* Roles List */}
-          <div className="p-3 space-y-2.5 divide-y-0">
-            {filteredRoles.map((role) => {
-              const isSelected = role.id === selectedRoleId;
-              return (
-                <div
-                  key={role.id}
-                  onClick={() => setSelectedRoleId(role.id)}
-                  className={`w-full p-3 rounded-md border transition-all flex items-center justify-between gap-3 cursor-pointer select-none ${
-                    isSelected
-                      ? 'bg-blue-50/70 dark:bg-blue-950/40 border-[#0B1E48] shadow-xs ring-1 ring-[#0B1E48]/40'
-                      : 'bg-surface-container-lowest hover:bg-surface-container/50 border-outline-variant/60'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    {renderAvatar(role.avatarType, role.avatarBg)}
-                    <div className="min-w-0 text-left">
-                      <div className="text-xs sm:text-sm font-black text-on-surface leading-tight truncate">
-                        {role.titleAm}
-                      </div>
-                      <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight truncate">
-                        {role.titleEn}
-                      </div>
-                    </div>
-                  </div>
-
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60 text-[11px] font-black shrink-0">
-                    {role.userCountText}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Bottom Pagination matching screenshot `< 1 >` */}
-          <div className="p-3 border-t border-outline-variant/60 flex items-center justify-center gap-2 mt-auto">
-            <button
-              type="button"
-              disabled
-              className="w-7 h-7 rounded-lg border border-outline-variant/80 flex items-center justify-center text-slate-400 opacity-50 cursor-not-allowed text-xs"
-            >
-              &lt;
-            </button>
-            <span className="w-7 h-7 rounded-lg bg-[#0B1E48] text-white flex items-center justify-center text-xs font-black shadow-2xs">
-              1
-            </span>
-            <button
-              type="button"
-              disabled
-              className="w-7 h-7 rounded-lg border border-outline-variant/80 flex items-center justify-center text-slate-400 opacity-50 cursor-not-allowed text-xs"
-            >
-              &gt;
+              <span>{isAmharic ? 'አዲስ ሚና' : 'Create Role'}</span>
             </button>
           </div>
         </div>
 
-        {/* ================= RIGHT COLUMN: PERMISSION MATRIX (lg:col-span-8) ================= */}
-        <div className="lg:col-span-8 bg-surface-container-lowest rounded-lg border border-outline-variant/80 shadow-xs overflow-hidden flex flex-col">
-          
-          {/* Top Bar: Selected Role & Active Status */}
-          <div className="p-3.5 sm:p-4 border-b border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container/30">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 w-full sm:w-auto">
-              <span className="text-xs sm:text-sm font-bold text-on-surface shrink-0">
-                {isAmharic ? 'የተመረጠ ሚና:' : 'Selected Role:'}
-              </span>
+        {/* Info Banner Container */}
+        <div className="p-3.5 mx-4 my-3 bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 rounded-md flex items-center gap-2.5 text-blue-900 dark:text-blue-200 text-xs font-semibold">
+          <Icon className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[18px] shrink-0">
+            info
+          </Icon>
+          <span>
+            {isAmharic
+              ? 'ከታች በተዘረዘሩት ተግባራት ላይ ለዚህ ሚና የሚፈቀዱትን ወይም የሚከለከሉትን ይምረጡ:'
+              : 'Select allowed, view-only, or denied permissions for this role on the activities below:'}
+          </span>
+        </div>
 
-              {/* Desktop/Tablet Selected Role Chip Box */}
-              <div className="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant rounded-md px-2.5 py-1 shadow-2xs">
-                <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center shrink-0">
-                  {renderAvatar(selectedRole.avatarType, selectedRole.avatarBg)}
-                </div>
-                <span className="text-xs font-extrabold text-on-surface">
-                  {selectedRole.titleAm} {selectedRole.titleEn}
-                </span>
-              </div>
-
-              {/* Mobile Quick Role Selector Dropdown */}
-              <select
-                value={selectedRoleId}
-                onChange={(e) => setSelectedRoleId(e.target.value)}
-                className="lg:hidden w-full bg-surface-container-lowest border border-outline-variant rounded-md px-2.5 py-1 text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-[#1D61E7]"
-              >
-                {roles.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.titleAm} {r.titleEn}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                {isAmharic ? 'ሁኔታ:' : 'Status:'}
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800 text-xs font-extrabold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>{isAmharic ? 'ንቁ (Active)' : 'Active'}</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Info Banner Container */}
-          <div className="p-3.5 mx-4 my-3 bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 rounded-md flex items-center gap-2.5 text-blue-900 dark:text-blue-200 text-xs font-semibold">
-            <Icon className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[18px] shrink-0">
-              info
-            </Icon>
-            <span>
-              {isAmharic
-                ? 'ከታች በተዘረዘሩት ተግባራት ላይ ለዚህ ሚና የሚፈቀዱትን ወይም የሚከለከሉትን ይምረጡ:'
-                : 'Select allowed, view-only, or denied permissions for this role on the activities below:'}
-            </span>
-          </div>
-
-          {/* Permissions Matrix Table */}
-          <div className="px-4 pb-4 overflow-x-auto">
+          {/* Permissions Matrix Table - Hidden on mobile, visible on desktop/tablet */}
+          <div className="hidden md:block px-4 pb-4 overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[560px]">
               <thead>
                 <tr className="border-b border-outline-variant/70 text-xs font-black text-slate-700 dark:text-slate-200">
@@ -714,6 +623,71 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             </table>
           </div>
 
+          {/* Mobile-Friendly Grid of Cards (Visible on small screens only) */}
+          <div className="md:hidden space-y-3 px-4 pb-4">
+            {DEFAULT_TASKS.map((task) => {
+              const state = currentRolePerms[task.id] || 'deny';
+              return (
+                <div key={task.id} className="p-3.5 bg-surface-container/20 rounded-lg border border-outline-variant/60 space-y-3 animate-in fade-in duration-150">
+                  <div className="flex items-start gap-2.5">
+                    <div className="p-2 bg-surface-container rounded-md text-slate-600 dark:text-slate-400 shrink-0">
+                      <Icon className="material-symbols-outlined text-[18px] block">
+                        {task.icon}
+                      </Icon>
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-black text-on-surface">
+                        {task.titleAm}
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium font-sans">
+                        {task.titleEn}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Responsive segmented controls */}
+                  <div className="grid grid-cols-3 gap-1.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleSetPermission(task.id, 'allow')}
+                      className={`py-2 px-1 rounded-md text-[10px] font-black uppercase tracking-wider text-center transition-all cursor-pointer active:scale-95 ${
+                        state === 'allow'
+                          ? 'bg-emerald-600 text-white shadow-2xs'
+                          : 'bg-surface-container hover:bg-surface-container-high text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      {isAmharic ? 'ፈቃድ' : 'Allow'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSetPermission(task.id, 'view_only')}
+                      className={`py-2 px-1 rounded-md text-[10px] font-black uppercase tracking-wider text-center transition-all cursor-pointer active:scale-95 ${
+                        state === 'view_only'
+                          ? 'bg-amber-500 text-white shadow-2xs'
+                          : 'bg-surface-container hover:bg-surface-container-high text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      {isAmharic ? 'ማየት ብቻ' : 'View Only'}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSetPermission(task.id, 'deny')}
+                      className={`py-2 px-1 rounded-md text-[10px] font-black uppercase tracking-wider text-center transition-all cursor-pointer active:scale-95 ${
+                        state === 'deny'
+                          ? 'bg-rose-500 text-white shadow-2xs'
+                          : 'bg-surface-container hover:bg-surface-container-high text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      {isAmharic ? 'ልክል' : 'Deny'}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
           {/* Bottom Legend matching image */}
           <div className="px-5 py-3 border-t border-outline-variant/60 bg-surface-container/20 flex flex-wrap items-center justify-between gap-4 text-xs">
             <div className="space-y-1">
@@ -781,15 +755,11 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
         </div>
 
-      </div>
-
       {/* ================= CLERK DASHBOARD & FEATURE VISIBILITY GOVERNANCE ================= */}
       <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-lg border border-blue-200/80 dark:border-blue-900/50 shadow-xs space-y-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/60 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 border border-blue-500/20 flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">badge</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[22px] text-blue-600 shrink-0">badge</Icon>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xs sm:text-sm font-black text-on-surface uppercase tracking-wider">

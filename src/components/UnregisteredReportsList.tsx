@@ -10,6 +10,7 @@ import {
 import { SmartImage } from './SmartImage';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { DataField } from './ui/StreamlinedUI';
+import { LoadingSpinner } from './ui/Skeleton';
 
 interface UnregisteredReportsListProps {
   lang: Language;
@@ -19,6 +20,7 @@ interface UnregisteredReportsListProps {
   onUpdateStatus?: (id: string, status: UnregisteredVehicleReport['status'], resolutionNotes?: string) => Promise<void>;
   onNewReportClick?: () => void;
   onOpenRegisterForm?: (report: UnregisteredVehicleReport) => void;
+  isLoading?: boolean;
 }
 
 export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = ({
@@ -29,8 +31,13 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
   onUpdateStatus,
   onNewReportClick,
   onOpenRegisterForm,
+  isLoading = false,
 }) => {
   const isAmharic = lang === 'am';
+
+  if (isLoading) {
+    return null;
+  }
 
   const [searchTerm, setSearchTerm] = useState('');
   const [subCityFilter, setSubCityFilter] = useState('all');
@@ -138,9 +145,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
         {/* CONTAINER SECTION HEADER */}
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 dark:bg-red-900/30 dark:text-red-400 border border-red-500/20 flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">no_drinks</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[22px] text-red-600 dark:text-red-400 shrink-0">no_drinks</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
@@ -245,7 +250,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       setStatusFilter(tab.id);
                       setCurrentPage(1);
                     }}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all duration-200 active:scale-105 cursor-pointer whitespace-nowrap select-none rounded-md ${
                       isActive
                         ? 'bg-primary text-white font-extrabold shadow-2xs'
                         : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
