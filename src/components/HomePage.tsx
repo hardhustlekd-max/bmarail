@@ -142,12 +142,12 @@ export const HomePage: React.FC<HomePageProps> = ({
     };
   }, [userNotificationScope, readStorageKey, clearedStorageKey]);
 
-  // State for expandable side menu accordion groups
+  // State for expandable side menu accordion groups (collapsed by default)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    registrations: true,
-    verification: true,
-    superadmin: true,
-    settings: true,
+    registrations: false,
+    verification: false,
+    superadmin: false,
+    settings: false,
   });
 
   const toggleGroup = (groupKey: string) => {
@@ -279,6 +279,32 @@ export const HomePage: React.FC<HomePageProps> = ({
       saveActivePage('dashboard');
     }
   }, [userRole, activePage, setActivePage]);
+
+  // Automatically open the side menu group containing the active page, collapsing others
+  useEffect(() => {
+    const pageToGroupMap: Record<string, string> = {
+      forms: 'registrations',
+      tables: 'registrations',
+      payment_receipts: 'registrations',
+      today_submissions_adjust: 'registrations',
+      scan: 'verification',
+      report_unregistered: 'verification',
+      unregistered_list: 'verification',
+      inspection_report: 'verification',
+      superadmin_users: 'superadmin',
+      print_batches: 'superadmin',
+      activity_logs: 'superadmin',
+      settings: 'settings',
+    };
+
+    const targetGroup = pageToGroupMap[activePage];
+    setExpandedGroups({
+      registrations: targetGroup === 'registrations',
+      verification: targetGroup === 'verification',
+      superadmin: targetGroup === 'superadmin',
+      settings: targetGroup === 'settings',
+    });
+  }, [activePage]);
 
   // Logout confirmation modal state
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);

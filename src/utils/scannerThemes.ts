@@ -65,40 +65,6 @@ export interface ScannerThemeConfig {
 }
 
 export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
-  // DEEP COBALT NAVY
-  deep_cobalt_navy: {
-    id: 'deep_cobalt_navy',
-    nameEn: 'Deep Cobalt Navy',
-    nameAm: 'ጥቁር ኮባልት ሰማያዊ',
-    badgeEn: 'Cobalt Theme',
-    badgeAm: 'ኮባልት ገጽታ',
-    descriptionEn: 'Deep royal/cobalt blue canvas, midnight navy cards, gold circle indicators, and crisp white typography.',
-    descriptionAm: 'ጥቁር ኮባልት ሰማያዊ ዳራ፣ ጥቁር ሰማያዊ ካርዶች፣ ወርቃማ ክብ አርማዎች እና ንጹህ ነጭ ጽሁፍ።',
-    palette: ['#0a1c44', '#0f295e', '#122e6b', '#fbbf24', '#22c55e'],
-
-    containerBg: 'bg-[#0b1e48]',
-    bodyBg: 'bg-[#0c2353]',
-    cardBg: 'bg-[#102a63] border-2 border-[#1a3e87] text-white',
-    ownerCardBg: 'bg-[#102a63] border-2 border-[#1a3e87] text-white',
-    specCardBg: 'bg-[#102a63] border-2 border-[#1a3e87] text-white',
-    chipBg: 'bg-[#122e6b] border border-[#1a3f8a] text-white',
-    iconCircle: 'bg-[#0a1c44] text-amber-400 border border-amber-500/30 shadow-xs',
-    actionButton: 'bg-[#102a63] hover:bg-[#16377e] text-amber-300 border border-amber-500/40 shadow-xs',
-    plateBadge: 'bg-[#0a1c44] text-blue-200 border border-blue-600/60',
-    headingText: 'text-white',
-    labelText: 'text-blue-200/90',
-    valueText: 'text-white',
-    sectionIconColor: 'text-blue-300',
-
-    headerApproved: 'bg-emerald-600 border-emerald-600 text-white',
-    headerPending: 'bg-amber-500 border-amber-500 text-white',
-    headerRejected: 'bg-rose-600 border-rose-600 text-white',
-
-    docCardBg: 'bg-[#122e6b] hover:bg-[#16377e]',
-    docCardBorder: 'border border-[#1a3f8a]',
-    footerText: 'text-blue-300/80',
-  },
-
   // WARM IVORY CREAM (DEFAULT THEME)
   warm_ivory_cream: {
     id: 'warm_ivory_cream',
@@ -131,6 +97,40 @@ export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
     docCardBg: 'bg-white hover:bg-slate-50',
     docCardBorder: 'border border-slate-200',
     footerText: 'text-slate-500',
+  },
+
+  // DEEP COBALT NAVY
+  deep_cobalt_navy: {
+    id: 'deep_cobalt_navy',
+    nameEn: 'Deep Cobalt Navy',
+    nameAm: 'ጥቁር ኮባልት ሰማያዊ',
+    badgeEn: 'Cobalt Theme',
+    badgeAm: 'ኮባልት ገጽታ',
+    descriptionEn: 'Deep royal/cobalt blue canvas, midnight navy cards, gold circle indicators, and crisp white typography.',
+    descriptionAm: 'ጥቁር ኮባልት ሰማያዊ ዳራ፣ ጥቁር ሰማያዊ ካርዶች፣ ወርቃማ ክብ አርማዎች እና ንጹህ ነጭ ጽሁፍ።',
+    palette: ['#0a1c44', '#0f295e', '#122e6b', '#fbbf24', '#22c55e'],
+
+    containerBg: 'bg-[#0b1e48]',
+    bodyBg: 'bg-[#0c2353]',
+    cardBg: 'bg-[#102a63] border-2 border-[#1a3e87] text-white',
+    ownerCardBg: 'bg-[#102a63] border-2 border-[#1a3e87] text-white',
+    specCardBg: 'bg-[#102a63] border-2 border-[#1a3e87] text-white',
+    chipBg: 'bg-[#122e6b] border border-[#1a3f8a] text-white',
+    iconCircle: 'bg-[#0a1c44] text-amber-400 border border-amber-500/30 shadow-xs',
+    actionButton: 'bg-[#102a63] hover:bg-[#16377e] text-amber-300 border border-amber-500/40 shadow-xs',
+    plateBadge: 'bg-[#0a1c44] text-blue-200 border border-blue-600/60',
+    headingText: 'text-white',
+    labelText: 'text-blue-200/90',
+    valueText: 'text-white',
+    sectionIconColor: 'text-blue-300',
+
+    headerApproved: 'bg-emerald-600 border-emerald-600 text-white',
+    headerPending: 'bg-amber-500 border-amber-500 text-white',
+    headerRejected: 'bg-rose-600 border-rose-600 text-white',
+
+    docCardBg: 'bg-[#122e6b] hover:bg-[#16377e]',
+    docCardBorder: 'border border-[#1a3f8a]',
+    footerText: 'text-blue-300/80',
   },
 
   // SOFT ICE BLUE

@@ -79,7 +79,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
           </div>
           <div className="min-w-0">
-            <h1 className="font-black text-xs sm:text-sm text-white tracking-tight leading-tight truncate">
+            <h1 className={`text-white leading-tight truncate whitespace-nowrap ${lang === 'am' ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
               {lang === 'am' ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
             </h1>
           </div>
