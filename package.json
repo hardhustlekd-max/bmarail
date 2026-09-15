@@ -23,8 +23,6 @@
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
-    "firebase": "^12.17.1",
-    "firebase-admin": "^14.2.0",
     "idb": "^8.0.3",
     "jsonwebtoken": "^9.0.3",
     "jsqr": "^1.4.0",

@@ -7,16 +7,15 @@ import {
 import { Icon } from './ui/Icon';
 import { formatEthiopianTime } from '../utils/ethiopianCalendar';
 
-interface FirebaseStatusWidgetProps {
+interface DatabaseStatusWidgetProps {
   isAmharic: boolean;
 }
 
-export const FirebaseQuotaWidget: React.FC<FirebaseStatusWidgetProps> = ({ isAmharic }) => {
+export const DatabaseStatusWidget: React.FC<DatabaseStatusWidgetProps> = ({ isAmharic }) => {
   const [dbError, setDbError] = useState<string | null>(null);
-  const [syncStatus, setSyncStatus] = useState<{ lastSyncTime: Date | null; isConnected: boolean; isQuotaExceeded?: boolean }>({
+  const [syncStatus, setSyncStatus] = useState<{ lastSyncTime: Date | null; isConnected: boolean }>({
     lastSyncTime: null,
     isConnected: true,
-    isQuotaExceeded: false,
   });
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -90,7 +89,7 @@ export const FirebaseQuotaWidget: React.FC<FirebaseStatusWidgetProps> = ({ isAmh
 
       {/* Last Cloud Sync timestamp */}
       <div className="flex items-center justify-between text-[10px] text-secondary bg-surface-container-high/60 px-2 py-1 rounded-md">
-        <span>{isAmharic ? 'የመጨረሻ ማመሳሰል:' : 'Last Cloud Sync:'}</span>
+        <span>{isAmharic ? 'የመጨረሻ ማመሳሰል:' : 'Last Database Sync:'}</span>
         <span className="font-mono font-semibold text-on-surface">
           {formatLastSync(syncStatus.lastSyncTime)}
         </span>
@@ -115,6 +114,5 @@ export const FirebaseQuotaWidget: React.FC<FirebaseStatusWidgetProps> = ({ isAmh
   );
 };
 
-// Export aliases for backward compatibility
-export const SupabaseStatusWidget = FirebaseQuotaWidget;
-export const PostgresStatusWidget = FirebaseQuotaWidget;
+export const PostgresStatusWidget = DatabaseStatusWidget;
+export const SupabaseStatusWidget = DatabaseStatusWidget;

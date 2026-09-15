@@ -51,8 +51,6 @@ export function onAuthStateChange(callback: (user: SystemUser | null) => void): 
   };
 }
 
-export const onFirebaseAuthChange = onAuthStateChange;
-
 export function getCurrentUser(): SystemUser | null {
   if (currentAuthUser) return currentAuthUser;
   if (typeof localStorage !== 'undefined') {
@@ -66,8 +64,6 @@ export function getCurrentUser(): SystemUser | null {
   }
   return null;
 }
-
-export const getCurrentFirebaseAuthUser = getCurrentUser;
 
 /**
  * Ensures a valid session user exists.
@@ -183,8 +179,6 @@ export async function loginOnlineUser(
   return { success: true, user: userProfile };
 }
 
-export const loginWithFirebaseAuth = loginOnlineUser;
-
 /**
  * Register a new user
  */
@@ -205,8 +199,6 @@ export async function registerOnlineUser(userData: Partial<SystemUser> & { passw
   }
 }
 
-export const registerWithFirebaseAuth = registerOnlineUser;
-
 /**
  * Sign out session
  */
@@ -225,8 +217,6 @@ export async function logoutOnlineUser(): Promise<void> {
     } catch (e) {}
   });
 }
-
-export const logoutFirebaseAuth = logoutOnlineUser;
 
 /**
  * Change / Update user password
@@ -292,5 +282,3 @@ export async function fetchOnlineSystemUsers(): Promise<SystemUser[]> {
     fullName: c.fullName,
   }));
 }
-
-export const fetchAllFirebaseAuthUsers = fetchOnlineSystemUsers;

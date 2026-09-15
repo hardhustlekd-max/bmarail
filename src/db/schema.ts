@@ -22,7 +22,7 @@ export const TABLES = {
   SETTINGS: 'system_settings',
 } as const;
 
-export function mapRegistrationToFirebase(reg: MotorcycleRegistration) {
+export function mapRegistrationToDb(reg: MotorcycleRegistration) {
   return {
     id: reg.id,
     fullName: reg.fullName,
@@ -56,7 +56,7 @@ export function mapRegistrationToFirebase(reg: MotorcycleRegistration) {
   };
 }
 
-export function mapRegistrationFromFirebase(row: any): MotorcycleRegistration {
+export function mapRegistrationFromDb(row: any): MotorcycleRegistration {
   return {
     id: row.id,
     fullName: row.fullName || row.full_name || '',
@@ -90,7 +90,7 @@ export function mapRegistrationFromFirebase(row: any): MotorcycleRegistration {
   };
 }
 
-export function mapOfficerToFirebase(officer: OfficerAssignment) {
+export function mapOfficerToDb(officer: OfficerAssignment) {
   return {
     id: officer.id,
     officerName: officer.officerName,
@@ -108,7 +108,7 @@ export function mapOfficerToFirebase(officer: OfficerAssignment) {
   };
 }
 
-export function mapOfficerFromFirebase(row: any): OfficerAssignment {
+export function mapOfficerFromDb(row: any): OfficerAssignment {
   return {
     id: row.id,
     officerName: row.officerName || row.officer_name || '',
@@ -126,7 +126,7 @@ export function mapOfficerFromFirebase(row: any): OfficerAssignment {
   };
 }
 
-export function mapPrintOrderToFirebase(order: PrintBatchOrder) {
+export function mapPrintOrderToDb(order: PrintBatchOrder) {
   return {
     id: order.id,
     orderDate: order.orderDate,
@@ -139,7 +139,7 @@ export function mapPrintOrderToFirebase(order: PrintBatchOrder) {
   };
 }
 
-export function mapPrintOrderFromFirebase(row: any): PrintBatchOrder {
+export function mapPrintOrderFromDb(row: any): PrintBatchOrder {
   return {
     id: row.id,
     orderDate: row.orderDate || row.order_date || '',
@@ -158,7 +158,7 @@ export function mapPrintOrderFromFirebase(row: any): PrintBatchOrder {
   };
 }
 
-export function mapVerificationToFirebase(log: VerificationLog) {
+export function mapVerificationToDb(log: VerificationLog) {
   return {
     id: log.id,
     scannedAt: log.scannedAt,
@@ -185,7 +185,7 @@ export function mapVerificationToFirebase(log: VerificationLog) {
   };
 }
 
-export function mapVerificationFromFirebase(row: any): VerificationLog {
+export function mapVerificationFromDb(row: any): VerificationLog {
   return {
     id: row.id,
     scannedAt: row.scannedAt || row.scanned_at || '',
@@ -212,7 +212,7 @@ export function mapVerificationFromFirebase(row: any): VerificationLog {
   };
 }
 
-export function mapUnregisteredReportToFirebase(report: UnregisteredVehicleReport) {
+export function mapUnregisteredReportToDb(report: UnregisteredVehicleReport) {
   return {
     id: report.id,
     reportedAt: report.reportedAt,
@@ -234,7 +234,7 @@ export function mapUnregisteredReportToFirebase(report: UnregisteredVehicleRepor
   };
 }
 
-export function mapUnregisteredReportFromFirebase(row: any): UnregisteredVehicleReport {
+export function mapUnregisteredReportFromDb(row: any): UnregisteredVehicleReport {
   return {
     id: row.id,
     reportedAt: row.reportedAt || row.reported_at || '',
@@ -256,7 +256,7 @@ export function mapUnregisteredReportFromFirebase(row: any): UnregisteredVehicle
   };
 }
 
-export function mapPaymentReceiptToFirebase(receipt: PaymentReceipt) {
+export function mapPaymentReceiptToDb(receipt: PaymentReceipt) {
   return {
     id: receipt.id,
     receiptNumber: receipt.receiptNumber,
@@ -275,7 +275,7 @@ export function mapPaymentReceiptToFirebase(receipt: PaymentReceipt) {
   };
 }
 
-export function mapPaymentReceiptFromFirebase(row: any): PaymentReceipt {
+export function mapPaymentReceiptFromDb(row: any): PaymentReceipt {
   return {
     id: row.id,
     receiptNumber: row.receiptNumber || row.receipt_number || '',
@@ -294,7 +294,7 @@ export function mapPaymentReceiptFromFirebase(row: any): PaymentReceipt {
   };
 }
 
-export function mapSettingsToFirebase(settings: SystemSettings) {
+export function mapSettingsToDb(settings: SystemSettings) {
   return {
     id: 'global_config',
     officerName: settings.officerName || null,
@@ -325,7 +325,7 @@ export function mapSettingsToFirebase(settings: SystemSettings) {
   };
 }
 
-export function mapSettingsFromFirebase(row: any, defaultSettings: SystemSettings): SystemSettings {
+export function mapSettingsFromDb(row: any, defaultSettings: SystemSettings): SystemSettings {
   if (!row) return defaultSettings;
   return {
     officerName: row.officerName ?? row.officer_name ?? defaultSettings.officerName,
@@ -362,14 +362,3 @@ export function mapSettingsFromFirebase(row: any, defaultSettings: SystemSetting
   };
 }
 
-// Aliases for backwards compatibility
-export const mapRegistrationToSupabase = mapRegistrationToFirebase;
-export const mapRegistrationFromSupabase = mapRegistrationFromFirebase;
-export const mapOfficerToSupabase = mapOfficerToFirebase;
-export const mapOfficerFromSupabase = mapOfficerFromFirebase;
-export const mapPrintOrderToSupabase = mapPrintOrderToFirebase;
-export const mapPrintOrderFromSupabase = mapPrintOrderFromFirebase;
-export const mapVerificationToSupabase = mapVerificationToFirebase;
-export const mapVerificationFromSupabase = mapVerificationFromFirebase;
-export const mapSettingsToSupabase = mapSettingsToFirebase;
-export const mapSettingsFromSupabase = mapSettingsFromFirebase;

@@ -112,7 +112,8 @@ VALUES (
     'allow',
     '{}'::jsonb
 )
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+  scanner_result_theme = COALESCE(NULLIF(system_settings.scanner_result_theme, ''), 'warm_ivory_cream');
 
 -- 3. Default Officer Assignments
 INSERT INTO officer_assignments (id, officer_name, badge_id, sub_city, location_name, shift, status, assigned_location, phone, shift_hours, assigned_date)

@@ -1012,13 +1012,14 @@ app.get('/api/notifications/state/:userScopeId', async (req, res) => {
 
 app.post('/api/notifications/state', async (req, res) => {
   try {
-    const { userScopeId, readIds, lastReadAt } = req.body;
+    const { userScopeId, readIds, clearedIds, lastReadAt } = req.body;
     if (!userScopeId) {
       return res.status(400).json({ error: 'Missing userScopeId' });
     }
     const data = {
       userScopeId,
       readIds: readIds || [],
+      clearedIds: clearedIds || [],
       lastReadAt: lastReadAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

@@ -1189,12 +1189,12 @@ export const HomePage: React.FC<HomePageProps> = ({
         addToast(
           isAmharic
             ? `የ ${newReg.fullName} ምዝገባ በተሳካ ሁኔታ በዳታቤዝ ተቀምጧል!`
-            : `Registration for ${newReg.fullName} stored successfully in Firebase Database!`,
+            : `Registration for ${newReg.fullName} stored successfully in Database!`,
           'success'
         );
       } else {
         addToast(
-          isAmharic ? 'የኦንላይን ዳታቤዝ ማስቀመጥ አልተሳካም!' : 'Online Firebase database save failed!',
+          isAmharic ? 'የኦንላይን ዳታቤዝ ማስቀመጥ አልተሳካም!' : 'Online database save failed!',
           'error'
         );
       }

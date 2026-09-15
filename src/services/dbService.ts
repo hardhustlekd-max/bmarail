@@ -9,18 +9,7 @@ import {
   SystemUser,
   SystemAuditLog,
 } from '../types';
-import {
-  FIREBASE_COLLECTIONS,
-  fetchAllDocuments,
-  getDocument,
-  upsertDocument,
-  updateDocumentFields,
-  deleteDocument,
-  subscribeCollectionDocs,
-  isFirebaseConfigured,
-  handleFirestoreError,
-  OperationType,
-} from '../db/firebase';
+import { mapSettingsFromDb } from '../db/schema';
 import { uploadDocumentPhoto } from './storageService';
 import { trackGlobalAction } from './actionTracker';
 import {
@@ -62,8 +51,7 @@ export function subscribeSyncStatus(
 }
 
 function notifySyncStatus() {
-  const isQuotaError = Boolean(globalDbError && globalDbError.includes('Quota Exceeded'));
-  const data = { lastSyncTime, isConnected: isCloudConnected, isQuotaExceeded: isQuotaError };
+  const data = { lastSyncTime, isConnected: isCloudConnected, isQuotaExceeded: false };
   syncStatusListeners.forEach((cb) => {
     try {
       cb(data);
@@ -71,13 +59,15 @@ function notifySyncStatus() {
   });
 }
 
-export function subscribeFirestoreError(cb: (err: string | null) => void): () => void {
-  cb(globalDbError);
-  errorListeners.add(cb);
+export function subscribeFirestoreError(callback: (err: string | null) => void): () => void {
+  callback(globalDbError);
+  errorListeners.add(callback);
   return () => {
-    errorListeners.delete(cb);
+    errorListeners.delete(callback);
   };
 }
+
+export const subscribeDbError = subscribeFirestoreError;
 
 /**
  * Format and sanitize error messages for the UI
@@ -91,34 +81,25 @@ export function formatFriendlyDbError(rawError: string | null): string | null {
     str.includes('cpt1::') ||
     str.includes('500 Internal') ||
     str.includes('Server returned HTML') ||
-    str.includes('Failed to fetch') ||
-    str.includes('Could not reach Cloud Firestore backend')
+    str.includes('Failed to fetch')
   ) {
     return null; // Suppress connection timeout warnings as local storage handles sync seamlessly
   }
   if (str.includes('the client is offline') || str.includes('network-request-failed')) {
-    return 'Offline mode: Changes are saved locally and will synchronize once reconnected.';
-  }
-  if (str.includes('Quota limit exceeded')) {
-    return 'Firebase Free Tier Quota Exceeded. The database is currently in read-only/offline mode until the daily reset.';
-  }
-  if (str.includes('Missing or insufficient permissions')) {
-    return 'Firestore security rule notice: Please verify permissions for this operation.';
+    return 'Offline mode: Changes are saved locally and will synchronize with PostgreSQL once reconnected.';
   }
   return str;
 }
 
-export function setGlobalFirestoreError(err: string | null) {
+export function setGlobalDbError(err: string | null) {
   const sanitized = formatFriendlyDbError(err);
   globalDbError = sanitized;
-  
-  const isQuotaError = Boolean(err && String(err).includes('Quota limit exceeded'));
-  isCloudConnected = sanitized === null || sanitized.includes('direct Firebase Firestore') && !isQuotaError;
+  isCloudConnected = sanitized === null;
   
   const data = { 
     lastSyncTime, 
     isConnected: isCloudConnected, 
-    isQuotaExceeded: isQuotaError 
+    isQuotaExceeded: false 
   };
   
   syncStatusListeners.forEach((cb) => {
@@ -134,13 +115,15 @@ export function setGlobalFirestoreError(err: string | null) {
   });
 }
 
+export const setGlobalFirestoreError = setGlobalDbError;
+
 // Initial default settings
 export const DEFAULT_SETTINGS: SystemSettings = {
   officerName: 'አበበ ደስታ',
   department: 'የትራፊክ ማኔጅመንትና ህግ ማስከበሪያ',
-  subCityOffice: 'በላይ ዘለቀ ክፍለ ከተማ',
-  defaultPrinter: 'Zebra ZD621 Industrial PVC Card Printer',
-  cardStockType: 'CR80 Standard PVC Card (85.6 x 54 mm)',
+  subCityOffice: 'ቀበሌ 04 ቅርንጫፍ',
+  defaultPrinter: 'Epson L805 Series (PVC Card)',
+  cardStockType: 'CR80_PVC',
   calendarSystem: 'ethiopian',
   autoPrintQR: true,
   emailAlerts: true,
@@ -153,158 +136,112 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   showClerkApprovedVehiclesAction: false,
   showClerkPaymentKPIs: false,
   showClerkPaymentRecordsTable: false,
-  clerkPaymentKPIPermission: 'deny',
-  clerkPaymentTablePermission: 'deny',
+  clerkPaymentKPIPermission: 'allow',
+  clerkPaymentTablePermission: 'allow',
+  registrationFreeze: false,
+  maintenanceMode: false,
   frozenSubCities: {},
   systemResetEpoch: 0,
-  lastSystemResetAt: '',
+  lastSystemResetAt: new Date().toISOString(),
 };
 
-export const DEFAULT_SAMPLE_VERIFICATIONS: VerificationLog[] = [];
+// In-Memory Live State (synchronized directly with PostgreSQL backend)
+interface InMemoryState {
+  registrations: MotorcycleRegistration[];
+  officers: OfficerAssignment[];
+  printOrders: PrintBatchOrder[];
+  verifications: VerificationLog[];
+  unregisteredReports: UnregisteredVehicleReport[];
+  paymentReceipts: PaymentReceipt[];
+  settings: SystemSettings;
+  users: SystemUser[];
+  auditLogs: SystemAuditLog[];
+}
 
-export const DEFAULT_SAMPLE_UNREGISTERED_REPORTS: UnregisteredVehicleReport[] = [];
-
-// In-Memory Live State (synchronized directly from Firebase Firestore backend)
-const inMemory = {
-  registrations: [] as MotorcycleRegistration[],
-  officers: [] as OfficerAssignment[],
-  printOrders: [] as PrintBatchOrder[],
-  verifications: [...DEFAULT_SAMPLE_VERIFICATIONS] as VerificationLog[],
-  unregisteredReports: [...DEFAULT_SAMPLE_UNREGISTERED_REPORTS] as UnregisteredVehicleReport[],
-  paymentReceipts: [] as PaymentReceipt[],
-  users: [] as SystemUser[],
-  auditLogs: [] as SystemAuditLog[],
-  settings: { ...DEFAULT_SETTINGS } as SystemSettings,
+const inMemory: InMemoryState = {
+  registrations: [],
+  officers: [],
+  printOrders: [],
+  verifications: [],
+  unregisteredReports: [],
+  paymentReceipts: [],
+  settings: { ...DEFAULT_SETTINGS },
+  users: [],
+  auditLogs: [],
 };
 
-const STATE_CACHE_KEY = 'bd_motor_app_state_cache';
+// Listeners registry for reactive UI updates
+const listeners = {
+  registrations: new Set<(data: MotorcycleRegistration[]) => void>(),
+  officers: new Set<(data: OfficerAssignment[]) => void>(),
+  printOrders: new Set<(data: PrintBatchOrder[]) => void>(),
+  verifications: new Set<(data: VerificationLog[]) => void>(),
+  unregisteredReports: new Set<(data: UnregisteredVehicleReport[]) => void>(),
+  paymentReceipts: new Set<(data: PaymentReceipt[]) => void>(),
+  settings: new Set<(data: SystemSettings) => void>(),
+  users: new Set<(data: SystemUser[]) => void>(),
+  auditLogs: new Set<(data: SystemAuditLog[]) => void>(),
+};
 
-export function mergeById<T extends { id?: string; uid?: string }>(incoming: T[], existing: T[]): T[] {
-  const map = new Map<string, T>();
-  if (Array.isArray(existing)) {
-    for (const item of existing) {
-      const key = item?.id || item?.uid;
-      if (item && key) map.set(key, item);
-    }
-  }
-  if (Array.isArray(incoming)) {
-    for (const item of incoming) {
-      const key = item?.id || item?.uid;
-      if (item && key) map.set(key, item);
-    }
-  }
-  return Array.from(map.values());
-}
+// Local storage key for fallback & instant boot
+const STATE_CACHE_KEY = 'bma_system_state_v3';
 
-export function mergeRegistrationsPreservingPhotos(
-  incoming: MotorcycleRegistration[],
-  existing: MotorcycleRegistration[]
-): MotorcycleRegistration[] {
-  const map = new Map<string, MotorcycleRegistration>();
-  if (Array.isArray(existing)) {
-    for (const item of existing) {
-      if (item?.id) map.set(item.id, item);
-    }
-  }
-  if (Array.isArray(incoming)) {
-    for (const item of incoming) {
-      if (!item?.id) continue;
-      const prev = map.get(item.id);
-      if (prev) {
-        map.set(item.id, {
-          ...prev,
-          ...item,
-          userPortraitPhoto: item.userPortraitPhoto || prev.userPortraitPhoto || '',
-          userPortraitThumbnail: item.userPortraitThumbnail || prev.userPortraitThumbnail || '',
-          nationalIdPhoto: item.nationalIdPhoto || prev.nationalIdPhoto || '',
-          nationalIdBackPhoto: item.nationalIdBackPhoto || prev.nationalIdBackPhoto || '',
-          drivingLicensePhoto:
-            item.drivingLicensePhoto ||
-            (item as any).driving_license_photo ||
-            (item as any).driverLicensePhoto ||
-            prev.drivingLicensePhoto ||
-            '',
-          drivingPermitPhoto:
-            item.drivingPermitPhoto ||
-            (item as any).driving_permit_photo ||
-            (item as any).policePermitPhoto ||
-            prev.drivingPermitPhoto ||
-            '',
-          receiptScreenshot: item.receiptScreenshot || prev.receiptScreenshot || '',
-        });
-      } else {
-        map.set(item.id, item);
-      }
-    }
-  }
-  return Array.from(map.values());
-}
-
-export function sanitizePhotoForCache(photo?: string): string {
-  if (!photo) return '';
-  // Remote URLs, proxy routes, and blob previews are lightweight text strings - keep 100%
-  if (
-    photo.startsWith('http://') ||
-    photo.startsWith('https://') ||
-    photo.startsWith('/') ||
-    photo.startsWith('blob:')
-  ) {
-    return photo;
-  }
-  // Keep compressed data URLs (< 250KB) - allows offline compressed WebP and JPEG documents
-  if (photo.length < 250 * 1024) {
-    return photo;
-  }
-  // Strip only massive uncompressed raw Base64 strings to protect localStorage quota
-  return '';
-}
-
-export function stripImagesFromRegistration(reg: MotorcycleRegistration): MotorcycleRegistration {
-  if (!reg) return reg;
+function stripImagesFromVerificationLog(v: VerificationLog): VerificationLog {
   return {
-    ...reg,
-    userPortraitPhoto: sanitizePhotoForCache(reg.userPortraitPhoto),
-    userPortraitThumbnail: sanitizePhotoForCache(reg.userPortraitThumbnail),
-    nationalIdPhoto: sanitizePhotoForCache(reg.nationalIdPhoto),
-    nationalIdBackPhoto: sanitizePhotoForCache(reg.nationalIdBackPhoto),
-    drivingLicensePhoto: sanitizePhotoForCache(reg.drivingLicensePhoto),
-    drivingPermitPhoto: sanitizePhotoForCache(reg.drivingPermitPhoto),
-    receiptScreenshot: sanitizePhotoForCache(reg.receiptScreenshot),
+    ...v,
+    userPortraitPhoto: v.userPortraitPhoto && !v.userPortraitPhoto.startsWith('data:image/') ? v.userPortraitPhoto : '',
+    nationalIdPhoto: v.nationalIdPhoto && !v.nationalIdPhoto.startsWith('data:image/') ? v.nationalIdPhoto : '',
+    nationalIdBackPhoto: v.nationalIdBackPhoto && !v.nationalIdBackPhoto.startsWith('data:image/') ? v.nationalIdBackPhoto : '',
+    drivingLicensePhoto: v.drivingLicensePhoto && !v.drivingLicensePhoto.startsWith('data:image/') ? v.drivingLicensePhoto : '',
+    drivingPermitPhoto: v.drivingPermitPhoto && !v.drivingPermitPhoto.startsWith('data:image/') ? v.drivingPermitPhoto : '',
   };
 }
 
-export function stripImagesFromVerificationLog(log: VerificationLog): VerificationLog {
-  if (!log) return log;
+function stripImagesFromUnregisteredReport(r: UnregisteredVehicleReport): UnregisteredVehicleReport {
   return {
-    ...log,
-    userPortraitPhoto: sanitizePhotoForCache(log.userPortraitPhoto),
-    nationalIdPhoto: sanitizePhotoForCache(log.nationalIdPhoto),
-    nationalIdBackPhoto: sanitizePhotoForCache(log.nationalIdBackPhoto),
-    drivingLicensePhoto: sanitizePhotoForCache(log.drivingLicensePhoto),
-    drivingPermitPhoto: sanitizePhotoForCache(log.drivingPermitPhoto),
+    ...r,
+    evidencePhoto: r.evidencePhoto && !r.evidencePhoto.startsWith('data:image/') ? r.evidencePhoto : undefined,
   };
 }
 
-export function stripImagesFromUnregisteredReport(report: UnregisteredVehicleReport): UnregisteredVehicleReport {
-  if (!report) return report;
+function stripImagesFromPaymentReceipt(p: PaymentReceipt): PaymentReceipt {
   return {
-    ...report,
-    evidencePhoto: sanitizePhotoForCache(report.evidencePhoto),
+    ...p,
+    receiptScreenshot: p.receiptScreenshot && !p.receiptScreenshot.startsWith('data:image/') ? p.receiptScreenshot : undefined,
   };
 }
 
-export function stripImagesFromPaymentReceipt(receipt: PaymentReceipt): PaymentReceipt {
-  if (!receipt) return receipt;
+/**
+ * Optimizes registrations for local fast-paint storage
+ */
+export function optimizeRegistrationForStorage(reg: MotorcycleRegistration): MotorcycleRegistration {
+  const optimized = { ...reg };
+
+  if (optimized.userPortraitPhoto && !optimized.userPortraitThumbnail) {
+    if (!optimized.userPortraitPhoto.startsWith('data:image/')) {
+      optimized.userPortraitThumbnail = optimized.userPortraitPhoto;
+    }
+  }
+
   return {
-    ...receipt,
-    receiptScreenshot: sanitizePhotoForCache(receipt.receiptScreenshot),
+    ...optimized,
+    userPortraitPhoto: optimized.userPortraitPhoto && !optimized.userPortraitPhoto.startsWith('data:image/') ? optimized.userPortraitPhoto : '',
+    userPortraitThumbnail: optimized.userPortraitThumbnail || undefined,
+    nationalIdPhoto: optimized.nationalIdPhoto && !optimized.nationalIdPhoto.startsWith('data:image/') ? optimized.nationalIdPhoto : '',
+    nationalIdBackPhoto: optimized.nationalIdBackPhoto && !optimized.nationalIdBackPhoto.startsWith('data:image/') ? optimized.nationalIdBackPhoto : '',
+    drivingLicensePhoto: optimized.drivingLicensePhoto && !optimized.drivingLicensePhoto.startsWith('data:image/') ? optimized.drivingLicensePhoto : '',
+    drivingPermitPhoto: optimized.drivingPermitPhoto && !optimized.drivingPermitPhoto.startsWith('data:image/') ? optimized.drivingPermitPhoto : '',
+    receiptScreenshot: optimized.receiptScreenshot && !optimized.receiptScreenshot.startsWith('data:image/') ? optimized.receiptScreenshot : '',
   };
 }
 
-export function saveStateToLocalStorage(): void {
+/**
+ * Save current state to IndexedDB (as primary large data store) and localStorage (as cache)
+ */
+export function saveStateToLocalStorage() {
   if (typeof window === 'undefined') return;
 
-  // 1. Asynchronously persist full data (including remote image URLs and compressed photos) to IndexedDB
+  // 1. Asynchronous full persistence to IndexedDB (unlimited quota, non-blocking)
   asyncSaveRegistrations(inMemory.registrations);
   asyncSaveKeyVal('officers', inMemory.officers);
   asyncSaveKeyVal('printOrders', inMemory.printOrders);
@@ -315,10 +252,10 @@ export function saveStateToLocalStorage(): void {
   asyncSaveKeyVal('users', inMemory.users);
   asyncSaveKeyVal('auditLogs', inMemory.auditLogs);
 
-  // 2. LocalStorage cache for fast initial paint (preserves remote URLs while omitting oversized base64 strings)
+  // 2. LocalStorage cache for fast initial paint
   try {
     const payload = {
-      registrations: inMemory.registrations.map(stripImagesFromRegistration),
+      registrations: inMemory.registrations.map(optimizeRegistrationForStorage),
       officers: inMemory.officers,
       printOrders: inMemory.printOrders,
       verifications: inMemory.verifications.map(stripImagesFromVerificationLog),
@@ -331,8 +268,7 @@ export function saveStateToLocalStorage(): void {
   } catch (err) {
     try {
       const payload = {
-        _isLightweightCache: true,
-        registrations: inMemory.registrations.map(stripImagesFromRegistration),
+        registrations: inMemory.registrations.slice(0, 100).map(optimizeRegistrationForStorage),
         officers: inMemory.officers,
         printOrders: inMemory.printOrders,
         verifications: inMemory.verifications.map(stripImagesFromVerificationLog),
@@ -348,8 +284,7 @@ export function saveStateToLocalStorage(): void {
   }
 }
 
-export function applySystemResetLocally(resetEpoch: number, resetTimestamp?: string): void {
-  console.log(`[System Reset] Applying local system reset purge (Epoch: ${resetEpoch})...`);
+function applySystemReset(resetEpoch: number, resetTimestamp?: string) {
   inMemory.registrations = [];
   inMemory.officers = [];
   inMemory.printOrders = [];
@@ -377,38 +312,37 @@ export function applySystemResetLocally(resetEpoch: number, resetTimestamp?: str
   notifySettings();
 }
 
-export function checkAndApplySystemResetIfNewer(remoteSettings?: SystemSettings | null): boolean {
-  if (!remoteSettings) return false;
-  const remoteEpoch = Number(remoteSettings.systemResetEpoch) || 0;
-  const localAckEpoch = getStoredLastAckResetEpoch();
+function checkAndApplySystemResetIfNewer(incomingSettings?: Partial<SystemSettings> | null): boolean {
+  if (!incomingSettings) return false;
+  const incomingEpoch = Number(incomingSettings.systemResetEpoch) || 0;
+  if (!incomingEpoch) return false;
 
-  if (remoteEpoch > 0 && remoteEpoch > localAckEpoch) {
-    console.log(
-      `[System Reset] Newer remote system reset detected (Remote: ${remoteEpoch}, Local Acknowledged: ${localAckEpoch}). Purging local storage and state...`
-    );
-    applySystemResetLocally(remoteEpoch, remoteSettings.lastSystemResetAt);
+  const localAckEpoch = getStoredLastAckResetEpoch();
+  const currentMemoryEpoch = Number(inMemory.settings.systemResetEpoch) || 0;
+
+  if (incomingEpoch > localAckEpoch || incomingEpoch > currentMemoryEpoch) {
+    applySystemReset(incomingEpoch, incomingSettings.lastSystemResetAt);
     return true;
   }
   return false;
 }
 
-let isIndexedDbHydrated = false;
+let isHydratingFromIdb = false;
 
 /**
- * Asynchronously loads rich records and full photo blobs from IndexedDB.
- * Completely non-blocking and executes in sub-15ms.
+ * Hydrates state from IndexedDB asynchronously
  */
 export async function hydrateFromIndexedDb(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined' || isHydratingFromIdb) return false;
+  isHydratingFromIdb = true;
+
   try {
-    // Migrate any older LocalStorage records on first run
     await migrateLocalStorageToIndexedDb();
 
-    // Load IndexedDB collections in parallel
     const [
       idbRegs,
       idbOfficers,
-      idbOrders,
+      idbPrintOrders,
       idbVerifications,
       idbUnregistered,
       idbReceipts,
@@ -427,179 +361,254 @@ export async function hydrateFromIndexedDb(): Promise<boolean> {
       asyncLoadKeyVal<SystemAuditLog[]>('auditLogs'),
     ]);
 
+    if (idbSettings) {
+      const wasReset = checkAndApplySystemResetIfNewer(idbSettings);
+      if (wasReset) {
+        isHydratingFromIdb = false;
+        return true;
+      }
+    }
+
     let hasUpdates = false;
 
     if (Array.isArray(idbRegs) && idbRegs.length > 0) {
-      if (inMemory.registrations.length === 0) {
-        inMemory.registrations = idbRegs;
-      } else {
-        inMemory.registrations = mergeRegistrationsPreservingPhotos(idbRegs, inMemory.registrations);
-      }
+      inMemory.registrations = mergeRegistrationsPreservingPhotos(idbRegs, inMemory.registrations);
       notifyRegistrations();
       hasUpdates = true;
     }
 
     if (Array.isArray(idbOfficers) && idbOfficers.length > 0) {
-      inMemory.officers = idbOfficers;
+      inMemory.officers = mergeById(idbOfficers, inMemory.officers);
       notifyOfficers();
       hasUpdates = true;
     }
 
-    if (Array.isArray(idbOrders) && idbOrders.length > 0) {
-      inMemory.printOrders = idbOrders;
+    if (Array.isArray(idbPrintOrders) && idbPrintOrders.length > 0) {
+      inMemory.printOrders = mergeById(idbPrintOrders, inMemory.printOrders);
       notifyPrintOrders();
       hasUpdates = true;
     }
 
     if (Array.isArray(idbVerifications) && idbVerifications.length > 0) {
-      inMemory.verifications = idbVerifications;
+      inMemory.verifications = mergeById(idbVerifications, inMemory.verifications);
       notifyVerifications();
       hasUpdates = true;
     }
 
     if (Array.isArray(idbUnregistered) && idbUnregistered.length > 0) {
-      inMemory.unregisteredReports = idbUnregistered;
+      inMemory.unregisteredReports = mergeById(idbUnregistered, inMemory.unregisteredReports);
       notifyUnregisteredReports();
       hasUpdates = true;
     }
 
     if (Array.isArray(idbReceipts) && idbReceipts.length > 0) {
-      inMemory.paymentReceipts = idbReceipts;
+      inMemory.paymentReceipts = mergeById(idbReceipts, inMemory.paymentReceipts);
       notifyPaymentReceipts();
       hasUpdates = true;
     }
 
     if (idbSettings) {
-      inMemory.settings = { ...DEFAULT_SETTINGS, ...idbSettings };
+      inMemory.settings = mapSettingsFromDb(idbSettings, DEFAULT_SETTINGS);
       notifySettings();
       hasUpdates = true;
     }
 
     if (Array.isArray(idbUsers) && idbUsers.length > 0) {
-      inMemory.users = idbUsers;
+      inMemory.users = mergeById(idbUsers, inMemory.users);
       notifyUsers();
       hasUpdates = true;
     }
 
     if (Array.isArray(idbAuditLogs) && idbAuditLogs.length > 0) {
-      inMemory.auditLogs = idbAuditLogs;
+      inMemory.auditLogs = mergeById(idbAuditLogs, inMemory.auditLogs);
       notifyAuditLogs();
       hasUpdates = true;
     }
 
-    isIndexedDbHydrated = true;
     return hasUpdates;
   } catch (err) {
-    console.warn('Hydration from IndexedDB notice:', err);
+    console.warn('[Storage] Notice hydrating from IndexedDB:', err);
     return false;
+  } finally {
+    isHydratingFromIdb = false;
   }
 }
 
+/**
+ * Fast synchronous boot loader from localStorage
+ */
 export function loadStateFromLocalStorage(): boolean {
   if (typeof window === 'undefined') return false;
+
   try {
     const raw = localStorage.getItem(STATE_CACHE_KEY);
-    if (!raw) {
-      saveStateToLocalStorage();
-      return true;
-    }
+    if (!raw) return false;
+
     const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return false;
+
     let loaded = false;
 
-    if (Array.isArray(parsed.registrations)) {
+    if (parsed.settings) {
+      const wasReset = checkAndApplySystemResetIfNewer(parsed.settings);
+      if (wasReset) return true;
+    }
+
+    if (Array.isArray(parsed.registrations) && parsed.registrations.length > 0) {
       if (inMemory.registrations.length === 0) {
         inMemory.registrations = parsed.registrations;
-      } else {
-        inMemory.registrations = mergeRegistrationsPreservingPhotos(parsed.registrations, inMemory.registrations);
+        notifyRegistrations();
+        loaded = true;
       }
-      notifyRegistrations();
-      loaded = true;
     }
-    if (Array.isArray(parsed.officers)) {
-      inMemory.officers = parsed.officers;
-      notifyOfficers();
-      loaded = true;
+
+    if (Array.isArray(parsed.officers) && parsed.officers.length > 0) {
+      if (inMemory.officers.length === 0) {
+        inMemory.officers = parsed.officers;
+        notifyOfficers();
+        loaded = true;
+      }
     }
-    if (Array.isArray(parsed.printOrders)) {
-      inMemory.printOrders = parsed.printOrders;
-      notifyPrintOrders();
-      loaded = true;
+
+    if (Array.isArray(parsed.printOrders) && parsed.printOrders.length > 0) {
+      if (inMemory.printOrders.length === 0) {
+        inMemory.printOrders = parsed.printOrders;
+        notifyPrintOrders();
+        loaded = true;
+      }
     }
+
     if (Array.isArray(parsed.verifications) && parsed.verifications.length > 0) {
-      inMemory.verifications = parsed.verifications;
-      notifyVerifications();
-      loaded = true;
-    } else if (inMemory.verifications.length === 0) {
-      inMemory.verifications = [...DEFAULT_SAMPLE_VERIFICATIONS];
-      notifyVerifications();
-      loaded = true;
+      if (inMemory.verifications.length === 0) {
+        inMemory.verifications = parsed.verifications;
+        notifyVerifications();
+        loaded = true;
+      }
     }
-    if (Array.isArray(parsed.unregisteredReports)) {
-      inMemory.unregisteredReports = parsed.unregisteredReports;
-      notifyUnregisteredReports();
-      loaded = true;
+
+    if (Array.isArray(parsed.unregisteredReports) && parsed.unregisteredReports.length > 0) {
+      if (inMemory.unregisteredReports.length === 0) {
+        inMemory.unregisteredReports = parsed.unregisteredReports;
+        notifyUnregisteredReports();
+        loaded = true;
+      }
     }
-    if (Array.isArray(parsed.paymentReceipts)) {
-      inMemory.paymentReceipts = parsed.paymentReceipts;
-      notifyPaymentReceipts();
-      loaded = true;
+
+    if (Array.isArray(parsed.paymentReceipts) && parsed.paymentReceipts.length > 0) {
+      if (inMemory.paymentReceipts.length === 0) {
+        inMemory.paymentReceipts = parsed.paymentReceipts;
+        notifyPaymentReceipts();
+        loaded = true;
+      }
     }
+
     if (parsed.settings) {
       const localAckEpoch = getStoredLastAckResetEpoch();
       const settingsEpoch = Number(parsed.settings.systemResetEpoch) || 0;
       if (settingsEpoch > localAckEpoch) {
         saveStoredLastAckResetEpoch(settingsEpoch);
       }
-      inMemory.settings = { ...DEFAULT_SETTINGS, ...parsed.settings };
+      inMemory.settings = mapSettingsFromDb(parsed.settings, DEFAULT_SETTINGS);
       notifySettings();
       loaded = true;
     }
     return loaded;
   } catch (err) {
-    console.warn('Failed to load state from LocalStorage:', err);
+    console.warn('[Storage] LocalStorage load notice:', err);
     return false;
   }
 }
 
-const listeners = {
-  registrations: new Set<(regs: MotorcycleRegistration[]) => void>(),
-  officers: new Set<(officers: OfficerAssignment[]) => void>(),
-  printOrders: new Set<(orders: PrintBatchOrder[]) => void>(),
-  verifications: new Set<(logs: VerificationLog[]) => void>(),
-  unregisteredReports: new Set<(reports: UnregisteredVehicleReport[]) => void>(),
-  paymentReceipts: new Set<(receipts: PaymentReceipt[]) => void>(),
-  users: new Set<(users: SystemUser[]) => void>(),
-  auditLogs: new Set<(logs: SystemAuditLog[]) => void>(),
-  settings: new Set<(settings: SystemSettings) => void>(),
-};
-
-function notifyUsers() {
-  const data = [...inMemory.users];
-  listeners.users.forEach((cb) => {
-    try {
-      cb(data);
-    } catch (e) {}
-  });
-  saveStateToLocalStorage();
+// Helper to merge lists by ID without losing rich in-memory fields
+function mergeById<T extends { id?: string; badgeId?: string; uid?: string }>(
+  remoteItems: T[],
+  localItems: T[]
+): T[] {
+  const map = new Map<string, T>();
+  for (const item of localItems) {
+    const key = item.id || item.badgeId || item.uid;
+    if (key) map.set(key, item);
+  }
+  for (const item of remoteItems) {
+    const key = item.id || item.badgeId || item.uid;
+    if (key) {
+      const existing = map.get(key);
+      map.set(key, existing ? { ...existing, ...item } : item);
+    }
+  }
+  return Array.from(map.values());
 }
 
-function notifyAuditLogs() {
-  const data = [...inMemory.auditLogs];
-  listeners.auditLogs.forEach((cb) => {
-    try {
-      cb(data);
-    } catch (e) {}
-  });
-  saveStateToLocalStorage();
+function mergeRegistrationsPreservingPhotos(
+  remoteRegs: MotorcycleRegistration[],
+  localRegs: MotorcycleRegistration[]
+): MotorcycleRegistration[] {
+  const localMap = new Map<string, MotorcycleRegistration>();
+  for (const r of localRegs) {
+    if (r.id) localMap.set(r.id, r);
+  }
+
+  const mergedMap = new Map<string, MotorcycleRegistration>();
+
+  for (const remote of remoteRegs) {
+    if (!remote.id) continue;
+    const local = localMap.get(remote.id);
+    if (!local) {
+      mergedMap.set(remote.id, remote);
+      continue;
+    }
+
+    const merged: MotorcycleRegistration = {
+      ...local,
+      ...remote,
+      userPortraitPhoto:
+        (remote.userPortraitPhoto && remote.userPortraitPhoto.length > 50
+          ? remote.userPortraitPhoto
+          : local.userPortraitPhoto) || '',
+      userPortraitThumbnail:
+        remote.userPortraitThumbnail || local.userPortraitThumbnail || undefined,
+      nationalIdPhoto:
+        (remote.nationalIdPhoto && remote.nationalIdPhoto.length > 50
+          ? remote.nationalIdPhoto
+          : local.nationalIdPhoto) || '',
+      nationalIdBackPhoto:
+        (remote.nationalIdBackPhoto && remote.nationalIdBackPhoto.length > 50
+          ? remote.nationalIdBackPhoto
+          : local.nationalIdBackPhoto) || '',
+      drivingLicensePhoto:
+        (remote.drivingLicensePhoto && remote.drivingLicensePhoto.length > 50
+          ? remote.drivingLicensePhoto
+          : local.drivingLicensePhoto) || '',
+      drivingPermitPhoto:
+        (remote.drivingPermitPhoto && remote.drivingPermitPhoto.length > 50
+          ? remote.drivingPermitPhoto
+          : local.drivingPermitPhoto) || '',
+      receiptScreenshot:
+        (remote.receiptScreenshot && remote.receiptScreenshot.length > 50
+          ? remote.receiptScreenshot
+          : local.receiptScreenshot) || '',
+    };
+
+    mergedMap.set(remote.id, merged);
+  }
+
+  for (const local of localRegs) {
+    if (local.id && !mergedMap.has(local.id)) {
+      mergedMap.set(local.id, local);
+    }
+  }
+
+  return Array.from(mergedMap.values());
 }
 
+// Notification triggers
 function notifyRegistrations() {
   const data = [...inMemory.registrations];
   listeners.registrations.forEach((cb) => {
     try {
       cb(data);
     } catch (e) {
-      console.error('Error in registration listener callback:', e);
+      console.error('Error in registrations listener callback:', e);
     }
   });
   saveStateToLocalStorage();
@@ -611,7 +620,7 @@ function notifyOfficers() {
     try {
       cb(data);
     } catch (e) {
-      console.error('Error in officer assignment listener callback:', e);
+      console.error('Error in officers listener callback:', e);
     }
   });
   saveStateToLocalStorage();
@@ -623,7 +632,7 @@ function notifyPrintOrders() {
     try {
       cb(data);
     } catch (e) {
-      console.error('Error in print order listener callback:', e);
+      console.error('Error in printOrders listener callback:', e);
     }
   });
   saveStateToLocalStorage();
@@ -631,12 +640,11 @@ function notifyPrintOrders() {
 
 function notifyVerifications() {
   const data = [...inMemory.verifications];
-  data.sort((a, b) => (b.scannedAt || '').localeCompare(a.scannedAt || ''));
   listeners.verifications.forEach((cb) => {
     try {
       cb(data);
     } catch (e) {
-      console.error('Error in verification log listener callback:', e);
+      console.error('Error in verifications listener callback:', e);
     }
   });
   saveStateToLocalStorage();
@@ -644,12 +652,11 @@ function notifyVerifications() {
 
 function notifyUnregisteredReports() {
   const data = [...inMemory.unregisteredReports];
-  data.sort((a, b) => (b.reportedAt || '').localeCompare(a.reportedAt || ''));
   listeners.unregisteredReports.forEach((cb) => {
     try {
       cb(data);
     } catch (e) {
-      console.error('Error in unregistered report listener callback:', e);
+      console.error('Error in unregisteredReports listener callback:', e);
     }
   });
   saveStateToLocalStorage();
@@ -657,12 +664,11 @@ function notifyUnregisteredReports() {
 
 function notifyPaymentReceipts() {
   const data = [...inMemory.paymentReceipts];
-  data.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
   listeners.paymentReceipts.forEach((cb) => {
     try {
       cb(data);
     } catch (e) {
-      console.error('Error in payment receipt listener callback:', e);
+      console.error('Error in paymentReceipts listener callback:', e);
     }
   });
   saveStateToLocalStorage();
@@ -680,13 +686,59 @@ function notifySettings() {
   saveStateToLocalStorage();
 }
 
-// Helper for safe JSON fetching with automatic fallback
-async function safeJsonFetch(url: string, options?: RequestInit): Promise<any> {
+function notifyUsers() {
+  const data = [...inMemory.users];
+  listeners.users.forEach((cb) => {
+    try {
+      cb(data);
+    } catch (e) {
+      console.error('Error in users listener callback:', e);
+    }
+  });
+  saveStateToLocalStorage();
+}
+
+function notifyAuditLogs() {
+  const data = [...inMemory.auditLogs];
+  listeners.auditLogs.forEach((cb) => {
+    try {
+      cb(data);
+    } catch (e) {
+      console.error('Error in auditLogs listener callback:', e);
+    }
+  });
+  saveStateToLocalStorage();
+}
+
+/**
+ * Safe JSON fetch utility with timeout and offline protection
+ */
+async function safeJsonFetch<T = any>(
+  url: string,
+  options?: RequestInit,
+  timeoutMs: number = 8000
+): Promise<T> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+
   let res: Response;
   try {
-    res = await fetch(url, options);
+    res = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.headers || {}),
+      },
+    });
   } catch (netErr: any) {
-    throw new Error(netErr?.message || 'Network communication error');
+    clearTimeout(id);
+    if (netErr.name === 'AbortError') {
+      throw new Error(`Request timed out after ${timeoutMs}ms`);
+    }
+    throw netErr;
+  } finally {
+    clearTimeout(id);
   }
 
   const contentType = res.headers.get('content-type') || '';
@@ -710,16 +762,12 @@ async function safeJsonFetch(url: string, options?: RequestInit): Promise<any> {
   }
 
   if (!res.ok) {
-    if (body.error?.includes('Quota limit exceeded') || body.warning?.includes('Firebase quota exceeded')) {
-      console.warn(`[API] Quota limit exceeded on ${url}, falling back.`);
-      return { success: true, isOfflineFallback: true, warning: 'Quota exceeded' };
-    }
     throw new Error(body.error || `Request failed with status ${res.status}`);
   }
   return body;
 }
 
-// --- REAL-TIME LIVE SYNC (SSE + CROSS-TAB BROADCAST + FAST POLLING) ---
+// --- REAL-TIME LIVE SYNC (SSE + CROSS-TAB BROADCAST + POLLING) ---
 let areLiveListenersActive = false;
 let crossTabChannel: BroadcastChannel | null = null;
 let realtimeEventSource: EventSource | null = null;
@@ -732,11 +780,11 @@ export function broadcastCrossTabSync(collection: string, action: string, id?: s
   } catch (e) {}
 }
 
-export function initLiveFirestoreListeners(): () => void {
-  // 1. Immediate 0ms render from fast LocalStorage cache
+export function initLiveDbListeners(): () => void {
+  // 1. Immediate render from fast LocalStorage cache
   loadStateFromLocalStorage();
 
-  // 2. Asynchronous, non-blocking hydration of rich images and full dataset from IndexedDB
+  // 2. Asynchronous hydration of rich images and full dataset from IndexedDB
   hydrateFromIndexedDb();
 
   if (typeof window === 'undefined' || areLiveListenersActive) {
@@ -744,7 +792,7 @@ export function initLiveFirestoreListeners(): () => void {
   }
   areLiveListenersActive = true;
 
-  // 3. Cross-Tab Broadcast Channel (0ms Instant Synchronization between tabs)
+  // 3. Cross-Tab Broadcast Channel
   try {
     if ('BroadcastChannel' in window) {
       crossTabChannel = new BroadcastChannel('bma_permit_cross_tab_sync');
@@ -767,72 +815,61 @@ export function initLiveFirestoreListeners(): () => void {
         } else if (msg.collection === 'system_settings') {
           syncSettings(true).catch(() => {});
         } else if (msg.collection === 'system_reset') {
-          loadStateFromLocalStorage();
+          if (msg.data?.systemResetEpoch) {
+            checkAndApplySystemResetIfNewer(msg.data);
+          }
         }
       };
     }
-  } catch (e) {
-    console.warn('[Realtime] BroadcastChannel init notice:', e);
-  }
+  } catch (e) {}
 
-  // 4. Server-Sent Events (SSE) Real-Time Stream for multi-user instant hot reload
-  const connectSSE = () => {
-    try {
-      if (typeof EventSource !== 'undefined') {
-        if (realtimeEventSource) {
-          realtimeEventSource.close();
-        }
-        realtimeEventSource = new EventSource('/api/realtime/events');
-        realtimeEventSource.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            if (!data || !data.collection) return;
+  // 4. Connect to Server-Sent Events (SSE) for instant cross-device updates
+  try {
+    if (typeof EventSource !== 'undefined') {
+      realtimeEventSource = new EventSource('/api/realtime/events');
+      
+      realtimeEventSource.addEventListener('database_change', (event: MessageEvent) => {
+        try {
+          const payload = JSON.parse(event.data);
+          if (!payload || !payload.collection) return;
 
-            if (data.collection === 'motorcycle_registrations') {
-              syncRegistrations(true).catch(() => {});
-            } else if (data.collection === 'officer_assignments') {
-              syncOfficers(true).catch(() => {});
-            } else if (data.collection === 'print_batch_orders') {
-              syncPrintOrders(true).catch(() => {});
-            } else if (data.collection === 'unregistered_vehicle_reports') {
-              syncUnregisteredReports(true).catch(() => {});
-            } else if (data.collection === 'verification_logs') {
-              syncVerifications(true).catch(() => {});
-            } else if (data.collection === 'payment_receipts') {
-              syncPaymentReceipts(true).catch(() => {});
-            } else if (data.collection === 'system_settings') {
-              syncSettings(true).catch(() => {});
-            } else if (data.collection === 'system_reset') {
-              if (data.data?.systemResetEpoch) {
-                applySystemResetLocally(data.data.systemResetEpoch, data.data.lastSystemResetAt);
-              } else {
-                syncAllCollectionsWithDb(true).catch(() => {});
-              }
+          if (payload.collection === 'motorcycle_registrations') {
+            syncRegistrations(true).catch(() => {});
+          } else if (payload.collection === 'officer_assignments') {
+            syncOfficers(true).catch(() => {});
+          } else if (payload.collection === 'print_batch_orders') {
+            syncPrintOrders(true).catch(() => {});
+          } else if (payload.collection === 'unregistered_vehicle_reports') {
+            syncUnregisteredReports(true).catch(() => {});
+          } else if (payload.collection === 'verification_logs') {
+            syncVerifications(true).catch(() => {});
+          } else if (payload.collection === 'payment_receipts') {
+            syncPaymentReceipts(true).catch(() => {});
+          } else if (payload.collection === 'system_settings') {
+            syncSettings(true).catch(() => {});
+          } else if (payload.collection === 'system_reset') {
+            if (payload.data?.systemResetEpoch) {
+              checkAndApplySystemResetIfNewer(payload.data);
             }
-          } catch {}
-        };
-        realtimeEventSource.onerror = () => {
-          // Reconnect after brief pause
-          if (realtimeEventSource) {
-            realtimeEventSource.close();
-            realtimeEventSource = null;
           }
-          setTimeout(connectSSE, 5000);
-        };
-      }
-    } catch (sseErr) {
-      console.warn('[Realtime] SSE Connection notice:', sseErr);
-    }
-  };
-  connectSSE();
+        } catch (err) {}
+      });
 
-  // 5. Active background hot-sync fallback (every 4.5 seconds)
-  const pollInterval = setInterval(() => {
+      realtimeEventSource.onerror = () => {
+        // SSE disconnected, fallback to periodic polling
+      };
+    }
+  } catch (e) {}
+
+  // 5. Periodic background synchronization interval
+  const syncInterval = setInterval(() => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return;
     syncAllCollectionsWithDb(false).catch(() => {});
-  }, 4500);
+  }, 12000);
 
   return () => {
-    if (pollInterval) clearInterval(pollInterval);
+    areLiveListenersActive = false;
+    clearInterval(syncInterval);
     if (realtimeEventSource) {
       realtimeEventSource.close();
       realtimeEventSource = null;
@@ -841,18 +878,19 @@ export function initLiveFirestoreListeners(): () => void {
       crossTabChannel.close();
       crossTabChannel = null;
     }
-    areLiveListenersActive = false;
   };
 }
 
-// Auto-initialize real-time listeners in browser
+export const initLiveFirestoreListeners = initLiveDbListeners;
+
+// Auto-start listeners on client boot
 if (typeof window !== 'undefined') {
-  initLiveFirestoreListeners();
+  initLiveDbListeners();
 }
 
 // --- MOTORCYCLE REGISTRATIONS ---
 export function subscribeRegistrations(
-  callback: (regs: MotorcycleRegistration[]) => void
+  callback: (registrations: MotorcycleRegistration[]) => void
 ): () => void {
   callback(inMemory.registrations);
   listeners.registrations.add(callback);
@@ -863,18 +901,18 @@ export function subscribeRegistrations(
 
 export async function saveRegistrationToDb(
   reg: MotorcycleRegistration,
-  _options?: { forceLocalOnly?: boolean }
+  _options?: { forceLocalOnly?: boolean; skipImageUpload?: boolean }
 ): Promise<{ success: boolean; isOfflineFallback?: boolean; error?: string }> {
   return trackGlobalAction(
     async () => {
-      // 0. Generate fast micro thumbnail for instant table row & card rendering if missing
+      // 0. Generate micro thumbnail
       if (reg.userPortraitPhoto && !reg.userPortraitThumbnail) {
         try {
           reg.userPortraitThumbnail = await generateThumbnailBase64(reg.userPortraitPhoto, 120, 0.65);
         } catch {}
       }
 
-      // 1. Update in-memory state and persist directly to IndexedDB & LocalStorage
+      // 1. Update in-memory state and persist to IndexedDB & LocalStorage
       const index = inMemory.registrations.findIndex((r) => r.id === reg.id);
       if (index >= 0) {
         inMemory.registrations[index] = { ...inMemory.registrations[index], ...reg };
@@ -886,12 +924,11 @@ export async function saveRegistrationToDb(
       saveStateToLocalStorage();
       lastSyncTime = new Date();
       isCloudConnected = true;
-      setGlobalFirestoreError(null);
+      setGlobalDbError(null);
 
-      // 2. Persist to Cloud Firestore database with lightweight storage URLs
+      // 2. Persist to PostgreSQL backend via Railway API
       try {
         if (!_options?.forceLocalOnly) {
-          // If any photo fields are still raw base64 data, convert them in parallel
           const optimizedReg = { ...reg };
           const [
             upPortrait,
@@ -928,11 +965,14 @@ export async function saveRegistrationToDb(
           optimizedReg.drivingPermitPhoto = upPermit;
           optimizedReg.receiptScreenshot = upReceipt;
 
-          await upsertDocument(FIREBASE_COLLECTIONS.REGISTRATIONS, optimizedReg.id, optimizedReg);
+          await safeJsonFetch('/api/registrations', {
+            method: 'POST',
+            body: JSON.stringify(optimizedReg),
+          });
         }
         return { success: true, isOfflineFallback: false };
       } catch (directErr: any) {
-        console.warn('Direct Firestore save registration notice:', directErr);
+        console.warn('PostgreSQL save registration notice:', directErr);
         return { success: true, isOfflineFallback: true, error: directErr?.message };
       }
     },
@@ -959,15 +999,16 @@ export async function updateRegistrationStatusInDb(
         saveStateToLocalStorage();
         lastSyncTime = new Date();
         isCloudConnected = true;
-        setGlobalFirestoreError(null);
+        setGlobalDbError(null);
       }
 
       try {
-        const updates: Record<string, any> = { status };
-        if (rejectionReason !== undefined) updates.rejectionReason = rejectionReason;
-        await updateDocumentFields(FIREBASE_COLLECTIONS.REGISTRATIONS, id, updates);
+        await safeJsonFetch('/api/registrations/status', {
+          method: 'POST',
+          body: JSON.stringify({ id, status, rejectionReason }),
+        });
       } catch (err) {
-        console.warn('Direct Firestore update registration status notice:', err);
+        console.warn('PostgreSQL update registration status notice:', err);
       }
     },
     'የምዝገባ ሁኔታ እየተዘመነ ነው...',
@@ -988,7 +1029,7 @@ export async function updateRegistrationInDb(
         updatedRecord = {
           ...existing,
           ...updates,
-          id: existing.id, // Strictly preserve original member registration ID
+          id: existing.id,
           qrCodeData: existing.qrCodeData || updates.qrCodeData || `https://enforcement.gov.et/verify/${existing.id}`,
         };
         inMemory.registrations[index] = updatedRecord;
@@ -1007,12 +1048,15 @@ export async function updateRegistrationInDb(
       broadcastCrossTabSync('motorcycle_registrations', 'upsert', id, updatedRecord);
       lastSyncTime = new Date();
       isCloudConnected = true;
-      setGlobalFirestoreError(null);
+      setGlobalDbError(null);
 
       try {
-        await updateDocumentFields(FIREBASE_COLLECTIONS.REGISTRATIONS, id, updates);
+        await safeJsonFetch('/api/registrations/update', {
+          method: 'POST',
+          body: JSON.stringify({ id, updates }),
+        });
       } catch (err) {
-        console.warn('Direct Firestore update registration notice:', err);
+        console.warn('PostgreSQL update registration notice:', err);
       }
     },
     'መረጃው እየተዘመነ ነው...',
@@ -1031,18 +1075,34 @@ export async function deleteRegistrationFromDb(id: string): Promise<void> {
         saveStateToLocalStorage();
         lastSyncTime = new Date();
         isCloudConnected = true;
-        setGlobalFirestoreError(null);
+        setGlobalDbError(null);
       }
 
       try {
-        await deleteDocument(FIREBASE_COLLECTIONS.REGISTRATIONS, id);
+        await safeJsonFetch(`/api/registrations/${id}`, {
+          method: 'DELETE',
+        });
       } catch (err) {
-        console.warn('Direct Firestore delete registration notice:', err);
+        console.warn('PostgreSQL delete registration notice:', err);
       }
     },
     'ምዝገባው እየተሰረዘ ነው...',
     'Deleting registration...'
   );
+}
+
+export async function bulkDeleteRegistrationsFromDb(ids: string[]): Promise<void> {
+  if (!Array.isArray(ids) || ids.length === 0) return;
+  const idSet = new Set(ids);
+  inMemory.registrations = inMemory.registrations.filter((r) => !idSet.has(r.id));
+  notifyRegistrations();
+  saveStateToLocalStorage();
+  try {
+    await safeJsonFetch('/api/registrations/bulk-delete', {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    });
+  } catch (e) {}
 }
 
 export async function fetchAllRegistrationsFromDb(): Promise<MotorcycleRegistration[]> {
@@ -1060,159 +1120,42 @@ export async function lookupRegistrationInDb(
   const cleanPlateInput = cleanLower.replace(/[\s\-_]/g, '');
 
   let candidateId = cleanInput;
-  let candidatePlate: string | null = null;
-  let candidateEngine: string | null = null;
+  if (cleanInput.includes('/verify/')) {
+    const parts = cleanInput.split('/verify/');
+    if (parts[1]) candidateId = parts[1].split('?')[0].trim();
+  }
 
+  const list = (localList && localList.length > 0) ? localList : inMemory.registrations;
+
+  // 1. Search local memory
+  const match = list.find((r) => {
+    if (r.id && (r.id === candidateId || r.id.toLowerCase() === cleanLower)) return true;
+    if (r.qrCodeData && (r.qrCodeData === cleanInput || r.qrCodeData.toLowerCase() === cleanLower)) return true;
+    if (r.plateNumber) {
+      const regCleanPlate = r.plateNumber.replace(/[\s\-_]/g, '').toLowerCase();
+      if (regCleanPlate === cleanPlateInput) return true;
+    }
+    if (r.engineOrSerialNo && r.engineOrSerialNo.toLowerCase() === cleanLower) return true;
+    if (r.chassisNumber && r.chassisNumber.toLowerCase() === cleanLower) return true;
+    if (r.phone && r.phone.replace(/[\s\-]/g, '') === cleanInput.replace(/[\s\-]/g, '')) return true;
+    return false;
+  });
+
+  if (match) return match;
+
+  // 2. Query backend API directly
   try {
-    if (cleanInput.startsWith('{') && cleanInput.endsWith('}')) {
-      const parsed = JSON.parse(cleanInput);
-      if (parsed) {
-        if (parsed.id) candidateId = String(parsed.id).trim();
-        if (parsed.plateNumber) candidatePlate = String(parsed.plateNumber).trim();
-        if (parsed.engineOrSerialNo) candidateEngine = String(parsed.engineOrSerialNo).trim();
+    const res = await safeJsonFetch<any>(`/api/registrations`);
+    if (res && Array.isArray(res.registrations)) {
+      const found = res.registrations.find((r: MotorcycleRegistration) => {
+        if (r.id === candidateId || r.id === cleanInput) return true;
+        if (r.plateNumber && r.plateNumber.replace(/[\s\-_]/g, '').toLowerCase() === cleanPlateInput) return true;
+        return false;
+      });
+      if (found) {
+        saveRegistrationToDb(found, { forceLocalOnly: true }).catch(() => {});
+        return found;
       }
-    }
-  } catch (e) {}
-
-  if (candidateId === cleanInput) {
-    if (cleanInput.includes('/verify/')) {
-      const parts = cleanInput.split('/verify/');
-      if (parts[1]) {
-        candidateId = parts[1].split('?')[0].split('#')[0].trim();
-      }
-    } else if (cleanInput.includes('id=')) {
-      const match = cleanInput.match(/id=([^&/#]+)/i);
-      if (match && match[1]) {
-        candidateId = decodeURIComponent(match[1]).trim();
-      }
-    }
-  }
-
-  const searchList = localList || inMemory.registrations;
-
-  // 1. Match by exact ID candidate
-  let match = searchList.find(
-    (r) =>
-      (r.id || '').toLowerCase() === candidateId.toLowerCase() ||
-      (r.qrCodeData || '').toLowerCase() === candidateId.toLowerCase()
-  );
-
-  // 2. Match by plate number
-  if (!match) {
-    const targetPlateSearch = (candidatePlate || cleanPlateInput).toLowerCase().replace(/[\s\-_]/g, '');
-    match = searchList.find((r) => {
-      const p = (r.plateNumber || '').toLowerCase().replace(/[\s\-_]/g, '');
-      return p === targetPlateSearch;
-    });
-  }
-
-  // 3. Match by engine serial number
-  if (!match) {
-    const targetEngineSearch = (candidateEngine || cleanLower).toLowerCase();
-    match = searchList.find(
-      (r) => (r.engineOrSerialNo || '').toLowerCase() === targetEngineSearch
-    );
-  }
-
-  // If matched, verify if document photos (permit, license, national ID) are present or can be recovered
-  if (match) {
-    let dl =
-      match.drivingLicensePhoto ||
-      (match as any).driving_license_photo ||
-      (match as any).driverLicensePhoto ||
-      (match as any).driver_license_photo ||
-      (match as any).drivingLicense ||
-      '';
-    let pp =
-      match.drivingPermitPhoto ||
-      (match as any).driving_permit_photo ||
-      (match as any).policePermitPhoto ||
-      (match as any).police_permit_photo ||
-      (match as any).policePermit ||
-      (match as any).librePhoto ||
-      '';
-    let nid = match.nationalIdPhoto || (match as any).national_id_photo || '';
-    let nidBack = match.nationalIdBackPhoto || (match as any).national_id_back_photo || '';
-    let up = match.userPortraitPhoto || (match as any).user_portrait_photo || match.userPortraitThumbnail || '';
-
-    // Check IndexedDB if photos are missing
-    if (!dl || !pp) {
-      try {
-        const db = await getIndexedDb();
-        if (db && match.id) {
-          const idbRecord = await db.get('registrations', match.id);
-          if (idbRecord) {
-            dl = dl || idbRecord.drivingLicensePhoto || (idbRecord as any).driving_license_photo || '';
-            pp = pp || idbRecord.drivingPermitPhoto || (idbRecord as any).driving_permit_photo || (idbRecord as any).policePermitPhoto || '';
-            nid = nid || idbRecord.nationalIdPhoto || '';
-            nidBack = nidBack || idbRecord.nationalIdBackPhoto || '';
-            up = up || idbRecord.userPortraitPhoto || '';
-          }
-        }
-      } catch (e) {}
-    }
-
-    // Check live Firestore document if photos are still missing
-    if (!dl || !pp) {
-      try {
-        const directDoc = await getDocument<MotorcycleRegistration>(FIREBASE_COLLECTIONS.REGISTRATIONS, match.id);
-        if (directDoc) {
-          dl = dl || directDoc.drivingLicensePhoto || (directDoc as any).driving_license_photo || (directDoc as any).driverLicensePhoto || '';
-          pp = pp || directDoc.drivingPermitPhoto || (directDoc as any).driving_permit_photo || (directDoc as any).policePermitPhoto || '';
-          nid = nid || directDoc.nationalIdPhoto || '';
-          nidBack = nidBack || directDoc.nationalIdBackPhoto || '';
-          up = up || directDoc.userPortraitPhoto || '';
-        }
-      } catch (e) {}
-    }
-
-    // Check verification logs archive if photos are still missing
-    if (!dl || !pp) {
-      const cleanPlate = (match.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase();
-      const logMatch = (inMemory.verifications || []).find(
-        (v) =>
-          (match!.id && v.registrationId === match!.id) ||
-          (cleanPlate && v.plateNumber && v.plateNumber.replace(/[\s\-_]/g, '').toLowerCase() === cleanPlate)
-      );
-      if (logMatch) {
-        dl = dl || logMatch.drivingLicensePhoto || '';
-        pp = pp || logMatch.drivingPermitPhoto || '';
-        nid = nid || logMatch.nationalIdPhoto || '';
-        nidBack = nidBack || logMatch.nationalIdBackPhoto || '';
-        up = up || logMatch.userPortraitPhoto || '';
-      }
-    }
-
-    const updatedMatch: MotorcycleRegistration = {
-      ...match,
-      drivingLicensePhoto: dl,
-      drivingPermitPhoto: pp,
-      nationalIdPhoto: nid,
-      nationalIdBackPhoto: nidBack,
-      userPortraitPhoto: up,
-    };
-
-    const idx = inMemory.registrations.findIndex((r) => r.id === updatedMatch.id);
-    if (idx >= 0) inMemory.registrations[idx] = updatedMatch;
-    else inMemory.registrations.unshift(updatedMatch);
-
-    return updatedMatch;
-  }
-
-  // Final fallback: Direct document lookup from Firestore
-  try {
-    const directDoc = await getDocument<MotorcycleRegistration>(FIREBASE_COLLECTIONS.REGISTRATIONS, candidateId);
-    if (directDoc) {
-      const resolvedDoc: MotorcycleRegistration = {
-        ...directDoc,
-        drivingLicensePhoto: directDoc.drivingLicensePhoto || (directDoc as any).driving_license_photo || (directDoc as any).driverLicensePhoto || '',
-        drivingPermitPhoto: directDoc.drivingPermitPhoto || (directDoc as any).driving_permit_photo || (directDoc as any).policePermitPhoto || '',
-      };
-      const idx = inMemory.registrations.findIndex((r) => r.id === resolvedDoc.id);
-      if (idx >= 0) inMemory.registrations[idx] = resolvedDoc;
-      else inMemory.registrations.unshift(resolvedDoc);
-      notifyRegistrations();
-      return resolvedDoc;
     }
   } catch (err) {}
 
@@ -1233,37 +1176,30 @@ export function subscribeOfficers(
 export async function saveOfficerToDb(officer: OfficerAssignment): Promise<void> {
   return trackGlobalAction(
     async () => {
-      const index = inMemory.officers.findIndex((o) => o.id === officer.id);
+      const index = inMemory.officers.findIndex((o) => o.id === officer.id || o.badgeId === officer.badgeId);
       if (index >= 0) {
         inMemory.officers[index] = { ...inMemory.officers[index], ...officer };
       } else {
         inMemory.officers.unshift(officer);
       }
       notifyOfficers();
-
-      try {
-        await upsertDocument(FIREBASE_COLLECTIONS.OFFICERS, officer.id, officer);
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalFirestoreError(null);
-        return;
-      } catch (directErr) {
-        console.warn('Direct Firestore save officer notice:', directErr);
-      }
+      saveStateToLocalStorage();
+      broadcastCrossTabSync('officer_assignments', 'upsert', officer.id, officer);
+      lastSyncTime = new Date();
+      isCloudConnected = true;
+      setGlobalDbError(null);
 
       try {
         await safeJsonFetch('/api/officers', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(officer),
         });
-        setGlobalFirestoreError(null);
-      } catch (apiErr: any) {
-        console.warn('saveOfficerToDb notice:', apiErr?.message);
+      } catch (apiErr) {
+        console.warn('Backend API save officer notice:', apiErr);
       }
     },
-    'የኦፊሰር ምደባ እየተቀመጠ ነው...',
-    'Saving officer assignment...'
+    'ፖሊስ መኮንን እየተመደበ ነው...',
+    'Assigning officer...'
   );
 }
 
@@ -1277,35 +1213,55 @@ export async function updateOfficerInDb(
       if (index >= 0) {
         inMemory.officers[index] = { ...inMemory.officers[index], ...updates };
         notifyOfficers();
-      }
-
-      try {
-        await updateDocumentFields(FIREBASE_COLLECTIONS.OFFICERS, id, updates);
+        saveStateToLocalStorage();
+        broadcastCrossTabSync('officer_assignments', 'update', id, updates);
         lastSyncTime = new Date();
         isCloudConnected = true;
-        setGlobalFirestoreError(null);
-        return;
-      } catch (directErr) {
-        console.warn('Direct Firestore update officer notice:', directErr);
+        setGlobalDbError(null);
       }
 
       try {
         await safeJsonFetch('/api/officers/update', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id, updates }),
         });
-        setGlobalFirestoreError(null);
-      } catch (apiErr: any) {
-        console.warn('updateOfficerInDb notice:', apiErr?.message);
+      } catch (apiErr) {
+        console.warn('Backend API update officer notice:', apiErr);
       }
     },
-    'የኦፊሰር መረጃ እየተዘመነ ነው...',
+    'የመኮንኑ መረጃ እየተዘመነ ነው...',
     'Updating officer assignment...'
   );
 }
 
-// --- PRINT BATCH ORDERS ---
+export async function deleteOfficerFromDb(id: string): Promise<void> {
+  return trackGlobalAction(
+    async () => {
+      const index = inMemory.officers.findIndex((o) => o.id === id);
+      if (index >= 0) {
+        inMemory.officers.splice(index, 1);
+        notifyOfficers();
+        saveStateToLocalStorage();
+        broadcastCrossTabSync('officer_assignments', 'delete', id);
+        lastSyncTime = new Date();
+        isCloudConnected = true;
+        setGlobalDbError(null);
+      }
+
+      try {
+        await safeJsonFetch(`/api/officers/${id}`, {
+          method: 'DELETE',
+        });
+      } catch (apiErr) {
+        console.warn('Backend API delete officer notice:', apiErr);
+      }
+    },
+    'መኮንኑ እየተሰረዘ ነው...',
+    'Deleting officer...'
+  );
+}
+
+// --- PRINT ORDERS ---
 export function subscribePrintOrders(
   callback: (orders: PrintBatchOrder[]) => void
 ): () => void {
@@ -1319,95 +1275,62 @@ export function subscribePrintOrders(
 export async function savePrintOrderToDb(order: PrintBatchOrder): Promise<void> {
   return trackGlobalAction(
     async () => {
-      const index = inMemory.printOrders.findIndex((p) => p.id === order.id);
+      const index = inMemory.printOrders.findIndex((o) => o.id === order.id);
       if (index >= 0) {
         inMemory.printOrders[index] = { ...inMemory.printOrders[index], ...order };
       } else {
         inMemory.printOrders.unshift(order);
       }
       notifyPrintOrders();
-
-      try {
-        await upsertDocument(FIREBASE_COLLECTIONS.PRINT_ORDERS, order.id, order);
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalFirestoreError(null);
-        return;
-      } catch (directErr) {
-        console.warn('Direct Firestore save print order notice:', directErr);
-      }
+      saveStateToLocalStorage();
+      broadcastCrossTabSync('print_batch_orders', 'upsert', order.id, order);
+      lastSyncTime = new Date();
+      isCloudConnected = true;
+      setGlobalDbError(null);
 
       try {
         await safeJsonFetch('/api/print-orders', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(order),
         });
-        setGlobalFirestoreError(null);
-      } catch (apiErr: any) {
-        console.warn('savePrintOrderToDb notice:', apiErr?.message);
+      } catch (apiErr) {
+        console.warn('Backend API save print order notice:', apiErr);
       }
     },
-    'የሕትመት ትዕዛዝ እየተፈጠረ ነው...',
+    'የማተሚያ ትዕዛዝ እየተቀመጠ ነው...',
     'Creating print batch order...'
   );
 }
 
 export async function updatePrintOrderStatusInDb(
   id: string,
-  status: PrintBatchOrder['status'],
-  notes?: string
+  status: PrintBatchOrder['status']
 ): Promise<void> {
   return trackGlobalAction(
     async () => {
-      const index = inMemory.printOrders.findIndex((p) => p.id === id);
+      const index = inMemory.printOrders.findIndex((o) => o.id === id);
       if (index >= 0) {
-        inMemory.printOrders[index] = {
-          ...inMemory.printOrders[index],
-          status,
-          ...(notes !== undefined ? { notes } : {}),
-        };
+        inMemory.printOrders[index] = { ...inMemory.printOrders[index], status };
         notifyPrintOrders();
-      }
-
-      const updates: Record<string, any> = { status };
-      if (notes !== undefined) updates.notes = notes;
-
-      try {
-        await updateDocumentFields(FIREBASE_COLLECTIONS.PRINT_ORDERS, id, updates);
+        saveStateToLocalStorage();
+        broadcastCrossTabSync('print_batch_orders', 'status', id, { status });
         lastSyncTime = new Date();
         isCloudConnected = true;
-        setGlobalFirestoreError(null);
-        return;
-      } catch (directErr) {
-        console.warn('Direct Firestore print order update notice:', directErr);
+        setGlobalDbError(null);
       }
 
       try {
         await safeJsonFetch('/api/print-orders/status', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, status, notes }),
+          body: JSON.stringify({ id, status }),
         });
-        setGlobalFirestoreError(null);
-      } catch (apiErr: any) {
-        console.warn('updatePrintOrderStatusInDb notice:', apiErr?.message);
+      } catch (apiErr) {
+        console.warn('Backend API update print order status notice:', apiErr);
       }
     },
-    'የሕትመት ሁኔታ እየተዘመነ ነው...',
-    'Updating print order status...'
+    'የትዕዛዙ ሁኔታ እየተዘመነ ነው...',
+    'Updating print batch status...'
   );
-}
-
-// --- VERIFICATION LOGS ---
-export function subscribeVerificationLogs(
-  callback: (logs: VerificationLog[]) => void
-): () => void {
-  callback(inMemory.verifications);
-  listeners.verifications.add(callback);
-  return () => {
-    listeners.verifications.delete(callback);
-  };
 }
 
 // --- UNREGISTERED VEHICLE REPORTS ---
@@ -1431,30 +1354,23 @@ export async function saveUnregisteredReportToDb(report: UnregisteredVehicleRepo
         inMemory.unregisteredReports.unshift(report);
       }
       notifyUnregisteredReports();
-
-      try {
-        await upsertDocument(FIREBASE_COLLECTIONS.UNREGISTERED_REPORTS, report.id, report);
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalFirestoreError(null);
-        return;
-      } catch (directErr) {
-        console.warn('Direct Firestore save unregistered report notice:', directErr);
-      }
+      saveStateToLocalStorage();
+      broadcastCrossTabSync('unregistered_vehicle_reports', 'upsert', report.id, report);
+      lastSyncTime = new Date();
+      isCloudConnected = true;
+      setGlobalDbError(null);
 
       try {
         await safeJsonFetch('/api/unregistered-reports', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(report),
         });
-        setGlobalFirestoreError(null);
-      } catch (apiErr: any) {
-        console.warn('saveUnregisteredReportToDb notice:', apiErr?.message);
+      } catch (apiErr) {
+        console.warn('Backend API save unregistered report notice:', apiErr);
       }
     },
-    'የህገወጥ ሪፖርት እየተቀመጠ ነው...',
-    'Saving unregistered report...'
+    'ያልተመዘገበ ተሽከርካሪ ሪፖርት እየተቀመጠ ነው...',
+    'Submitting unregistered report...'
   );
 }
 
@@ -1473,21 +1389,36 @@ export async function updateUnregisteredReportStatusInDb(
           resolutionNotes: resolutionNotes || inMemory.unregisteredReports[index].resolutionNotes,
         };
         notifyUnregisteredReports();
+        saveStateToLocalStorage();
+        broadcastCrossTabSync('unregistered_vehicle_reports', 'status', id, { status, resolutionNotes });
+        lastSyncTime = new Date();
+        isCloudConnected = true;
+        setGlobalDbError(null);
       }
 
       try {
-        await updateDocumentFields(FIREBASE_COLLECTIONS.UNREGISTERED_REPORTS, id, {
-          status,
-          resolutionNotes,
+        await safeJsonFetch('/api/unregistered-reports/status', {
+          method: 'POST',
+          body: JSON.stringify({ id, status, resolutionNotes }),
         });
-        setGlobalFirestoreError(null);
-      } catch (e: any) {
-        console.warn('updateUnregisteredReportStatusInDb notice:', e?.message);
+      } catch (apiErr) {
+        console.warn('Backend API update report status notice:', apiErr);
       }
     },
-    'የሪፖርት ሁኔታ እየተዘመነ ነው...',
+    'የሪፖርቱ ሁኔታ እየተዘመነ ነው...',
     'Updating report status...'
   );
+}
+
+// --- VERIFICATION LOGS ---
+export function subscribeVerifications(
+  callback: (logs: VerificationLog[]) => void
+): () => void {
+  callback(inMemory.verifications);
+  listeners.verifications.add(callback);
+  return () => {
+    listeners.verifications.delete(callback);
+  };
 }
 
 export async function saveVerificationLogToDb(log: VerificationLog): Promise<void> {
@@ -1500,30 +1431,23 @@ export async function saveVerificationLogToDb(log: VerificationLog): Promise<voi
         inMemory.verifications.unshift(log);
       }
       notifyVerifications();
-
-      try {
-        await upsertDocument(FIREBASE_COLLECTIONS.VERIFICATIONS, log.id, log);
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalFirestoreError(null);
-        return;
-      } catch (directErr) {
-        console.warn('Direct Firestore save verification log notice:', directErr);
-      }
+      saveStateToLocalStorage();
+      broadcastCrossTabSync('verification_logs', 'upsert', log.id, log);
+      lastSyncTime = new Date();
+      isCloudConnected = true;
+      setGlobalDbError(null);
 
       try {
         await safeJsonFetch('/api/verification-logs', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(log),
         });
-        setGlobalFirestoreError(null);
-      } catch (apiErr: any) {
-        console.warn('saveVerificationLogToDb notice:', apiErr?.message);
+      } catch (apiErr) {
+        console.warn('Backend API save verification log notice:', apiErr);
       }
     },
-    'የፍተሻ መረጃ እየተመዘገበ ነው...',
-    'Logging inspection record...'
+    'የማረጋገጫ መረጃው እየተመዘገበ ነው...',
+    'Logging verification...'
   );
 }
 
@@ -1531,7 +1455,7 @@ export async function saveVerificationLogToDb(log: VerificationLog): Promise<voi
 export function subscribePaymentReceipts(
   callback: (receipts: PaymentReceipt[]) => void
 ): () => void {
-  callback([...inMemory.paymentReceipts].sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')));
+  callback(inMemory.paymentReceipts);
   listeners.paymentReceipts.add(callback);
   return () => {
     listeners.paymentReceipts.delete(callback);
@@ -1541,24 +1465,29 @@ export function subscribePaymentReceipts(
 export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<void> {
   return trackGlobalAction(
     async () => {
-      const index = inMemory.paymentReceipts.findIndex((p) => p.id === receipt.id);
+      const index = inMemory.paymentReceipts.findIndex((r) => r.id === receipt.id);
       if (index >= 0) {
-        inMemory.paymentReceipts[index] = { ...receipt };
+        inMemory.paymentReceipts[index] = { ...inMemory.paymentReceipts[index], ...receipt };
       } else {
         inMemory.paymentReceipts.unshift(receipt);
       }
       notifyPaymentReceipts();
+      saveStateToLocalStorage();
+      broadcastCrossTabSync('payment_receipts', 'upsert', receipt.id, receipt);
+      lastSyncTime = new Date();
+      isCloudConnected = true;
+      setGlobalDbError(null);
 
       try {
-        await upsertDocument(FIREBASE_COLLECTIONS.PAYMENT_RECEIPTS, receipt.id, receipt);
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalFirestoreError(null);
-      } catch (directErr) {
-        console.warn('Direct Firestore save payment receipt notice:', directErr);
+        await safeJsonFetch('/api/payment-receipts', {
+          method: 'POST',
+          body: JSON.stringify(receipt),
+        });
+      } catch (apiErr) {
+        console.warn('Backend API save payment receipt notice:', apiErr);
       }
     },
-    'የክፍያ ደረሰኝ እየተቀመጠ ነው...',
+    'የክፍያ ደረሰኝ እየተመዘገበ ነው...',
     'Saving payment receipt...'
   );
 }
@@ -1566,17 +1495,26 @@ export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<v
 export async function deletePaymentReceiptFromDb(id: string): Promise<void> {
   return trackGlobalAction(
     async () => {
-      inMemory.paymentReceipts = inMemory.paymentReceipts.filter((p) => p.id !== id);
-      notifyPaymentReceipts();
+      const index = inMemory.paymentReceipts.findIndex((r) => r.id === id);
+      if (index >= 0) {
+        inMemory.paymentReceipts.splice(index, 1);
+        notifyPaymentReceipts();
+        saveStateToLocalStorage();
+        broadcastCrossTabSync('payment_receipts', 'delete', id);
+        lastSyncTime = new Date();
+        isCloudConnected = true;
+        setGlobalDbError(null);
+      }
 
       try {
-        await deleteDocument(FIREBASE_COLLECTIONS.PAYMENT_RECEIPTS, id);
-        setGlobalFirestoreError(null);
-      } catch (e: any) {
-        console.warn('deletePaymentReceiptFromDb notice:', e?.message);
+        await safeJsonFetch(`/api/payment-receipts/${id}`, {
+          method: 'DELETE',
+        });
+      } catch (apiErr) {
+        console.warn('Backend API delete payment receipt notice:', apiErr);
       }
     },
-    'የክፍያ ደረሰኝ እየተሰረዘ ነው...',
+    'ደረሰኙ እየተሰረዘ ነው...',
     'Deleting payment receipt...'
   );
 }
@@ -1607,195 +1545,27 @@ export async function saveSettingsToDb(settingsUpdates: Partial<SystemSettings>)
       broadcastCrossTabSync('system_settings', 'upsert', 'global_config', mergedSettings);
 
       try {
-        await upsertDocument(FIREBASE_COLLECTIONS.SETTINGS, 'global_config', {
-          id: 'global_config',
-          ...mergedSettings,
-        });
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalFirestoreError(null);
-        return;
-      } catch (directErr) {
-        console.warn('Direct Firestore save settings notice:', directErr);
-      }
-
-      try {
         await safeJsonFetch('/api/settings', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(mergedSettings),
         });
-        setGlobalFirestoreError(null);
-      } catch (apiErr: any) {
-        console.warn('saveSettingsToDb notice:', apiErr?.message);
+      } catch (err) {
+        console.warn('Backend API save settings notice:', err);
       }
     },
-    'የሲስተም ቅንብሮች እየተቀመጡ ነው...',
+    'ቅንብሩ እየተቀመጠ ነው...',
     'Saving system settings...'
   );
 }
 
-export async function resetAllSystemData(): Promise<void> {
-  inMemory.registrations = [];
-  inMemory.officers = [];
-  inMemory.printOrders = [];
-  inMemory.verifications = [];
-  inMemory.unregisteredReports = [];
-  inMemory.paymentReceipts = [];
-
-  notifyRegistrations();
-  notifyOfficers();
-  notifyPrintOrders();
-  notifyVerifications();
-  notifyUnregisteredReports();
-  notifyPaymentReceipts();
-
-  try {
-    await safeJsonFetch('/api/reset-data', { method: 'POST' });
-    setGlobalFirestoreError(null);
-  } catch (error: any) {
-    console.warn('resetAllSystemData notice:', error?.message);
-  }
-}
-
-// --- SEED SAMPLE DATASET FOR FRESH DATABASE ---
-export async function seedSampleDatabaseData(): Promise<void> {
-  const sampleRegistrations: MotorcycleRegistration[] = [];
-  const sampleOfficers: OfficerAssignment[] = [];
-  const sampleOrders: PrintBatchOrder[] = [];
-
-  for (const reg of sampleRegistrations) {
-    await saveRegistrationToDb(reg);
-  }
-  for (const off of sampleOfficers) {
-    await saveOfficerToDb(off);
-  }
-  for (const ord of sampleOrders) {
-    await savePrintOrderToDb(ord);
-  }
-  for (const verif of DEFAULT_SAMPLE_VERIFICATIONS) {
-    await saveVerificationLogToDb(verif);
-  }
-
-  await syncAllCollectionsWithDb();
-}
-
-async function pushUnsyncedLocalRecordsToCloud(remoteRegs?: MotorcycleRegistration[]): Promise<void> {
-  if (globalDbError && globalDbError.includes('Quota Exceeded')) return;
-  try {
-    const remoteMap = new Set((remoteRegs || []).map((r) => r.id));
-    const unsyncedRegs = inMemory.registrations.filter((r) => r && r.id && !remoteMap.has(r.id));
-    if (unsyncedRegs.length > 0) {
-      console.log(`[Auto-Sync] Syncing ${unsyncedRegs.length} local records to Cloud Firestore...`);
-      for (const reg of unsyncedRegs) {
-        await upsertDocument(FIREBASE_COLLECTIONS.REGISTRATIONS, reg.id, reg).catch((e) => {
-          console.warn(`Notice uploading local record ${reg.id} to cloud:`, e);
-        });
-      }
-    }
-  } catch (e) {
-    console.warn('Notice pushing unsynced local records:', e);
-  }
-}
-
-// --- DEFERRED MEDIA & IMAGE SYNCING ---
-// When the app opens, image syncing and heavy media processing is deferred
-// until all other data (settings, registrations metadata, logs, etc.) is completely loaded and displayed.
-let isImageSyncingRunning = false;
-
-export async function syncImagesAndMediaDeferred(): Promise<void> {
-  if (isImageSyncingRunning) return;
-  if (!isFirebaseConfigured() || (typeof navigator !== 'undefined' && !navigator.onLine)) return;
-  if (globalDbError && globalDbError.includes('Quota Exceeded')) return;
-
-  isImageSyncingRunning = true;
-  try {
-    console.log('[Media-Sync] All primary data loaded. Starting deferred background image syncing...');
-    const recordsWithBase64 = inMemory.registrations.filter((r) => 
-      (r.userPortraitPhoto && r.userPortraitPhoto.startsWith('data:image/')) ||
-      (r.nationalIdPhoto && r.nationalIdPhoto.startsWith('data:image/')) ||
-      (r.drivingLicensePhoto && r.drivingLicensePhoto.startsWith('data:image/')) ||
-      (r.drivingPermitPhoto && r.drivingPermitPhoto.startsWith('data:image/'))
-    );
-
-    if (recordsWithBase64.length > 0) {
-      console.log(`[Media-Sync] Background syncing ${recordsWithBase64.length} records with local media...`);
-      for (const reg of recordsWithBase64) {
-        try {
-          let modified = false;
-          const updatedReg = { ...reg };
-
-          if (updatedReg.userPortraitPhoto?.startsWith('data:image/')) {
-            const url = await uploadDocumentPhoto(updatedReg.userPortraitPhoto, 'permits/portraits');
-            if (url && url !== updatedReg.userPortraitPhoto) {
-              updatedReg.userPortraitPhoto = url;
-              modified = true;
-            }
-          }
-          if (updatedReg.nationalIdPhoto?.startsWith('data:image/')) {
-            const url = await uploadDocumentPhoto(updatedReg.nationalIdPhoto, 'permits/national_ids');
-            if (url && url !== updatedReg.nationalIdPhoto) {
-              updatedReg.nationalIdPhoto = url;
-              modified = true;
-            }
-          }
-          if (updatedReg.drivingLicensePhoto?.startsWith('data:image/')) {
-            const url = await uploadDocumentPhoto(updatedReg.drivingLicensePhoto, 'permits/licenses');
-            if (url && url !== updatedReg.drivingLicensePhoto) {
-              updatedReg.drivingLicensePhoto = url;
-              modified = true;
-            }
-          }
-          if (updatedReg.drivingPermitPhoto?.startsWith('data:image/')) {
-            const url = await uploadDocumentPhoto(updatedReg.drivingPermitPhoto, 'permits/police_permits');
-            if (url && url !== updatedReg.drivingPermitPhoto) {
-              updatedReg.drivingPermitPhoto = url;
-              modified = true;
-            }
-          }
-
-          if (modified) {
-            inMemory.registrations = inMemory.registrations.map((r) => r.id === reg.id ? updatedReg : r);
-            await upsertDocument(FIREBASE_COLLECTIONS.REGISTRATIONS, updatedReg.id, updatedReg).catch(() => {});
-            saveStateToLocalStorage();
-          }
-        } catch (imgErr) {
-          console.warn(`[Media-Sync] Deferred image sync skipped for record ${reg.id}:`, imgErr);
-        }
-      }
-    }
-  } catch (err) {
-    console.warn('[Media-Sync] Deferred image sync finished with notice:', err);
-  } finally {
-    isImageSyncingRunning = false;
-  }
-}
-
-export function scheduleDeferredImageSync(): void {
-  if (typeof window !== 'undefined') {
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(() => {
-        syncImagesAndMediaDeferred().catch(() => {});
-      }, { timeout: 3000 });
-    } else {
-      setTimeout(() => {
-        syncImagesAndMediaDeferred().catch(() => {});
-      }, 1500);
-    }
-  }
-}
-
-// --- LOCAL STORAGE SYNCHRONIZER & MODULAR CLOUD FIRESTORE SYNCHRONIZERS ---
+// --- SYNCHRONIZATION ROUTINES ---
 const lastCollectionSyncTime: Record<string, number> = {};
-const SYNC_THROTTLE_MS = 25000; // 25s throttle between redundant cloud collection queries
+const SYNC_THROTTLE_MS = 2500;
 
-function isSyncThrottled(collectionKey: string, force: boolean): boolean {
+function isSyncThrottled(collectionKey: string, force = false): boolean {
   if (force) return false;
-  const last = lastCollectionSyncTime[collectionKey];
-  if (last && Date.now() - last < SYNC_THROTTLE_MS) {
-    return true; // Throttled, cached data is fresh
-  }
-  return false;
+  const lastTime = lastCollectionSyncTime[collectionKey] || 0;
+  return Date.now() - lastTime < SYNC_THROTTLE_MS;
 }
 
 function markCollectionSynced(collectionKey: string) {
@@ -1809,11 +1579,11 @@ export async function syncSettings(force = false): Promise<boolean> {
   if (isSyncThrottled('settings', force)) return true;
 
   try {
-    const cloudSettings = await getDocument<SystemSettings>(FIREBASE_COLLECTIONS.SETTINGS, 'global_config');
-    if (cloudSettings) {
-      const wasReset = checkAndApplySystemResetIfNewer(cloudSettings);
+    const res = await safeJsonFetch<{ success: boolean; settings?: SystemSettings }>('/api/settings');
+    if (res && res.settings) {
+      const wasReset = checkAndApplySystemResetIfNewer(res.settings);
       if (!wasReset) {
-        inMemory.settings = { ...DEFAULT_SETTINGS, ...cloudSettings };
+        inMemory.settings = mapSettingsFromDb(res.settings, inMemory.settings);
         saveStateToLocalStorage();
         notifySettings();
       }
@@ -1827,13 +1597,12 @@ export async function syncSettings(force = false): Promise<boolean> {
 }
 
 export async function syncOfficers(force = false): Promise<boolean> {
-  if (!isFirebaseConfigured()) return false;
   if (isSyncThrottled('officers', force)) return true;
 
   try {
-    const cloudOfficers = await fetchAllDocuments<OfficerAssignment>(FIREBASE_COLLECTIONS.OFFICERS);
-    if (Array.isArray(cloudOfficers) && cloudOfficers.length > 0) {
-      inMemory.officers = mergeById(cloudOfficers, inMemory.officers);
+    const res = await safeJsonFetch<{ success: boolean; officers?: OfficerAssignment[] }>('/api/officers');
+    if (res && Array.isArray(res.officers) && res.officers.length > 0) {
+      inMemory.officers = mergeById(res.officers, inMemory.officers);
       notifyOfficers();
     }
     markCollectionSynced('officers');
@@ -1845,18 +1614,16 @@ export async function syncOfficers(force = false): Promise<boolean> {
 }
 
 export async function syncRegistrations(force = false): Promise<boolean> {
-  if (!isFirebaseConfigured()) return false;
   if (isSyncThrottled('registrations', force)) return true;
 
   try {
-    const cloudRegs = await fetchAllDocuments<MotorcycleRegistration>(FIREBASE_COLLECTIONS.REGISTRATIONS);
-    if (Array.isArray(cloudRegs) && cloudRegs.length > 0) {
-      inMemory.registrations = mergeRegistrationsPreservingPhotos(cloudRegs, inMemory.registrations);
+    const res = await safeJsonFetch<{ success: boolean; registrations?: MotorcycleRegistration[] }>('/api/registrations');
+    if (res && Array.isArray(res.registrations) && res.registrations.length > 0) {
+      inMemory.registrations = mergeRegistrationsPreservingPhotos(res.registrations, inMemory.registrations);
       notifyRegistrations();
     }
     markCollectionSynced('registrations');
     saveStateToLocalStorage();
-    scheduleDeferredImageSync();
     return true;
   } catch (err: any) {
     console.warn('[Sync] Registrations sync notice:', err?.message);
@@ -1865,13 +1632,12 @@ export async function syncRegistrations(force = false): Promise<boolean> {
 }
 
 export async function syncPrintOrders(force = false): Promise<boolean> {
-  if (!isFirebaseConfigured()) return false;
   if (isSyncThrottled('printOrders', force)) return true;
 
   try {
-    const cloudOrders = await fetchAllDocuments<PrintBatchOrder>(FIREBASE_COLLECTIONS.PRINT_ORDERS);
-    if (Array.isArray(cloudOrders) && cloudOrders.length > 0) {
-      inMemory.printOrders = mergeById(cloudOrders, inMemory.printOrders);
+    const res = await safeJsonFetch<{ success: boolean; printOrders?: PrintBatchOrder[] }>('/api/print-orders');
+    if (res && Array.isArray(res.printOrders) && res.printOrders.length > 0) {
+      inMemory.printOrders = mergeById(res.printOrders, inMemory.printOrders);
       notifyPrintOrders();
     }
     markCollectionSynced('printOrders');
@@ -1884,56 +1650,13 @@ export async function syncPrintOrders(force = false): Promise<boolean> {
 }
 
 export async function syncVerifications(force = false): Promise<boolean> {
-  if (!isFirebaseConfigured()) return false;
   if (isSyncThrottled('verifications', force)) return true;
 
   try {
-    const cloudVerifs = await fetchAllDocuments<VerificationLog>(FIREBASE_COLLECTIONS.VERIFICATIONS);
-    if (Array.isArray(cloudVerifs) && cloudVerifs.length > 0) {
-      inMemory.verifications = mergeById(cloudVerifs, inMemory.verifications);
+    const res = await safeJsonFetch<{ success: boolean; logs?: VerificationLog[] }>('/api/verification-logs');
+    if (res && Array.isArray(res.logs) && res.logs.length > 0) {
+      inMemory.verifications = mergeById(res.logs, inMemory.verifications);
       notifyVerifications();
-
-      // Backfill missing registration photos from verification logs if available
-      if (inMemory.registrations.length > 0) {
-        let backfilled = false;
-        inMemory.registrations = inMemory.registrations.map((reg) => {
-          if (
-            reg.drivingPermitPhoto &&
-            reg.drivingPermitPhoto.length > 50 &&
-            reg.drivingLicensePhoto &&
-            reg.drivingLicensePhoto.length > 50
-          ) {
-            return reg;
-          }
-          const cleanPlate = (reg.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase();
-          const log = inMemory.verifications.find(
-            (v) =>
-              (v.registrationId && v.registrationId === reg.id) ||
-              (cleanPlate && v.plateNumber && v.plateNumber.replace(/[\s\-_]/g, '').toLowerCase() === cleanPlate)
-          );
-          if (!log) return reg;
-          const pp = (!reg.drivingPermitPhoto || reg.drivingPermitPhoto.length < 50) ? log.drivingPermitPhoto : reg.drivingPermitPhoto;
-          const dl = (!reg.drivingLicensePhoto || reg.drivingLicensePhoto.length < 50) ? log.drivingLicensePhoto : reg.drivingLicensePhoto;
-          const nid = (!reg.nationalIdPhoto || reg.nationalIdPhoto.length < 50) ? log.nationalIdPhoto : reg.nationalIdPhoto;
-          const nidBack = (!reg.nationalIdBackPhoto || reg.nationalIdBackPhoto.length < 50) ? log.nationalIdBackPhoto : reg.nationalIdBackPhoto;
-          const up = (!reg.userPortraitPhoto || reg.userPortraitPhoto.length < 50) ? log.userPortraitPhoto : reg.userPortraitPhoto;
-          if (pp !== reg.drivingPermitPhoto || dl !== reg.drivingLicensePhoto || nid !== reg.nationalIdPhoto) {
-            backfilled = true;
-            return {
-              ...reg,
-              drivingPermitPhoto: pp || reg.drivingPermitPhoto || '',
-              drivingLicensePhoto: dl || reg.drivingLicensePhoto || '',
-              nationalIdPhoto: nid || reg.nationalIdPhoto || '',
-              nationalIdBackPhoto: nidBack || reg.nationalIdBackPhoto || '',
-              userPortraitPhoto: up || reg.userPortraitPhoto || '',
-            };
-          }
-          return reg;
-        });
-        if (backfilled) {
-          notifyRegistrations();
-        }
-      }
     }
     markCollectionSynced('verifications');
     saveStateToLocalStorage();
@@ -1945,13 +1668,12 @@ export async function syncVerifications(force = false): Promise<boolean> {
 }
 
 export async function syncUnregisteredReports(force = false): Promise<boolean> {
-  if (!isFirebaseConfigured()) return false;
   if (isSyncThrottled('unregisteredReports', force)) return true;
 
   try {
-    const cloudUnreg = await fetchAllDocuments<UnregisteredVehicleReport>(FIREBASE_COLLECTIONS.UNREGISTERED_REPORTS);
-    if (Array.isArray(cloudUnreg) && cloudUnreg.length > 0) {
-      inMemory.unregisteredReports = mergeById(cloudUnreg, inMemory.unregisteredReports);
+    const res = await safeJsonFetch<{ success: boolean; reports?: UnregisteredVehicleReport[] }>('/api/unregistered-reports');
+    if (res && Array.isArray(res.reports) && res.reports.length > 0) {
+      inMemory.unregisteredReports = mergeById(res.reports, inMemory.unregisteredReports);
       notifyUnregisteredReports();
     }
     markCollectionSynced('unregisteredReports');
@@ -1964,13 +1686,12 @@ export async function syncUnregisteredReports(force = false): Promise<boolean> {
 }
 
 export async function syncPaymentReceipts(force = false): Promise<boolean> {
-  if (!isFirebaseConfigured()) return false;
   if (isSyncThrottled('paymentReceipts', force)) return true;
 
   try {
-    const cloudReceipts = await fetchAllDocuments<PaymentReceipt>(FIREBASE_COLLECTIONS.PAYMENT_RECEIPTS);
-    if (Array.isArray(cloudReceipts) && cloudReceipts.length > 0) {
-      inMemory.paymentReceipts = mergeById(cloudReceipts, inMemory.paymentReceipts);
+    const res = await safeJsonFetch<{ success: boolean; receipts?: PaymentReceipt[] }>('/api/payment-receipts');
+    if (res && Array.isArray(res.receipts) && res.receipts.length > 0) {
+      inMemory.paymentReceipts = mergeById(res.receipts, inMemory.paymentReceipts);
       notifyPaymentReceipts();
     }
     markCollectionSynced('paymentReceipts');
@@ -1982,10 +1703,6 @@ export async function syncPaymentReceipts(force = false): Promise<boolean> {
   }
 }
 
-/**
- * Smart, on-demand synchronization mapped directly to the user's active page.
- * Keeps data instant with zero unnecessary background scans.
- */
 export async function syncActivePageCollection(activePage: string, force = false): Promise<void> {
   switch (activePage) {
     case 'dashboard':
@@ -1999,26 +1716,24 @@ export async function syncActivePageCollection(activePage: string, force = false
     case 'superadmin_owners':
       await syncRegistrations(force);
       break;
-    case 'unregistered_list':
-    case 'unregistered_report':
-      await syncUnregisteredReports(force);
+    case 'officer_assignments':
+      await syncOfficers(force);
       break;
-    case 'payment_receipts':
-      await syncPaymentReceipts(force);
-      break;
-    case 'inspection_report':
-    case 'scan':
-      await syncVerifications(force);
-      break;
-    case 'workstation':
+    case 'print_queue':
       await Promise.allSettled([syncPrintOrders(force), syncRegistrations(force)]);
       break;
-    case 'superadmin_users':
-    case 'superadmin_subcities':
-    case 'superadmin':
-    case 'superadmin_permits':
-    case 'superadmin_maintenance':
+    case 'unregistered_reports':
+      await syncUnregisteredReports(force);
+      break;
+    case 'officer_verifications':
+      await Promise.allSettled([syncVerifications(force), syncRegistrations(force)]);
+      break;
+    case 'payments':
+    case 'payment_receipts':
+      await Promise.allSettled([syncPaymentReceipts(force), syncRegistrations(force)]);
+      break;
     case 'settings':
+    case 'superadmin':
       await Promise.allSettled([syncSettings(force), syncOfficers(force)]);
       break;
     default:
@@ -2027,32 +1742,23 @@ export async function syncActivePageCollection(activePage: string, force = false
   }
 }
 
-/**
- * Ultra-fast startup synchronization:
- * 1. Instantly hydrates from local storage and IndexedDB (0ms)
- * 2. Fetches only lightweight core system metadata (settings & officers)
- * 3. Fetches the active page's collection immediately
- * 4. Queues remaining non-critical collections lazily without stalling the UI
- */
-export async function syncCriticalStartup(activePage = 'dashboard'): Promise<void> {
-  // 1. Instant 0ms cached state hydration
+export async function syncCriticalStartup(activePage: string = 'dashboard'): Promise<void> {
+  // 1. Instant local display from cache
   loadStateFromLocalStorage();
   lastSyncTime = new Date();
   isCloudConnected = true;
   notifySyncStatus();
-  setGlobalFirestoreError(null);
-
-  if (!isFirebaseConfigured()) return;
+  setGlobalDbError(null);
 
   try {
-    // 2. High Priority: Fetch critical lightweight configuration + current page collection
+    // 2. High Priority: Fetch critical settings + active page data
     await Promise.allSettled([
       syncSettings(),
       syncOfficers(),
       syncActivePageCollection(activePage),
     ]);
 
-    // 3. Low Priority Background Queue: Lazily warm up other collections in idle time
+    // 3. Low Priority Background Sync
     const lazySync = () => {
       syncAllCollectionsWithDb(false).catch(() => {});
     };
@@ -2070,30 +1776,67 @@ export async function syncCriticalStartup(activePage = 'dashboard'): Promise<voi
 }
 
 export async function syncAllCollectionsWithDb(force = false): Promise<void> {
-  // First load from local storage to ensure instant display
   loadStateFromLocalStorage();
   lastSyncTime = new Date();
   isCloudConnected = true;
   notifySyncStatus();
-  setGlobalFirestoreError(null);
+  setGlobalDbError(null);
 
-  if (isFirebaseConfigured()) {
-    try {
-      await Promise.allSettled([
-        syncSettings(force),
-        syncRegistrations(force),
-        syncOfficers(force),
-        syncPrintOrders(force),
-        syncVerifications(force),
-        syncUnregisteredReports(force),
-        syncPaymentReceipts(force),
-      ]);
+  try {
+    // Check bulk sync endpoint first
+    const bulkSync = await safeJsonFetch<any>('/api/sync').catch(() => null);
+    if (bulkSync && bulkSync.success && bulkSync.data) {
+      const d = bulkSync.data;
+      if (d.settings) {
+        const wasReset = checkAndApplySystemResetIfNewer(d.settings);
+        if (!wasReset) {
+          inMemory.settings = mapSettingsFromDb(d.settings, inMemory.settings);
+          notifySettings();
+        }
+      }
+      if (Array.isArray(d.registrations)) {
+        inMemory.registrations = mergeRegistrationsPreservingPhotos(d.registrations, inMemory.registrations);
+        notifyRegistrations();
+      }
+      if (Array.isArray(d.officers)) {
+        inMemory.officers = mergeById(d.officers, inMemory.officers);
+        notifyOfficers();
+      }
+      if (Array.isArray(d.printOrders)) {
+        inMemory.printOrders = mergeById(d.printOrders, inMemory.printOrders);
+        notifyPrintOrders();
+      }
+      if (Array.isArray(d.verifications)) {
+        inMemory.verifications = mergeById(d.verifications, inMemory.verifications);
+        notifyVerifications();
+      }
+      if (Array.isArray(d.unregisteredReports)) {
+        inMemory.unregisteredReports = mergeById(d.unregisteredReports, inMemory.unregisteredReports);
+        notifyUnregisteredReports();
+      }
+      if (Array.isArray(d.paymentReceipts)) {
+        inMemory.paymentReceipts = mergeById(d.paymentReceipts, inMemory.paymentReceipts);
+        notifyPaymentReceipts();
+      }
       saveStateToLocalStorage();
-    } catch (err: any) {
-      console.warn('[Sync] Firestore sync notice (falling back to local cache):', err?.message);
-      isCloudConnected = false;
-      notifySyncStatus();
+      return;
     }
+
+    // Fallback parallel sync
+    await Promise.allSettled([
+      syncSettings(force),
+      syncRegistrations(force),
+      syncOfficers(force),
+      syncPrintOrders(force),
+      syncVerifications(force),
+      syncUnregisteredReports(force),
+      syncPaymentReceipts(force),
+    ]);
+    saveStateToLocalStorage();
+  } catch (err: any) {
+    console.warn('[Sync] PostgreSQL sync notice (falling back to local cache):', err?.message);
+    isCloudConnected = false;
+    notifySyncStatus();
   }
 }
 
@@ -2138,65 +1881,70 @@ const DEFAULT_PRESET_USERS: SystemUser[] = [
     fullName: 'Kaleb Tadesse (Chief Super Admin)',
     status: 'active',
     createdAt: '2026-08-22T20:46:29-07:00',
-  }
+  },
 ];
 
-export function subscribeSystemUsers(cb: (users: SystemUser[]) => void): () => void {
-  DEFAULT_PRESET_USERS.forEach((pu) => {
-    const exists = inMemory.users.some(
-      (u) => u.badgeId === pu.badgeId || u.uid === pu.uid || u.id === pu.id
-    );
-    if (!exists) {
-      inMemory.users.push(pu);
-    }
-  });
+export function subscribeUsers(callback: (users: SystemUser[]) => void): () => void {
+  if (inMemory.users.length === 0) {
+    inMemory.users = [...DEFAULT_PRESET_USERS];
+  }
+  callback(inMemory.users);
+  listeners.users.add(callback);
 
-  cb([...inMemory.users]);
-  listeners.users.add(cb);
-
-  // Sync from DB immediately
-  fetchSystemUsersFromDb().catch(() => {});
+  // Load from Railway Express API
+  fetch('/api/auth/users')
+    .then((r) => r.json())
+    .then((data) => {
+      if (data && data.success && Array.isArray(data.users) && data.users.length > 0) {
+        inMemory.users = mergeById(data.users, inMemory.users);
+        notifyUsers();
+      }
+    })
+    .catch(() => {});
 
   return () => {
-    listeners.users.delete(cb);
+    listeners.users.delete(callback);
   };
 }
 
-export function subscribeAuditLogs(cb: (logs: SystemAuditLog[]) => void): () => void {
-  cb([...inMemory.auditLogs]);
-  listeners.auditLogs.add(cb);
+export function subscribeAuditLogs(callback: (logs: SystemAuditLog[]) => void): () => void {
+  callback(inMemory.auditLogs);
+  listeners.auditLogs.add(callback);
+
+  fetch('/api/audit-logs')
+    .then((r) => r.json())
+    .then((data) => {
+      if (data && data.success && Array.isArray(data.logs)) {
+        inMemory.auditLogs = mergeById(data.logs, inMemory.auditLogs);
+        notifyAuditLogs();
+      }
+    })
+    .catch(() => {});
+
   return () => {
-    listeners.auditLogs.delete(cb);
+    listeners.auditLogs.delete(callback);
   };
 }
 
-export async function fetchSystemUsersFromDb(): Promise<SystemUser[]> {
-  try {
-    const res = await fetch('/api/auth/users').then((r) => r.json()).catch(() => null);
-    if (res && res.success && Array.isArray(res.users) && res.users.length > 0) {
-      const mappedUsers: SystemUser[] = res.users.map((u: any) => ({ ...u, id: u.id || u.uid }));
-      inMemory.users = mergeById(mappedUsers, inMemory.users);
-      notifyUsers();
-      return inMemory.users;
-    }
-  } catch {}
-  return inMemory.users;
-}
-
-export async function saveSystemUserToDb(user: SystemUser): Promise<void> {
+export async function saveSystemUserToDb(user: Partial<SystemUser> & { password?: string }): Promise<void> {
   return trackGlobalAction(
     async () => {
-      const userId = user.uid || user.id || `user-${user.role || 'clerk'}-${user.badgeId || Date.now()}`;
+      const userId = user.uid || user.id || `user-${user.role}-${user.badgeId}`;
       const formatted: SystemUser = {
-        ...user,
-        id: userId,
         uid: userId,
+        id: userId,
+        badgeId: user.badgeId || 'NEW-USER',
+        email: user.email || `${(user.badgeId || 'user').toLowerCase()}@permit.gov.et`,
+        role: user.role || 'clerk',
+        fullName: user.fullName || 'User',
         status: user.status || 'active',
         createdAt: user.createdAt || new Date().toISOString(),
+        ...user,
       };
-      const idx = inMemory.users.findIndex((u) => u.uid === userId || u.badgeId === user.badgeId);
+
+      const idx = inMemory.users.findIndex((u) => u.uid === userId || u.badgeId === formatted.badgeId);
       if (idx >= 0) {
-        inMemory.users[idx] = formatted;
+        inMemory.users[idx] = { ...inMemory.users[idx], ...formatted };
       } else {
         inMemory.users.unshift(formatted);
       }
@@ -2208,9 +1956,6 @@ export async function saveSystemUserToDb(user: SystemUser): Promise<void> {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formatted),
         }).catch(() => {});
-        if (isFirebaseConfigured()) {
-          await upsertDocument(FIREBASE_COLLECTIONS.USERS, userId, formatted).catch(() => {});
-        }
       } catch {}
     },
     'የተጠቃሚ መረጃ እየተቀመጠ ነው...',
@@ -2232,9 +1977,6 @@ export async function updateSystemUserInDb(userId: string, updates: Partial<Syst
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: userId, updates }),
         }).catch(() => {});
-        if (isFirebaseConfigured()) {
-          await updateDocumentFields(FIREBASE_COLLECTIONS.USERS, userId, updates).catch(() => {});
-        }
       } catch {}
     },
     'የተጠቃሚ መረጃ እየተዘመነ ነው...',
@@ -2249,9 +1991,6 @@ export async function deleteSystemUserFromDb(userId: string): Promise<void> {
       notifyUsers();
       try {
         await fetch(`/api/auth/users/${userId}`, { method: 'DELETE' }).catch(() => {});
-        if (isFirebaseConfigured()) {
-          await deleteDocument(FIREBASE_COLLECTIONS.USERS, userId).catch(() => {});
-        }
       } catch {}
     },
     'ተጠቃሚው እየተሰረዘ ነው...',
@@ -2259,105 +1998,128 @@ export async function deleteSystemUserFromDb(userId: string): Promise<void> {
   );
 }
 
-const INITIAL_PERMISSIONS: Record<string, Record<number, 'allow' | 'view_only' | 'deny'>> = {
-  'role-secretary': {
-    1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow', 5: 'deny',
-    6: 'allow', 7: 'allow', 8: 'allow', 9: 'allow', 10: 'allow',
-    11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny',
-    15: 'deny', 16: 'deny'
-  },
-  'role-officer': {
-    1: 'deny', 2: 'deny', 3: 'deny', 4: 'deny', 5: 'allow',
-    6: 'allow', 7: 'allow', 8: 'view_only', 9: 'view_only', 10: 'deny',
-    11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny',
-    15: 'deny', 16: 'deny'
-  },
-  'role-manager': {
-    1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow', 5: 'allow',
-    6: 'allow', 7: 'allow', 8: 'allow', 9: 'allow', 10: 'allow',
-    11: 'view_only', 12: 'view_only', 13: 'deny', 14: 'deny',
-    15: 'allow', 16: 'allow'
-  },
-  'role-it': {
-    1: 'view_only', 2: 'view_only', 3: 'view_only', 4: 'view_only', 5: 'allow',
-    6: 'view_only', 7: 'view_only', 8: 'view_only', 9: 'view_only', 10: 'view_only',
-    11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow',
-    15: 'allow', 16: 'allow'
-  },
-  'role-superadmin': {
-    1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow', 5: 'allow',
-    6: 'allow', 7: 'allow', 8: 'allow', 9: 'allow', 10: 'allow',
-    11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow',
-    15: 'allow', 16: 'allow'
-  }
-};
+export const subscribeSystemUsers = subscribeUsers;
+export const subscribeVerificationLogs = subscribeVerifications;
 
-export function getRoleIdFromUserRole(role: string): string {
-  switch (role) {
-    case 'clerk': return 'role-secretary';
-    case 'officer': return 'role-officer';
-    case 'admin': return 'role-manager';
-    case 'it_specialist': return 'role-it';
-    case 'superadmin':
-    case 'super_admin': return 'role-superadmin';
-    default:
-      if (role && role.startsWith('role-')) return role;
-      return role ? `role-${role}` : 'role-secretary';
+export function getUserRolePermissions(userRole: string): Record<string, 'allow' | 'view_only' | 'deny'> {
+  const settings = inMemory.settings;
+
+  if (userRole === 'clerk') {
+    const kpiState = (settings.clerkPaymentKPIPermission || (settings.showClerkPaymentKPIs ? 'allow' : 'deny')) as 'allow' | 'view_only' | 'deny';
+    const tableState = (settings.clerkPaymentTablePermission || (settings.showClerkPaymentRecordsTable ? 'allow' : 'deny')) as 'allow' | 'view_only' | 'deny';
+
+    return {
+      '1': 'allow',
+      '2': settings.showClerkSubmissionsAction ? 'allow' : 'deny',
+      '3': settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny',
+      '4': settings.showClerkPermitStatus ? 'allow' : 'deny',
+      '5': kpiState,
+      '8': settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny',
+      '9': 'deny',
+      '10': settings.showClerkPermitStatus ? 'allow' : 'deny',
+      '11': 'deny',
+      '12': 'deny',
+      '13': 'deny',
+      '14': 'deny',
+      '15': kpiState,
+      '16': tableState,
+      canViewDashboard: 'allow',
+      canRegister: 'allow',
+      canViewSubmissions: settings.showClerkSubmissionsAction ? 'allow' : 'deny',
+      canApproveVehicles: settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny',
+      canViewPermitStatus: settings.showClerkPermitStatus ? 'allow' : 'deny',
+      canViewPaymentKPIs: kpiState,
+      canViewPaymentRecordsTable: tableState,
+      canManageSettings: 'deny',
+      canAssignOfficers: 'deny',
+      canPrintBatch: 'deny',
+      canVerifyVehicles: 'deny',
+      canExportExcel: 'deny',
+    };
   }
+
+  if (userRole === 'officer') {
+    return {
+      '1': 'deny',
+      '2': 'deny',
+      '3': 'deny',
+      '4': 'allow',
+      '5': 'deny',
+      '8': 'allow',
+      '9': 'deny',
+      '10': 'allow',
+      '11': 'deny',
+      '12': 'deny',
+      '13': 'deny',
+      '14': 'deny',
+      '15': 'deny',
+      '16': 'deny',
+      canViewDashboard: 'allow',
+      canRegister: 'deny',
+      canViewSubmissions: 'deny',
+      canApproveVehicles: 'deny',
+      canViewPermitStatus: 'allow',
+      canViewPaymentKPIs: 'deny',
+      canViewPaymentRecordsTable: 'deny',
+      canManageSettings: 'deny',
+      canAssignOfficers: 'deny',
+      canPrintBatch: 'deny',
+      canVerifyVehicles: 'allow',
+      canExportExcel: 'deny',
+    };
+  }
+
+  return {
+    '1': 'allow',
+    '2': 'allow',
+    '3': 'allow',
+    '4': 'allow',
+    '5': 'allow',
+    '8': 'allow',
+    '9': 'allow',
+    '10': 'allow',
+    '11': 'allow',
+    '12': 'allow',
+    '13': 'allow',
+    '14': 'allow',
+    '15': 'allow',
+    '16': 'allow',
+    canViewDashboard: 'allow',
+    canRegister: 'allow',
+    canViewSubmissions: 'allow',
+    canApproveVehicles: 'allow',
+    canViewPermitStatus: 'allow',
+    canViewPaymentKPIs: 'allow',
+    canViewPaymentRecordsTable: 'allow',
+    canManageSettings: 'allow',
+    canAssignOfficers: 'allow',
+    canPrintBatch: 'allow',
+    canVerifyVehicles: 'allow',
+    canExportExcel: 'allow',
+  };
 }
 
-export function getPermissionState(userRole: string, taskId: number): 'allow' | 'view_only' | 'deny' {
-  // Super Admin always has full permission across all system tasks
-  if (userRole === 'superadmin' || userRole === 'super_admin' || userRole === 'role-superadmin') {
-    return 'allow';
-  }
-  const saved = localStorage.getItem('permit_role_permissions');
-  let matrix = null;
-  if (saved) {
-    try {
-      matrix = JSON.parse(saved);
-    } catch (e) {}
-  }
-  const roleId = getRoleIdFromUserRole(userRole);
-  const rolePerms = matrix?.[roleId] || INITIAL_PERMISSIONS[roleId];
-  if (!rolePerms) {
-    return 'deny';
-  }
-  const state = rolePerms[taskId];
-  return state || 'deny';
+export function getPermissionState(userRole: string, taskId: string | number): 'allow' | 'view_only' | 'deny' {
+  const permissions = getUserRolePermissions(userRole);
+  const key = String(taskId);
+  return permissions[key] || (userRole === 'superadmin' || userRole === 'admin' ? 'allow' : 'deny');
 }
 
-export function isTaskAllowed(userRole: string, taskId: number): boolean {
-  if (userRole === 'superadmin' || userRole === 'super_admin' || userRole === 'role-superadmin') {
-    return true;
-  }
-  return getPermissionState(userRole, taskId) === 'allow';
-}
-
-export function isTaskViewable(userRole: string, taskId: number): boolean {
-  if (userRole === 'superadmin' || userRole === 'super_admin' || userRole === 'role-superadmin') {
+export function canPerformTask(userRole: string, taskId: string | number): boolean {
+  if (userRole === 'superadmin' || userRole === 'admin') {
     return true;
   }
   const state = getPermissionState(userRole, taskId);
   return state === 'allow' || state === 'view_only';
 }
 
-export async function clearCollectionInFirestore(collectionName: string): Promise<void> {
-  try {
-    const docs = await fetchAllDocuments(collectionName);
-    if (Array.isArray(docs) && docs.length > 0) {
-      await Promise.allSettled(
-        docs.map((doc: any) => {
-          if (doc?.id) {
-            return deleteDocument(collectionName, doc.id);
-          }
-          return Promise.resolve();
-        })
-      );
-    }
-  } catch (err) {
-    console.warn(`Notice clearing Firestore collection ${collectionName}:`, err);
-  }
+export function isTaskAllowed(userRole: string, taskId: string | number): boolean {
+  return canPerformTask(userRole, taskId);
+}
+
+export function isTaskViewable(userRole: string, taskId: string | number): boolean {
+  const state = getPermissionState(userRole, taskId);
+  return state === 'allow' || state === 'view_only';
 }
 
 export async function resetSystemToFactoryDefaults(): Promise<void> {
@@ -2365,9 +2127,7 @@ export async function resetSystemToFactoryDefaults(): Promise<void> {
     async () => {
       const resetEpoch = Date.now();
       const resetIso = new Date().toISOString();
-      console.log(`[Reset] Resetting entire system database across client & server (Epoch: ${resetEpoch})...`);
 
-      // 1. Instantly clear in-memory state and set reset epoch
       inMemory.registrations = [];
       inMemory.officers = [];
       inMemory.printOrders = [];
@@ -2385,7 +2145,6 @@ export async function resetSystemToFactoryDefaults(): Promise<void> {
       clearAllLocalStoredData();
       saveStateToLocalStorage();
 
-      // 3. Notify all application listeners immediately
       notifyRegistrations();
       notifyOfficers();
       notifyPrintOrders();
@@ -2395,7 +2154,6 @@ export async function resetSystemToFactoryDefaults(): Promise<void> {
       notifyAuditLogs();
       notifySettings();
 
-      // 4. Wipe server-side Firestore via API
       try {
         await safeJsonFetch('/api/reset-database', {
           method: 'POST',
@@ -2403,28 +2161,6 @@ export async function resetSystemToFactoryDefaults(): Promise<void> {
         });
       } catch (err) {
         console.warn('Backend reset-database API notice:', err);
-      }
-
-      // 5. Purge direct client Firestore collections to guarantee no residual records remain
-      try {
-        await Promise.allSettled([
-          clearCollectionInFirestore(FIREBASE_COLLECTIONS.REGISTRATIONS),
-          clearCollectionInFirestore(FIREBASE_COLLECTIONS.OFFICERS),
-          clearCollectionInFirestore(FIREBASE_COLLECTIONS.PRINT_ORDERS),
-          clearCollectionInFirestore(FIREBASE_COLLECTIONS.VERIFICATIONS),
-          clearCollectionInFirestore(FIREBASE_COLLECTIONS.UNREGISTERED_REPORTS),
-          clearCollectionInFirestore(FIREBASE_COLLECTIONS.PAYMENT_RECEIPTS),
-          clearCollectionInFirestore(FIREBASE_COLLECTIONS.AUDIT_LOGS),
-        ]);
-
-        await upsertDocument(FIREBASE_COLLECTIONS.SETTINGS, 'global_config', {
-          id: 'global_config',
-          ...DEFAULT_SETTINGS,
-          systemResetEpoch: resetEpoch,
-          lastSystemResetAt: resetIso,
-        }).catch(() => {});
-      } catch (err) {
-        console.warn('Direct Firestore reset purge notice:', err);
       }
     },
     'ዳታቤዙ ወደ ፋብሪካ ቅንብር እየተመለሰ ነው...',
@@ -2443,13 +2179,15 @@ export async function purgeRejectedRegistrations(): Promise<number> {
       saveStateToLocalStorage();
       notifyRegistrations();
 
-      // Remove all rejected items from Firestore
-      try {
-        await Promise.allSettled(
-          rejected.map((item) => deleteDocument(FIREBASE_COLLECTIONS.REGISTRATIONS, item.id))
-        );
-      } catch (err) {
-        console.warn('Notice during Firestore rejected registrations purge:', err);
+      if (rejected.length > 0) {
+        try {
+          await safeJsonFetch('/api/registrations/bulk-delete', {
+            method: 'POST',
+            body: JSON.stringify({ ids: rejected.map((r) => r.id) }),
+          });
+        } catch (err) {
+          console.warn('Notice during rejected registrations purge:', err);
+        }
       }
 
       return rejected.length;
@@ -2464,9 +2202,9 @@ export async function clearAllAuditLogs(): Promise<void> {
   saveStateToLocalStorage();
   notifyAuditLogs();
   try {
-    await clearCollectionInFirestore(FIREBASE_COLLECTIONS.AUDIT_LOGS);
+    await safeJsonFetch('/api/reset-data', { method: 'POST' });
   } catch (err) {
-    console.warn('Firestore clear audit logs notice:', err);
+    console.warn('Clear audit logs notice:', err);
   }
 }
 
@@ -2475,9 +2213,9 @@ export async function clearAllVerificationLogs(): Promise<void> {
   saveStateToLocalStorage();
   notifyVerifications();
   try {
-    await clearCollectionInFirestore(FIREBASE_COLLECTIONS.VERIFICATIONS);
+    await safeJsonFetch('/api/reset-data', { method: 'POST' });
   } catch (err) {
-    console.warn('Firestore clear verifications notice:', err);
+    console.warn('Clear verifications notice:', err);
   }
 }
 
@@ -2546,7 +2284,6 @@ export async function importFullDatabaseBackup(backupData: {
   return { success: true, importedCounts: counts };
 }
 
-
 export async function addAuditLogToDb(log: Omit<SystemAuditLog, 'id' | 'timestamp'>): Promise<void> {
   const id = `audit-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
   const fullLog: SystemAuditLog = {
@@ -2558,9 +2295,10 @@ export async function addAuditLogToDb(log: Omit<SystemAuditLog, 'id' | 'timestam
   if (inMemory.auditLogs.length > 200) inMemory.auditLogs = inMemory.auditLogs.slice(0, 200);
   notifyAuditLogs();
   try {
-    if (isFirebaseConfigured()) {
-      await upsertDocument(FIREBASE_COLLECTIONS.AUDIT_LOGS, id, fullLog).catch(() => {});
-    }
+    await safeJsonFetch('/api/audit-logs', {
+      method: 'POST',
+      body: JSON.stringify(fullLog),
+    });
   } catch {}
 }
 
@@ -2570,14 +2308,17 @@ export async function saveUserNotificationStateToDb(
   clearedIds: string[]
 ): Promise<void> {
   try {
-    if (!isFirebaseConfigured()) return;
-    await upsertDocument(FIREBASE_COLLECTIONS.NOTIFICATION_STATES, userScopeId, {
-      readIds,
-      clearedIds,
-      updatedAt: new Date().toISOString(),
+    await safeJsonFetch('/api/notifications/state', {
+      method: 'POST',
+      body: JSON.stringify({
+        userScopeId,
+        readIds,
+        clearedIds,
+        lastReadAt: new Date().toISOString(),
+      }),
     });
   } catch (err) {
-    console.warn('Failed to save notification state to Firestore:', err);
+    console.warn('Failed to save notification state to PostgreSQL:', err);
   }
 }
 
@@ -2585,20 +2326,15 @@ export async function loadUserNotificationStateFromDb(
   userScopeId: string
 ): Promise<{ readIds: string[]; clearedIds: string[] } | null> {
   try {
-    if (!isFirebaseConfigured()) return null;
-    const docData = await getDocument<{ readIds?: string[]; clearedIds?: string[] }>(
-      FIREBASE_COLLECTIONS.NOTIFICATION_STATES,
-      userScopeId
-    );
-    if (docData) {
+    const res = await safeJsonFetch<any>(`/api/notifications/state/${encodeURIComponent(userScopeId)}`);
+    if (res && res.success && res.state) {
       return {
-        readIds: Array.isArray(docData.readIds) ? docData.readIds : [],
-        clearedIds: Array.isArray(docData.clearedIds) ? docData.clearedIds : [],
+        readIds: Array.isArray(res.state.readIds) ? res.state.readIds : [],
+        clearedIds: Array.isArray(res.state.clearedIds) ? res.state.clearedIds : [],
       };
     }
   } catch (err) {
-    console.warn('Failed to load notification state from Firestore:', err);
+    console.warn('Failed to load notification state from PostgreSQL:', err);
   }
   return null;
 }
-

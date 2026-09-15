@@ -85,6 +85,18 @@ export async function initializeDatabaseSchema(): Promise<void> {
         console.log('[PostgreSQL] Seed data verified and initialized from database/seed.sql.');
       }
 
+      // 3. Ensure scanner_result_theme defaults properly
+      try {
+        await client.query(`
+          ALTER TABLE system_settings ALTER COLUMN scanner_result_theme SET DEFAULT 'warm_ivory_cream';
+          UPDATE system_settings 
+          SET scanner_result_theme = 'warm_ivory_cream' 
+          WHERE scanner_result_theme IS NULL OR scanner_result_theme = '' OR scanner_result_theme = 'deep_cobalt_navy';
+        `);
+      } catch (themeMigrateErr) {
+        // Table might not exist or already updated
+      }
+
       isPostgresReady = true;
     } finally {
       client.release();
