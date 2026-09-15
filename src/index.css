@@ -1108,17 +1108,17 @@ input[type="radio"]:active {
   border-radius: 50%;
   pointer-events: none;
   transform: translate(-50%, -50%) scale(0);
-  animation: appRippleAnim 380ms cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  animation: appRippleAnim 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   z-index: 40;
 }
 
 @keyframes appRippleAnim {
   0% {
     transform: translate(-50%, -50%) scale(0);
-    opacity: 0.36;
+    opacity: 0.45;
   }
-  35% {
-    opacity: 0.26;
+  50% {
+    opacity: 0.25;
   }
   100% {
     transform: translate(-50%, -50%) scale(1);
@@ -1212,12 +1212,12 @@ input[type="radio"]:active {
    ========================================================================== */
 .side-menu-drawer {
   will-change: transform;
-  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .side-menu-backdrop {
   will-change: opacity, backdrop-filter;
-  transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 300ms ease;
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 350ms ease;
 }
 
 /* Grounded, solid page footer styles preventing floating overlay bugs */
@@ -1225,7 +1225,6 @@ input[type="radio"]:active {
   position: relative;
   z-index: 10;
   flex-shrink: 0;
-  margin-top: auto;
   box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.02);
 }
 

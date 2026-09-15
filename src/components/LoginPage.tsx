@@ -147,7 +147,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <label htmlFor="badge-id-input" className="block text-xs sm:text-sm font-bold text-on-surface">
                 {lang === 'am' ? 'የመታወቂያ ቁጥር' : 'Badge ID'}
               </label>
-              <div className="relative flex items-center">
+              <div className="relative">
                 <input
                   id="badge-id-input"
                   type="text"
@@ -174,7 +174,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <label htmlFor="password-input" className="block text-xs sm:text-sm font-bold text-on-surface">
                 {lang === 'am' ? 'የይለፍ ቃል' : 'Password'}
               </label>
-              <div className="relative flex items-center">
+              <div className="relative">
                 <input
                   id="password-input"
                   type={showPassword ? 'text' : 'password'}
@@ -187,7 +187,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2.5 inset-y-0 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer p-1"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 no-ripple"
                 >
                   <Icon className="material-symbols-outlined text-[18px] leading-none">
                     {showPassword ? 'visibility_off' : 'visibility'}

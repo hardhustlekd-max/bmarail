@@ -2928,7 +2928,7 @@ export const HomePage: React.FC<HomePageProps> = ({
         <main className={
           activePage === 'scan'
             ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
-            : "flex-1 overflow-y-auto w-full max-w-7xl md:max-w-[1600px] px-3 sm:px-4 md:px-6 pt-1.5 sm:pt-2 md:pt-2 pb-6 md:pb-8 mx-auto min-h-0 flex flex-col justify-between"
+            : "flex-1 overflow-y-auto w-full max-w-7xl md:max-w-[1600px] px-3 sm:px-4 md:px-6 pt-1.5 sm:pt-2 md:pt-2 pb-6 md:pb-8 mx-auto min-h-0 flex flex-col"
         }>
           {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (
@@ -2965,7 +2965,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           {isCurrentPageBlocked ? (
             renderBlockedPageUI()
           ) : (
-            <div key={activePage} className="animate-page-enter flex-1 flex flex-col min-h-0">
+            <div key={activePage} className="animate-page-enter flex-none flex flex-col">
               {/* PAGE 1: UNIVERSAL DASHBOARD OVERVIEW */}
               {activePage === 'dashboard' && (
                 <MunicipalDashboardOverview
@@ -3137,7 +3137,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           {/* Modern, elegant system footer containing language and theme selectors */}
           {activePage !== 'scan' && (
-            <footer className="app-grounded-footer w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 rounded-lg">
+            <footer className="app-grounded-footer hidden md:flex w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex-col sm:flex-row items-center justify-between gap-4 mt-8 rounded-lg">
               <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
                 {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኛች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Motorcyclists Association Permit Governance System. All rights reserved.'}
               </div>

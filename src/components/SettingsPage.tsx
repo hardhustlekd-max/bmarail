@@ -459,14 +459,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder={isAmharic ? 'የአሁኑን የይለፍ ቃል ያስገቡ' : 'Enter current password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-10"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrentPass(!showCurrentPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 no-ripple"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">
+                      <Icon className="material-symbols-outlined text-[18px] leading-none">
                         {showCurrentPass ? 'visibility_off' : 'visibility'}
                       </Icon>
                     </button>
@@ -484,16 +484,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder={isAmharic ? 'አዲስ ጠንካራ የይለፍ ቃል ያስገቡ' : 'Enter new strong password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-10"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                       required
                       minLength={6}
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPass(!showNewPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 no-ripple"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">
+                      <Icon className="material-symbols-outlined text-[18px] leading-none">
                         {showNewPass ? 'visibility_off' : 'visibility'}
                       </Icon>
                     </button>
@@ -527,16 +527,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder={isAmharic ? 'አዲሱን የይለፍ ቃል በድጋሚ ያስገቡ' : 'Re-enter new password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-10"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                       required
                       minLength={6}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPass(!showConfirmPass)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 no-ripple"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">
+                      <Icon className="material-symbols-outlined text-[18px] leading-none">
                         {showConfirmPass ? 'visibility_off' : 'visibility'}
                       </Icon>
                     </button>

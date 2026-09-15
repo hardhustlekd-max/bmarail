@@ -96,9 +96,9 @@ function createRipple(e: PointerEvent, container: HTMLElement): void {
     document.documentElement.classList.contains('dark');
 
   if (isDarkContainer) {
-    ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.28)';
+    ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.32)';
   } else {
-    ripple.style.backgroundColor = 'rgba(11, 30, 72, 0.16)';
+    ripple.style.backgroundColor = 'rgba(11, 30, 72, 0.18)';
   }
 
   container.appendChild(ripple);
