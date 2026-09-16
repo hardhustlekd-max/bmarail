@@ -287,6 +287,54 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
   const [paymentAmountError, setPaymentAmountError] = useState('');
   const [receiptScreenshotError, setReceiptScreenshotError] = useState(false);
 
+  // Step 4: Cheki Verifier State
+  const [chekiBank, setChekiBank] = useState('');
+  const [chekiLoading, setChekiLoading] = useState(false);
+  const [chekiResult, setChekiResult] = useState<any>(null);
+  const [chekiError, setChekiError] = useState('');
+  const [isReceiptVerified, setIsReceiptVerified] = useState(false);
+
+  const handleVerifyStep4Receipt = async () => {
+    const ref = receiptNumber.trim();
+    if (!ref) {
+      setReceiptNumberError(isAmharic ? 'እባክዎ መጀመሪያ የደረሰኝ ቁጥር ያስገቡ!' : 'Please enter a receipt number first!');
+      return;
+    }
+    setChekiLoading(true);
+    setChekiError('');
+    setChekiResult(null);
+
+    try {
+      const res = await fetch('/api/cheki/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reference: ref,
+          bank: chekiBank.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Verification failed');
+      }
+      setChekiResult(data);
+      if (data.verified) {
+        setIsReceiptVerified(true);
+        if (data.amount) {
+          const clean = String(data.amount).replace(/[^0-9.]/g, '');
+          if (clean) setPaymentAmount(clean);
+        }
+      } else {
+        setIsReceiptVerified(false);
+      }
+    } catch (err: any) {
+      setChekiError(err?.message || (isAmharic ? 'የቼኪ ማረጋገጫ አልተሳካም።' : 'Cheki verification failed.'));
+      setIsReceiptVerified(false);
+    } finally {
+      setChekiLoading(false);
+    }
+  };
+
   // Form State
   const [firstName, setFirstName] = useState('');
   const [fatherName, setFatherName] = useState('');
@@ -1951,36 +1999,146 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Receipt Number Input */}
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                        {isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt Number'} <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={receiptNumber}
-                          onChange={(e) => {
-                            setReceiptNumber(e.target.value);
-                            if (receiptNumberError) setReceiptNumberError('');
-                          }}
-                          placeholder={isAmharic ? 'ምሳሌ፡ REC-982143' : 'e.g. REC-982143'}
-                          className={`w-full px-3 py-2.5 bg-white dark:bg-slate-900 border rounded-md text-xs font-mono font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 transition-all ${
-                            receiptNumberError
-                              ? 'border-red-500 focus:ring-red-500/20'
-                              : 'border-slate-300 dark:border-slate-700 focus:border-slate-700 focus:ring-blue-600/20'
-                          }`}
-                          id="multistep-receipt-number"
-                        />
-                        <span className="absolute right-3 top-2.5 text-slate-400 pointer-events-none">
-                          <Icon className="material-symbols-outlined text-[18px]">receipt_long</Icon>
+                    {/* Receipt Number Input with Integrated Cheki Verifier */}
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                          <span>{isAmharic ? 'የደረሰኝ / ባንክ ማጣቀሻ ቁጥር' : 'Receipt / Bank Ref Number'}</span>
+                          <span className="text-red-500">*</span>
+                          {isReceiptVerified && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                              <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
+                              <span>{isAmharic ? 'በባንክ የተረጋገጠ' : 'Bank Verified'}</span>
+                            </span>
+                          )}
+                        </label>
+                        <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
+                          <Icon className="material-symbols-outlined text-[12px]">verified_user</Icon>
+                          <span>Cheki API</span>
                         </span>
                       </div>
+
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            value={receiptNumber}
+                            onChange={(e) => {
+                              setReceiptNumber(e.target.value);
+                              if (receiptNumberError) setReceiptNumberError('');
+                              if (isReceiptVerified) {
+                                setIsReceiptVerified(false);
+                                setChekiResult(null);
+                              }
+                            }}
+                            placeholder={isAmharic ? 'ምሳሌ፡ FT24083091122 ወይም REC-982143' : 'e.g. FT24083091122 or REC-982143'}
+                            className={`w-full px-3 py-2.5 bg-white dark:bg-slate-900 border rounded-md text-xs font-mono font-bold text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 transition-all ${
+                              receiptNumberError
+                                ? 'border-red-500 focus:ring-red-500/20'
+                                : isReceiptVerified
+                                ? 'border-emerald-500 ring-1 ring-emerald-500/30 bg-emerald-500/5'
+                                : 'border-slate-300 dark:border-slate-700 focus:border-slate-700 focus:ring-blue-600/20'
+                            }`}
+                            id="multistep-receipt-number"
+                          />
+                          <span className="absolute right-3 top-2.5 text-slate-400 pointer-events-none">
+                            <Icon className="material-symbols-outlined text-[18px]">receipt_long</Icon>
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <select
+                            value={chekiBank}
+                            onChange={(e) => setChekiBank(e.target.value)}
+                            className="px-2 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-bold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600 max-w-[125px]"
+                            title="Bank"
+                          >
+                            <option value="">{isAmharic ? 'ራስ-ሰር ፈልግ' : 'Auto Bank'}</option>
+                            <option value="cbe">CBE</option>
+                            <option value="telebirr">Telebirr</option>
+                            <option value="awash">Awash</option>
+                            <option value="dashen">Dashen</option>
+                            <option value="abyssinia">Abyssinia</option>
+                            <option value="coop">Coop</option>
+                          </select>
+
+                          <button
+                            type="button"
+                            onClick={handleVerifyStep4Receipt}
+                            disabled={chekiLoading || !receiptNumber.trim()}
+                            className="px-3 py-2 rounded-md bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-bold transition-all flex items-center gap-1 shrink-0 cursor-pointer disabled:cursor-not-allowed"
+                          >
+                            {chekiLoading ? (
+                              <>
+                                <Icon className="material-symbols-outlined text-[15px] animate-spin">progress_activity</Icon>
+                                <span>{isAmharic ? 'በማጣራት...' : 'Checking...'}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Icon className="material-symbols-outlined text-[15px]">verified</Icon>
+                                <span>{isAmharic ? 'አረጋግጥ' : 'Verify'}</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
                       {receiptNumberError && (
                         <p className="text-[11px] text-red-500 font-medium flex items-center gap-1 mt-1">
                           <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                           <span>{receiptNumberError}</span>
                         </p>
+                      )}
+
+                      {chekiError && (
+                        <div className="p-2 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 rounded-md text-[11px] font-bold flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <Icon className="material-symbols-outlined text-[15px] shrink-0">error</Icon>
+                            <span>{chekiError}</span>
+                          </div>
+                          <button type="button" onClick={() => setChekiError('')} className="text-rose-600 hover:text-rose-800 font-bold text-xs">✕</button>
+                        </div>
+                      )}
+
+                      {chekiResult && (
+                        <div className={`p-2.5 rounded-md border text-xs space-y-1.5 ${
+                          chekiResult.verified
+                            ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-950 dark:text-emerald-100'
+                            : 'bg-amber-500/10 border-amber-500/40 text-amber-950 dark:text-amber-100'
+                        }`}>
+                          <div className="flex items-center justify-between font-black uppercase text-[11px]">
+                            <div className="flex items-center gap-1.5">
+                              <Icon className="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">
+                                {chekiResult.verified ? 'check_circle' : 'warning'}
+                              </Icon>
+                              <span>
+                                {chekiResult.verified
+                                  ? (isAmharic ? 'በባንክ የተረጋገጠ ደረሰኝ (Cheki API)' : 'Verified on Bank System (Cheki API)')
+                                  : (isAmharic ? 'ደረሰኙ በባንኩ አልተገኘም' : 'Receipt Not Found on Bank System')}
+                              </span>
+                            </div>
+                            <span className="text-[10px] font-mono opacity-80">{chekiResult.bank || chekiBank || 'Bank'}</span>
+                          </div>
+
+                          {chekiResult.verified && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+                              <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20">
+                                <span className="text-[9px] text-slate-500 block uppercase font-bold">{isAmharic ? 'መጠን' : 'Amount'}</span>
+                                <span className="font-bold text-emerald-700 dark:text-emerald-300 font-mono">
+                                  {chekiResult.amount ? `${chekiResult.amount}` : `${paymentAmount} ETB`}
+                                </span>
+                              </div>
+                              <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20">
+                                <span className="text-[9px] text-slate-500 block uppercase font-bold">{isAmharic ? 'ባንክ' : 'Bank'}</span>
+                                <span className="font-bold truncate block">{chekiResult.bank || 'CBE / Telebirr'}</span>
+                              </div>
+                              <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20 col-span-2 sm:col-span-1">
+                                <span className="text-[9px] text-slate-500 block uppercase font-bold">{isAmharic ? 'ቀን' : 'Date'}</span>
+                                <span className="font-mono text-[10px] truncate block">{chekiResult.date || chekiResult.transactionDate || 'Confirmed'}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
 
