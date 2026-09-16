@@ -2958,7 +2958,14 @@ const HomePageShell: React.FC<HomePageProps> = ({
           {isCurrentPageBlocked ? (
             renderBlockedPageUI()
           ) : (
-            <div key={activePage} className="animate-page-enter flex-none flex flex-col">
+            <div
+              key={activePage}
+              className={
+                activePage === 'scan'
+                  ? "flex-1 w-full h-full min-h-[500px] flex flex-col overflow-hidden"
+                  : "animate-page-enter flex-none flex flex-col"
+              }
+            >
               {/* Domain 1: Universal Dashboard Overview */}
               {activePage === 'dashboard' && (
                 <DashboardOverviewRouter

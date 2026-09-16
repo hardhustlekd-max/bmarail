@@ -889,17 +889,49 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                 </div>
 
 
+                {/* Camera Error & Permission Denied UI */}
                 {cameraError && (
-                  <div className="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center p-4 text-center z-20 space-y-2">
-                    <Icon className="material-symbols-outlined text-rose-400 text-[32px]">videocam_off</Icon>
-                    <p className="text-rose-300 text-xs font-bold max-w-xs">{cameraError}</p>
-                    <button
-                      type="button"
-                      onClick={handleStartCameraScan}
-                      className="bg-slate-800 hover:bg-slate-700 text-white px-3.5 py-1.5 rounded-md text-xs font-bold transition-colors cursor-pointer"
-                    >
-                      {isAmharic ? 'እንደገና ሞክር' : 'Retry Camera'}
-                    </button>
+                  <div className="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-6 text-center z-40 space-y-4 pointer-events-auto">
+                    <div className="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-lg">
+                      <Icon className="material-symbols-outlined text-[36px]">videocam_off</Icon>
+                    </div>
+                    <div className="space-y-1 max-w-sm">
+                      <h4 className="text-white font-black text-sm">
+                        {isAmharic ? 'የካሜራ ችግር ተፈጥሯል' : 'Camera Unavailable'}
+                      </h4>
+                      <p className="text-rose-300/90 text-xs font-medium leading-relaxed">{cameraError}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                      <button
+                        type="button"
+                        onClick={handleStartCameraScan}
+                        className="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-md flex items-center gap-1.5 active:scale-95"
+                      >
+                        <Icon className="material-symbols-outlined text-[16px]">refresh</Icon>
+                        <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry Camera'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                            fileInputRef.current.click();
+                          }
+                        }}
+                        className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all border border-slate-700 flex items-center gap-1.5 active:scale-95"
+                      >
+                        <Icon className="material-symbols-outlined text-[16px]">image</Icon>
+                        <span>{isAmharic ? 'ምስል ስካን' : 'Select Photo'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowTopMenu(true)}
+                        className="bg-slate-800 hover:bg-slate-700 text-amber-400 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all border border-slate-700 flex items-center gap-1.5 active:scale-95"
+                      >
+                        <Icon className="material-symbols-outlined text-[16px]">search</Icon>
+                        <span>{isAmharic ? 'በሰሌዳ ፈልግ' : 'Search by Plate'}</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
