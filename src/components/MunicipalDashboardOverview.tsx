@@ -252,7 +252,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             subtitle: isAmharic ? 'የባለቤትና ሞተር ቅጽ' : 'Register Motor & Owner',
             icon: 'how_to_reg',
             badge: isAmharic ? 'ቅጽ' : 'Form',
-            iconBg: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+            iconBg: 'bg-blue-100 text-slate-800 dark:bg-blue-900/50 dark:text-blue-300',
           });
         }
 
@@ -342,7 +342,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               subtitle: `${registrations.length} ${isAmharic ? 'ጠቅላላ ማህደሮች' : 'system records'}`,
               icon: 'two_wheeler',
               badge: `${registrations.length} ${isAmharic ? 'ተሽከርካሪዎች' : 'Motors'}`,
-              iconBg: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+              iconBg: 'bg-blue-100 text-slate-800 dark:bg-blue-900/50 dark:text-blue-300',
             },
             {
               key: 'inspection_report_full',
@@ -438,7 +438,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             onClick={() => handleActionClick('quick_verify')}
             className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center shadow-md group cursor-pointer hover:bg-blue-500/20 active:scale-95 touch-manipulation transition-all duration-300"
           >
-            <Icon className="material-symbols-outlined text-[42px] sm:text-[48px] text-blue-600 group-hover:scale-110 transition-transform duration-300">
+            <Icon className="material-symbols-outlined text-[42px] sm:text-[48px] text-slate-700 group-hover:scale-110 transition-transform duration-300">
               qr_code_scanner
             </Icon>
           </div>
@@ -457,7 +457,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <button
             type="button"
             onClick={() => handleActionClick('quick_verify')}
-            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-[#1D61E7] hover:bg-blue-700 active:scale-95 touch-manipulation transition-all font-black text-xs sm:text-sm text-white tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md cursor-pointer"
+            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-[#0f172a] hover:bg-slate-800 active:scale-95 touch-manipulation transition-all font-black text-xs sm:text-sm text-white tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-md cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[22px]">photo_camera</Icon>
             <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch QR Scanner'}</span>
@@ -482,10 +482,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Total Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-blue-600/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <div className="flex justify-between items-center text-blue-600 dark:text-blue-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-blue-600">
+              <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-slate-700">
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">group</Icon>
@@ -608,7 +608,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[22px] text-blue-600 shrink-0">badge</Icon>
+              <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">badge</Icon>
               <div>
                 <h3 className="text-sm sm:text-base font-black text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'የምዝገባ መረጃዎች' : 'Clerk Intake Dashboard Metrics'}
@@ -620,9 +620,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
             <button
               onClick={() => onQuickAction && onQuickAction('view_submissions')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-blue-600/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-blue-600 dark:text-blue-400 mb-1">
+              <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
                 <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
                   {isAmharic ? 'ጠቅላላ የቀረቡ' : 'Submitted'}
                 </span>
@@ -693,10 +693,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               {/* Total Receipts */}
               <div
                 onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                className="p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-blue-600/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                className="p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
               >
-                <div className="flex justify-between items-center text-blue-600 dark:text-blue-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-blue-600">
+                <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-slate-700">
                     {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
                   </span>
                   <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">receipt</Icon>
@@ -778,7 +778,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
               <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[22px] text-blue-600 shrink-0">policy</Icon>
+                <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>
                 <div>
                   <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
                     {isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub'}
@@ -793,7 +793,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
                 className="w-full text-left p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
               >
-                <div className="flex justify-between items-center text-blue-600 dark:text-blue-400 mb-1">
+                <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
                   <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
                     {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                   </span>
@@ -853,7 +853,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[22px] text-blue-600 shrink-0">policy</Icon>
+              <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>
               <div>
                 <h2 className="font-extrabold text-sm sm:text-base text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
@@ -869,7 +869,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
               className="w-full text-left p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-blue-600 dark:text-blue-400 mb-1">
+              <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
                 <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
                   {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                 </span>

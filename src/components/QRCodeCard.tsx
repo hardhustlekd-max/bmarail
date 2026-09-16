@@ -134,14 +134,14 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
         <div id="pvc-card-container" className="printable-id-card w-[580px] h-[366px] bg-white rounded-md shadow-2xl border border-slate-300 overflow-hidden text-slate-900 relative shrink-0 select-none font-sans flex flex-col justify-between">
           
           {/* TOP HEADER BANNER - Deep Navy Blue */}
-          <div className="bg-[#0B1E48] text-white px-3.5 py-1.5 flex items-center justify-between relative min-h-[92px] shrink-0 border-b-2 border-yellow-500">
+          <div className="bg-[#1e293b] text-white px-3.5 py-1.5 flex items-center justify-between relative min-h-[92px] shrink-0 border-b-2 border-yellow-500">
             
             {/* Left Emblem Logo */}
             <div className="flex flex-col items-center shrink-0 z-10 w-[68px]">
               <div className="w-13 h-13 rounded-full bg-white shadow-md flex items-center justify-center relative overflow-hidden">
                 <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
               </div>
-              <div className="bg-white text-[#0B1E48] text-[7.5px] font-black px-1.5 py-0.5 rounded-xs mt-0.5 border border-[#EAB308] whitespace-nowrap shadow-2xs">
+              <div className="bg-white text-[#1e293b] text-[7.5px] font-black px-1.5 py-0.5 rounded-xs mt-0.5 border border-[#EAB308] whitespace-nowrap shadow-2xs">
                 ማህበራዊ አገልግሎት
               </div>
             </div>
@@ -156,7 +156,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               </h1>
 
               {/* Center Yellow Pill Badge */}
-              <div className="mt-1 bg-[#EAB308] text-[#0B1E48] px-5 py-0.5 rounded-full shadow-sm border border-yellow-300 flex flex-col items-center">
+              <div className="mt-1 bg-[#EAB308] text-[#1e293b] px-5 py-0.5 rounded-full shadow-sm border border-yellow-300 flex flex-col items-center">
                 <span className="text-[11px] font-black leading-tight">የአባል መታወቂያ</span>
                 <span className="text-[9.5px] font-extrabold tracking-wider uppercase leading-tight">MEMBER ID CARD</span>
               </div>
@@ -186,7 +186,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             
             {/* Left Column: ENLARGED Portrait Photo with Navy Border */}
             <div className="w-[125px] shrink-0 flex flex-col items-center">
-              <div className="w-[120px] h-[155px] rounded-lg border-2 border-[#0B1E48] shadow-md overflow-hidden bg-slate-100 relative">
+              <div className="w-[120px] h-[155px] rounded-lg border-2 border-[#1e293b] shadow-md overflow-hidden bg-slate-100 relative">
                 <SmartImage
                   src={portraitPhoto}
                   alt="Member Portrait"
@@ -201,7 +201,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               
               {/* Full Name */}
               <div className="flex items-start gap-1">
-                <span className="font-extrabold text-[#0B1E48] min-w-[130px] shrink-0 text-[12px]">ሙሉ ስም / Full Name</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">ሙሉ ስም / Full Name</span>
                 <div className="font-black text-slate-900 text-[14px] leading-tight">
                   <p>: {nameParts.am}</p>
                   {nameParts.en && <p className="ml-2 font-bold text-slate-800 text-[11.5px]">{nameParts.en}</p>}
@@ -210,37 +210,37 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
 
               {/* ID No */}
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-[#0B1E48] min-w-[130px] shrink-0 text-[12px]">የአባል መለያ ቁጥር / ID No.</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">የአባል መለያ ቁጥር / ID No.</span>
                 <span className="font-mono font-black text-slate-900 text-[13px]">: {idNo}</span>
               </div>
 
               {/* Plate No */}
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-[#0B1E48] min-w-[130px] shrink-0 text-[12px]">የምዝገባ ሰሌዳ / Plate No.</span>
-                <span className="font-mono font-black text-[#0B1E48] text-[13.5px]">: {plateNo}</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">የምዝገባ ሰሌዳ / Plate No.</span>
+                <span className="font-mono font-black text-[#1e293b] text-[13.5px]">: {plateNo}</span>
               </div>
 
               {/* Blood Group */}
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-[#0B1E48] min-w-[130px] shrink-0 text-[12px]">የደም አይነት / Blood Group</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">የደም አይነት / Blood Group</span>
                 <span className="font-black text-red-600 text-[13px]">: {bloodGroup}</span>
               </div>
 
               {/* Phone */}
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-[#0B1E48] min-w-[130px] shrink-0 text-[12px]">ስልክ / Phone</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">ስልክ / Phone</span>
                 <span className="font-mono font-bold text-slate-900 text-[12.5px]">: {phone}</span>
               </div>
 
               {/* Issue Date */}
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-[#0B1E48] min-w-[130px] shrink-0 text-[12px]">የተሰጠበት ቀን / Issue Date</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">የተሰጠበት ቀን / Issue Date</span>
                 <span className="font-mono font-bold text-slate-900 text-[12.5px]">: {issueDate}</span>
               </div>
 
               {/* Expiry Date */}
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-[#0B1E48] min-w-[130px] shrink-0 text-[12px]">የሚያበቃበት ቀን / Expiry Date</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">የሚያበቃበት ቀን / Expiry Date</span>
                 <span className="font-mono font-bold text-slate-900 text-[12.5px]">: {expiryDate}</span>
               </div>
             </div>
@@ -255,10 +255,10 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
 
               {/* Official Stamp & Signature */}
               <div className="relative flex flex-col items-center mt-0.5">
-                <div className="w-16 h-16 rounded-full border-2 border-double border-[#0B1E48] p-0.5 flex items-center justify-center relative bg-white">
-                  <div className="w-full h-full rounded-full border border-dashed border-[#0B1E48] flex flex-col items-center justify-center p-0.5 text-[5.5px] font-black text-[#0B1E48] text-center">
+                <div className="w-16 h-16 rounded-full border-2 border-double border-[#1e293b] p-0.5 flex items-center justify-center relative bg-white">
+                  <div className="w-full h-full rounded-full border border-dashed border-[#1e293b] flex flex-col items-center justify-center p-0.5 text-[5.5px] font-black text-[#1e293b] text-center">
                     <span>ባህር ዳር ሞተረኛች</span>
-                    <Icon className="material-symbols-outlined text-[16px] text-[#0B1E48] my-0.5">two_wheeler</Icon>
+                    <Icon className="material-symbols-outlined text-[16px] text-[#1e293b] my-0.5">two_wheeler</Icon>
                     <span>ማህበር</span>
                   </div>
 
@@ -267,7 +267,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
                     <path d="M5 20 Q20 5 35 18 T55 12 T75 22 T95 10" />
                   </svg>
                 </div>
-                <span className="text-[7.5px] font-bold text-[#0B1E48] mt-0.5 text-center leading-tight">
+                <span className="text-[7.5px] font-bold text-[#1e293b] mt-0.5 text-center leading-tight">
                   የስራ ኃላፊ ፊርማ<br />Authorized Signature
                 </span>
               </div>
@@ -275,7 +275,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           </div>
 
           {/* BOTTOM FOOTER BANNER - Deep Navy Blue */}
-          <div className="bg-[#0B1E48] text-white py-1 px-3 text-center text-[10.5px] font-black tracking-wide shrink-0">
+          <div className="bg-[#1e293b] text-white py-1 px-3 text-center text-[10.5px] font-black tracking-wide shrink-0">
             ይህ መታወቂያ የባህር ዳር ሞተረኛች ማህበር ንብረት ነው።
           </div>
         </div>

@@ -31,7 +31,7 @@ const succeededUrls = new Set<string>();
  * Visual styling for console output
  */
 const STYLES = {
-  badge: 'background: #0B1E48; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;',
+  badge: 'background: #1e293b; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;',
   success: 'background: #059669; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;',
   warn: 'background: #D97706; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;',
   error: 'background: #DC2626; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px;',

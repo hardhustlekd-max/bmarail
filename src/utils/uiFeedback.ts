@@ -83,10 +83,10 @@ function createRipple(e: PointerEvent, container: HTMLElement): void {
   // Choose ink color based on background luminance or text color
   const isDarkContainer =
     container.classList.contains('bg-primary') ||
-    container.classList.contains('bg-[#0B1E48]') ||
-    container.classList.contains('bg-[#1D61E7]') ||
-    container.classList.contains('bg-blue-600') ||
-    container.classList.contains('bg-blue-700') ||
+    container.classList.contains('bg-[#1e293b]') ||
+    container.classList.contains('bg-[#0f172a]') ||
+    container.classList.contains('bg-slate-700') ||
+    container.classList.contains('bg-slate-800') ||
     container.classList.contains('bg-emerald-600') ||
     container.classList.contains('bg-emerald-700') ||
     container.classList.contains('bg-red-600') ||

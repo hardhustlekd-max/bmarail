@@ -74,10 +74,10 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       count: registrations.length,
       percentage: 100,
       icon: 'assessment',
-      badgeBg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-700',
+      badgeBg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-slate-800',
       border: 'border-slate-200 dark:border-slate-800',
       bg: 'bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800/70',
-      textClass: 'text-blue-700 dark:text-blue-400',
+      textClass: 'text-slate-800 dark:text-blue-400',
       description: isAmharic ? 'ሁሉም ምዝገባዎች' : 'All registrations',
     },
   ];
@@ -112,7 +112,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
             <div
               key={card.key}
               onClick={() => onSelectStatusFilter && onSelectStatusFilter(card.key)}
-              className={`p-2 sm:p-3 rounded-lg border ${card.border} ${card.bg} hover:shadow-md hover:border-primary/40 active:scale-105 active:bg-[#1D61E7]/25 dark:active:bg-[#1D61E7]/40 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
+              className={`p-2 sm:p-3 rounded-lg border ${card.border} ${card.bg} hover:shadow-md hover:border-primary/40 active:scale-105 active:bg-[#0f172a]/25 dark:active:bg-[#0f172a]/40 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
             >
               <div className={`flex justify-between items-center ${card.textClass} mb-1`}>
                 <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-primary transition-colors">

@@ -163,7 +163,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={plateNumber}
               onChange={(e) => setPlateNumber(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ 3-12345 ወይም የታርጋ የሌለው' : 'e.g. AA 3 99812 or Unplated'}
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
             />
           </div>
 
@@ -177,7 +177,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ አበበ ከበደ / DL-90812' : 'e.g. Abebe Kebede / DL-90812'}
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
             />
           </div>
 
@@ -191,7 +191,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={driverPhone}
               onChange={(e) => setDriverPhone(e.target.value)}
               placeholder="+251 9..."
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
             />
           </div>
 
@@ -205,7 +205,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ ፋሲሎ ቀበሌ 04' : 'e.g. Fasilo Kebele 04 Checkpoint'}
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#1D61E7]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
             />
           </div>
         </div>

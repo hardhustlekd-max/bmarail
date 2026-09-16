@@ -157,7 +157,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             <button
               type="button"
               onClick={onNewReportClick}
-              className="hidden sm:flex px-3.5 py-1.5 rounded-md bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-2xs items-center gap-1.5 shrink-0 cursor-pointer active:scale-95"
+              className="hidden sm:flex px-3.5 py-1.5 rounded-md bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-2xs items-center gap-1.5 shrink-0 cursor-pointer active:scale-95"
             >
               <Icon className="material-symbols-outlined text-[16px]">add_alert</Icon>
               <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>
@@ -184,7 +184,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ፣ ኦፊሰር ወይም መታወቂያ ፈልግ...'
                   : 'Search plate, driver, location, officer, ID...'
               }
-              className="w-full pl-9 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-semibold text-on-surface placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#1D61E7]/20 shadow-2xs"
+              className="w-full pl-9 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-semibold text-on-surface placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20 shadow-2xs"
             />
             {searchTerm && (
               <button
@@ -225,7 +225,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   count: investigationCount,
                   badgeColor:
                     investigationCount > 0
-                      ? 'bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                      ? 'bg-blue-500/20 text-slate-800 dark:text-blue-300'
                       : 'bg-surface-container-highest text-secondary',
                 },
                 {
@@ -394,7 +394,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3 py-1.5 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ዝርዝር' : 'View Details'}</span>
@@ -468,7 +468,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="w-full py-2 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                          className="w-full py-2 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ሙሉ ዝርዝር ይመልከቱ' : 'View Full Details'}</span>

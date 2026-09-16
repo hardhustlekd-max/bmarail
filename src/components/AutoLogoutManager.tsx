@@ -307,7 +307,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                     {isAmharic ? 'ክፍለ ጊዜው ሊጠናቀቅ ነው፡ በመለያዎ እንዳሉ ይቀጥሉ?' : 'Session Expiring Soon: Keep Session Active?'}
                   </h3>
                   {isTestPreview && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-900/60 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-slate-800">
                       Test Preview
                     </span>
                   )}
@@ -389,7 +389,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                 ref={keepLoggedInButtonRef}
                 type="button"
                 onClick={handleKeepLoggedIn}
-                className="order-1 sm:order-2 px-6 py-3 rounded-lg text-xs sm:text-sm font-black bg-[#0B1E48] hover:bg-[#162B5B] text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 group"
+                className="order-1 sm:order-2 px-6 py-3 rounded-lg text-xs sm:text-sm font-black bg-[#1e293b] hover:bg-[#162B5B] text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 group"
               >
                 <Icon className="material-symbols-outlined text-[18px] text-yellow-400 group-hover:rotate-180 transition-transform duration-500">
                   lock_reset

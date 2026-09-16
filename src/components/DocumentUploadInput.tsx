@@ -178,7 +178,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
         </label>
         
         {isBusy ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#0B1E48] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 animate-pulse">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#1e293b] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 animate-pulse">
             <Icon className="material-symbols-outlined text-[13px] animate-spin">progress_activity</Icon>
             <span>{status === 'compressing' ? (isAmharic ? 'እየተዘጋጀ...' : 'Optimizing...') : `${uploadProgress}%`}</span>
           </span>
@@ -225,13 +225,13 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               ? 'border-red-500 bg-red-50/70 dark:bg-red-950/30 ring-2 ring-red-500/30'
               : isDraggingOver
               ? 'border-primary bg-primary/10 ring-2 ring-primary/30'
-              : 'border-outline-variant hover:border-[#0B1E48] bg-surface-container/30 hover:bg-[#0B1E48]/5'
+              : 'border-outline-variant hover:border-[#1e293b] bg-surface-container/30 hover:bg-[#1e293b]/5'
           }`}
         >
           {isBusy ? (
             <div className="flex flex-col items-center justify-center space-y-2 py-2">
-              <Icon className="material-symbols-outlined animate-spin text-[#0B1E48] text-[24px]">progress_activity</Icon>
-              <span className="text-[11px] font-bold text-[#0B1E48]">
+              <Icon className="material-symbols-outlined animate-spin text-[#1e293b] text-[24px]">progress_activity</Icon>
+              <span className="text-[11px] font-bold text-[#1e293b]">
                 {status === 'compressing'
                   ? isAmharic ? 'ምስሉ እየተስተካከለ ነው...' : 'Compressing image...'
                   : isAmharic ? `እየተጫነ ነው (${uploadProgress}%)...` : `Uploading (${uploadProgress}%)...`}
@@ -239,7 +239,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               {/* Progress bar */}
               <div className="w-28 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#0B1E48] transition-all duration-300 rounded-full"
+                  className="h-full bg-[#1e293b] transition-all duration-300 rounded-full"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
@@ -249,13 +249,13 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               <div className={`w-10 h-10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${
                 hasError
                   ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                  : 'bg-[#0B1E48]/10 text-[#0B1E48]'
+                  : 'bg-[#1e293b]/10 text-[#1e293b]'
               }`}>
                 <Icon className="material-symbols-outlined text-[22px]">
                   {hasError ? 'warning' : 'add_a_photo'}
                 </Icon>
               </div>
-              <p className={`text-xs font-black ${hasError ? 'text-red-600 dark:text-red-400' : 'text-[#0B1E48]'}`}>
+              <p className={`text-xs font-black ${hasError ? 'text-red-600 dark:text-red-400' : 'text-[#1e293b]'}`}>
                 {hasError
                   ? isAmharic ? 'እባክዎ ሰነዱን ይጫኑ' : 'Please upload document'
                   : isAmharic ? 'ፎቶ/ምስል ይጫኑ' : 'Upload Photo'}
@@ -346,7 +346,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               <button
                 type="button"
                 onClick={triggerSelect}
-                className="text-[#0B1E48] dark:text-blue-400 font-bold px-2 py-1.5 rounded-md hover:bg-[#0B1E48]/10 active:scale-95 transition-all cursor-pointer flex items-center gap-1 min-h-[36px] touch-manipulation"
+                className="text-[#1e293b] dark:text-blue-400 font-bold px-2 py-1.5 rounded-md hover:bg-[#1e293b]/10 active:scale-95 transition-all cursor-pointer flex items-center gap-1 min-h-[36px] touch-manipulation"
               >
                 <Icon className="material-symbols-outlined text-[15px]">photo_camera</Icon>
                 <span>{isAmharic ? 'ቀይር' : 'Change'}</span>

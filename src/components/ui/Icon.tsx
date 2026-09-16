@@ -54,6 +54,8 @@ export const Icon: React.FC<IconProps> = ({
     ...style,
   };
 
+  const { key, ...restProps } = props as any;
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +66,7 @@ export const Icon: React.FC<IconProps> = ({
       className={`material-symbols-outlined inline-block shrink-0 align-middle ${className}`}
       style={combinedStyle}
       aria-hidden="true"
-      {...props}
+      {...restProps}
     >
       <path d={pathData} />
     </svg>

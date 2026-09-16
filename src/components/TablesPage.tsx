@@ -615,7 +615,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             onClick={() => {
                               setActiveTableTab('approved');
                             }}
-                            className="px-3 py-1.5 bg-yellow-500 text-[#0B1E48] font-extrabold text-xs rounded-md shadow-xs hover:bg-yellow-400 cursor-pointer"
+                            className="px-3 py-1.5 bg-yellow-500 text-[#1e293b] font-extrabold text-xs rounded-md shadow-xs hover:bg-yellow-400 cursor-pointer"
                           >
                             {isAmharic ? 'የፀደቁትን አሳይ' : 'Show Approved Permits'}
                           </button>
@@ -636,7 +636,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     onClick={() => toggleRegExpand(reg.id)}
                                     className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
                                       isExpanded
-                                        ? 'bg-yellow-500 text-[#0B1E48]'
+                                        ? 'bg-yellow-500 text-[#1e293b]'
                                         : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
                                     }`}
                                     title={isExpanded ? (isAmharic ? 'አጣጥፍ' : 'Collapse') : (isAmharic ? 'ሰነዶችን እና ዝርዝር አሳይ' : 'Expand Documents & Details')}
@@ -673,7 +673,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             {/* Plate Number & Category */}
                             <td className="px-4 py-2.5 align-middle h-16">
                               <div className="space-y-1">
-                                <span className="font-mono font-black text-xs text-[#0B1E48] dark:text-yellow-400 inline-block">
+                                <span className="font-mono font-black text-xs text-[#1e293b] dark:text-yellow-400 inline-block">
                                   {reg.plateNumber || '—'}
                                 </span>
                                 <div>
@@ -779,7 +779,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => setSelectedRegForA4(reg)}
-                                      className="px-2.5 py-1 bg-[#0B1E48] hover:bg-[#071330] text-yellow-400 font-extrabold text-[11px] rounded-lg transition-all cursor-pointer border border-yellow-500/30 flex items-center gap-1 shadow-2xs"
+                                      className="px-2.5 py-1 bg-[#1e293b] hover:bg-[#071330] text-yellow-400 font-extrabold text-[11px] rounded-lg transition-all cursor-pointer border border-yellow-500/30 flex items-center gap-1 shadow-2xs"
                                       title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ ወረቀት አትም' : 'Print Movement Permit Document'}
                                     >
                                       <Icon className="material-symbols-outlined text-[15px]">print</Icon>
@@ -848,7 +848,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   onClick={() => toggleRegExpand(reg.id)}
                                   className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                                     isExpanded
-                                      ? 'bg-yellow-500 text-[#0B1E48] shadow-2xs'
+                                      ? 'bg-yellow-500 text-[#1e293b] shadow-2xs'
                                       : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                                   }`}
                                   title={isExpanded ? (isAmharic ? 'ሰነዶችን ደብቅ' : 'Hide Documents') : (isAmharic ? 'ሰነዶችን ዘርጋ' : 'Expand Documents')}
@@ -874,7 +874,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => setSelectedRegForDetails(reg)}
-                                      className="text-xs font-extrabold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                                      className="text-xs font-extrabold text-slate-700 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
                                     >
                                       <span>{isAmharic ? 'ሙሉ ዝርዝር እይ' : 'View Full Details'}</span>
                                       <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
@@ -997,7 +997,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             <div className="flex items-center gap-3 text-xs flex-wrap pt-0.5">
                               <div>
                                 <span className="text-slate-500 dark:text-slate-400 mr-1">{isAmharic ? 'ሰሌዳ፡' : 'Plate:'}</span>
-                                <span className="font-mono font-black text-[#0B1E48] dark:text-yellow-400">{reg.plateNumber || '—'}</span>
+                                <span className="font-mono font-black text-[#1e293b] dark:text-yellow-400">{reg.plateNumber || '—'}</span>
                               </div>
                               <div>
                                 <span className="text-slate-500 dark:text-slate-400 mr-1">{isAmharic ? 'አይነት፡' : 'Type:'}</span>
@@ -1211,7 +1211,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   <button
                                     type="button"
                                     onClick={() => setSelectedRegForA4(reg)}
-                                    className="px-3 py-1.5 bg-[#0B1E48] text-yellow-400 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1 shadow-2xs"
+                                    className="px-3 py-1.5 bg-[#1e293b] text-yellow-400 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1 shadow-2xs"
                                   >
                                     <Icon className="material-symbols-outlined text-[16px]">print</Icon>
                                     <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
@@ -1425,7 +1425,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-md bg-[#0B1E48] text-yellow-400 flex items-center justify-center font-bold shadow-xs">
+                <div className="w-10 h-10 rounded-md bg-[#1e293b] text-yellow-400 flex items-center justify-center font-bold shadow-xs">
                   <Icon className="material-symbols-outlined text-[24px]">two_wheeler</Icon>
                 </div>
                 <div>
@@ -1433,7 +1433,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     {isAmharic ? 'የተሟላ የሞተር ሳይክል ምዝገባ መረጃ' : 'Motorcycle Registration Record Details'}
                   </h3>
                   <p className="text-xs font-mono text-slate-500">
-                    Record ID: <span className="font-bold text-[#0B1E48] dark:text-yellow-400">{selectedRegForDetails.id}</span>
+                    Record ID: <span className="font-bold text-[#1e293b] dark:text-yellow-400">{selectedRegForDetails.id}</span>
                   </p>
                 </div>
               </div>
@@ -1620,7 +1620,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                         <button
                                           type="button"
                                           onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
-                                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-bold underline cursor-pointer flex items-center gap-0.5"
+                                          className="text-slate-700 hover:text-blue-800 dark:text-blue-400 font-bold underline cursor-pointer flex items-center gap-0.5"
                                         >
                                           <Icon className="material-symbols-outlined text-[13px]">image</Icon>
                                           <span>{isAmharic ? 'እይ' : 'View'}</span>
@@ -1711,7 +1711,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                           <button
                                             type="button"
                                             onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
-                                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 font-black underline cursor-pointer flex items-center gap-1 py-1"
+                                            className="text-slate-700 hover:text-blue-800 dark:text-blue-400 font-black underline cursor-pointer flex items-center gap-1 py-1"
                                           >
                                             <Icon className="material-symbols-outlined text-[14px]">image</Icon>
                                             <span>{isAmharic ? 'ሰነድ እይ' : 'View Slip'}</span>
@@ -1910,7 +1910,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         setSelectedRegForDetails(null);
                         setSelectedRegForA4(reg);
                       }}
-                      className="px-3.5 py-2 bg-[#0B1E48] hover:bg-[#071330] text-yellow-400 font-extrabold rounded-md text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                      className="px-3.5 py-2 bg-[#1e293b] hover:bg-[#071330] text-yellow-400 font-extrabold rounded-md text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">print</Icon>
                       <span>{isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Print Permit'}</span>
@@ -2003,7 +2003,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:'}</span>
-                  <span className="font-mono font-bold text-[#0B1E48] dark:text-yellow-400 block truncate">{renewalModalReg.plateNumber || '—'}</span>
+                  <span className="font-mono font-bold text-[#1e293b] dark:text-yellow-400 block truncate">{renewalModalReg.plateNumber || '—'}</span>
                 </div>
               </div>
 

@@ -50,6 +50,42 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [submitSuccess, setSubmitSuccess] = useState('');
   const [submitError, setSubmitError] = useState('');
 
+  // Cheki Receipt Checker State
+  const [isChekiCheckerOpen, setIsChekiCheckerOpen] = useState(false);
+  const [chekiRefInput, setChekiRefInput] = useState('');
+  const [chekiBankInput, setChekiBankInput] = useState('');
+  const [chekiResult, setChekiResult] = useState<any>(null);
+  const [chekiLoading, setChekiLoading] = useState(false);
+  const [chekiError, setChekiError] = useState('');
+
+  const handleVerifyChekiReceipt = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chekiRefInput.trim()) return;
+    setChekiLoading(true);
+    setChekiError('');
+    setChekiResult(null);
+
+    try {
+      const res = await fetch('/api/cheki/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reference: chekiRefInput.trim(),
+          bank: chekiBankInput.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Verification failed');
+      }
+      setChekiResult(data);
+    } catch (err: any) {
+      setChekiError(err?.message || 'Failed to connect to Cheki verification service.');
+    } finally {
+      setChekiLoading(false);
+    }
+  };
+
   // Form Fields
   const [receiptNumber, setReceiptNumber] = useState('');
   const [regNumber, setRegNumber] = useState('');
@@ -371,30 +407,210 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setIsFormOpen(!isFormOpen);
-              setSubmitError('');
-              setSubmitSuccess('');
-            }}
-            className="px-3.5 py-1.5 rounded-md bg-primary hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
-          >
-            <Icon className="material-symbols-outlined text-[16px]">
-              {isFormOpen ? 'close' : 'add_circle'}
-            </Icon>
-            <span>
-              {isFormOpen
-                ? isAmharic
-                  ? 'ፎርሙን ዝጋ'
-                  : 'Close Form'
-                : isAmharic
-                ? 'አዲስ ደረሰኝ መዝግብ'
-                : 'New Payment Receipt'}
-            </span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsChekiCheckerOpen(!isChekiCheckerOpen);
+                setChekiError('');
+              }}
+              className="px-3.5 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">verified</Icon>
+              <span>{isAmharic ? 'የቼኪ ደረሰኝ ማረጋገጫ (Cheki Verifier)' : 'Cheki Receipt Verifier'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsFormOpen(!isFormOpen);
+                setSubmitError('');
+                setSubmitSuccess('');
+              }}
+              className="px-3.5 py-1.5 rounded-md bg-primary hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">
+                {isFormOpen ? 'close' : 'add_circle'}
+              </Icon>
+              <span>
+                {isFormOpen
+                  ? isAmharic
+                    ? 'ፎርሙን ዝጋ'
+                    : 'Close Form'
+                  : isAmharic
+                  ? 'አዲስ ደረሰኝ መዝግብ'
+                  : 'New Payment Receipt'}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* CHEKI RECEIPT VERIFIER PANEL (Integrated from https://chekiapp.vercel.app/docs) */}
+      {isChekiCheckerOpen && (
+        <div className="bg-surface-container-lowest border-2 border-emerald-600/50 rounded-xl p-4 sm:p-6 shadow-md space-y-4 animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+            <div className="flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-emerald-600 text-[22px]">verified_user</Icon>
+              <div>
+                <h2 className="text-sm font-black text-on-surface uppercase tracking-wider">
+                  {isAmharic ? 'የቼኪ ባንክ ደረሰኝ ማረጋገጫ (Cheki API Checker)' : 'Cheki Bank Receipt Verification Checker'}
+                </h2>
+                <p className="text-[11px] text-secondary">
+                  {isAmharic
+                    ? 'ከ https://chekiapp.vercel.app/docs የተወሰደ ነፃ የኢትዮጵያ ባንክ ደረሰኞች ማረጋገጫ API'
+                    : 'Powered by Cheki API (https://chekiapp.vercel.app/docs) for instant Ethiopian bank receipt validation.'}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsChekiCheckerOpen(false)}
+              className="w-7 h-7 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center text-xs font-bold cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+
+          <form onSubmit={handleVerifyChekiReceipt} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Reference Number */}
+              <div className="md:col-span-2 space-y-1">
+                <label className="block text-xs font-bold text-on-surface uppercase tracking-wide">
+                  {isAmharic ? 'የባንክ ማጣቀሻ / ደረሰኝ ቁጥር (Reference / TXN ID) *' : 'Bank Reference / TXN ID *'}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={chekiRefInput}
+                    onChange={(e) => setChekiRefInput(e.target.value)}
+                    placeholder={isAmharic ? 'ምሳሌ፦ FT24083091122 ወይም የደረሰኝ ሊንክ' : 'e.g. FT24083091122 or receipt URL'}
+                    className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  />
+                  <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
+                    tag
+                  </Icon>
+                </div>
+              </div>
+
+              {/* Bank Optional Selector */}
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-on-surface uppercase tracking-wide">
+                  {isAmharic ? 'ባንክ (አማራጭ)' : 'Bank (Optional)'}
+                </label>
+                <select
+                  value={chekiBankInput}
+                  onChange={(e) => setChekiBankInput(e.target.value)}
+                  className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-emerald-600 cursor-pointer"
+                >
+                  <option value="">{isAmharic ? '— በራስ-ሰር ፈልግ (Auto Detect) —' : '— Auto Detect —'}</option>
+                  <option value="cbe">Commercial Bank of Ethiopia (CBE)</option>
+                  <option value="telebirr">Telebirr</option>
+                  <option value="awash">Awash Bank</option>
+                  <option value="dashen">Dashen Bank</option>
+                  <option value="abyssinia">Bank of Abyssinia</option>
+                  <option value="coop">Cooperative Bank of Oromia</option>
+                </select>
+              </div>
+            </div>
+
+            {chekiError && (
+              <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 rounded-lg text-xs font-bold flex items-center gap-2">
+                <Icon className="material-symbols-outlined text-[18px]">error</Icon>
+                <span>{chekiError}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="submit"
+                disabled={chekiLoading || !chekiRefInput.trim()}
+                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white text-xs font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              >
+                {chekiLoading ? (
+                  <>
+                    <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
+                    <span>{isAmharic ? 'በማጣራት ላይ...' : 'Verifying with Cheki API...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Icon className="material-symbols-outlined text-[18px]">verified</Icon>
+                    <span>{isAmharic ? 'ደረሰኝ አረጋግጥ (Verify)' : 'Verify Receipt Now'}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* VERIFICATION RESULT DISPLAY */}
+          {chekiResult && (
+            <div className="mt-4 p-4 rounded-xl bg-surface-container/50 border border-outline-variant space-y-3 animate-in fade-in duration-200">
+              <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2">
+                <div className="flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-emerald-600 text-[20px]">
+                    {chekiResult.verified ? 'check_circle' : 'warning'}
+                  </Icon>
+                  <h3 className="text-xs font-black uppercase text-on-surface">
+                    {isAmharic ? 'የማረጋገጫ ውጤት (Verification Result)' : 'API Verification Response'}
+                  </h3>
+                </div>
+                <span className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase ${
+                  chekiResult.verified
+                    ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30'
+                    : 'bg-rose-500/10 text-rose-700 border border-rose-500/30'
+                }`}>
+                  {chekiResult.verified ? (isAmharic ? 'ትክክለኛ (Verified Valid)' : 'Verified Valid') : (isAmharic ? 'አልተረጋገጠም (Unverified)' : 'Unverified / Invalid')}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
+                  <span className="block text-[10px] font-bold text-secondary uppercase">
+                    {isAmharic ? 'ባንክ' : 'Bank'}
+                  </span>
+                  <div className="text-xs font-bold text-on-surface mt-0.5">
+                    {chekiResult.bank || chekiResult.bankName || 'Unknown Bank'}
+                  </div>
+                </div>
+
+                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
+                  <span className="block text-[10px] font-bold text-secondary uppercase">
+                    {isAmharic ? 'የማጣቀሻ ቁጥር' : 'Reference'}
+                  </span>
+                  <div className="text-xs font-mono font-bold text-on-surface mt-0.5">
+                    {chekiResult.reference || chekiRefInput}
+                  </div>
+                </div>
+
+                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
+                  <span className="block text-[10px] font-bold text-secondary uppercase">
+                    {isAmharic ? 'የተከፈለ መጠን' : 'Amount'}
+                  </span>
+                  <div className="text-xs font-black text-emerald-700 dark:text-emerald-300 mt-0.5">
+                    {chekiResult.amount ? `${chekiResult.amount}` : (isAmharic ? 'መረጃ የለም' : 'N/A')}
+                  </div>
+                </div>
+
+                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
+                  <span className="block text-[10px] font-bold text-secondary uppercase">
+                    {isAmharic ? 'ቀን / ሰዓት' : 'Date / Time'}
+                  </span>
+                  <div className="text-xs font-mono font-medium text-on-surface mt-0.5">
+                    {chekiResult.date || chekiResult.transactionDate || (isAmharic ? 'ወቅታዊ' : 'Recent')}
+                  </div>
+                </div>
+              </div>
+
+              {chekiResult.receiverAccount && (
+                <div className="text-xs text-secondary font-mono bg-surface-container-lowest p-2 rounded border border-outline-variant/40">
+                  <strong>Receiver Account:</strong> {chekiResult.receiverAccount} {chekiResult.receiverName ? `(${chekiResult.receiverName})` : ''}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Global Success Banner */}
       {submitSuccess && (
@@ -419,18 +635,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {isFormOpen && (
         <form
           onSubmit={handleSubmitForm}
-          className="bg-surface-container-lowest border-2 border-[#1D61E7]/40 rounded-xl p-4 sm:p-6 shadow-md space-y-5 animate-in fade-in slide-in-from-top-4 duration-200"
+          className="bg-surface-container-lowest border-2 border-[#0f172a]/40 rounded-xl p-4 sm:p-6 shadow-md space-y-5 animate-in fade-in slide-in-from-top-4 duration-200"
         >
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
             <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-[#1D61E7] text-[22px]">post_add</Icon>
+              <Icon className="material-symbols-outlined text-[#0f172a] text-[22px]">post_add</Icon>
               <h2 className="text-sm font-black text-on-surface uppercase tracking-wider">
                 {isAmharic ? 'አዲስ የክፍያ ደረሰኝ መመዝገቢያ ፎርም' : 'New Payment Receipt Entry Form'}
               </h2>
             </div>
             <span className="text-[11px] font-extrabold text-slate-500">
               {isAmharic ? 'መዝጋቢ፦ ' : 'Clerk: '}
-              <span className="text-[#1D61E7] font-black">{userBadgeId}</span>
+              <span className="text-[#0f172a] font-black">{userBadgeId}</span>
             </span>
           </div>
 
@@ -454,7 +670,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   value={receiptNumber}
                   onChange={(e) => setReceiptNumber(e.target.value)}
                   placeholder={isAmharic ? 'ምሳሌ፦ FT24083091122' : 'e.g. FT24083091122 or REC-9921'}
-                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
+                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
                 />
                 <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
                   receipt
@@ -496,7 +712,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       ? 'የምዝገባ ቁጥር፣ ሰሌዳ፣ ወይም ሞተር ቁጥር አስገባ...'
                       : 'Enter Registration #, Plate #, or Engine #'
                   }
-                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
+                  className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
                 />
                 <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
                   badge
@@ -523,7 +739,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="bg-surface-container/30 border border-outline-variant/70 rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-outline-variant/40 pb-2">
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[#1D61E7] text-[20px]">person_pin</Icon>
+                <Icon className="material-symbols-outlined text-[#0f172a] text-[20px]">person_pin</Icon>
                 <h3 className="text-xs font-black text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'ከማህደር የተወጣጣ የባለቤት መረጃ & የክፍያ ሁኔታ' : 'Fetched Owner Info & Expiration Status'}
                 </h3>
@@ -548,7 +764,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     {isAmharic ? 'የባለቤቱ ሙሉ ስም (ከDB የተወሰደ)' : 'Owner Full Name (Fetched)'}
                   </span>
                   <div className="text-xs font-black text-on-surface mt-1 flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-[16px] text-blue-600">person</Icon>
+                    <Icon className="material-symbols-outlined text-[16px] text-slate-700">person</Icon>
                     <span>{selectedRegInfo.registration.fullName}</span>
                   </div>
                 </div>
@@ -559,7 +775,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     {isAmharic ? 'የሰሌዳ ቁጥር (ከDB የተወሰደ)' : 'Plate Number (Fetched)'}
                   </span>
                   <div className="text-xs font-mono font-black text-on-surface mt-1 flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-[16px] text-blue-600">numbers</Icon>
+                    <Icon className="material-symbols-outlined text-[16px] text-slate-700">numbers</Icon>
                     <span>{selectedRegInfo.registration.plateNumber || (isAmharic ? 'ሰሌዳ የለውም' : 'No Plate')}</span>
                   </div>
                 </div>
@@ -570,7 +786,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     {isAmharic ? 'የስልክ ቁጥር (ከDB የተወሰደ)' : 'Phone Number (Fetched)'}
                   </span>
                   <div className="text-xs font-mono font-black text-on-surface mt-1 flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-[16px] text-blue-600">call</Icon>
+                    <Icon className="material-symbols-outlined text-[16px] text-slate-700">call</Icon>
                     <span>{selectedRegInfo.registration.phone || (isAmharic ? 'ስልክ የለም' : 'No Phone')}</span>
                   </div>
                 </div>
@@ -683,7 +899,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="500"
-                className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
+                className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
               />
             </div>
 
@@ -743,7 +959,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 />
                 <label
                   htmlFor="receipt-screenshot-upload"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1D61E7] hover:bg-blue-700 text-white text-xs font-bold cursor-pointer transition-all shadow-xs"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold cursor-pointer transition-all shadow-xs"
                 >
                   <Icon className="material-symbols-outlined text-[18px]">cloud_upload</Icon>
                   <span>{isAmharic ? 'ስክሪንሾት / ደረሰኝ ፎቶ ስቀል' : 'Upload Receipt Screenshot'}</span>
@@ -767,7 +983,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={isAmharic ? 'ተጨማሪ መረጃ ካለ ያስገቡ...' : 'Add optional clerk notes...'}
-              className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-[#1D61E7]"
+              className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
             />
           </div>
 
@@ -783,7 +999,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || selectedRegInfo?.expirationStatusType === 'active'}
-              className="px-5 py-2.5 rounded-lg bg-[#1D61E7] hover:bg-blue-700 disabled:bg-slate-400 dark:disabled:bg-slate-700 text-white text-xs font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
+              className="px-5 py-2.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 disabled:bg-slate-400 dark:disabled:bg-slate-700 text-white text-xs font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
             >
               {isSubmitting ? (
                 <>
@@ -872,7 +1088,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     onClick={() => setStatusFilter(tab.id)}
                     className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all duration-200 active:scale-105 cursor-pointer whitespace-nowrap ${
                       isActive
-                        ? 'bg-yellow-500 text-[#0B1E48] shadow-2xs'
+                        ? 'bg-yellow-500 text-[#1e293b] shadow-2xs'
                         : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
                     }`}
                   >
@@ -880,7 +1096,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     <span
                       className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-black ${
                         isActive
-                          ? 'bg-[#0B1E48]/20 text-[#0B1E48]'
+                          ? 'bg-[#1e293b]/20 text-[#1e293b]'
                           : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                       }`}
                     >
@@ -940,7 +1156,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
                         {/* Receipt Number */}
                         <td className="px-4 py-3 font-mono font-black text-on-surface">
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 font-bold">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-500/10 text-slate-800 dark:text-blue-300 border border-blue-500/20 font-bold">
                             <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
                             <span>{rc.receiptNumber}</span>
                           </span>
@@ -1041,7 +1257,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                               <button
                                 type="button"
                                 onClick={() => setPreviewReceipt(rc)}
-                                className="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all cursor-pointer"
+                                className="p-1.5 rounded-md text-slate-700 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all cursor-pointer"
                                 title={isAmharic ? 'እይታ' : 'View Proof'}
                               >
                                 <Icon className="material-symbols-outlined text-[18px]">visibility</Icon>
@@ -1085,7 +1301,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   >
                     {/* Top Header Row: Receipt # & Status Badge */}
                     <div className="flex items-center justify-between gap-2">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20 font-mono font-black text-xs">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500/10 text-slate-800 dark:text-blue-300 border border-blue-500/20 font-mono font-black text-xs">
                         <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
                         <span>{rc.receiptNumber}</span>
                       </span>
@@ -1173,7 +1389,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         <button
                           type="button"
                           onClick={() => setPreviewReceipt(rc)}
-                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 cursor-pointer"
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/40 text-slate-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 cursor-pointer"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                           <span>{isAmharic ? 'ማረጋገጫ ፎቶ እይ' : 'View Proof Image'}</span>
@@ -1210,7 +1426,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <div className="flex items-center justify-between border-b border-outline-variant pb-3">
               <div>
                 <h3 className="text-base font-black text-on-surface uppercase tracking-wide flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-blue-600 text-[22px]">receipt</Icon>
+                  <Icon className="material-symbols-outlined text-slate-700 text-[22px]">receipt</Icon>
                   <span>{isAmharic ? 'የክፍያ ደረሰኝ ስክሪንሾት' : 'Payment Receipt Screenshot'}</span>
                 </h3>
                 <p className="text-xs text-secondary font-mono mt-0.5">
@@ -1265,7 +1481,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <button
                 type="button"
                 onClick={() => setPreviewReceipt(null)}
-                className="px-5 py-2 rounded-lg bg-[#1D61E7] text-white text-xs font-bold hover:bg-blue-700 transition-all cursor-pointer"
+                className="px-5 py-2 rounded-lg bg-[#0f172a] text-white text-xs font-bold hover:bg-slate-800 transition-all cursor-pointer"
               >
                 {isAmharic ? 'ዝጋ' : 'Close'}
               </button>

@@ -59,7 +59,7 @@ const INITIAL_ROLES: RoleDefinition[] = [
     titleAm: 'ኦፊሰር',
     titleEn: '(Officer)',
     userCountText: '5 ተጠቃሚ',
-    avatarBg: 'bg-blue-600',
+    avatarBg: 'bg-slate-700',
     avatarType: 'officer',
     status: 'active',
   },
@@ -567,7 +567,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
         );
       case 'superadmin':
         return (
-          <div className="w-11 h-11 rounded-full bg-[#0B1E48] border-2 border-amber-400 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
+          <div className="w-11 h-11 rounded-full bg-[#1e293b] border-2 border-amber-400 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
             <Icon className="material-symbols-outlined text-[26px] text-amber-300">verified_user</Icon>
           </div>
         );
@@ -598,7 +598,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               <select
                 value={selectedRoleId}
                 onChange={(e) => setSelectedRoleId(e.target.value)}
-                className="w-full bg-surface-container-lowest border border-outline-variant rounded-md pl-3.5 pr-9 py-2 text-xs font-black text-on-surface cursor-pointer focus:outline-hidden focus:border-[#1D61E7] shadow-2xs hover:border-slate-400 dark:hover:border-slate-600 transition-colors"
+                className="w-full bg-surface-container-lowest border border-outline-variant rounded-md pl-3.5 pr-9 py-2 text-xs font-black text-on-surface cursor-pointer focus:outline-hidden focus:border-[#0f172a] shadow-2xs hover:border-slate-400 dark:hover:border-slate-600 transition-colors"
               >
                 {roles.map((r) => (
                   <option key={r.id} value={r.id} className="font-semibold text-xs">
@@ -624,7 +624,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             <button
               type="button"
               onClick={() => setShowNewRoleModal(true)}
-              className="px-4 py-1.5 bg-[#1D61E7] hover:bg-blue-700 active:scale-[0.97] text-white rounded-md text-xs font-black transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+              className="px-4 py-1.5 bg-[#0f172a] hover:bg-slate-800 active:scale-[0.97] text-white rounded-md text-xs font-black transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
             >
               <Icon className="material-symbols-outlined text-[16px]">add</Icon>
               <span>{isAmharic ? 'አዲስ ሚና' : 'Create Role'}</span>
@@ -634,7 +634,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
         {/* Info Banner Container */}
         <div className="p-3.5 mx-4 my-3 bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 rounded-md flex items-center gap-2.5 text-blue-900 dark:text-blue-200 text-xs font-semibold">
-          <Icon className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[18px] shrink-0">
+          <Icon className="material-symbols-outlined text-slate-700 dark:text-blue-400 text-[18px] shrink-0">
             info
           </Icon>
           <span>
@@ -839,7 +839,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               <button
                 type="button"
                 onClick={onOpenUsersTable}
-                className="hidden sm:flex text-xs font-bold text-[#1D61E7] hover:underline items-center gap-1 cursor-pointer"
+                className="hidden sm:flex text-xs font-bold text-[#0f172a] hover:underline items-center gap-1 cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[16px]">manage_accounts</Icon>
                 <span>{isAmharic ? 'የተጠቃሚዎች አካውንት ዝርዝር ክፈት' : 'Open User Accounts List'}</span>
@@ -860,7 +860,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             <button
               type="button"
               onClick={handleSavePermissions}
-              className="w-full sm:w-auto px-6 py-2.5 bg-[#0B1E48] hover:bg-[#0D2B5C] active:scale-95 text-white font-black text-xs rounded-md transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto px-6 py-2.5 bg-[#1e293b] hover:bg-[#0D2B5C] active:scale-95 text-white font-black text-xs rounded-md transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
             >
               <Icon className="material-symbols-outlined text-[18px]">save</Icon>
               <span>{isAmharic ? 'ፈቃድ አስቀምጥ (Save Permissions)' : 'Save Permissions'}</span>
@@ -873,7 +873,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-lg border border-blue-200/80 dark:border-blue-900/50 shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-lg bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-lg bg-slate-700/10 dark:bg-blue-500/20 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0">
               <Icon className="material-symbols-outlined text-[24px]">tune</Icon>
             </div>
             <div>
@@ -883,7 +883,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                     ? 'የፀሀፊ ፈጣን አቋራጮችና የዳሽቦርድ መቆጣጠሪያ ማትሪክስ (Clerk RBAC Controls)'
                     : 'Clerk Quick Actions & Dashboard RBAC Matrix'}
                 </h3>
-                <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-black">
+                <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-slate-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-black">
                   {isAmharic ? 'የፀሀፊ ሚና (Clerk / Secretary)' : 'Clerk Role'}
                 </span>
               </div>
@@ -909,7 +909,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             <button
               type="button"
               onClick={() => handleBatchClerkPreset('standard')}
-              className="px-2.5 py-1.5 rounded-md bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 border border-blue-300/80 dark:border-blue-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+              className="px-2.5 py-1.5 rounded-md bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-slate-800 dark:text-blue-300 border border-blue-300/80 dark:border-blue-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
             >
               <Icon className="material-symbols-outlined text-[14px]">auto_fix_high</Icon>
               <span>{isAmharic ? 'መሰረታዊ ብቻ' : 'Standard Clerk'}</span>
@@ -967,7 +967,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             {/* Quick Action 2: Submission Correction */}
             <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
                   <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
                 </div>
                 <div className="min-w-0 space-y-0.5">
@@ -1073,7 +1073,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 type="button"
                 onClick={() => handleToggleClerk('showClerkSubmissionsAction')}
                 className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkSubmissionsAction ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                  currentSettings.showClerkSubmissionsAction ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
               >
                 <span
@@ -1103,7 +1103,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 type="button"
                 onClick={() => handleToggleClerk('showClerkApprovedVehiclesAction')}
                 className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkApprovedVehiclesAction ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                  currentSettings.showClerkApprovedVehiclesAction ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
               >
                 <span
@@ -1127,7 +1127,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             {/* Widget 1: Permit Status & Counts */}
             <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
+                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
                   <Icon className="material-symbols-outlined text-[20px]">pie_chart</Icon>
                 </div>
                 <div className="min-w-0 space-y-0.5">
@@ -1143,7 +1143,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 type="button"
                 onClick={() => handleToggleClerk('showClerkPermitStatus')}
                 className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkPermitStatus ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                  currentSettings.showClerkPermitStatus ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
               >
                 <span
@@ -1173,7 +1173,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 type="button"
                 onClick={() => handleToggleClerk('showClerkPaymentKPIs')}
                 className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkPaymentKPIs ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                  currentSettings.showClerkPaymentKPIs ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
               >
                 <span
@@ -1203,7 +1203,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 type="button"
                 onClick={() => handleToggleClerk('showClerkPaymentRecordsTable')}
                 className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkPaymentRecordsTable ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-700'
+                  currentSettings.showClerkPaymentRecordsTable ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
                 }`}
               >
                 <span
@@ -1223,7 +1223,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
           <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-outline-variant pb-3">
               <h3 className="font-black text-base text-on-surface flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[#1D61E7] text-[22px]">add_moderator</Icon>
+                <Icon className="material-symbols-outlined text-[#0f172a] text-[22px]">add_moderator</Icon>
                 <span>{isAmharic ? 'አዲስ የስራ ሚና መፍጠሪያ' : 'Create New System Role'}</span>
               </h3>
               <button
@@ -1246,7 +1246,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                   value={newRoleTitleAm}
                   onChange={(e) => setNewRoleTitleAm(e.target.value)}
                   placeholder="ምሳሌ፡ ኦዲተር ወይም ሱፐርቫይዘር"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1D61E7]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f172a]"
                 />
               </div>
 
@@ -1259,7 +1259,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                   value={newRoleTitleEn}
                   onChange={(e) => setNewRoleTitleEn(e.target.value)}
                   placeholder="e.g. Auditor / Supervisor"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1D61E7]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f172a]"
                 />
               </div>
 
@@ -1270,7 +1270,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 <select
                   value={newRoleTemplate}
                   onChange={(e) => setNewRoleTemplate(e.target.value)}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#1D61E7]"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#0f172a]"
                 >
                   <option value="role-secretary">{isAmharic ? 'እንደ ጸሃፊ (Secretary Template)' : 'Secretary Template'}</option>
                   <option value="role-officer">{isAmharic ? 'እንደ ኦፊሰር (Officer Template)' : 'Officer Template'}</option>
@@ -1291,7 +1291,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#1D61E7] hover:bg-blue-700 text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
+                  className="px-5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
                 >
                   {isAmharic ? 'ሚናውን ፍጠር' : 'Create Role'}
                 </button>

@@ -208,7 +208,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 userRole === 'superadmin'
                   ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800'
                   : userRole === 'admin'
-                  ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
+                  ? 'bg-blue-500/10 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
                   : userRole === 'officer'
                   ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
                   : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
@@ -238,19 +238,19 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             {/* User Profile Card */}
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
               <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
-                <Icon className="material-symbols-outlined text-[#0B1E48] dark:text-yellow-400 text-[22px]">account_circle</Icon>
+                <Icon className="material-symbols-outlined text-[#1e293b] dark:text-yellow-400 text-[22px]">account_circle</Icon>
                 <h2 className="text-sm font-black text-on-surface">
                   {isAmharic ? 'የተጠቃሚ መገለጫ' : 'User Profile Details'}
                 </h2>
               </div>
 
               <div className="flex items-center gap-3.5">
-                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-yellow-500 flex items-center justify-center text-xl font-black text-[#0B1E48] dark:text-yellow-400 shrink-0 overflow-hidden shadow-xs">
+                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-yellow-500 flex items-center justify-center text-xl font-black text-[#1e293b] dark:text-yellow-400 shrink-0 overflow-hidden shadow-xs">
                   <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="font-extrabold text-sm text-on-surface truncate">{displayName}</h3>
-                  <p className="font-mono text-xs font-bold text-[#0B1E48] dark:text-yellow-400 bg-surface-container px-2 py-0.5 rounded inline-block mt-0.5">
+                  <p className="font-mono text-xs font-bold text-[#1e293b] dark:text-yellow-400 bg-surface-container px-2 py-0.5 rounded inline-block mt-0.5">
                     {userBadgeId || creds.badgeId}
                   </p>
                   <div className="flex items-center gap-1.5 mt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
@@ -280,7 +280,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-outline-variant pb-3">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[#0B1E48] dark:text-yellow-400 text-[22px]">tune</Icon>
+                  <Icon className="material-symbols-outlined text-[#1e293b] dark:text-yellow-400 text-[22px]">tune</Icon>
                   <h2 className="text-sm font-black text-on-surface">
                     {isAmharic ? 'የስርዓት ምርጫዎች' : 'System Preferences'}
                   </h2>
@@ -370,7 +370,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     type="button"
                     onClick={() => setSoundAlerts(!soundAlerts)}
                     className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                      soundAlerts ? 'bg-[#0B1E48] dark:bg-yellow-500' : 'bg-slate-300 dark:bg-slate-700'
+                      soundAlerts ? 'bg-[#1e293b] dark:bg-yellow-500' : 'bg-slate-300 dark:bg-slate-700'
                     }`}
                   >
                     <div
@@ -459,7 +459,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder={isAmharic ? 'የአሁኑን የይለፍ ቃል ያስገቡ' : 'Enter current password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#1e293b] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                     />
                     <button
                       type="button"
@@ -484,7 +484,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder={isAmharic ? 'አዲስ ጠንካራ የይለፍ ቃል ያስገቡ' : 'Enter new strong password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#1e293b] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                       required
                       minLength={6}
                     />
@@ -527,7 +527,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder={isAmharic ? 'አዲሱን የይለፍ ቃል በድጋሚ ያስገቡ' : 'Re-enter new password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#0B1E48] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
+                      className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#1e293b] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                       required
                       minLength={6}
                     />
@@ -589,7 +589,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#0B1E48] hover:bg-[#112D6C] text-white font-extrabold text-xs py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+                    className="w-full bg-[#1e293b] hover:bg-[#112D6C] text-white font-extrabold text-xs py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98 disabled:opacity-50"
                   >
                     {isLoading ? (
                       <Icon className="material-symbols-outlined text-[18px] animate-spin">sync</Icon>

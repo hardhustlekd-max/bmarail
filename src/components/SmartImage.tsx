@@ -159,7 +159,7 @@ export const SmartImage: React.FC<SmartImageProps> = ({
             type="button"
             onClick={handleManualRetry}
             title="እንደገና ሞክር / Retry loading image"
-            className="mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-1 cursor-pointer"
+            className="mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-slate-700 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-1 cursor-pointer"
           >
             <Icon name="refresh" size={10} />
             <span>እንደገና ሞክር</span>
@@ -168,6 +168,8 @@ export const SmartImage: React.FC<SmartImageProps> = ({
       </div>
     );
   }
+
+  const { key, ...restProps } = props as any;
 
   return (
     <div
@@ -193,7 +195,7 @@ export const SmartImage: React.FC<SmartImageProps> = ({
         className={`w-full h-full object-cover transition-all duration-200 ${
           isGrayscale ? 'grayscale' : ''
         } ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
-        {...props}
+        {...restProps}
       />
     </div>
   );

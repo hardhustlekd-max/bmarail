@@ -1131,6 +1131,48 @@ app.post('/api/reset-data', async (req, res) => {
   }
 });
 
+// Cheki Bank Receipt Verification Proxy Endpoints
+app.post('/api/cheki/verify', async (req, res) => {
+  try {
+    const { reference, bank } = req.body;
+    if (!reference) {
+      return res.status(400).json({ success: false, error: 'Receipt reference number is required' });
+    }
+    const resp = await fetch('https://chekiapp.vercel.app/api/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reference, bank }),
+    });
+    const data = await resp.json();
+    return res.json(data);
+  } catch (err: any) {
+    console.error('[Cheki Verify Error]:', err);
+    return res.status(500).json({ success: false, error: err?.message || 'Failed to verify receipt with Cheki API' });
+  }
+});
+
+app.get('/api/cheki/banks', async (req, res) => {
+  try {
+    const resp = await fetch('https://chekiapp.vercel.app/api/banks');
+    const data = await resp.json();
+    return res.json(data);
+  } catch (err: any) {
+    console.error('[Cheki Banks Error]:', err);
+    return res.status(500).json({ success: false, error: err?.message || 'Failed to fetch supported banks from Cheki API' });
+  }
+});
+
+app.get('/api/cheki/health', async (req, res) => {
+  try {
+    const resp = await fetch('https://chekiapp.vercel.app/api/health');
+    const data = await resp.json();
+    return res.json(data);
+  } catch (err: any) {
+    console.error('[Cheki Health Error]:', err);
+    return res.status(500).json({ success: false, error: err?.message || 'Failed to check Cheki API health' });
+  }
+});
+
 // 404 handler for unmatched /api endpoints
 app.use('/api/*', (req, res) => {
   res.status(404).json({ error: `API endpoint ${req.originalUrl || req.url} not found` });

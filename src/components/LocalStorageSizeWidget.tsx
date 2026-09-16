@@ -254,7 +254,7 @@ export const LocalStorageSizeWidget: React.FC<LocalStorageSizeWidgetProps> = ({
       {/* Widget Header */}
       <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0">
             <Icon className="material-symbols-outlined text-[16px]">hard_drive</Icon>
           </div>
           <div>
@@ -268,9 +268,9 @@ export const LocalStorageSizeWidget: React.FC<LocalStorageSizeWidgetProps> = ({
           type="button"
           onClick={handleRefresh}
           title={lang === 'am' ? 'እንደገና አስላ' : 'Recalculate Size'}
-          className="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
         >
-          <Icon className={`material-symbols-outlined text-[16px] ${isRefreshing ? 'animate-spin text-blue-600' : ''}`}>
+          <Icon className={`material-symbols-outlined text-[16px] ${isRefreshing ? 'animate-spin text-slate-700' : ''}`}>
             refresh
           </Icon>
         </button>
@@ -360,7 +360,7 @@ export const LocalStorageSizeWidget: React.FC<LocalStorageSizeWidgetProps> = ({
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-[11px] font-bold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer transition-colors"
+            className="text-[11px] font-bold text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-blue-400 flex items-center gap-1 cursor-pointer transition-colors"
           >
             <Icon className="material-symbols-outlined text-[14px]">
               {isExpanded ? 'unfold_less' : 'unfold_more'}
