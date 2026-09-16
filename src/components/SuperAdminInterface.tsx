@@ -1257,7 +1257,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     </div>
 
                     {/* Stats metrics */}
-                    <div className="grid grid-cols-3 gap-2 py-2 px-3 rounded-md bg-surface-container/60 border border-outline-variant/50 text-center">
+                    <div className="grid grid-cols-3 gap-2 py-2 px-3 rounded-md bg-slate-50 dark:bg-slate-900/30 text-center">
                       <div>
                         <div className="text-[10px] text-outline font-bold uppercase tracking-wider">{isAmharic ? 'ጠቅላላ' : 'Total'}</div>
                         <div className="text-sm font-black text-on-surface">{regCount}</div>

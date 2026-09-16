@@ -545,7 +545,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {canViewKPIs && (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
           {/* Total Revenue */}
-          <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="bg-slate-50 dark:bg-slate-900/30 p-3.5 rounded-xl shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase text-slate-700 dark:text-slate-300 tracking-wider">
                 {isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
@@ -566,7 +566,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* Active / Current */}
-          <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-emerald-300 dark:border-emerald-800/80 shadow-xs">
+          <div className="bg-emerald-50 dark:bg-emerald-900/30 p-3.5 rounded-xl shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 tracking-wider">
                 {isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
@@ -589,7 +589,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* Expiring Soon (DUE) */}
-          <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-amber-300 dark:border-amber-800/80 shadow-xs">
+          <div className="bg-amber-50 dark:bg-amber-900/30 p-3.5 rounded-xl shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase text-amber-800 dark:text-amber-300 tracking-wider">
                 {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
@@ -612,7 +612,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* Delinquent / Expired */}
-          <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-rose-300 dark:border-rose-800/80 shadow-xs">
+          <div className="bg-rose-50 dark:bg-rose-900/30 p-3.5 rounded-xl shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase text-rose-800 dark:text-rose-300 tracking-wider">
                 {isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}

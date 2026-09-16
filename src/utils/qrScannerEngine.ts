@@ -84,20 +84,24 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
             const bb = results[0].boundingBox;
             let boundingBox;
             if (bb) {
+              const x = (bb as any).x ?? (bb as any).left ?? 0;
+              const y = (bb as any).y ?? (bb as any).top ?? 0;
+              const width = bb.width || 0;
+              const height = bb.height || 0;
               boundingBox = {
-                x: bb.x,
-                y: bb.y,
-                width: bb.width,
-                height: bb.height,
-                centerX: bb.x + bb.width / 2,
-                centerY: bb.y + bb.height / 2
+                x,
+                y,
+                width,
+                height,
+                centerX: x + width / 2,
+                centerY: y + height / 2,
               };
             }
             return {
               rawValue: results[0].rawValue.trim(),
               format: results[0].format,
               source: 'native',
-              boundingBox
+              boundingBox,
             };
           }
         } catch (err) {
@@ -145,10 +149,10 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
           const scaleX = cropW / targetRoiW;
           const scaleY = cropH / targetRoiH;
           
-          const minX = Math.min(loc.topLeftCorner.x, loc.bottomLeftCorner.x);
-          const maxX = Math.max(loc.topRightCorner.x, loc.bottomRightCorner.x);
-          const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y);
-          const maxY = Math.max(loc.bottomLeftCorner.y, loc.bottomRightCorner.y);
+          const minX = Math.min(loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomRightCorner.x, loc.bottomLeftCorner.x);
+          const maxX = Math.max(loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomRightCorner.x, loc.bottomLeftCorner.x);
+          const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomRightCorner.y, loc.bottomLeftCorner.y);
+          const maxY = Math.max(loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomRightCorner.y, loc.bottomLeftCorner.y);
           
           const x = cropX + minX * scaleX;
           const y = cropY + minY * scaleY;
@@ -199,10 +203,10 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
           const scaleX = vw / targetW;
           const scaleY = vh / targetH;
           
-          const minX = Math.min(loc.topLeftCorner.x, loc.bottomLeftCorner.x);
-          const maxX = Math.max(loc.topRightCorner.x, loc.bottomRightCorner.x);
-          const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y);
-          const maxY = Math.max(loc.bottomLeftCorner.y, loc.bottomRightCorner.y);
+          const minX = Math.min(loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomRightCorner.x, loc.bottomLeftCorner.x);
+          const maxX = Math.max(loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomRightCorner.x, loc.bottomLeftCorner.x);
+          const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomRightCorner.y, loc.bottomLeftCorner.y);
+          const maxY = Math.max(loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomRightCorner.y, loc.bottomLeftCorner.y);
           
           const x = minX * scaleX;
           const y = minY * scaleY;
@@ -293,10 +297,10 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
         const scaleX = origW / w;
         const scaleY = origH / h;
 
-        const minX = Math.min(loc.topLeftCorner.x, loc.bottomLeftCorner.x);
-        const maxX = Math.max(loc.topRightCorner.x, loc.bottomRightCorner.x);
-        const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y);
-        const maxY = Math.max(loc.bottomLeftCorner.y, loc.bottomRightCorner.y);
+        const minX = Math.min(loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomRightCorner.x, loc.bottomLeftCorner.x);
+        const maxX = Math.max(loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomRightCorner.x, loc.bottomLeftCorner.x);
+        const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomRightCorner.y, loc.bottomLeftCorner.y);
+        const maxY = Math.max(loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomRightCorner.y, loc.bottomLeftCorner.y);
 
         const x = minX * scaleX;
         const y = minY * scaleY;

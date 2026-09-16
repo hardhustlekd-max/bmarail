@@ -174,9 +174,67 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const cameraContainerRef = useRef<HTMLDivElement>(null);
+  const viewfinderReticleRef = useRef<HTMLDivElement>(null);
   const animFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const isProcessingRef = useRef(false);
+
+  // Computes precise 2D affine translation + scale to bring detected QR code directly into bracket center
+  const computeQrLockStyle = (
+    detectedBox: { x: number; y: number; width: number; height: number; centerX: number; centerY: number },
+    mediaWidth: number,
+    mediaHeight: number
+  ): React.CSSProperties => {
+    const container = cameraContainerRef.current;
+    const reticle = viewfinderReticleRef.current;
+
+    if (!container || !reticle || !mediaWidth || !mediaHeight || !detectedBox) {
+      return {};
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const reticleRect = reticle.getBoundingClientRect();
+
+    const cW = containerRect.width;
+    const cH = containerRect.height;
+    if (cW <= 0 || cH <= 0) return {};
+
+    // Exact scale factor used by CSS `object-fit: cover`
+    const scaleCover = Math.max(cW / mediaWidth, cH / mediaHeight);
+    const renderedW = mediaWidth * scaleCover;
+    const renderedH = mediaHeight * scaleCover;
+    const offsetX = (cW - renderedW) / 2;
+    const offsetY = (cH - renderedH) / 2;
+
+    // Center of the detected QR code in container coordinate space
+    const qrScreenX = offsetX + detectedBox.centerX * scaleCover;
+    const qrScreenY = offsetY + detectedBox.centerY * scaleCover;
+
+    // Center of the blue bracket viewfinder in container coordinate space
+    const targetX = reticleRect.left + reticleRect.width / 2 - containerRect.left;
+    const targetY = reticleRect.top + reticleRect.height / 2 - containerRect.top;
+
+    // Target zoom: fit the QR code comfortably inside the bracket (~72% of reticle size)
+    const qrScreenWidth = Math.max((detectedBox.width || 80) * scaleCover, 20);
+    const desiredQrWidth = Math.max(reticleRect.width * 0.72, 120);
+    let zoom = desiredQrWidth / qrScreenWidth;
+
+    if (isNaN(zoom) || !isFinite(zoom)) {
+      zoom = 1.6;
+    }
+    zoom = Math.min(Math.max(zoom, 1.25), 3.2);
+
+    // Exact translation to place the QR center precisely at the bracket center
+    const translateX = targetX - qrScreenX * zoom;
+    const translateY = targetY - qrScreenY * zoom;
+
+    return {
+      transformOrigin: '0px 0px',
+      transform: `translate(${translateX.toFixed(2)}px, ${translateY.toFixed(2)}px) scale(${zoom.toFixed(3)})`,
+      transition: 'transform 0.65s cubic-bezier(0.22, 1, 0.36, 1)',
+    };
+  };
 
   // When closing, reset everything
   const handleClose = () => {
@@ -477,25 +535,20 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   
                   if (detected.boundingBox && video.videoWidth && video.videoHeight) {
                     setIsLocked(true);
-                    
-                    const originX = (detected.boundingBox.centerX / video.videoWidth) * 100;
-                    const originY = (detected.boundingBox.centerY / video.videoHeight) * 100;
-                    
-                    setQrLockStyle({
-                      transformOrigin: `${originX}% ${originY}%`,
-                      transform: 'scale(1.8)',
-                      transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
-                    });
+                    const lockStyle = computeQrLockStyle(detected.boundingBox, video.videoWidth, video.videoHeight);
+                    setQrLockStyle(lockStyle);
                     
                     // Wait for the spring animation to center the QR code before processing
                     setTimeout(() => {
-                      if (active || isProcessingRef.current) {
+                      if (active) {
                         active = false;
+                        isProcessingRef.current = false;
                         processQRData(detected.rawValue);
                       }
                     }, 800);
                   } else {
                     active = false;
+                    isProcessingRef.current = false;
                     processQRData(detected.rawValue);
                   }
                   return;
@@ -562,8 +615,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const processQRData = async (qrData: string, imageOverride?: string) => {
     const cleanData = qrData.trim();
     if (!cleanData) return;
-    if (isProcessingRef.current) return;
-    isProcessingRef.current = true;
 
     // Play shutter sound instantly upon capturing a valid QR code
     playShutterSound();
@@ -660,14 +711,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
         if (detected.boundingBox && origW && origH) {
           setIsLocked(true);
-          const originX = (detected.boundingBox.centerX / origW) * 100;
-          const originY = (detected.boundingBox.centerY / origH) * 100;
-          
-          setQrLockStyle({
-            transformOrigin: `${originX}% ${originY}%`,
-            transform: 'scale(1.8)',
-            transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          });
+          const lockStyle = computeQrLockStyle(detected.boundingBox, origW, origH);
+          setQrLockStyle(lockStyle);
 
           // Wait for the spring animation to center the QR code inside the bracket while blue laser line is scanning
           setTimeout(() => {
@@ -741,7 +786,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           {/* Camera View Box - Full viewpoint height & width */}
           <div className="relative bg-slate-950 rounded-none w-full flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center border-0">
             {isScanning ? (
-              <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden">
+              <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden">
                 {uploadedImageSrc ? (
                   <img
                     src={uploadedImageSrc}
@@ -834,6 +879,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {/* 2. CENTER VIEWFINDER (Compact Reticle Size & Semi-Transparent Viewport Overlay) */}
                   <div className="flex flex-col items-center justify-center my-auto pointer-events-none">
                     <div
+                      ref={viewfinderReticleRef}
                       className="relative w-56 h-56 sm:w-64 sm:h-64 max-w-[70vw] max-h-[50vh] border border-white/25 rounded-xl flex-shrink-0"
                       style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
                     >

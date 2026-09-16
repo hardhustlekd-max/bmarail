@@ -217,18 +217,12 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     async (log: VerificationLog) => {
       try {
         await saveVerificationLogToDb(log);
-        addToast(
-          isAmharic ? 'የማረጋገጫ መረጃው ተመዝግቧል!' : 'Verification log stored successfully!',
-          'success'
-        );
+        // Silent automated background logging without disruptive toast notification
       } catch (err) {
-        addToast(
-          isAmharic ? 'የማረጋገጫ መረጃ ማስቀመጥ አልተሳካም!' : 'Failed to save verification log!',
-          'error'
-        );
+        console.error('Failed to save verification log:', err);
       }
     },
-    [addToast, isAmharic]
+    []
   );
 
   const saveOfficerAssignment = useCallback(

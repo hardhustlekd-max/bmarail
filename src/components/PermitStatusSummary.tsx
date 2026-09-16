@@ -39,8 +39,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       percentage: Math.round((pendingCount / totalCount) * 100),
       icon: 'pending_actions',
       badgeBg: 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700',
-      border: 'border-amber-200 dark:border-amber-900/60',
-      bg: 'bg-amber-50/40 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30',
+      bg: 'bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/40',
       textClass: 'text-amber-700 dark:text-amber-400',
       description: isAmharic ? 'ማፅደቂያ የሚጠበቁ' : 'Awaiting review',
     },
@@ -51,8 +50,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       percentage: Math.round((approvedCount / totalCount) * 100),
       icon: 'verified',
       badgeBg: 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700',
-      border: 'border-emerald-200 dark:border-emerald-900/60',
-      bg: 'bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/30',
+      bg: 'bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
       textClass: 'text-emerald-700 dark:text-emerald-400',
       description: isAmharic ? 'የተረጋገጡ' : 'Verified & active',
     },
@@ -63,8 +61,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       percentage: Math.round((rejectedCount / totalCount) * 100),
       icon: 'cancel',
       badgeBg: 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-700',
-      border: 'border-rose-200 dark:border-rose-900/60',
-      bg: 'bg-rose-50/40 dark:bg-rose-950/20 hover:bg-rose-50 dark:hover:bg-rose-950/30',
+      bg: 'bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-100 dark:hover:bg-rose-900/40',
       textClass: 'text-rose-700 dark:text-rose-400',
       description: isAmharic ? 'ውድቅ የተደረጉ' : 'Failed eligibility',
     },
@@ -75,8 +72,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       percentage: 100,
       icon: 'assessment',
       badgeBg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-slate-800',
-      border: 'border-slate-200 dark:border-slate-800',
-      bg: 'bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800/70',
+      bg: 'bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-800/70',
       textClass: 'text-slate-800 dark:text-blue-400',
       description: isAmharic ? 'ሁሉም ምዝገባዎች' : 'All registrations',
     },
@@ -112,7 +108,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
             <div
               key={card.key}
               onClick={() => onSelectStatusFilter && onSelectStatusFilter(card.key)}
-              className={`p-2 sm:p-3 rounded-lg border ${card.border} ${card.bg} hover:shadow-md hover:border-primary/40 active:scale-105 active:bg-[#0f172a]/25 dark:active:bg-[#0f172a]/40 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
+              className={`p-2 sm:p-3 rounded-lg ${card.bg} hover:shadow-md active:scale-105 active:bg-[#0f172a]/25 dark:active:bg-[#0f172a]/40 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
             >
               <div className={`flex justify-between items-center ${card.textClass} mb-1`}>
                 <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-primary transition-colors">
