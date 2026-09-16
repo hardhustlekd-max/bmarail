@@ -1536,7 +1536,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
               <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
                 <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 shrink-0"></span>
                   <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ግንኙነት' : 'Cloud'}</span>
                 </div>
                 <div className="text-xs sm:text-base font-black text-emerald-600 truncate">
@@ -1829,8 +1829,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
                   <span>
                     {isAmharic ? 'የአሁኑ ገጽታ:' : 'Active:'}{' '}
                     <strong>
@@ -1874,7 +1874,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
                             </div>
                             <span className="text-[10px] font-black tracking-wide">
-                              ባህርዳር ሞተረኛች ማህበር
+                              ባህር ዳር ሞተረኞች ማህበር
                             </span>
                           </div>
                           <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-white/20 text-white uppercase">

@@ -443,7 +443,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           </div>
 
           {showHiddenControls && isSuperAdmin && (
-            <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-full text-xs font-black shadow-2xs animate-pulse">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-md text-xs font-bold shadow-2xs">
               <Icon className="material-symbols-outlined text-[16px]">visibility_off</Icon>
               <span>
                 {isAmharic ? 'ጠቅላላ የተደበቁ:' : 'Total Hidden:'}{' '}
@@ -754,7 +754,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     type="button"
                                     onClick={() => setSelectedRegForQR(reg)}
                                     className="px-2.5 py-1 bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-[11px] rounded-lg transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
-                                    title={isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}
+                                    title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
                                   >
                                     <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
                                     <span className="hidden xl:inline">{isAmharic ? 'መታወቂያ' : 'Association ID'}</span>
@@ -1897,7 +1897,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     className="px-3.5 py-2 bg-purple-700 hover:bg-purple-800 text-white font-extrabold rounded-md text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
                   >
                     <Icon className="material-symbols-outlined text-[18px]">badge</Icon>
-                    <span>{isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}</span>
+                    <span>{isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}</span>
                   </button>
                 )}
 

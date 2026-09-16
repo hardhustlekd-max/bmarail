@@ -54,7 +54,7 @@ export const FormsPage: React.FC<FormsPageProps> = ({
     <div className="space-y-2 md:space-y-2.5">
       {isReadOnly && (
         <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center gap-2.5 shadow-2xs">
-          <Icon className="material-symbols-outlined text-[18px] animate-pulse">warning</Icon>
+          <Icon className="material-symbols-outlined text-[18px]">warning</Icon>
           <span>
             {isAmharic
               ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ በእርስዎ ሚና ፈቃዶች መሰረት ማስተካከል እና አዲስ ምዝገባ ማስገባት አይቻልም።'

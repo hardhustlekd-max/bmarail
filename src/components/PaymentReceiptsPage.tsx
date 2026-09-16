@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Icon } from './ui/Icon';
-import { Language, UserRole, MotorcycleRegistration, PaymentReceipt } from '../types';
-import { calculateOneMonthExpiration, getPaymentReceiptStatus } from '../utils/paymentUtils';
+import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
+import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
@@ -18,6 +18,7 @@ interface PaymentReceiptsPageProps {
   onAddPaymentReceipt?: (receipt: PaymentReceipt) => Promise<void>;
   onDeleteReceipt?: (id: string) => Promise<void>;
   onDeletePaymentReceipt?: (id: string) => Promise<void>;
+  onShowToast?: (msg: string, type?: 'success' | 'error' | 'info') => void;
   isLoading?: boolean;
 }
 
@@ -32,6 +33,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   onAddPaymentReceipt,
   onDeleteReceipt,
   onDeletePaymentReceipt,
+  onShowToast,
   isLoading = false,
 }) => {
   const isAmharic = lang === 'am';
@@ -210,10 +212,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       unpaidDebtAmount = 500; // standard single term fee due
     }
 
+    const termStatus: TermStatus = found.termStatus || (
+      latestReceipt?.expirationDate ? calculateTermStatus(latestReceipt.expirationDate) : 'DELINQUENT'
+    );
+
     return {
       registration: found,
       latestReceipt,
       expirationStatusType,
+      termStatus,
       daysRemaining,
       unpaidDebtAmount,
       overdueMonths,
@@ -364,6 +371,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         await saveFn(newReceipt);
       } else {
         await savePaymentReceiptToDb(newReceipt);
+        if (onShowToast) {
+          onShowToast(
+            isAmharic
+              ? `የክፍያ ደረሰኝ ቁጥር ${newReceipt.receiptNumber} በተሳካ ሁኔታ ተመዝግቧል!`
+              : `Payment receipt #${newReceipt.receiptNumber} successfully registered!`,
+            'success'
+          );
+        }
       }
 
       setSubmitSuccess(
@@ -521,10 +536,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 {isAmharic ? 'አዲስ የክፍያ ደረሰኝ መመዝገቢያ ፎርም' : 'New Payment Receipt Entry Form'}
               </h2>
             </div>
-            <span className="text-[11px] font-extrabold text-slate-500">
-              {isAmharic ? 'መዝጋቢ፦ ' : 'Clerk: '}
-              <span className="text-[#0f172a] font-black">{userBadgeId}</span>
-            </span>
           </div>
 
           {submitError && (
@@ -743,7 +754,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 />
                 <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-secondary">
                   <Icon className="material-symbols-outlined text-[18px]">
-                    badge
+                    search
                   </Icon>
                 </div>
               </div>
@@ -820,25 +831,38 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   </div>
                 </div>
 
-                {/* Auto-Calculated Last Payment Expiration Status */}
+                {/* Auto-Calculated Last Payment Expiration Status & Account Ledger TermStatus */}
                 <div className="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant/60">
-                  <span className="block text-[10px] font-bold text-secondary uppercase">
-                    {isAmharic ? 'የመጨረሻ ክፍያ ማብቂያ ሁኔታ' : 'Last Payment Expiration Status'}
-                  </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="block text-[10px] font-bold text-secondary uppercase">
+                      {isAmharic ? 'የመጨረሻ ክፍያ ማብቂያ ሁኔታ' : 'Last Payment Expiration Status'}
+                    </span>
+                    <span
+                      className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded tracking-wider ${
+                        selectedRegInfo.termStatus === 'CURRENT'
+                          ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40'
+                          : selectedRegInfo.termStatus === 'DUE'
+                          ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40'
+                          : 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40'
+                      }`}
+                    >
+                      LEDGER: {selectedRegInfo.termStatus}
+                    </span>
+                  </div>
                   <div className="mt-1">
                     {selectedRegInfo.expirationStatusType === 'active' && (
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-black uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                         <Icon className="material-symbols-outlined text-[14px]">check_circle</Icon>
                         <span>
-                          {isAmharic ? 'ህጋዊ' : 'Active'} ({selectedRegInfo.daysRemaining} {isAmharic ? 'ቀን ይቀራል' : 'days left'})
+                          {isAmharic ? 'ህጋዊ (CURRENT)' : 'CURRENT (Active)'} ({selectedRegInfo.daysRemaining} {isAmharic ? 'ቀን ይቀራል' : 'days left'})
                         </span>
                       </span>
                     )}
                     {selectedRegInfo.expirationStatusType === 'expiring_soon' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-black uppercase bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-black uppercase bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
                         <Icon className="material-symbols-outlined text-[14px]">alarm</Icon>
                         <span>
-                          {isAmharic ? 'ሊያልቅ ነው' : 'Expiring Soon'} ({selectedRegInfo.daysRemaining} {isAmharic ? 'ቀን' : 'days'})
+                          {isAmharic ? 'የደረሰ (DUE)' : 'DUE (Expiring Soon)'} ({selectedRegInfo.daysRemaining} {isAmharic ? 'ቀን' : 'days'})
                         </span>
                       </span>
                     )}
@@ -846,14 +870,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-black uppercase bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 dark:border-rose-800">
                         <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                         <span>
-                          {isAmharic ? 'ጊዜው አልፏል' : 'Expired'} ({Math.abs(selectedRegInfo.daysRemaining)} {isAmharic ? 'ቀን አልፏል' : 'days ago'})
+                          {isAmharic ? 'ያለፈበት (DELINQUENT)' : 'DELINQUENT (Expired)'} ({Math.abs(selectedRegInfo.daysRemaining)} {isAmharic ? 'ቀን አልፏል' : 'days ago'})
                         </span>
                       </span>
                     )}
                     {selectedRegInfo.expirationStatusType === 'none' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-black uppercase bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700">
-                        <Icon className="material-symbols-outlined text-[14px]">info</Icon>
-                        <span>{isAmharic ? 'ቀደመ ክፍያ የለም' : 'No Previous Payment Recorded'}</span>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-black uppercase bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 dark:border-rose-800">
+                        <Icon className="material-symbols-outlined text-[14px]">warning</Icon>
+                        <span>{isAmharic ? 'ያልተከፈለ (DELINQUENT)' : 'DELINQUENT (Unpaid Term)'}</span>
                       </span>
                     )}
                   </div>
@@ -1237,7 +1261,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                               </span>
                             )}
                             {status === 'expiring_soon' && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
                                 <Icon className="material-symbols-outlined text-[12px]">alarm</Icon>
                                 <span>
                                   {isAmharic ? 'ሊያልቅ ነው' : 'Expiring Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
@@ -1367,7 +1391,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           </span>
                         )}
                         {status === 'expiring_soon' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800 animate-pulse">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
                             <Icon className="material-symbols-outlined text-[12px]">alarm</Icon>
                             <span>
                               {isAmharic ? 'ሊያልቅ ነው' : 'Expiring Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})

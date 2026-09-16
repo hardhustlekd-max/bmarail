@@ -1408,8 +1408,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <div className="pt-3 pb-1 text-center text-[10px] sm:text-[11px] font-medium opacity-80">
                     <p className={activeTheme.footerText}>
                       {isAmharic
-                        ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኛች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።'
-                        : '© 2026 Bahir Dar Motorcyclists Association Permit Control System. All rights reserved.'}
+                        ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።'
+                        : '© 2026 Bahirdar Motorist Association Permit Control System. All rights reserved.'}
                     </p>
                   </div>
 
@@ -1516,7 +1516,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             <ZoomableDocumentContainer
               lang={lang}
               userRole={userRole as any}
-              title={isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}
+              title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
               onClose={() => setShowDigitalIdModal(false)}
               requireClerkRequest={false}
             >

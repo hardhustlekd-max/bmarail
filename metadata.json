@@ -1,6 +1,6 @@
 {
-  "name": "ባህር ዳር ሞተረኛች ማህበር",
-  "description": "ባህር ዳር ሞተረኛች ማህበር - የሞተር ሳይክል ፈቃድና ምዝገባ ስርዓት",
+  "name": "Bahirdar Motorist Association",
+  "description": "ባህር ዳር ሞተረኞች ማህበር - Bahirdar Motorist Association Permit & Vehicle Governance System",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

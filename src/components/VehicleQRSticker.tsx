@@ -125,10 +125,10 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
                 {/* Header System Title Text Block */}
                 <div className="flex-1 text-center font-sans leading-none text-[#000000]">
                   <div className="text-[12px] font-black tracking-tight mb-1 font-sans">
-                    ባህር ዳር ሞተረኛች ማህበር
+                    ባህር ዳር ሞተረኞች ማህበር
                   </div>
                   <div className="text-[10px] font-extrabold tracking-tight text-black uppercase">
-                    BAHIR DAR MOTORCYCLISTS ASSOCIATION
+                    BAHIRDAR MOTORIST ASSOCIATION
                   </div>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
         {/* Modal Action Footer Bar (No-Print) */}
         <div className="no-print flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/60">
           <div className="text-[11px] font-semibold text-secondary flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
             <span>{isAmharic ? 'የተረጋገጠ ኦፊሴላዊ ተለጣፊ' : 'Official Validated Sticker'}</span>
           </div>
 

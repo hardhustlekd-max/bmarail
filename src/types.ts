@@ -1,7 +1,7 @@
 export const APP_LOGO = '/logo.png';
 export const APP_FLAG = '/flag.jpg';
-export const APP_TITLE_AM = 'ባህር ዳር ሞተረኛች ማህበር';
-export const APP_TITLE_EN = 'BAHIR DAR MOTORCYCLISTS ASSOCIATION';
+export const APP_TITLE_AM = 'ባህር ዳር ሞተረኞች ማህበር';
+export const APP_TITLE_EN = 'BAHIRDAR MOTORIST ASSOCIATION';
 
 export const BAHIR_DAR_SUBCITIES = [
   { en: 'Fasilo', am: 'ፋሲሎ' },
@@ -17,6 +17,8 @@ export type UserRole = 'clerk' | 'admin' | 'officer' | 'superadmin';
 export type Language = 'am' | 'en';
 
 export type VehicleCategory = 'electric' | 'gas_under_110cc';
+
+export type TermStatus = 'CURRENT' | 'DUE' | 'DELINQUENT';
 
 export interface MotorcycleRegistration {
   id: string;
@@ -48,6 +50,11 @@ export interface MotorcycleRegistration {
   receiptNumber?: string;
   paymentAmount?: string;
   receiptScreenshot?: string;
+  termStatus?: TermStatus;
+  activeTermExpirationDate?: string;
+  lastPaymentDate?: string;
+  lastReceiptNumber?: string;
+  lastPaymentAmount?: string | number;
 }
 
 export interface OfficerAssignment {

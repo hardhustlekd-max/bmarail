@@ -62,6 +62,14 @@ import {
   pulseNavbarLoader,
   ActionState,
 } from '../services/actionTracker';
+import { ToastProvider, useToast } from '../context/ToastContext';
+import { DataProvider, useData } from '../context/DataContext';
+import { ActionProvider } from '../context/ActionContext';
+import { DashboardOverviewRouter } from '../domains/dashboard/DashboardOverviewRouter';
+import { RegistryRouter } from '../domains/registry/RegistryRouter';
+import { EnforcementRouter } from '../domains/enforcement/EnforcementRouter';
+import { RevenueRouter } from '../domains/revenue/RevenueRouter';
+import { GovernanceRouter } from '../domains/governance/GovernanceRouter';
 
 interface HomePageProps {
   userBadgeId: string;
@@ -94,7 +102,7 @@ export type ActiveHomePage =
   | 'superadmin'
   | 'settings';
 
-export const HomePage: React.FC<HomePageProps> = ({
+const HomePageShell: React.FC<HomePageProps> = ({
   userBadgeId,
   userRole,
   currentLang,
@@ -488,7 +496,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   // Synchronize browser document.title throughout the app to reflect the top navbar title in Amharic
   useEffect(() => {
-    document.title = `${currentNavbarTitleAmharic} | ባህር ዳር ሞተረኛች ማህበር`;
+    document.title = `${currentNavbarTitleAmharic} | ባህር ዳር ሞተረኞች ማህበር`;
   }, [currentNavbarTitleAmharic]);
 
   // Dynamic Breadcrumb navigation calculation matching side menu page titles
@@ -1090,11 +1098,32 @@ export const HomePage: React.FC<HomePageProps> = ({
   );
 
   // Toasts Notification State
-  const [toasts, setToasts] = useState<{ id: string; message: string; type: 'success' | 'error' | 'info' }[]>([]);
+  interface ToastItem {
+    id: string;
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+    title?: string;
+    tag?: string;
+  }
 
-  const addToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  const addToast = (
+    message: string,
+    type: 'success' | 'error' | 'info' | 'warning' = 'success',
+    options?: { title?: string; tag?: string }
+  ) => {
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
+    setToasts((prev) => [
+      ...prev,
+      {
+        id,
+        message,
+        type,
+        title: options?.title,
+        tag: options?.tag,
+      },
+    ]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 4500);
@@ -1153,8 +1182,12 @@ export const HomePage: React.FC<HomePageProps> = ({
       addToast(
         isAmharic
           ? `የክፍያ ደረሰኝ ቁጥር ${receipt.receiptNumber} በተሳካ ሁኔታ ተመዝግቧል!`
-          : `Payment receipt #${receipt.receiptNumber} saved successfully!`,
-        'success'
+          : `Payment receipt #${receipt.receiptNumber} registered successfully!`,
+        'success',
+        {
+          title: isAmharic ? 'የክፍያ ደረሰኝ ተመዝግቧል' : 'Receipt Registered Successfully',
+          tag: `#${receipt.receiptNumber}`,
+        }
       );
     } catch (err) {
       addToast(
@@ -1428,7 +1461,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             {!isCollapsed && (
               <div className="min-w-0">
                 <h1 id="desktop-header-text" className={`text-white leading-tight truncate whitespace-nowrap ${isAmharic ? 'font-black text-sm lg:text-[15px]' : 'font-black text-xs lg:text-sm tracking-tight'}`}>
-                  {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
+                  {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'BAHIRDAR MOTORIST ASSOCIATION'}
                 </h1>
               </div>
             )}
@@ -1860,7 +1893,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     {userRole === 'superadmin' ? 'Super Admin' : userRole === 'admin' ? 'Manager' : userRole === 'clerk' ? 'Secretary' : 'Officer'}
                   </span>
                   <div className="flex items-center gap-1 mt-0.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                     <span className="text-[10px] text-emerald-400 font-bold">Online</span>
                   </div>
                 </div>
@@ -1913,7 +1946,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div className="min-w-0">
                   <h1 id="header-text" className={`text-white leading-tight truncate whitespace-nowrap ${isAmharic ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
-                    {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
+                    {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'BAHIRDAR MOTORIST ASSOCIATION'}
                   </h1>
                 </div>
               </div>
@@ -2017,7 +2050,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   >
                     <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">notifications</Icon>
                     {unreadNotificationCount > 0 && (
-                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[17px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-0.5 -right-0.5 shadow-2xs border border-[#1e293b] animate-pulse">
+                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[17px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-0.5 -right-0.5 shadow-2xs border border-[#1e293b]">
                         {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                       </span>
                     )}
@@ -2680,7 +2713,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               >
                 <Icon className="material-symbols-outlined text-[20px]">notifications</Icon>
                 {unreadNotificationCount > 0 && (
-                  <span className="bg-rose-500 text-white text-[10px] font-black min-w-[18px] h-4.5 px-1 rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-2xs border-2 border-white animate-pulse">
+                  <span className="bg-rose-500 text-white text-[10px] font-black min-w-[18px] h-4.5 px-1 rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-2xs border-2 border-white">
                     {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                   </span>
                 )}
@@ -2966,166 +2999,59 @@ export const HomePage: React.FC<HomePageProps> = ({
             renderBlockedPageUI()
           ) : (
             <div key={activePage} className="animate-page-enter flex-none flex flex-col">
-              {/* PAGE 1: UNIVERSAL DASHBOARD OVERVIEW */}
+              {/* Domain 1: Universal Dashboard Overview */}
               {activePage === 'dashboard' && (
-                <MunicipalDashboardOverview
-                  userBadgeId={userBadgeId}
-                  userRole={userRole}
+                <DashboardOverviewRouter
                   lang={currentLang}
-                  registrations={registrations}
-                  officers={officers}
-                  verificationLogs={verificationLogs}
-                  unregisteredReports={unregisteredReports}
-                  paymentReceipts={paymentReceipts}
+                  userRole={userRole}
+                  userBadgeId={userBadgeId}
                   onQuickAction={handleQuickAction}
-                  onAddVerificationLog={handleAddVerificationLog}
                   isLoading={isInitialLoading || pageLoading}
                 />
               )}
 
-              {/* PAGE 2: DEDICATED FORMS PAGE */}
-              {activePage === 'forms' && (
-                <FormsPage
+              {/* Domain 2: Registry Domain (Forms, Today's Submissions, Tables) */}
+              {['forms', 'today_submissions_adjust', 'tables'].includes(activePage) && (
+                <RegistryRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
                   lang={currentLang}
                   userRole={userRole}
                   userBadgeId={userBadgeId}
-                  registrations={registrations}
-                  officers={officers}
-                  onAddRegistration={handleAddRegistration}
-                  onViewRegistered={() => setActivePage('today_submissions_adjust')}
-                  onAddOfficerAssignment={handleAddOfficerAssignment}
+                  tableInitialTab={tableInitialTab}
                 />
               )}
 
-              {/* PAGE: TODAY'S SUBMISSIONS / EDITING & CORRECTION */}
-              {activePage === 'today_submissions_adjust' && (
-                <TodaySubmissionsPage
+              {/* Domain 3: Enforcement (Field) Domain (Scanner, Inspection Reports, Unregistered Reports) */}
+              {['scan', 'inspection_report', 'report_unregistered', 'unregistered_list'].includes(activePage) && (
+                <EnforcementRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
                   lang={currentLang}
                   userRole={userRole}
                   userBadgeId={userBadgeId}
-                  registrations={registrations}
-                  onNavigateToNewRegistration={() => setActivePage('forms')}
-                  onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
-                  isLoading={isInitialLoading || pageLoading}
                 />
               )}
 
-              {/* PAGE 3: DEDICATED TABLES & RECORDS PAGE */}
-              {activePage === 'tables' && (
-                <TablesPage
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                  registrations={registrations}
-                  officers={officers}
-                  verificationLogs={verificationLogs}
-                  paymentReceipts={paymentReceipts}
-                  onSavePaymentReceipt={handleAddPaymentReceipt}
-                  onDeletePaymentReceipt={handleDeletePaymentReceipt}
-                  onApproveRegistration={handleApproveRegistration}
-                  onRejectRegistration={handleRejectRegistration}
-                  onAddVerificationLog={handleAddVerificationLog}
-                  initialTableTab={tableInitialTab}
-                  onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
-                  isLoading={isInitialLoading || pageLoading}
-                />
-              )}
-
-              {/* PAGE: DEDICATED INSPECTION REPORT (VERIFICATION LOG) PAGE */}
-              {activePage === 'inspection_report' && (
-                <OfficerVerificationHistory
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                  registrations={registrations}
-                  verificationLogs={verificationLogs}
-                  onAddVerificationLog={handleAddVerificationLog}
-                  initialStatusFilter={inspectionInitialFilter}
-                />
-              )}
-
-              {/* PAGE: UNREGISTERED VEHICLE REPORT FORM */}
-              {activePage === 'report_unregistered' && (
-                <UnregisteredVehicleForm
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                  officerName={userRole === 'officer' ? 'Traffic Patrol Officer' : 'System Officer'}
-                  onSubmitReport={handleAddUnregisteredReport}
-                  onCancel={() => setActivePage('unregistered_list')}
-                />
-              )}
-
-              {/* PAGE: UNREGISTERED VEHICLE REPORTS LIST */}
-              {activePage === 'unregistered_list' && (
-                <UnregisteredReportsList
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                  unregisteredReports={unregisteredReports}
-                  onUpdateStatus={handleUpdateUnregisteredReportStatus}
-                  onNewReportClick={() => setActivePage('report_unregistered')}
-                  onOpenRegisterForm={() => setActivePage('forms')}
-                  isLoading={isInitialLoading || pageLoading}
-                />
-              )}
-
-              {/* PAGE: PAYMENT RECEIPT ENTRY & EXPIRATION METRICS */}
+              {/* Domain 4: Revenue (Treasury) Domain (Payment Receipts & Ledger Metrics) */}
               {activePage === 'payment_receipts' && (
-                <PaymentReceiptsPage
+                <RevenueRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
                   lang={currentLang}
                   userRole={userRole}
                   userBadgeId={userBadgeId}
-                  paymentReceipts={paymentReceipts}
-                  registrations={registrations}
-                  onSaveReceipt={handleAddPaymentReceipt}
-                  onAddPaymentReceipt={handleAddPaymentReceipt}
-                  onDeleteReceipt={handleDeletePaymentReceipt}
-                  onDeletePaymentReceipt={handleDeletePaymentReceipt}
-                  isLoading={isInitialLoading || pageLoading}
                 />
               )}
 
-              {/* PAGE 7: SUPER ADMIN GOVERNANCE SEPARATE PAGES */}
-              {activePage.startsWith('superadmin') && userRole === 'superadmin' && (
-                <SuperAdminInterface
-                  currentLang={currentLang}
-                  currentUserBadgeId={userBadgeId}
-                  initialTab={
-                    activePage === 'superadmin_subcities'
-                      ? 'subcities'
-                      : activePage === 'superadmin_owners'
-                      ? 'permits'
-                      : activePage === 'superadmin_permits'
-                      ? 'permits'
-                      : activePage === 'superadmin_maintenance'
-                      ? 'maintenance'
-                      : 'users'
-                  }
-                  onShowToast={(msg, type) => addToast(msg, type === 'warning' ? 'error' : type)}
-                />
-              )}
-
-              {/* PAGE 6: FULL-SCREEN QR SCANNER & VERIFICATION PAGE */}
-              {activePage === 'scan' && (
-                <SharedScannerModal
-                  isOpen={true}
-                  onClose={() => setActivePage('dashboard')}
+              {/* Domain 5: Governance Domain (SuperAdmin Governance & Settings) */}
+              {(activePage.startsWith('superadmin') || activePage === 'settings') && (
+                <GovernanceRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
                   lang={currentLang}
-                  registrations={registrations}
-                  userBadgeId={userBadgeId}
                   userRole={userRole}
-                  onAddVerificationLog={handleAddVerificationLog}
-                  isPage={true}
-                />
-              )}
-
-              {/* PAGE 8: UNIVERSAL USER & SYSTEM SETTINGS PAGE (ALL ROLES) */}
-              {activePage === 'settings' && (
-                <SettingsPage
                   userBadgeId={userBadgeId}
-                  userRole={userRole}
-                  currentLang={currentLang}
                   currentTheme={currentTheme}
                   onToggleLang={onToggleLang}
                   onToggleTheme={onToggleTheme}
@@ -3139,7 +3065,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           {activePage !== 'scan' && (
             <footer className="app-grounded-footer w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 rounded-lg">
               <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
-                {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኛች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahir Dar Motorcyclists Association Permit Governance System. All rights reserved.'}
+                {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahirdar Motorist Association Permit Governance System. All rights reserved.'}
               </div>
               
               <div className="flex items-center gap-3">
@@ -3172,36 +3098,97 @@ export const HomePage: React.FC<HomePageProps> = ({
         </main>
       </div>
 
-      {/* Floating Toast Notification Stack */}
-      <div id="toast-notifications-container" className="fixed top-4 right-4 z-[9999] flex flex-col gap-2.5 w-full max-w-[360px] pointer-events-none px-4 sm:px-0">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-lg shadow-lg border animate-fadeIn transition-all duration-300 ${
-              toast.type === 'success'
-                ? 'bg-surface-container-lowest text-on-surface border-emerald-500 border-l-4'
-                : toast.type === 'info'
-                ? 'bg-surface-container-lowest text-on-surface border-primary border-l-4'
-                : 'bg-surface-container-lowest text-on-surface border-rose-500 border-l-4'
-            }`}
-          >
-            <Icon className={`material-symbols-outlined text-[20px] shrink-0 mt-0.5 ${
-              toast.type === 'success' ? 'text-emerald-500' : toast.type === 'info' ? 'text-primary' : 'text-rose-500'
-            }`}>
-              {toast.type === 'success' ? 'check_circle' : toast.type === 'info' ? 'info' : 'error'}
-            </Icon>
-            <div className="flex-1">
-              <p className="text-xs font-bold leading-snug">{toast.message}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
-              className="text-secondary hover:text-on-surface shrink-0 cursor-pointer transition-colors"
+      {/* Floating Toast Notification Stack - Right Aligned, Animated, Filled Background */}
+      <div
+        id="toast-notifications-container"
+        className="fixed top-5 right-5 z-[99999] flex flex-col items-end gap-3 w-full max-w-[390px] pointer-events-none px-4 sm:px-0"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {toasts.map((toast) => {
+          const isSuccess = toast.type === 'success';
+          const isError = toast.type === 'error';
+          const isWarning = toast.type === 'warning';
+          const isInfo = toast.type === 'info' || (!isSuccess && !isError && !isWarning);
+
+          return (
+            <div
+              key={toast.id}
+              className={`pointer-events-auto relative overflow-hidden w-full self-end ml-auto rounded-xl p-3.5 sm:p-4 shadow-xl text-white transition-all duration-300 animate-toast-in ${
+                isSuccess
+                  ? 'bg-emerald-600 border border-emerald-500 shadow-emerald-950/25 animate-toast-pulse-success'
+                  : isError
+                  ? 'bg-rose-600 border border-rose-500 shadow-rose-950/25'
+                  : isWarning
+                  ? 'bg-amber-600 border border-amber-500 shadow-amber-950/25'
+                  : 'bg-slate-900 border border-slate-700 shadow-black/30'
+              }`}
             >
-              <Icon className="material-symbols-outlined text-[16px] font-bold">close</Icon>
-            </button>
-          </div>
-        ))}
+              {/* Subtle top-light edge highlight */}
+              <div className="absolute inset-x-0 top-0 h-[1px] bg-white/25 pointer-events-none" />
+
+              {/* Subtle shimmer animation for success */}
+              {isSuccess && (
+                <div className="absolute inset-0 -translate-x-full animate-toast-shimmer bg-gradient-to-r from-transparent via-white/12 to-transparent pointer-events-none" />
+              )}
+
+              <div className="flex items-start gap-3 relative z-10">
+                {/* Animated Icon badge with filled contrast container */}
+                <div
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 shadow-xs ${
+                    isSuccess
+                      ? 'bg-white/20 text-white'
+                      : isError
+                      ? 'bg-white/20 text-white'
+                      : isWarning
+                      ? 'bg-white/20 text-white'
+                      : 'bg-white/15 text-white'
+                  }`}
+                >
+                  <Icon
+                    className={`material-symbols-outlined text-[20px] ${
+                      isSuccess ? 'animate-toast-pop' : ''
+                    }`}
+                  >
+                    {isSuccess ? 'check_circle' : isError ? 'error' : isWarning ? 'warning' : 'info'}
+                  </Icon>
+                </div>
+
+                <div className="flex-1 min-w-0 pr-1 text-left">
+                  {toast.title && (
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-[11px] font-black tracking-wide uppercase opacity-90">
+                        {toast.title}
+                      </span>
+                      {toast.tag && (
+                        <span className="px-1.5 py-0.2 rounded bg-black/20 text-[10px] font-mono font-bold">
+                          {toast.tag}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <p className="text-xs font-bold leading-snug text-white/95 break-words">
+                    {toast.message}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+                  className="text-white/80 hover:text-white hover:bg-white/15 p-1 rounded-md shrink-0 cursor-pointer transition-colors"
+                  title={isAmharic ? 'ዝጋ' : 'Dismiss'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px] font-bold">close</Icon>
+                </button>
+              </div>
+
+              {/* Subtle Auto-dismiss Countdown Progress Bar */}
+              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/15 overflow-hidden">
+                <div className="h-full bg-white/40 animate-toast-countdown" />
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Universal Logout Confirmation Modal for All Users */}
@@ -3272,5 +3259,17 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       )}
     </div>
+  );
+};
+
+export const HomePage: React.FC<HomePageProps> = (props) => {
+  return (
+    <ToastProvider>
+      <DataProvider lang={props.currentLang}>
+        <ActionProvider>
+          <HomePageShell {...props} />
+        </ActionProvider>
+      </DataProvider>
+    </ToastProvider>
   );
 };

@@ -615,7 +615,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
           {/* Right side controls: Status Badge and Create Role Button */}
           <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 flex-wrap">
             <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800 px-3 py-1.5 rounded-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               <span className="text-[10px] sm:text-xs font-black text-emerald-700 dark:text-emerald-300">
                 {isAmharic ? 'ንቁ (Active)' : 'Active'}
               </span>

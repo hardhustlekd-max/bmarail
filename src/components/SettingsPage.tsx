@@ -214,7 +214,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
               }`}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
               <span>
                 {userRole === 'superadmin'
                   ? 'Super Admin'

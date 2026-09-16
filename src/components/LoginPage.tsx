@@ -84,7 +84,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
           <div className="min-w-0">
             <h1 className={`text-white leading-tight truncate whitespace-nowrap ${lang === 'am' ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
-              {lang === 'am' ? 'ባህር ዳር ሞተረኛች ማህበር' : 'BAHIR DAR MOTORCYCLISTS ASSOCIATION'}
+              {lang === 'am' ? 'ባህር ዳር ሞተረኞች ማህበር' : 'BAHIRDAR MOTORIST ASSOCIATION'}
             </h1>
           </div>
         </div>
@@ -236,8 +236,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <div className="text-center pt-2 border-t border-outline-variant">
             <p className="text-[11px] text-outline">
               {lang === 'am'
-                ? 'ባህር ዳር ሞተረኛች ማህበር • 2026'
-                : 'Bahir Dar Motorcyclists Association • 2026'}
+                ? 'ባህር ዳር ሞተረኞች ማህበር • 2026'
+                : 'Bahirdar Motorist Association • 2026'}
             </p>
           </div>
         </div>

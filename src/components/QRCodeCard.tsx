@@ -149,10 +149,10 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             {/* Center Association Title */}
             <div className="flex flex-col items-center text-center flex-1 mx-1 z-10">
               <h2 className="text-[12px] font-black text-white tracking-tight leading-tight">
-                ባህር ዳር ሞተረኛች ማህበር
+                ባህር ዳር ሞተረኞች ማህበር
               </h2>
               <h1 className="text-[11.5px] font-black text-white tracking-wider uppercase leading-tight mt-0.5">
-                BAHIR DAR MOTORCYCLISTS ASSOCIATION
+                BAHIRDAR MOTORIST ASSOCIATION
               </h1>
 
               {/* Center Yellow Pill Badge */}
@@ -257,7 +257,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               <div className="relative flex flex-col items-center mt-0.5">
                 <div className="w-16 h-16 rounded-full border-2 border-double border-[#1e293b] p-0.5 flex items-center justify-center relative bg-white">
                   <div className="w-full h-full rounded-full border border-dashed border-[#1e293b] flex flex-col items-center justify-center p-0.5 text-[5.5px] font-black text-[#1e293b] text-center">
-                    <span>ባህር ዳር ሞተረኛች</span>
+                    <span>ባህር ዳር ሞተረኞች</span>
                     <Icon className="material-symbols-outlined text-[16px] text-[#1e293b] my-0.5">two_wheeler</Icon>
                     <span>ማህበር</span>
                   </div>
@@ -276,7 +276,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
 
           {/* BOTTOM FOOTER BANNER - Deep Navy Blue */}
           <div className="bg-[#1e293b] text-white py-1 px-3 text-center text-[10.5px] font-black tracking-wide shrink-0">
-            ይህ መታወቂያ የባህር ዳር ሞተረኛች ማህበር ንብረት ነው።
+            ይህ መታወቂያ የባህር ዳር ሞተረኞች ማህበር ንብረት ነው።
           </div>
         </div>
 

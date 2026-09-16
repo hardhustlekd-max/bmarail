@@ -1326,7 +1326,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
-            title={isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Official Digital Permit & QR Badge'}
+            title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
             onClose={() => setInspectReg(null)}
             onPrint={() => triggerDocumentPrint('id-card')}
           >

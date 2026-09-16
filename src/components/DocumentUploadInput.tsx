@@ -178,12 +178,12 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
         </label>
         
         {isBusy ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#1e293b] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800 animate-pulse">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#1e293b] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
             <Icon className="material-symbols-outlined text-[13px] animate-spin">progress_activity</Icon>
             <span>{status === 'compressing' ? (isAmharic ? 'እየተዘጋጀ...' : 'Optimizing...') : `${uploadProgress}%`}</span>
           </span>
         ) : status === 'completed' && hasPhoto ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
             <Icon className="material-symbols-outlined text-[13px]">check_circle</Icon>
             <span>{isAmharic ? 'ተጭኗል' : 'Uploaded'}</span>
           </span>
@@ -191,13 +191,13 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
           <button
             type="button"
             onClick={handleRetry}
-            className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800 hover:bg-amber-100 cursor-pointer"
+            className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800 hover:bg-amber-100 cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[13px]">refresh</Icon>
             <span>{isAmharic ? 'እንደገና ይሞክሩ' : 'Retry'}</span>
           </button>
         ) : hasError ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800 animate-pulse">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800">
             <Icon className="material-symbols-outlined text-[13px]">error</Icon>
             <span>{isAmharic ? 'ያስፈልጋል' : 'Required'}</span>
           </span>

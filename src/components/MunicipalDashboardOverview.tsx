@@ -1070,7 +1070,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
-            title={isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር መታወቂያ' : 'Motorcyclists Association ID'}
+            title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
             onClose={() => setSelectedLogForDetails(null)}
           >
             <QRCodeCard

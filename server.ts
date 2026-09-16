@@ -960,8 +960,44 @@ app.post('/api/payment-receipts', async (req, res) => {
     if (!receipt.id) {
       return res.status(400).json({ error: 'Missing receipt ID' });
     }
+    // 1. Audit ledger record write
     await dbUpsert('payment_receipts', receipt.id, receipt);
     broadcastSseChange({ collection: 'payment_receipts', action: 'upsert', docId: receipt.id, data: receipt });
+
+    // 2. Account Ledger Model: Atomically update vehicle registration's active term & financial status
+    let targetRegId = receipt.ownerRegistrationId;
+    if (!targetRegId && receipt.plateNumber) {
+      const allRegs = await dbGetAll('motorcycle_registrations');
+      const matched = allRegs.find((r: any) =>
+        (r.plateNumber && r.plateNumber.toLowerCase() === receipt.plateNumber.toLowerCase()) ||
+        (r.id && r.id.toLowerCase() === receipt.plateNumber.toLowerCase())
+      );
+      if (matched) targetRegId = matched.id;
+    }
+
+    if (targetRegId) {
+      const existingReg = await dbGetById('motorcycle_registrations', targetRegId);
+      if (existingReg) {
+        const updatedReg = {
+          ...existingReg,
+          termStatus: 'CURRENT' as const,
+          activeTermExpirationDate: receipt.expirationDate,
+          lastPaymentDate: receipt.paymentDate,
+          lastReceiptNumber: receipt.receiptNumber,
+          lastPaymentAmount: receipt.amount || '500 ETB',
+          receiptNumber: receipt.receiptNumber,
+          paymentAmount: receipt.amount ? String(receipt.amount) : '500 ETB',
+        };
+        await dbUpsert('motorcycle_registrations', targetRegId, updatedReg);
+        broadcastSseChange({
+          collection: 'motorcycle_registrations',
+          action: 'upsert',
+          docId: targetRegId,
+          data: updatedReg,
+        });
+      }
+    }
+
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -970,8 +1006,67 @@ app.post('/api/payment-receipts', async (req, res) => {
 
 app.delete('/api/payment-receipts/:id', async (req, res) => {
   try {
-    await dbDelete('payment_receipts', req.params.id);
-    broadcastSseChange({ collection: 'payment_receipts', action: 'delete', docId: req.params.id });
+    const receiptId = req.params.id;
+    const existingReceipt = await dbGetById('payment_receipts', receiptId);
+    await dbDelete('payment_receipts', receiptId);
+    broadcastSseChange({ collection: 'payment_receipts', action: 'delete', docId: receiptId });
+
+    // Re-evaluate the vehicle's financial ledger status if attached to a registration
+    if (existingReceipt && (existingReceipt.ownerRegistrationId || existingReceipt.plateNumber)) {
+      const regId = existingReceipt.ownerRegistrationId;
+      const plate = existingReceipt.plateNumber;
+      const allReceipts = await dbGetAll('payment_receipts');
+      
+      const targetReg = regId
+        ? await dbGetById('motorcycle_registrations', regId)
+        : (await dbGetAll('motorcycle_registrations')).find((r: any) =>
+            plate && r.plateNumber && r.plateNumber.toLowerCase() === plate.toLowerCase()
+          );
+
+      if (targetReg) {
+        const remaining = allReceipts.filter((r: any) =>
+          r.id !== receiptId &&
+          ((targetReg.id && r.ownerRegistrationId === targetReg.id) ||
+           (targetReg.plateNumber && r.plateNumber && r.plateNumber.toLowerCase() === targetReg.plateNumber.toLowerCase()))
+        );
+        remaining.sort((a: any, b: any) => new Date(b.expirationDate).getTime() - new Date(a.expirationDate).getTime());
+        const latest = remaining[0];
+
+        let termStatus = 'DELINQUENT';
+        let expDate = undefined;
+        let lastPay = undefined;
+        let lastRc = undefined;
+        let lastAmt = undefined;
+
+        if (latest) {
+          expDate = latest.expirationDate;
+          lastPay = latest.paymentDate;
+          lastRc = latest.receiptNumber;
+          lastAmt = latest.amount;
+          const expTime = new Date(latest.expirationDate).getTime();
+          const now = Date.now();
+          const diffDays = Math.ceil((expTime - now) / (1000 * 60 * 60 * 24));
+          termStatus = diffDays > 5 ? 'CURRENT' : diffDays >= 0 ? 'DUE' : 'DELINQUENT';
+        }
+
+        const updatedReg = {
+          ...targetReg,
+          termStatus,
+          activeTermExpirationDate: expDate,
+          lastPaymentDate: lastPay,
+          lastReceiptNumber: lastRc,
+          lastPaymentAmount: lastAmt,
+        };
+        await dbUpsert('motorcycle_registrations', targetReg.id, updatedReg);
+        broadcastSseChange({
+          collection: 'motorcycle_registrations',
+          action: 'upsert',
+          docId: targetReg.id,
+          data: updatedReg,
+        });
+      }
+    }
+
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

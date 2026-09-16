@@ -264,7 +264,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </button>
 
           <span className="text-[10px] text-secondary font-medium">
-            {isAmharic ? 'ባህር ዳር ሞተረኛች ማህበር' : 'Bahir Dar Motorcyclists Association'}
+            {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahirdar Motorist Association'}
           </span>
         </div>
       )}

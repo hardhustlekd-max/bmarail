@@ -57,7 +57,7 @@ export const DatabaseStatusWidget: React.FC<DatabaseStatusWidgetProps> = ({ isAm
         </div>
         <div className="flex items-center gap-1 text-[10px] font-medium">
           <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             <span>{isAmharic ? 'ፖስትግሬስ ዳታቤዝ' : 'PostgreSQL Active'}</span>
           </span>
         </div>

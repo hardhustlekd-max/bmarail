@@ -250,16 +250,17 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
         <div
           role="status"
           aria-live="polite"
-          className="fixed bottom-5 right-5 z-[999999] max-w-sm bg-surface-container-lowest dark:bg-slate-900 border border-emerald-500/40 rounded-xl shadow-2xl p-3.5 flex items-start gap-3 animate-in slide-in-from-bottom-3 duration-200"
+          className="fixed bottom-5 right-5 z-[999999] max-w-sm bg-emerald-600 border border-emerald-500 rounded-xl shadow-xl shadow-emerald-950/25 p-3.5 flex items-start gap-3 animate-toast-in text-white relative overflow-hidden animate-toast-pulse-success"
         >
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-            <Icon className="material-symbols-outlined text-[20px]">verified_user</Icon>
+          <div className="absolute inset-0 -translate-x-full animate-toast-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+          <div className="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+            <Icon className="material-symbols-outlined text-[20px] animate-toast-pop">verified_user</Icon>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-black text-on-surface dark:text-white">
+            <p className="text-xs font-black text-white">
               {isAmharic ? 'የስራ ክፍለ ጊዜዎ ተራዝሟል!' : 'Session Successfully Extended!'}
             </p>
-            <p className="text-[11px] text-secondary dark:text-slate-300 mt-0.5 leading-relaxed">
+            <p className="text-[11px] text-white/90 mt-0.5 leading-relaxed">
               {isAmharic
                 ? 'ተጨማሪ 15 ደቂቃዎች ተጨምረዋል። ስራዎን ያለማቋረጥ መቀጠል ይችላሉ።'
                 : '15 minutes added to your session. You can continue working safely.'}
@@ -268,7 +269,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
           <button
             type="button"
             onClick={() => setShowExtensionToast(false)}
-            className="text-outline hover:text-on-surface p-1 rounded cursor-pointer shrink-0"
+            className="text-white/80 hover:text-white hover:bg-white/15 p-1 rounded-md cursor-pointer shrink-0 transition-colors"
             title={isAmharic ? 'ዝጋ' : 'Dismiss'}
           >
             <Icon className="material-symbols-outlined text-[16px]">close</Icon>

@@ -8,6 +8,7 @@ import {
   SystemSettings,
   SystemUser,
   SystemAuditLog,
+  TermStatus,
 } from '../types';
 import { mapSettingsFromDb } from '../db/schema';
 import { uploadDocumentPhoto } from './storageService';
@@ -1469,6 +1470,7 @@ export function subscribePaymentReceipts(
 export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<void> {
   return trackGlobalAction(
     async () => {
+      // 1. Save or update payment receipt
       const index = inMemory.paymentReceipts.findIndex((r) => r.id === receipt.id);
       if (index >= 0) {
         inMemory.paymentReceipts[index] = { ...inMemory.paymentReceipts[index], ...receipt };
@@ -1476,8 +1478,34 @@ export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<v
         inMemory.paymentReceipts.unshift(receipt);
       }
       notifyPaymentReceipts();
-      saveStateToLocalStorage();
       broadcastCrossTabSync('payment_receipts', 'upsert', receipt.id, receipt);
+
+      // 2. Account Ledger Model: Atomically update associated registration's financial status
+      const targetRegId = receipt.ownerRegistrationId;
+      const regIndex = inMemory.registrations.findIndex((r) =>
+        (targetRegId && r.id === targetRegId) ||
+        (receipt.plateNumber && r.plateNumber && r.plateNumber.toLowerCase() === receipt.plateNumber.toLowerCase())
+      );
+
+      if (regIndex >= 0) {
+        const reg = inMemory.registrations[regIndex];
+        const updatedReg: MotorcycleRegistration = {
+          ...reg,
+          termStatus: 'CURRENT',
+          activeTermExpirationDate: receipt.expirationDate,
+          lastPaymentDate: receipt.paymentDate,
+          lastReceiptNumber: receipt.receiptNumber,
+          lastPaymentAmount: receipt.amount || '500 ETB',
+          receiptNumber: receipt.receiptNumber,
+          paymentAmount: receipt.amount ? String(receipt.amount) : '500 ETB',
+        };
+        inMemory.registrations[regIndex] = updatedReg;
+        notifyRegistrations();
+        asyncUpsertSingleRegistration(updatedReg);
+        broadcastCrossTabSync('motorcycle_registrations', 'upsert', updatedReg.id, updatedReg);
+      }
+
+      saveStateToLocalStorage();
       lastSyncTime = new Date();
       isCloudConnected = true;
       setGlobalDbError(null);
@@ -1499,16 +1527,66 @@ export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<v
 export async function deletePaymentReceiptFromDb(id: string): Promise<void> {
   return trackGlobalAction(
     async () => {
+      const targetReceipt = inMemory.paymentReceipts.find((r) => r.id === id);
       const index = inMemory.paymentReceipts.findIndex((r) => r.id === id);
       if (index >= 0) {
         inMemory.paymentReceipts.splice(index, 1);
         notifyPaymentReceipts();
-        saveStateToLocalStorage();
         broadcastCrossTabSync('payment_receipts', 'delete', id);
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalDbError(null);
       }
+
+      // Account Ledger Model: Re-evaluate the vehicle's financial ledger status if attached to a registration
+      if (targetReceipt) {
+        const regId = targetReceipt.ownerRegistrationId;
+        const plate = targetReceipt.plateNumber;
+        const regIndex = inMemory.registrations.findIndex((r) =>
+          (regId && r.id === regId) ||
+          (plate && r.plateNumber && r.plateNumber.toLowerCase() === plate.toLowerCase())
+        );
+
+        if (regIndex >= 0) {
+          const reg = inMemory.registrations[regIndex];
+          const remainingReceipts = inMemory.paymentReceipts.filter((r) =>
+            (reg.id && r.ownerRegistrationId === reg.id) ||
+            (reg.plateNumber && r.plateNumber && r.plateNumber.toLowerCase() === reg.plateNumber.toLowerCase())
+          );
+          remainingReceipts.sort((a, b) => new Date(b.expirationDate).getTime() - new Date(a.expirationDate).getTime());
+          const latest = remainingReceipts[0];
+
+          let termStatus: TermStatus = 'DELINQUENT';
+          let expDate = undefined;
+          let lastPay = undefined;
+          let lastRc = undefined;
+          let lastAmt = undefined;
+
+          if (latest) {
+            expDate = latest.expirationDate;
+            lastPay = latest.paymentDate;
+            lastRc = latest.receiptNumber;
+            lastAmt = latest.amount;
+            const diffDays = Math.ceil((new Date(latest.expirationDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+            termStatus = diffDays > 5 ? 'CURRENT' : diffDays >= 0 ? 'DUE' : 'DELINQUENT';
+          }
+
+          const updatedReg: MotorcycleRegistration = {
+            ...reg,
+            termStatus,
+            activeTermExpirationDate: expDate,
+            lastPaymentDate: lastPay,
+            lastReceiptNumber: lastRc,
+            lastPaymentAmount: lastAmt,
+          };
+          inMemory.registrations[regIndex] = updatedReg;
+          notifyRegistrations();
+          asyncUpsertSingleRegistration(updatedReg);
+          broadcastCrossTabSync('motorcycle_registrations', 'upsert', updatedReg.id, updatedReg);
+        }
+      }
+
+      saveStateToLocalStorage();
+      lastSyncTime = new Date();
+      isCloudConnected = true;
+      setGlobalDbError(null);
 
       try {
         await safeJsonFetch(`/api/payment-receipts/${id}`, {

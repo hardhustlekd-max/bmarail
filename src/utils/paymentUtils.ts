@@ -16,9 +16,31 @@ export interface PaymentReceipt {
 
 export type PaymentStatusType = 'active' | 'expiring_soon' | 'expired';
 
+export type TermStatus = 'CURRENT' | 'DUE' | 'DELINQUENT';
+
 export interface PaymentStatusInfo {
   status: PaymentStatusType;
   daysRemaining: number;
+}
+
+/**
+ * Calculates authoritative financial status for a registration:
+ * CURRENT: Active paid term with > 5 days remaining.
+ * DUE: Expiring soon (within 5 days or today).
+ * DELINQUENT: Past expiration date or missing payment.
+ */
+export function calculateTermStatus(expirationDateStr?: string): TermStatus {
+  if (!expirationDateStr) {
+    return 'DELINQUENT';
+  }
+  const statusInfo = getPaymentReceiptStatus(expirationDateStr);
+  if (statusInfo.status === 'active') {
+    return 'CURRENT';
+  } else if (statusInfo.status === 'expiring_soon') {
+    return 'DUE';
+  } else {
+    return 'DELINQUENT';
+  }
 }
 
 /**

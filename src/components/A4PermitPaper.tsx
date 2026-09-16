@@ -149,13 +149,13 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                   </div>
                 </div>
                 <h1 className="text-xs font-black text-black uppercase tracking-wider">
-                  ባህር ዳር ሞተረኛች ማህበር
+                  ባህር ዳር ሞተረኞች ማህበር
                 </h1>
                 <h2 className="text-[11px] font-bold text-black tracking-wide">
-                  BAHIR DAR MOTORCYCLISTS ASSOCIATION
+                  BAHIRDAR MOTORIST ASSOCIATION
                 </h2>
                 <div className="text-[11px] font-bold text-black pt-0.5">
-                  የተሽከርካሪ ምዝገባ እና ፈቃድ ክፍል (BAHIRDAR MOTOR ASSOCIATION)
+                  የተሽከርካሪ ምዝገባ እና ፈቃድ ክፍል (BAHIRDAR MOTORIST ASSOCIATION)
                 </div>
               </div>
 
@@ -188,7 +188,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
                   <div className="col-span-5 font-extrabold text-black">4. አድራሻ (Permanent Address)</div>
-                  <div className="col-span-7 font-bold text-black">ባህር ዳር, ቀበሌ 14 • ባህር ዳር ሞተረኛች ማህበር</div>
+                  <div className="col-span-7 font-bold text-black">ባህር ዳር, ቀበሌ 14 • ባህር ዳር ሞተረኞች ማህበር</div>
                 </div>
 
                 {/* 5. Registration Details block */}
@@ -318,7 +318,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
         {/* Modal Action Footer Bar (No-Print) */}
         <div className="no-print flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/60">
           <div className="text-[11px] font-semibold text-secondary flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
             <span>{isAmharic ? 'የተረጋገጠ ኦፊሴላዊ ሰነድ' : 'Official Validated Document'}</span>
           </div>
 
