@@ -839,9 +839,11 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       }
                       className="w-full bg-surface-container border border-outline-variant rounded-md pl-9 pr-4 py-2 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
                     />
-                    <Icon className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">
-                      search
-                    </Icon>
+                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                      <Icon className="material-symbols-outlined text-[18px]">
+                        search
+                      </Icon>
+                    </div>
                   </div>
 
                   <select
@@ -1689,9 +1691,11 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             {/* Audit Filters */}
             <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
               <div className="w-full sm:w-72 relative">
-                <Icon className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[18px]">
-                  search
-                </Icon>
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+                  <Icon className="material-symbols-outlined text-[18px]">
+                    search
+                  </Icon>
+                </div>
                 <input
                   type="text"
                   value={auditSearch}

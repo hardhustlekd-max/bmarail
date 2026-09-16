@@ -461,15 +461,18 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       placeholder={isAmharic ? 'የአሁኑን የይለፍ ቃል ያስገቡ' : 'Enter current password'}
                       className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#1e293b] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowCurrentPass(!showCurrentPass)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 no-ripple"
-                    >
-                      <Icon className="material-symbols-outlined text-[18px] leading-none">
-                        {showCurrentPass ? 'visibility_off' : 'visibility'}
-                      </Icon>
-                    </button>
+                    <div className="absolute right-2 inset-y-0 flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPass(!showCurrentPass)}
+                        aria-label={showCurrentPass ? (isAmharic ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (isAmharic ? 'የይለፍ ቃል አሳይ' : 'Show password')}
+                        className="w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                      >
+                        <Icon className="material-symbols-outlined text-[18px]">
+                          {showCurrentPass ? 'visibility_off' : 'visibility'}
+                        </Icon>
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -488,15 +491,18 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       required
                       minLength={6}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPass(!showNewPass)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 no-ripple"
-                    >
-                      <Icon className="material-symbols-outlined text-[18px] leading-none">
-                        {showNewPass ? 'visibility_off' : 'visibility'}
-                      </Icon>
-                    </button>
+                    <div className="absolute right-2 inset-y-0 flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPass(!showNewPass)}
+                        aria-label={showNewPass ? (isAmharic ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (isAmharic ? 'የይለፍ ቃል አሳይ' : 'Show password')}
+                        className="w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                      >
+                        <Icon className="material-symbols-outlined text-[18px]">
+                          {showNewPass ? 'visibility_off' : 'visibility'}
+                        </Icon>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Password Strength Indicator */}
@@ -531,15 +537,18 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       required
                       minLength={6}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPass(!showConfirmPass)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 no-ripple"
-                    >
-                      <Icon className="material-symbols-outlined text-[18px] leading-none">
-                        {showConfirmPass ? 'visibility_off' : 'visibility'}
-                      </Icon>
-                    </button>
+                    <div className="absolute right-2 inset-y-0 flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPass(!showConfirmPass)}
+                        aria-label={showConfirmPass ? (isAmharic ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (isAmharic ? 'የይለፍ ቃል አሳይ' : 'Show password')}
+                        className="w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                      >
+                        <Icon className="material-symbols-outlined text-[18px]">
+                          {showConfirmPass ? 'visibility_off' : 'visibility'}
+                        </Icon>
+                      </button>
+                    </div>
                   </div>
 
                   {confirmPassword && newPassword && (

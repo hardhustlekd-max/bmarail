@@ -50,41 +50,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [submitSuccess, setSubmitSuccess] = useState('');
   const [submitError, setSubmitError] = useState('');
 
-  // Cheki Receipt Checker State
-  const [isChekiCheckerOpen, setIsChekiCheckerOpen] = useState(false);
-  const [chekiRefInput, setChekiRefInput] = useState('');
-  const [chekiBankInput, setChekiBankInput] = useState('');
-  const [chekiResult, setChekiResult] = useState<any>(null);
-  const [chekiLoading, setChekiLoading] = useState(false);
-  const [chekiError, setChekiError] = useState('');
 
-  const handleVerifyChekiReceipt = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chekiRefInput.trim()) return;
-    setChekiLoading(true);
-    setChekiError('');
-    setChekiResult(null);
-
-    try {
-      const res = await fetch('/api/cheki/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reference: chekiRefInput.trim(),
-          bank: chekiBankInput.trim() || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        throw new Error(data.error || 'Verification failed');
-      }
-      setChekiResult(data);
-    } catch (err: any) {
-      setChekiError(err?.message || 'Failed to connect to Cheki verification service.');
-    } finally {
-      setChekiLoading(false);
-    }
-  };
 
   // Form Fields
   const [receiptNumber, setReceiptNumber] = useState('');
@@ -498,210 +464,30 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setIsChekiCheckerOpen(!isChekiCheckerOpen);
-                setChekiError('');
-              }}
-              className="px-3.5 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
-            >
-              <Icon className="material-symbols-outlined text-[16px]">verified</Icon>
-              <span>{isAmharic ? 'የቼኪ ደረሰኝ ማረጋገጫ (Cheki Verifier)' : 'Cheki Receipt Verifier'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setIsFormOpen(!isFormOpen);
-                setSubmitError('');
-                setSubmitSuccess('');
-              }}
-              className="px-3.5 py-1.5 rounded-md bg-primary hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
-            >
-              <Icon className="material-symbols-outlined text-[16px]">
-                {isFormOpen ? 'close' : 'add_circle'}
-              </Icon>
-              <span>
-                {isFormOpen
-                  ? isAmharic
-                    ? 'ፎርሙን ዝጋ'
-                    : 'Close Form'
-                  : isAmharic
-                  ? 'አዲስ ደረሰኝ መዝግብ'
-                  : 'New Payment Receipt'}
-              </span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setIsFormOpen(!isFormOpen);
+              setSubmitError('');
+              setSubmitSuccess('');
+            }}
+            className="px-3.5 py-1.5 rounded-md bg-primary hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
+          >
+            <Icon className="material-symbols-outlined text-[16px]">
+              {isFormOpen ? 'close' : 'add_circle'}
+            </Icon>
+            <span>
+              {isFormOpen
+                ? isAmharic
+                  ? 'ፎርሙን ዝጋ'
+                  : 'Close Form'
+                : isAmharic
+                ? 'አዲስ ደረሰኝ መዝግብ'
+                : 'New Payment Receipt'}
+            </span>
+          </button>
         </div>
       </div>
-
-      {/* CHEKI RECEIPT VERIFIER PANEL (Integrated from https://chekiapp.vercel.app/docs) */}
-      {isChekiCheckerOpen && (
-        <div className="bg-surface-container-lowest border-2 border-emerald-600/50 rounded-xl p-4 sm:p-6 shadow-md space-y-4 animate-in fade-in slide-in-from-top-4 duration-200">
-          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
-            <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-emerald-600 text-[22px]">verified_user</Icon>
-              <div>
-                <h2 className="text-sm font-black text-on-surface uppercase tracking-wider">
-                  {isAmharic ? 'የቼኪ ባንክ ደረሰኝ ማረጋገጫ (Cheki API Checker)' : 'Cheki Bank Receipt Verification Checker'}
-                </h2>
-                <p className="text-[11px] text-secondary">
-                  {isAmharic
-                    ? 'ከ https://chekiapp.vercel.app/docs የተወሰደ ነፃ የኢትዮጵያ ባንክ ደረሰኞች ማረጋገጫ API'
-                    : 'Powered by Cheki API (https://chekiapp.vercel.app/docs) for instant Ethiopian bank receipt validation.'}
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsChekiCheckerOpen(false)}
-              className="w-7 h-7 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface flex items-center justify-center text-xs font-bold cursor-pointer"
-            >
-              ✕
-            </button>
-          </div>
-
-          <form onSubmit={handleVerifyChekiReceipt} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Reference Number */}
-              <div className="md:col-span-2 space-y-1">
-                <label className="block text-xs font-bold text-on-surface uppercase tracking-wide">
-                  {isAmharic ? 'የባንክ ማጣቀሻ / ደረሰኝ ቁጥር (Reference / TXN ID) *' : 'Bank Reference / TXN ID *'}
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    value={chekiRefInput}
-                    onChange={(e) => setChekiRefInput(e.target.value)}
-                    placeholder={isAmharic ? 'ምሳሌ፦ FT24083091122 ወይም የደረሰኝ ሊንክ' : 'e.g. FT24083091122 or receipt URL'}
-                    className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-emerald-600"
-                  />
-                  <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
-                    tag
-                  </Icon>
-                </div>
-              </div>
-
-              {/* Bank Optional Selector */}
-              <div className="space-y-1">
-                <label className="block text-xs font-bold text-on-surface uppercase tracking-wide">
-                  {isAmharic ? 'ባንክ (አማራጭ)' : 'Bank (Optional)'}
-                </label>
-                <select
-                  value={chekiBankInput}
-                  onChange={(e) => setChekiBankInput(e.target.value)}
-                  className="w-full px-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-emerald-600 cursor-pointer"
-                >
-                  <option value="">{isAmharic ? '— በራስ-ሰር ፈልግ (Auto Detect) —' : '— Auto Detect —'}</option>
-                  <option value="cbe">Commercial Bank of Ethiopia (CBE)</option>
-                  <option value="telebirr">Telebirr</option>
-                  <option value="awash">Awash Bank</option>
-                  <option value="dashen">Dashen Bank</option>
-                  <option value="abyssinia">Bank of Abyssinia</option>
-                  <option value="coop">Cooperative Bank of Oromia</option>
-                </select>
-              </div>
-            </div>
-
-            {chekiError && (
-              <div className="p-3 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 rounded-lg text-xs font-bold flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[18px]">error</Icon>
-                <span>{chekiError}</span>
-              </div>
-            )}
-
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="submit"
-                disabled={chekiLoading || !chekiRefInput.trim()}
-                className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white text-xs font-black transition-all shadow-sm flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
-              >
-                {chekiLoading ? (
-                  <>
-                    <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
-                    <span>{isAmharic ? 'በማጣራት ላይ...' : 'Verifying with Cheki API...'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Icon className="material-symbols-outlined text-[18px]">verified</Icon>
-                    <span>{isAmharic ? 'ደረሰኝ አረጋግጥ (Verify)' : 'Verify Receipt Now'}</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-
-          {/* VERIFICATION RESULT DISPLAY */}
-          {chekiResult && (
-            <div className="mt-4 p-4 rounded-xl bg-surface-container/50 border border-outline-variant space-y-3 animate-in fade-in duration-200">
-              <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2">
-                <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-emerald-600 text-[20px]">
-                    {chekiResult.verified ? 'check_circle' : 'warning'}
-                  </Icon>
-                  <h3 className="text-xs font-black uppercase text-on-surface">
-                    {isAmharic ? 'የማረጋገጫ ውጤት (Verification Result)' : 'API Verification Response'}
-                  </h3>
-                </div>
-                <span className={`px-2.5 py-0.5 rounded text-[10px] font-black uppercase ${
-                  chekiResult.verified
-                    ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/30'
-                    : 'bg-rose-500/10 text-rose-700 border border-rose-500/30'
-                }`}>
-                  {chekiResult.verified ? (isAmharic ? 'ትክክለኛ (Verified Valid)' : 'Verified Valid') : (isAmharic ? 'አልተረጋገጠም (Unverified)' : 'Unverified / Invalid')}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
-                  <span className="block text-[10px] font-bold text-secondary uppercase">
-                    {isAmharic ? 'ባንክ' : 'Bank'}
-                  </span>
-                  <div className="text-xs font-bold text-on-surface mt-0.5">
-                    {chekiResult.bank || chekiResult.bankName || 'Unknown Bank'}
-                  </div>
-                </div>
-
-                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
-                  <span className="block text-[10px] font-bold text-secondary uppercase">
-                    {isAmharic ? 'የማጣቀሻ ቁጥር' : 'Reference'}
-                  </span>
-                  <div className="text-xs font-mono font-bold text-on-surface mt-0.5">
-                    {chekiResult.reference || chekiRefInput}
-                  </div>
-                </div>
-
-                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
-                  <span className="block text-[10px] font-bold text-secondary uppercase">
-                    {isAmharic ? 'የተከፈለ መጠን' : 'Amount'}
-                  </span>
-                  <div className="text-xs font-black text-emerald-700 dark:text-emerald-300 mt-0.5">
-                    {chekiResult.amount ? `${chekiResult.amount}` : (isAmharic ? 'መረጃ የለም' : 'N/A')}
-                  </div>
-                </div>
-
-                <div className="bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/60">
-                  <span className="block text-[10px] font-bold text-secondary uppercase">
-                    {isAmharic ? 'ቀን / ሰዓት' : 'Date / Time'}
-                  </span>
-                  <div className="text-xs font-mono font-medium text-on-surface mt-0.5">
-                    {chekiResult.date || chekiResult.transactionDate || (isAmharic ? 'ወቅታዊ' : 'Recent')}
-                  </div>
-                </div>
-              </div>
-
-              {chekiResult.receiverAccount && (
-                <div className="text-xs text-secondary font-mono bg-surface-container-lowest p-2 rounded border border-outline-variant/40">
-                  <strong>Receiver Account:</strong> {chekiResult.receiverAccount} {chekiResult.receiverName ? `(${chekiResult.receiverName})` : ''}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Global Success Banner */}
       {submitSuccess && (
@@ -787,9 +573,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         : 'border-outline-variant focus:ring-emerald-600'
                     }`}
                   />
-                  <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
-                    receipt
-                  </Icon>
+                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-secondary">
+                    <Icon className="material-symbols-outlined text-[18px]">
+                      receipt
+                    </Icon>
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -953,9 +741,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   }
                   className="w-full pl-9 pr-3 py-2 bg-surface-container/50 border border-outline-variant rounded-lg text-xs font-mono font-bold text-on-surface focus:outline-none focus:ring-2 focus:ring-[#0f172a]"
                 />
-                <Icon className="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary">
-                  badge
-                </Icon>
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-secondary">
+                  <Icon className="material-symbols-outlined text-[18px]">
+                    badge
+                  </Icon>
+                </div>
               </div>
               <datalist id="reg-numbers-datalist">
                 {registrations.map((r) => (

@@ -2041,7 +2041,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             }`}
                             id="multistep-receipt-number"
                           />
-                          <span className="absolute right-3 top-2.5 text-slate-400 pointer-events-none">
+                          <span className="absolute inset-y-0 right-3 flex items-center text-slate-400 pointer-events-none">
                             <Icon className="material-symbols-outlined text-[18px]">receipt_long</Icon>
                           </span>
                         </div>
@@ -2163,7 +2163,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           }`}
                           id="multistep-payment-amount"
                         />
-                        <span className="absolute right-3 top-2.5 text-slate-400 pointer-events-none text-xs font-bold">
+                        <span className="absolute inset-y-0 right-3 flex items-center text-slate-400 pointer-events-none text-xs font-bold">
                           ETB
                         </span>
                       </div>

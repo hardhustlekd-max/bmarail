@@ -29,6 +29,13 @@
 }
 
 /* Material Symbols & SVG Icon Rules */
+.-translate-y-1\/2 {
+  transform: translateY(-50%);
+}
+.translate-y-1\/2 {
+  transform: translateY(50%);
+}
+
 :where(
   .material-symbols-outlined,
   .material-symbols-rounded,
