@@ -209,6 +209,8 @@ export interface PaymentReceipt {
   notes?: string;
   enteredBy: string;
   createdAt: string;
+  enteredAt?: string;
+  updatedAt?: string;
   status?: string;
   verifiedByCheki?: boolean;
   chekiBank?: string;

@@ -280,8 +280,8 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
               {/* Bottom Footer Signatures & Date */}
               <div className="pt-3 border-t-2 border-black flex justify-between items-end">
                 <div className="text-[10px] font-mono text-black font-bold">
-                  <div>Date: {formatEthiopianDate(issueDate, isAmharic ? 'am' : 'en')}</div>
-                  <div className="text-[9px] text-slate-600 mt-0.5">Bahir Dar Transport Authority</div>
+                  <div>ቀን / Date: <span className="font-extrabold">{formatEthiopianDate(issueDate, isAmharic ? 'am' : 'en')}</span> <span className="text-[9px] text-slate-700 font-normal">(GC: {new Date(issueDate || Date.now()).toISOString().split('T')[0]})</span></div>
+                  <div className="text-[9px] text-slate-800 font-semibold mt-0.5">Bahir Dar City Transport Authority</div>
                 </div>
 
                 <div className="flex items-end gap-6">
