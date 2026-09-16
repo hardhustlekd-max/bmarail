@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react';
 import { Icon } from '../components/ui/Icon';
 
 export interface ToastItem {
@@ -20,35 +20,80 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  // Deduplication cache: tracks recent message timestamps to prevent rapid duplicates
+  const recentToastsRef = useRef<Map<string, number>>(new Map());
+  const timersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const removeToast = useCallback((id: string) => {
+    // Clear any pending timer
+    const existingTimer = timersRef.current.get(id);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+      timersRef.current.delete(id);
+    }
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const addToast = useCallback(
-    (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', durationMs = 4500) => {
-      const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', durationMs = 4000) => {
+      if (!message || !message.trim()) return;
+
+      const trimmedMsg = message.trim();
       const normalizedType = (type as string) === 'warning' ? 'error' : type;
+      const dedupeKey = `${normalizedType}::${trimmedMsg}`;
+      const now = Date.now();
+
+      // Check if the exact same message was emitted in the last 2000ms
+      const lastEmittedAt = recentToastsRef.current.get(dedupeKey);
+      if (lastEmittedAt && now - lastEmittedAt < 2000) {
+        // Prevent duplicate toaster
+        return;
+      }
+      recentToastsRef.current.set(dedupeKey, now);
+
+      // Clean up stale cache keys older than 10s
+      for (const [key, ts] of recentToastsRef.current.entries()) {
+        if (now - ts > 10000) {
+          recentToastsRef.current.delete(key);
+        }
+      }
+
+      const id = `toast-${now}-${Math.random().toString(36).substring(2, 7)}`;
       const newToast: ToastItem = {
         id,
-        message,
+        message: trimmedMsg,
         type: normalizedType,
-        timestamp: Date.now(),
+        timestamp: now,
         durationMs,
       };
 
-      setToasts((prev) => [...prev.slice(-4), newToast]);
+      setToasts((prev) => {
+        // Double check: if an identical message is already in visible toasts, don't duplicate
+        const alreadyVisible = prev.some(
+          (t) => t.type === normalizedType && t.message === trimmedMsg
+        );
+        if (alreadyVisible) {
+          return prev;
+        }
+        return [...prev.slice(-3), newToast];
+      });
 
       if (durationMs > 0) {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           removeToast(id);
         }, durationMs);
+        timersRef.current.set(id, timer);
       }
     },
     [removeToast]
   );
 
   const clearToasts = useCallback(() => {
+    for (const timer of timersRef.current.values()) {
+      clearTimeout(timer);
+    }
+    timersRef.current.clear();
+    recentToastsRef.current.clear();
     setToasts([]);
   }, []);
 

@@ -676,83 +676,85 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* ==================== STANDALONE METRIC SECTIONS (FOR SUPER ADMIN & MANAGER) ==================== */}
       {(userRole === 'superadmin' || userRole === 'admin') && (
         <div className="space-y-4">
-          {/* 1. Payment Receipts & Compliance Metrics */}
-          <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
-            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
-              <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">payments</Icon>
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
-                    {isAmharic ? 'የክፍያ ደረሰኞች ቁጥጥር' : 'Payment Receipts & Compliance'}
-                  </h3>
+          {/* 1. Payment Receipts & Compliance Metrics (Super Admin Only) */}
+          {(userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
+            <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
+              <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+                <div className="flex items-center gap-2.5">
+                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">payments</Icon>
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
+                      {isAmharic ? 'የገቢዎችና ደረሰኞች ቁጥጥር' : 'Revenue Ledger & Compliance'}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
+                {/* Total Receipts */}
+                <div
+                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+                  className="p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                >
+                  <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-slate-700">
+                      {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
+                    </span>
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">receipt</Icon>
+                  </div>
+                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{paymentMetrics.total}</p>
+                </div>
+
+                {/* Active Valid (1 month) */}
+                <div
+                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+                  className="p-2 sm:p-3 rounded-lg border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 hover:shadow-md hover:border-emerald-400 active:scale-105 active:bg-emerald-600/20 dark:active:bg-emerald-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                >
+                  <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 mb-1">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-emerald-600">
+                      {isAmharic ? 'ትክክለኛ' : 'Valid'}
+                    </span>
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">verified</Icon>
+                  </div>
+                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight">
+                    {paymentMetrics.activeCount}
+                  </p>
+                </div>
+
+                {/* Expiring Soon */}
+                <div
+                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+                  className="p-2 sm:p-3 rounded-lg border border-amber-200/80 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 hover:shadow-md hover:border-amber-400 active:scale-105 active:bg-amber-600/20 dark:active:bg-amber-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                >
+                  <div className="flex justify-between items-center text-amber-600 dark:text-amber-400 mb-1">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-amber-600">
+                      {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring'}
+                    </span>
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">alarm</Icon>
+                  </div>
+                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight">
+                    {paymentMetrics.expiringSoonCount}
+                  </p>
+                </div>
+
+                {/* Expired */}
+                <div
+                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+                  className="p-2 sm:p-3 rounded-lg border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/40 dark:bg-rose-950/20 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 hover:shadow-md hover:border-rose-400 active:scale-105 active:bg-rose-600/20 dark:active:bg-rose-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                >
+                  <div className="flex justify-between items-center text-rose-600 dark:text-rose-400 mb-1">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-rose-600">
+                      {isAmharic ? 'ያለፈበት' : 'Expired'}
+                    </span>
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">cancel</Icon>
+                  </div>
+                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight">
+                    {paymentMetrics.expiredCount}
+                  </p>
                 </div>
               </div>
             </div>
-
-            <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
-              {/* Total Receipts */}
-              <div
-                onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                className="p-2 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:shadow-md hover:border-blue-400 active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-slate-700">
-                    {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">receipt</Icon>
-                </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{paymentMetrics.total}</p>
-              </div>
-
-              {/* Active Valid (1 month) */}
-              <div
-                onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                className="p-2 sm:p-3 rounded-lg border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 hover:shadow-md hover:border-emerald-400 active:scale-105 active:bg-emerald-600/20 dark:active:bg-emerald-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-emerald-600">
-                    {isAmharic ? 'ትክክለኛ' : 'Valid'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">verified</Icon>
-                </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight">
-                  {paymentMetrics.activeCount}
-                </p>
-              </div>
-
-              {/* Expiring Soon */}
-              <div
-                onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                className="p-2 sm:p-3 rounded-lg border border-amber-200/80 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 hover:shadow-md hover:border-amber-400 active:scale-105 active:bg-amber-600/20 dark:active:bg-amber-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex justify-between items-center text-amber-600 dark:text-amber-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-amber-600">
-                    {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">alarm</Icon>
-                </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight">
-                  {paymentMetrics.expiringSoonCount}
-                </p>
-              </div>
-
-              {/* Expired */}
-              <div
-                onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                className="p-2 sm:p-3 rounded-lg border border-rose-200/80 dark:border-rose-900/50 bg-rose-50/40 dark:bg-rose-950/20 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 hover:shadow-md hover:border-rose-400 active:scale-105 active:bg-rose-600/20 dark:active:bg-rose-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex justify-between items-center text-rose-600 dark:text-rose-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-rose-600">
-                    {isAmharic ? 'ያለፈበት' : 'Expired'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">cancel</Icon>
-                </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight">
-                  {paymentMetrics.expiredCount}
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* 2. Permit Status Breakdown */}
           <PermitStatusSummary

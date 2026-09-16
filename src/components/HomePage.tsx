@@ -1557,21 +1557,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           </button>
                         )}
 
-                        {(settings.showClerkPaymentReceiptsAction ?? true) && (isTaskViewable(userRole, 15) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 1)) && (
-                          <button
-                            type="button"
-                            onClick={() => setActivePage('payment_receipts')}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
-                              activePage === 'payment_receipts'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                            }`}
-                          >
-                            <Icon className="material-symbols-outlined text-[17px] text-emerald-400 shrink-0">receipt_long</Icon>
-                            <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
-                          </button>
-                        )}
-
                         {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 8) && (
                           <button
                             type="button"
@@ -1619,21 +1604,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           >
                             <Icon className="material-symbols-outlined text-[17px] shrink-0">how_to_reg</Icon>
                             <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
-                          </button>
-                        )}
-
-                        {userRole !== 'officer' && isTaskViewable(userRole, 1) && (
-                          <button
-                            type="button"
-                            onClick={() => setActivePage('payment_receipts')}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
-                              activePage === 'payment_receipts'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
-                            }`}
-                          >
-                            <Icon className="material-symbols-outlined text-[17px] text-emerald-400 shrink-0">receipt_long</Icon>
-                            <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
                           </button>
                         )}
 
@@ -1824,6 +1794,19 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       >
                         <Icon className="material-symbols-outlined text-[16px] shrink-0">database</Icon>
                         <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('payment_receipts')}
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                          activePage === 'payment_receipts'
+                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
+                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[16px] text-emerald-400 shrink-0">receipt_long</Icon>
+                        <span>{isAmharic ? 'የገቢዎች ማህደር' : 'Revenue Ledger'}</span>
                       </button>
                     </div>
                   </div>
@@ -2238,27 +2221,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               </button>
                             )}
 
-                            {(settings.showClerkPaymentReceiptsAction ?? true) && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActivePage('payment_receipts');
-                                  setIsMobileMenuOpen(false);
-                                }}
-                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                                  activePage === 'payment_receipts'
-                                    ? 'bg-yellow-500 text-[#1e293b] font-black shadow-xs'
-                                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <Icon className="material-symbols-outlined text-[20px] text-emerald-400">receipt_long</Icon>
-                                  <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
-                                </div>
-                                <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                              </button>
-                            )}
-
                             {settings.showClerkSubmissionsAction && (
                               <button
                                 type="button"
@@ -2320,27 +2282,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                                 <div className="flex items-center gap-2.5">
                                   <Icon className="material-symbols-outlined text-[20px] text-amber-400">how_to_reg</Icon>
                                   <span>{isAmharic ? 'ምዝገባ' : 'Registration'}</span>
-                                </div>
-                                <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
-                              </button>
-                            )}
-
-                            {userRole !== 'officer' && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActivePage('payment_receipts');
-                                  setIsMobileMenuOpen(false);
-                                }}
-                                className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                                  activePage === 'payment_receipts'
-                                    ? 'bg-yellow-500 text-[#1e293b] font-black shadow-xs'
-                                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <Icon className="material-symbols-outlined text-[20px] text-emerald-400">receipt_long</Icon>
-                                  <span>{isAmharic ? 'የክፍያ ደረሰኞች' : 'Payment Receipts'}</span>
                                 </div>
                                 <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
                               </button>
@@ -2572,6 +2513,25 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               <div className="flex items-center gap-2.5">
                                 <Icon className="material-symbols-outlined text-[20px] text-amber-300">database</Icon>
                                 <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
+                              </div>
+                              <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivePage('payment_receipts');
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between p-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                activePage === 'payment_receipts'
+                                  ? 'bg-amber-400 text-[#1e293b] font-black shadow-xs'
+                                  : 'text-purple-100 hover:bg-purple-900/30'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <Icon className="material-symbols-outlined text-[20px] text-emerald-400">receipt_long</Icon>
+                                <span>{isAmharic ? 'የገቢዎች ማህደር' : 'Revenue Ledger'}</span>
                               </div>
                               <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
                             </button>

@@ -350,6 +350,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         await onSaveReceipt(newReceipt);
       } else {
         await savePaymentReceiptToDb(newReceipt);
+        if (onShowToast) {
+          onShowToast(
+            isAmharic
+              ? `የደረሰኝ #${newReceipt.receiptNumber} ምዝገባ ተጠናቋል`
+              : `Receipt #${newReceipt.receiptNumber} recorded successfully`,
+            'success'
+          );
+        }
       }
 
       setSubmitSuccess(
@@ -357,15 +365,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           ? 'የክፍያ ደረሰኙ በተሳካ ሁኔታ ተመዝግቧል! የ1 ወር ማብቂያ ቀን በራስ-ሰር ተሰልቷል።'
           : 'Payment receipt saved successfully! 1-Month expiration computed.'
       );
-
-      if (onShowToast) {
-        onShowToast(
-          isAmharic
-            ? `የደረሰኝ #${newReceipt.receiptNumber} ምዝገባ ተጠናቋል`
-            : `Receipt #${newReceipt.receiptNumber} recorded successfully`,
-          'success'
-        );
-      }
 
       // Reset form fields
       setReceiptNumber('');
@@ -415,13 +414,12 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         await onDeleteReceipt(deleteConfirmId);
       } else {
         await deletePaymentReceiptFromDb(deleteConfirmId);
-      }
-
-      if (onShowToast) {
-        onShowToast(
-          isAmharic ? 'የክፍያ ደረሰኝ በተሳካ ሁኔታ ተሰርዟል' : 'Payment receipt deleted successfully',
-          'info'
-        );
+        if (onShowToast) {
+          onShowToast(
+            isAmharic ? 'የክፍያ ደረሰኝ በተሳካ ሁኔታ ተሰርዟል' : 'Payment receipt deleted successfully',
+            'info'
+          );
+        }
       }
 
       if (reconcileReceipt && reconcileReceipt.id === deleteConfirmId) {
@@ -523,11 +521,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </Icon>
             <span>{isAmharic ? 'የክፍያ ደረሰኝ & የሂሳብ መዝገብ' : 'Payment Receipts & Revenue Ledger'}</span>
           </h2>
-          <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-0.5">
-            {isAmharic
-              ? 'የወርሃዊ ክፍያ ማረጋገጫዎች፣ የባንክ ማስታረቂያ (Reconciliation) እና የኢትዮጵያ ቀን አቆጣጠር ማጠቃለያ'
-              : 'Monthly fee records, CBE/Telebirr bank reconciliation drawer, and dual-calendar audit tracking'}
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
@@ -576,7 +569,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-emerald-300 dark:border-emerald-800/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 tracking-wider">
-                {isAmharic ? 'ህጋዊ (CURRENT)' : 'Active (CURRENT)'}
+                {isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
               </span>
               <Icon className="material-symbols-outlined text-emerald-700 dark:text-emerald-400 text-[20px]">
                 check_circle
@@ -599,7 +592,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-amber-300 dark:border-amber-800/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase text-amber-800 dark:text-amber-300 tracking-wider">
-                {isAmharic ? 'ሊያልቅ የደረሰ (DUE)' : 'Due Soon (DUE)'}
+                {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
               </span>
               <Icon className="material-symbols-outlined text-amber-700 dark:text-amber-400 text-[20px]">
                 alarm
@@ -622,7 +615,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-rose-300 dark:border-rose-800/80 shadow-xs">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase text-rose-800 dark:text-rose-300 tracking-wider">
-                {isAmharic ? 'ያለፈበት (DELINQUENT)' : 'Expired (DELINQUENT)'}
+                {isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}
               </span>
               <Icon className="material-symbols-outlined text-rose-700 dark:text-rose-400 text-[20px]">
                 error
@@ -677,96 +670,105 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           )}
 
-          {/* Form Top Row: Receipt # & Bank Verifier */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {/* Receipt / Bank Reference Number */}
+          {/* Form Top Row: Receipt # Standalone for optimal mobile layout */}
+          <div className="space-y-3.5">
+            {/* 1. Standalone Receipt / Bank Reference Number */}
             <div className="space-y-1">
               <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
-                {isAmharic ? 'የደረሰኝ ቁጥር / የባንክ ማጣቀሻ (FT Number / Ref)' : 'Receipt # / Bank Reference (FT / Ref)'}
+                {isAmharic ? 'የደረሰኝ ቁጥር / የባንክ ማጣቀሻ ቁጥር' : 'Receipt # / Bank Reference'}
                 <span className="text-rose-600 ml-1">*</span>
               </label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    required
-                    value={receiptNumber}
-                    onChange={(e) => setReceiptNumber(e.target.value)}
-                    placeholder="e.g., FT26071... or REC-8902"
-                    className="w-full pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-500">
-                    <Icon className="material-symbols-outlined text-[16px]">receipt</Icon>
-                  </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  required
+                  value={receiptNumber}
+                  onChange={(e) => setReceiptNumber(e.target.value)}
+                  placeholder={isAmharic ? 'ለምሳሌ፡ FT26071... ወይም REC-8902' : 'e.g., FT26071... or REC-8902'}
+                  className="w-full pl-8 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                />
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-500">
+                  <Icon className="material-symbols-outlined text-[16px]">receipt</Icon>
                 </div>
-
-                <select
-                  value={formChekiBank}
-                  onChange={(e) => setFormChekiBank(e.target.value)}
-                  className="px-2 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 shrink-0"
-                >
-                  <option value="">{isAmharic ? 'ራስ-ሰር ባንክ' : 'Auto Bank'}</option>
-                  <option value="cbe">CBE</option>
-                  <option value="telebirr">Telebirr</option>
-                  <option value="awash">Awash</option>
-                  <option value="dashen">Dashen</option>
-                  <option value="abyssinia">Abyssinia</option>
-                  <option value="coop">Coop</option>
-                </select>
-
-                <button
-                  type="button"
-                  onClick={handleVerifyReceiptInForm}
-                  disabled={formChekiLoading || !receiptNumber.trim()}
-                  className="px-3 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 shrink-0 cursor-pointer disabled:cursor-not-allowed active:scale-95"
-                  title={isAmharic ? 'በቼኪ API ደረሰኙን አረጋግጥ' : 'Verify receipt on bank system via Cheki API'}
-                >
-                  {formChekiLoading ? (
-                    <>
-                      <Icon className="material-symbols-outlined text-[15px] animate-spin">progress_activity</Icon>
-                      <span className="hidden sm:inline">{isAmharic ? 'በማጣራት...' : 'Checking...'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Icon className="material-symbols-outlined text-[15px]">verified</Icon>
-                      <span>{isAmharic ? 'አረጋግጥ' : 'Verify'}</span>
-                    </>
-                  )}
-                </button>
               </div>
-
-              {formChekiError && (
-                <div className="p-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 rounded-lg text-[11px] font-bold flex items-center justify-between gap-2 mt-1">
-                  <div className="flex items-center gap-1.5">
-                    <Icon className="material-symbols-outlined text-[15px] shrink-0">error</Icon>
-                    <span>{formChekiError}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setFormChekiError('')}
-                    className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer"
-                  >
-                    ✕
-                  </button>
-                </div>
-              )}
             </div>
 
-            {/* Payment Date Input with Dual-Calendar live indicator */}
-            <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide flex items-center justify-between">
-                <span>{isAmharic ? 'የተከፈለበት ቀን (Payment Date)' : 'Payment Date (Gregorian / GC)'}</span>
-                <span className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200">
-                  {formatEthiopianDate(paymentDate, isAmharic ? 'am' : 'en')}
-                </span>
-              </label>
-              <input
-                type="date"
-                required
-                value={paymentDate}
-                onChange={(e) => setPaymentDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
+            {/* 2. Bank System Verification & Payment Date Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {/* Bank Selector and Verification Button */}
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
+                  {isAmharic ? 'የባንክ ማረጋገጫ' : 'Bank System Check'}
+                </label>
+                <div className="flex gap-2">
+                  <select
+                    value={formChekiBank}
+                    onChange={(e) => setFormChekiBank(e.target.value)}
+                    className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  >
+                    <option value="">{isAmharic ? 'ራስ-ሰር ባንክ' : 'Auto Bank'}</option>
+                    <option value="cbe">CBE</option>
+                    <option value="telebirr">Telebirr</option>
+                    <option value="awash">Awash</option>
+                    <option value="dashen">Dashen</option>
+                    <option value="abyssinia">Abyssinia</option>
+                    <option value="coop">Coop</option>
+                  </select>
+
+                  <button
+                    type="button"
+                    onClick={handleVerifyReceiptInForm}
+                    disabled={formChekiLoading || !receiptNumber.trim()}
+                    className="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 shrink-0 cursor-pointer disabled:cursor-not-allowed active:scale-95"
+                    title={isAmharic ? 'ደረሰኙን አረጋግጥ' : 'Verify receipt on bank system via Cheki API'}
+                  >
+                    {formChekiLoading ? (
+                      <>
+                        <Icon className="material-symbols-outlined text-[15px] animate-spin">progress_activity</Icon>
+                        <span>{isAmharic ? 'በማጣራት...' : 'Checking...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icon className="material-symbols-outlined text-[15px]">verified</Icon>
+                        <span>{isAmharic ? 'አረጋግጥ' : 'Verify'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {formChekiError && (
+                  <div className="p-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 rounded-lg text-[11px] font-bold flex items-center justify-between gap-2 mt-1">
+                    <div className="flex items-center gap-1.5">
+                      <Icon className="material-symbols-outlined text-[15px] shrink-0">error</Icon>
+                      <span>{formChekiError}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setFormChekiError('')}
+                      className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Payment Date Input */}
+              <div className="space-y-1">
+                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide flex items-center justify-between">
+                  <span>{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
+                  <span className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200">
+                    {formatEthiopianDate(paymentDate, isAmharic ? 'am' : 'en')}
+                  </span>
+                </label>
+                <input
+                  type="date"
+                  required
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                />
+              </div>
             </div>
           </div>
 
@@ -945,7 +947,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             {/* Amount */}
             <div className="space-y-1">
               <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
-                {isAmharic ? 'የተከፈለው መጠን (ብር / ETB)' : 'Amount Paid (ETB)'}
+                {isAmharic ? 'የተከፈለው መጠን (ብር)' : 'Amount Paid (ETB)'}
               </label>
               <input
                 type="number"
@@ -961,11 +963,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wide flex items-center justify-between">
                 <span className="flex items-center gap-1">
                   <Icon className="material-symbols-outlined text-[16px]">event_available</Icon>
-                  <span>{isAmharic ? 'የ1 ወር ማብቂያ ቀን (የኢትዮጵያ ቀን)' : 'Calculated 1-Month Expiry (Eth)'}</span>
+                  <span>{isAmharic ? 'የ1 ወር ማብቂያ ቀን' : 'Calculated 1-Month Expiry (Eth)'}</span>
                 </span>
-                <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300">
-                  GC: {calculatedExpirationDate}
-                </span>
+                {!isAmharic && (
+                  <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300">
+                    GC: {calculatedExpirationDate}
+                  </span>
+                )}
               </label>
               <div className="w-full px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-lg text-xs font-black text-emerald-900 dark:text-emerald-300 flex items-center justify-between shadow-2xs">
                 <span className="font-mono text-xs sm:text-sm">
@@ -981,7 +985,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           {/* Screenshot Upload Dropzone */}
           <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
             <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
-              {isAmharic ? 'የደረሰኝ ስክሪንሾት / ፎቶ (Receipt Screenshot Upload)' : 'Receipt Screenshot Upload'}
+              {isAmharic ? 'የደረሰኝ ፎቶ ስቀል' : 'Receipt Screenshot Upload'}
             </label>
 
             <div className="flex flex-col sm:flex-row items-center gap-3 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
@@ -1004,7 +1008,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 <div className="w-28 h-20 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
                   <Icon className="material-symbols-outlined text-[24px]">receipt</Icon>
                   <span className="text-[9px] font-bold mt-0.5">
-                    {isAmharic ? 'ስክሪንሾት የለም' : 'No Image'}
+                    {isAmharic ? 'ፎቶ የለም' : 'No Image'}
                   </span>
                 </div>
               )}
@@ -1022,7 +1026,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold cursor-pointer transition-all shadow-xs"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">cloud_upload</Icon>
-                  <span>{isAmharic ? 'ስክሪንሾት / ደረሰኝ ፎቶ ስቀል' : 'Upload Receipt Screenshot'}</span>
+                  <span>{isAmharic ? 'የደረሰኝ ፎቶ ስቀል' : 'Upload Receipt Screenshot'}</span>
                 </label>
                 <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300">
                   {isAmharic
@@ -1160,7 +1164,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <th className="px-4 py-3.5 text-center w-12">#</th>
                   <th className="px-4 py-3.5">{isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt #'}</th>
                   <th className="px-4 py-3.5">{isAmharic ? 'የባለቤት ስም & ሰሌዳ' : 'Owner & Vehicle'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'የተከፈለበት ቀን (የኢትዮጵያ / GC)' : 'Payment Date (Eth/GC)'}</th>
+                  <th className="px-4 py-3.5">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date (Eth/GC)'}</th>
                   <th className="px-4 py-3.5">{isAmharic ? 'የ1 ወር ማብቂያ ቀን & ሁኔታ' : 'Expiration & Status'}</th>
                   <th className="px-4 py-3.5">{isAmharic ? 'መጠን (ብር)' : 'Amount'}</th>
                   <th className="px-4 py-3.5 text-center">{isAmharic ? 'ማረጋገጫ ፎቶ' : 'Proof'}</th>
@@ -1235,14 +1239,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           </div>
                         </td>
 
-                        {/* Payment Date: Primary Ethiopian Calendar + Secondary Gregorian */}
+                        {/* Payment Date: Primary Ethiopian Calendar */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="font-black text-slate-950 dark:text-white text-xs">
                             {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
                           </div>
-                          <div className="font-mono text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
-                            GC: {rc.paymentDate}
-                          </div>
+                          {!isAmharic && (
+                            <div className="font-mono text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
+                              GC: {rc.paymentDate}
+                            </div>
+                          )}
                         </td>
 
                         {/* Expiration Date: Primary Ethiopian Calendar + Status Badge */}
@@ -1250,9 +1256,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           <div className="font-mono font-black text-slate-950 dark:text-white text-xs">
                             {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
                           </div>
-                          <div className="font-mono text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
-                            GC: {rc.expirationDate}
-                          </div>
+                          {!isAmharic && (
+                            <div className="font-mono text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
+                              GC: {rc.expirationDate}
+                            </div>
+                          )}
                           <div className="mt-1">
                             {status === 'active' && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-400">
@@ -1323,7 +1331,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                               type="button"
                               onClick={() => setReconcileReceipt(rc)}
                               className="px-2.5 py-1 rounded-md bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-black hover:bg-slate-800 dark:hover:bg-white transition-all flex items-center gap-1 cursor-pointer"
-                              title={isAmharic ? 'የባንክ ማስታረቂያ (Reconciliation Drawer)' : 'Reconcile Bank Reference'}
+                              title={isAmharic ? 'የባንክ ማስታረቂያ' : 'Reconcile Bank Reference'}
                             >
                               <Icon className="material-symbols-outlined text-[15px]">compare_arrows</Icon>
                               <span>{isAmharic ? 'አስታርቅ' : 'Reconcile'}</span>
@@ -1539,7 +1547,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       account_balance
                     </Icon>
                     <span className="font-black text-slate-950 dark:text-white uppercase">
-                      {isAmharic ? 'የባንክ ማጣቀሻ ማረጋገጫ (CBE / Telebirr)' : 'Bank Reference Verification'}
+                      {isAmharic ? 'የባንክ ማጣቀሻ ማረጋገጫ' : 'Bank Reference Verification'}
                     </span>
                   </div>
                   {reconcileReceipt.verifiedByCheki && (
@@ -1555,7 +1563,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
                     <div>
                       <span className="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300">
-                        {isAmharic ? 'የማጣቀሻ ቁጥር (FT / Ref)' : 'Reference # (FT / Ref)'}
+                        {isAmharic ? 'የማጣቀሻ ቁጥር' : 'Reference # (FT / Ref)'}
                       </span>
                       <span className="font-mono font-black text-slate-950 dark:text-white text-xs sm:text-sm">
                         {reconcileReceipt.receiptNumber}
@@ -1569,7 +1577,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       <Icon className="material-symbols-outlined text-[14px]">
                         {reconcileCopiedField === 'Reference #' ? 'check' : 'content_copy'}
                       </Icon>
-                      <span>{reconcileCopiedField === 'Reference #' ? 'Copied' : 'Copy'}</span>
+                      <span>{reconcileCopiedField === 'Reference #' ? (isAmharic ? 'ተቀድቷል' : 'Copied') : (isAmharic ? 'ቅዳ' : 'Copy')}</span>
                     </button>
                   </div>
 
@@ -1591,7 +1599,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       <Icon className="material-symbols-outlined text-[14px]">
                         {reconcileCopiedField === 'Amount' ? 'check' : 'content_copy'}
                       </Icon>
-                      <span>{reconcileCopiedField === 'Amount' ? 'Copied' : 'Copy'}</span>
+                      <span>{reconcileCopiedField === 'Amount' ? (isAmharic ? 'ተቀድቷል' : 'Copied') : (isAmharic ? 'ቅዳ' : 'Copy')}</span>
                     </button>
                   </div>
                 </div>
@@ -1600,7 +1608,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 <div className="space-y-1.5 pt-1">
                   <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-100">
                     {isAmharic
-                      ? 'ከባንክ ኤስኤምኤስ ወይም ከሲቢኢ መተግበሪያ የተገኘ የማጣቀሻ ቁጥር እዚህ አጣራ፦'
+                      ? 'ከባንክ ኤስኤምኤስ ወይም ከመተግበሪያ የተገኘ የማጣቀሻ ቁጥር እዚህ አጣራ፦'
                       : 'Compare Bank Statement SMS / Web Reference against Ledger:'}
                   </label>
                   <div className="relative">
@@ -1648,40 +1656,44 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     calendar_month
                   </Icon>
                   <span className="font-black text-slate-950 dark:text-white uppercase">
-                    {isAmharic ? 'የኢትዮጵያ & ግሪጎሪያን የቀን አቆጣጠር ማጠቃለያ' : 'Dual-Calendar Timeline & Term Status'}
+                    {isAmharic ? 'የቀን አቆጣጠር ማጠቃለያ' : 'Dual-Calendar Timeline & Term Status'}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
                     <span className="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300">
-                      {isAmharic ? 'የተከፈለበት ቀን (የኢትዮጵያ)' : 'Payment Date (Ethiopian)'}
+                      {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date (Ethiopian)'}
                     </span>
                     <span className="font-black text-slate-950 dark:text-white text-xs sm:text-sm block mt-0.5">
                       {formatEthiopianDate(reconcileReceipt.paymentDate, isAmharic ? 'am' : 'en')}
                     </span>
-                    <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 block">
-                      Audit GC: {reconcileReceipt.paymentDate}
-                    </span>
+                    {!isAmharic && (
+                      <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 block">
+                        Audit GC: {reconcileReceipt.paymentDate}
+                      </span>
+                    )}
                   </div>
 
                   <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
                     <span className="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300">
-                      {isAmharic ? 'የ1 ወር ማብቂያ ቀን (የኢትዮጵያ)' : 'Expiration Date (Ethiopian)'}
+                      {isAmharic ? 'የ1 ወር ማብቂያ ቀን' : 'Expiration Date (Ethiopian)'}
                     </span>
                     <span className="font-black text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm block mt-0.5">
                       {formatEthiopianDate(reconcileReceipt.expirationDate, isAmharic ? 'am' : 'en')}
                     </span>
-                    <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 block">
-                      Audit GC: {reconcileReceipt.expirationDate}
-                    </span>
+                    {!isAmharic && (
+                      <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 block">
+                        Audit GC: {reconcileReceipt.expirationDate}
+                      </span>
+                    )}
                   </div>
                 </div>
 
                 {(reconcileReceipt.enteredAt || reconcileReceipt.createdAt) && (
                   <div className="text-[11px] font-mono text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <strong>{isAmharic ? 'የተመዘገበበት ሰዓት (Audit Timestamp):' : 'Audit Timestamp:'}</strong>{' '}
-                    {formatEthiopianDateTime(reconcileReceipt.enteredAt || reconcileReceipt.createdAt, isAmharic ? 'am' : 'en')} (GC: {new Date(reconcileReceipt.enteredAt || reconcileReceipt.createdAt).toLocaleString()})
+                    <strong>{isAmharic ? 'የተመዘገበበት ሰዓት:' : 'Audit Timestamp:'}</strong>{' '}
+                    {formatEthiopianDateTime(reconcileReceipt.enteredAt || reconcileReceipt.createdAt, isAmharic ? 'am' : 'en')} {!isAmharic && `(GC: ${new Date(reconcileReceipt.enteredAt || reconcileReceipt.createdAt).toLocaleString()})`}
                   </div>
                 )}
               </div>
@@ -1689,7 +1701,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* HIGH-RES PROOF SCREENSHOT VIEWER */}
               <div className="space-y-2">
                 <span className="block text-xs font-black text-slate-950 dark:text-white uppercase">
-                  {isAmharic ? 'የተያያዘ የክፍያ ማረጋገጫ ፎቶ (Receipt Proof Image)' : 'Attached Receipt Proof Image'}
+                  {isAmharic ? 'የተያያዘ የክፍያ ማረጋገጫ ፎቶ' : 'Attached Receipt Proof Image'}
                 </span>
 
                 <div className="rounded-xl bg-black border border-slate-800 p-2 flex items-center justify-center min-h-[220px] max-h-[360px] overflow-auto">

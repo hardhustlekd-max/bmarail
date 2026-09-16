@@ -2138,16 +2138,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         userRole={userRole}
         userBadgeId={userBadgeId}
         onClose={() => setEditingRegistration(null)}
-        onSaveSuccess={(updatedReg) => {
+        onSaveSuccess={() => {
           setEditingRegistration(null);
-          if (onShowToast) {
-            onShowToast(
-              isAmharic
-                ? `የአባል ${updatedReg.fullName} መረጃ በተሳካ ሁኔታ ተሻሽሏል`
-                : `Registration for ${updatedReg.fullName} updated successfully`,
-              'success'
-            );
-          }
         }}
       />
     </div>
