@@ -145,10 +145,10 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
           const scaleX = cropW / targetRoiW;
           const scaleY = cropH / targetRoiH;
           
-          const minX = Math.min(loc.topLeft.x, loc.bottomLeft.x);
-          const maxX = Math.max(loc.topRight.x, loc.bottomRight.x);
-          const minY = Math.min(loc.topLeft.y, loc.topRight.y);
-          const maxY = Math.max(loc.bottomLeft.y, loc.bottomRight.y);
+          const minX = Math.min(loc.topLeftCorner.x, loc.bottomLeftCorner.x);
+          const maxX = Math.max(loc.topRightCorner.x, loc.bottomRightCorner.x);
+          const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y);
+          const maxY = Math.max(loc.bottomLeftCorner.y, loc.bottomRightCorner.y);
           
           const x = cropX + minX * scaleX;
           const y = cropY + minY * scaleY;
@@ -199,10 +199,10 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
           const scaleX = vw / targetW;
           const scaleY = vh / targetH;
           
-          const minX = Math.min(loc.topLeft.x, loc.bottomLeft.x);
-          const maxX = Math.max(loc.topRight.x, loc.bottomRight.x);
-          const minY = Math.min(loc.topLeft.y, loc.topRight.y);
-          const maxY = Math.max(loc.bottomLeft.y, loc.bottomRight.y);
+          const minX = Math.min(loc.topLeftCorner.x, loc.bottomLeftCorner.x);
+          const maxX = Math.max(loc.topRightCorner.x, loc.bottomRightCorner.x);
+          const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y);
+          const maxY = Math.max(loc.bottomLeftCorner.y, loc.bottomRightCorner.y);
           
           const x = minX * scaleX;
           const y = minY * scaleY;
@@ -228,16 +228,32 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
   };
 
   const decodeImage = async (img: HTMLImageElement): Promise<ScanDetectionResult | null> => {
+    const origW = img.naturalWidth || img.width;
+    const origH = img.naturalHeight || img.height;
+
     // 1. Native BarcodeDetector API for image
     const nativeDetector = getNativeBarcodeDetector();
     if (nativeDetector) {
       try {
         const results = await nativeDetector.detect(img);
         if (results && results.length > 0 && results[0]?.rawValue) {
+          const bb = results[0].boundingBox;
+          let boundingBox;
+          if (bb) {
+            boundingBox = {
+              x: bb.x,
+              y: bb.y,
+              width: bb.width,
+              height: bb.height,
+              centerX: bb.x + bb.width / 2,
+              centerY: bb.y + bb.height / 2,
+            };
+          }
           return {
             rawValue: results[0].rawValue.trim(),
             format: results[0].format,
             source: 'native',
+            boundingBox,
           };
         }
       } catch (err) {
@@ -246,10 +262,11 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
     }
 
     // 2. Multi-scale jsQR passes (1200px, 800px, 500px, original)
-    const targetScales = [1200, 800, 500, Math.max(img.width, img.height)];
+    const targetScales = [1200, 800, 500, Math.max(origW || 1000, origH || 1000)];
     for (const maxDim of targetScales) {
-      let w = img.width;
-      let h = img.height;
+      if (!origW || !origH) continue;
+      let w = origW;
+      let h = origH;
       if (w > maxDim || h > maxDim) {
         if (w > h) {
           h = Math.round((h * maxDim) / w);
@@ -272,9 +289,31 @@ export const createFastScannerPipeline = (): FastScannerPipeline => {
         inversionAttempts: 'attemptBoth',
       });
       if (code && code.data && code.data.trim()) {
+        const loc = code.location;
+        const scaleX = origW / w;
+        const scaleY = origH / h;
+
+        const minX = Math.min(loc.topLeftCorner.x, loc.bottomLeftCorner.x);
+        const maxX = Math.max(loc.topRightCorner.x, loc.bottomRightCorner.x);
+        const minY = Math.min(loc.topLeftCorner.y, loc.topRightCorner.y);
+        const maxY = Math.max(loc.bottomLeftCorner.y, loc.bottomRightCorner.y);
+
+        const x = minX * scaleX;
+        const y = minY * scaleY;
+        const width = (maxX - minX) * scaleX;
+        const height = (maxY - minY) * scaleY;
+
         return {
           rawValue: code.data.trim(),
           source: 'image',
+          boundingBox: {
+            x,
+            y,
+            width,
+            height,
+            centerX: x + width / 2,
+            centerY: y + height / 2,
+          },
         };
       }
     }

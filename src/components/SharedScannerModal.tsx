@@ -10,6 +10,7 @@ import { getScannerTheme } from '../utils/scannerThemes';
 import {
   createFastScannerPipeline,
   getOptimalCameraConstraints,
+  ScanDetectionResult,
 } from '../utils/qrScannerEngine';
 import {
   FullscreenDocumentCarouselModal,
@@ -624,11 +625,11 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   };
 
   // Helper to scan HTMLImageElement for QR or Barcodes using high-speed pipeline
-  const decodeQRFromImage = async (img: HTMLImageElement): Promise<string | null> => {
+  const decodeQRFromImage = async (img: HTMLImageElement): Promise<ScanDetectionResult | null> => {
     const pipeline = createFastScannerPipeline();
     try {
       const result = await pipeline.decodeImage(img);
-      return result?.rawValue || null;
+      return result || null;
     } finally {
       pipeline.destroy();
     }
@@ -646,17 +647,41 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     setScannedRegResult(null);
     setIsProcessingScan(true);
     isProcessingRef.current = true;
+    setIsLocked(false);
+    setQrLockStyle({});
 
     const img = new Image();
     img.onload = async () => {
-      const foundData = await decodeQRFromImage(img);
+      const detected = await decodeQRFromImage(img);
       
-      // Delay so the user sees the active scanning animation over uploaded image in camera view
-      setTimeout(() => {
-        isProcessingRef.current = false;
-        if (foundData) {
-          processQRData(foundData, instantPreviewUrl);
+      if (detected && detected.rawValue) {
+        const origW = img.naturalWidth || img.width;
+        const origH = img.naturalHeight || img.height;
+
+        if (detected.boundingBox && origW && origH) {
+          setIsLocked(true);
+          const originX = (detected.boundingBox.centerX / origW) * 100;
+          const originY = (detected.boundingBox.centerY / origH) * 100;
+          
+          setQrLockStyle({
+            transformOrigin: `${originX}% ${originY}%`,
+            transform: 'scale(1.8)',
+            transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+          });
+
+          // Wait for the spring animation to center the QR code inside the bracket while blue laser line is scanning
+          setTimeout(() => {
+            isProcessingRef.current = false;
+            processQRData(detected.rawValue, instantPreviewUrl);
+          }, 800);
         } else {
+          setTimeout(() => {
+            isProcessingRef.current = false;
+            processQRData(detected.rawValue, instantPreviewUrl);
+          }, 700);
+        }
+      } else {
+        setTimeout(() => {
           setIsProcessingScan(false);
           playScanFeedback(false);
           setScanFlash('not_found');
@@ -666,8 +691,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             setScanFlash(null);
             isProcessingRef.current = false;
           }, 450);
-        }
-      }, 700);
+        }, 600);
+      }
     };
     img.src = instantPreviewUrl;
 
@@ -721,13 +746,15 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <img
                     src={uploadedImageSrc}
                     alt="Uploaded QR Image"
-                    className="w-full h-full object-cover bg-slate-950"
+                    className="absolute inset-0 w-full h-full object-cover bg-slate-950"
+                    style={{ ...qrLockStyle, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : capturedFrameSrc ? (
                   <img
                     src={capturedFrameSrc}
                     alt="Captured Camera Frame"
-                    className="w-full h-full object-cover bg-slate-950"
+                    className="absolute inset-0 w-full h-full object-cover bg-slate-950"
+                    style={{ ...qrLockStyle, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
                   <video 
@@ -817,9 +844,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-[#3b82f6] rounded-br-sm z-20" />
 
                       {/* Animated Blue Scanning Line */}
-                      {!uploadedImageSrc && (
-                        <div className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20 animate-scanner-laser" />
-                      )}
+                      <div className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20 animate-scanner-laser" />
                     </div>
                   </div>
 
