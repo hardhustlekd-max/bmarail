@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Icon } from './ui/Icon';
-import jsQR from 'jsqr';
 import { motion, AnimatePresence } from 'motion/react';
 import { MotorcycleRegistration, VerificationLog, Language, SystemSettings } from '../types';
 import { QRCodeCard } from './QRCodeCard';
@@ -8,6 +7,10 @@ import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { SmartImage } from './SmartImage';
 import { lookupRegistrationInDb, subscribeSettings, DEFAULT_SETTINGS } from '../services/dbService';
 import { getScannerTheme } from '../utils/scannerThemes';
+import {
+  createFastScannerPipeline,
+  getOptimalCameraConstraints,
+} from '../utils/qrScannerEngine';
 import {
   FullscreenDocumentCarouselModal,
   buildRegistrationDocumentList,
@@ -159,6 +162,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string | null>(null);
   const [capturedFrameSrc, setCapturedFrameSrc] = useState<string | null>(null);
   const [isProcessingScan, setIsProcessingScan] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [qrLockStyle, setQrLockStyle] = useState<React.CSSProperties>({});
   const [showNotesSection, setShowNotesSection] = useState(false);
   const [showDigitalIdModal, setShowDigitalIdModal] = useState(false);
   const [showTopMenu, setShowTopMenu] = useState(false);
@@ -171,6 +176,24 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const animFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const isProcessingRef = useRef(false);
+
+  // When closing, reset everything
+  const handleClose = () => {
+    setIsLocked(false);
+    setQrLockStyle({});
+    onClose();
+  };
+
+  // Restart scanning
+  const handleRestartScan = () => {
+    setIsLocked(false);
+    setQrLockStyle({});
+    setScannedRegResult(null);
+    setCapturedFrameSrc(null);
+    setUploadedImageSrc(null);
+    setIsProcessingScan(false);
+    setCameraError('');
+  };
 
   const openDocumentCarousel = (targetUrl: string, fallbackTitle?: string) => {
     if (!targetUrl) return;
@@ -400,9 +423,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     }
   };
 
-  // Live Camera QR Scan Loop via jsQR
+  // Live Camera QR Scan Loop via high-performance fast pipeline
   useEffect(() => {
     let active = true;
+    let pipeline = createFastScannerPipeline();
 
     if (isOpen && isScanning && searchMode === 'camera' && !scannedRegResult) {
       setCameraError('');
@@ -412,13 +436,20 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
         return;
       }
 
+      // Request optimal HD camera stream for razor-sharp QR detection
       navigator.mediaDevices
-        .getUserMedia({
-          video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        .getUserMedia(getOptimalCameraConstraints(facingMode))
+        .catch(() => {
+          // Fallback to baseline constraints if HD constraints fail
+          return navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: facingMode } },
+            audio: false,
+          });
         })
         .then((stream) => {
           if (!active) {
             stream.getTracks().forEach((track) => track.stop());
+            pipeline.destroy();
             return;
           }
           streamRef.current = stream;
@@ -427,26 +458,56 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             videoRef.current.play().catch(() => {});
           }
 
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-          const scanFrame = () => {
+          let isScanningFrame = false;
+          const scanFrame = async () => {
             if (!active) return;
             const video = videoRef.current;
-            if (video && video.readyState === video.HAVE_ENOUGH_DATA && ctx) {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-              const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                inversionAttempts: 'dontInvert'
-              });
-              if (code && code.data) {
-                processQRData(code.data);
-                return;
+            if (
+              video &&
+              video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+              !isScanningFrame &&
+              !isProcessingRef.current
+            ) {
+              isScanningFrame = true;
+              try {
+                const detected = await pipeline.scanVideoFrame(video);
+                if (detected && detected.rawValue && active) {
+                  isProcessingRef.current = true;
+                  
+                  if (detected.boundingBox && video.videoWidth && video.videoHeight) {
+                    setIsLocked(true);
+                    
+                    const originX = (detected.boundingBox.centerX / video.videoWidth) * 100;
+                    const originY = (detected.boundingBox.centerY / video.videoHeight) * 100;
+                    
+                    setQrLockStyle({
+                      transformOrigin: `${originX}% ${originY}%`,
+                      transform: 'scale(1.8)',
+                      transition: 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                    });
+                    
+                    // Wait for the spring animation to center the QR code before processing
+                    setTimeout(() => {
+                      if (active || isProcessingRef.current) {
+                        active = false;
+                        processQRData(detected.rawValue);
+                      }
+                    }, 800);
+                  } else {
+                    active = false;
+                    processQRData(detected.rawValue);
+                  }
+                  return;
+                }
+              } catch (e) {
+                // Ignore transient frame scan glitches
+              } finally {
+                isScanningFrame = false;
               }
             }
-            animFrameRef.current = requestAnimationFrame(scanFrame);
+            if (active) {
+              animFrameRef.current = requestAnimationFrame(scanFrame);
+            }
           };
 
           animFrameRef.current = requestAnimationFrame(scanFrame);
@@ -473,6 +534,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
         streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
       }
+      pipeline.destroy();
     };
   }, [isOpen, isScanning, searchMode, scannedRegResult, isAmharic, facingMode]);
 
@@ -561,55 +623,15 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     }
   };
 
-  // Helper to scan HTMLImageElement for QR or Barcodes using native API + multi-scale jsQR
+  // Helper to scan HTMLImageElement for QR or Barcodes using high-speed pipeline
   const decodeQRFromImage = async (img: HTMLImageElement): Promise<string | null> => {
-    // 1. Try Native BarcodeDetector API if available
-    if ('BarcodeDetector' in window) {
-      try {
-        const detector = new (window as any).BarcodeDetector({
-          formats: ['qr_code', 'code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a', 'data_matrix', 'pdf417']
-        });
-        const detected = await detector.detect(img);
-        if (detected && detected.length > 0 && detected[0].rawValue) {
-          return detected[0].rawValue;
-        }
-      } catch (err) {
-        console.warn('Native BarcodeDetector failed, trying jsQR scales:', err);
-      }
+    const pipeline = createFastScannerPipeline();
+    try {
+      const result = await pipeline.decodeImage(img);
+      return result?.rawValue || null;
+    } finally {
+      pipeline.destroy();
     }
-
-    // 2. Try jsQR across multiple scaled canvas resolutions
-    const targetSizes = [800, 1200, 500, Math.max(img.width, img.height)];
-    for (const maxDim of targetSizes) {
-      let w = img.width;
-      let h = img.height;
-      if (w > maxDim || h > maxDim) {
-        if (w > h) {
-          h = Math.round((h * maxDim) / w);
-          w = maxDim;
-        } else {
-          w = Math.round((w * maxDim) / h);
-          h = maxDim;
-        }
-      }
-
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (!ctx) continue;
-
-      ctx.drawImage(img, 0, 0, w, h);
-      const imageData = ctx.getImageData(0, 0, w, h);
-      const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'attemptBoth'
-      });
-      if (code && code.data && code.data.trim()) {
-        return code.data.trim();
-      }
-    }
-
-    return null;
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -714,7 +736,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     playsInline
                     muted
                     className="absolute inset-0 w-full h-full object-cover"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    style={{ ...qrLockStyle, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 )}
 
@@ -733,28 +755,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                 {/* Custom Live Scanner Overlay UI - Full screen viewfinder & bottom controls */}
                 <div className="absolute inset-0 pointer-events-none flex flex-col justify-between z-10">
-                  {/* 1. TOP HEADER with Opaque Dark Background & Blur */}
-                  <div className="w-full flex flex-col pt-3 px-4 sm:px-6 z-30 shrink-0">
-                    <div className="pointer-events-auto bg-black/70 backdrop-blur-md border border-white/15 rounded-lg px-4 py-3 flex items-center justify-between shadow-2xl">
-                      {/* Back Button with Title */}
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className="flex items-center gap-1.5 sm:gap-2 text-white hover:text-white/80 active:scale-95 transition-all cursor-pointer drop-shadow-md select-none group min-h-[44px] min-w-[44px] touch-manipulation"
-                        title={isAmharic ? 'ተመለስ' : 'Back'}
-                      >
-                        <Icon className="material-symbols-outlined text-[28px] sm:text-[32px] leading-none text-white transition-transform group-hover:-translate-x-0.5">
-                          chevron_left
-                        </Icon>
-                        <span className="text-base sm:text-lg font-bold tracking-tight text-white drop-shadow-xs">
-                          {isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code'}
-                        </span>
-                      </button>
-                    </div>
-
-                    {/* Search Dropdown Card if active */}
+                  {/* TOP SEARCH POPUP (Only shown when Search by Plate is toggled) */}
+                  <div className="w-full flex flex-col pt-3 px-4 sm:px-6 z-30 shrink-0 min-h-[10px]">
                     {showTopMenu && (
-                      <div className="pointer-events-auto w-full max-w-md mx-auto mt-3 bg-slate-900/95 border border-slate-700 rounded-lg shadow-2xl p-3 text-white backdrop-blur-xl animate-in slide-in-from-top-3 duration-200">
+                      <div className="pointer-events-auto w-full max-w-md mx-auto bg-slate-900/95 border border-slate-700/80 rounded-xl shadow-2xl p-3 text-white backdrop-blur-xl animate-in slide-in-from-top-3 duration-200">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
                             <Icon className="material-symbols-outlined text-[18px] text-primary">search</Icon>
@@ -800,26 +804,26 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     )}
                   </div>
 
-                  {/* 2. CENTER VIEWFINDER (Bigger Reticle Size) */}
+                  {/* 2. CENTER VIEWFINDER (Compact Reticle Size & Semi-Transparent Viewport Overlay) */}
                   <div className="flex flex-col items-center justify-center my-auto pointer-events-none">
                     <div
-                      className="relative w-72 h-72 sm:w-92 sm:h-92 max-w-[85vw] max-h-[75vh] border border-white/20 rounded-lg flex-shrink-0"
-                      style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.7)' }}
+                      className="relative w-56 h-56 sm:w-64 sm:h-64 max-w-[70vw] max-h-[50vh] border border-white/25 rounded-xl flex-shrink-0"
+                      style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
                     >
                       {/* 4 Vibrant Blue Corner Brackets */}
-                      <div className="absolute -top-1 -left-1 w-7 h-7 border-t-[4px] border-l-[4px] border-[#3b82f6] rounded-tl-sm z-20" />
-                      <div className="absolute -top-1 -right-1 w-7 h-7 border-t-[4px] border-r-[4px] border-[#3b82f6] rounded-tr-sm z-20" />
-                      <div className="absolute -bottom-1 -left-1 w-7 h-7 border-b-[4px] border-l-[4px] border-[#3b82f6] rounded-bl-sm z-20" />
-                      <div className="absolute -bottom-1 -right-1 w-7 h-7 border-b-[4px] border-r-[4px] border-[#3b82f6] rounded-br-sm z-20" />
+                      <div className="absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] border-[#3b82f6] rounded-tl-sm z-20" />
+                      <div className="absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] border-[#3b82f6] rounded-tr-sm z-20" />
+                      <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-[#3b82f6] rounded-bl-sm z-20" />
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-[#3b82f6] rounded-br-sm z-20" />
 
-                      {/* Animated Red Laser Scanning Line */}
+                      {/* Animated Blue Scanning Line */}
                       {!uploadedImageSrc && (
-                        <div className="absolute left-2 right-2 h-[2.5px] bg-red-500 shadow-[0_0_14px_#ef4444] rounded-full z-20 animate-red-laser" />
+                        <div className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20 animate-scanner-laser" />
                       )}
                     </div>
                   </div>
 
-                  {/* 3. BOTTOM SECTION: Guide Text (No background, placed above bottom buttons) & ACTION BUTTONS */}
+                  {/* 3. BOTTOM SECTION: Guide Text & ACTION BUTTONS WITH BACK BUTTON */}
                   <div className="pointer-events-auto flex flex-col items-center w-full max-w-md mx-auto px-4 pb-6 z-30 shrink-0 gap-2 sm:gap-2.5">
                     {/* Guide Text without background, positioned just above action buttons */}
                     <div className="text-center pointer-events-none select-none">
@@ -829,22 +833,32 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     </div>
 
                     {/* Bottom Action Buttons Row with Opaque Dark Background & Blur */}
-                    <div className="w-full bg-black/70 backdrop-blur-md border border-white/15 rounded-xl p-3 sm:p-4 flex items-center justify-evenly shadow-2xl">
-                      {/* 1. Search Button */}
+                    <div className="w-full bg-black/75 backdrop-blur-md border border-white/15 rounded-xl p-2.5 sm:p-3.5 flex items-center justify-between sm:justify-evenly shadow-2xl gap-1 sm:gap-2">
+                      {/* 1. Back Button */}
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer border border-white/15"
+                        title={isAmharic ? 'ተመለስ' : 'Back'}
+                      >
+                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">arrow_back</Icon>
+                      </button>
+
+                      {/* 2. Search Button */}
                       <button
                         type="button"
                         onClick={() => setShowTopMenu(!showTopMenu)}
-                        className={`w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           showTopMenu
                             ? 'bg-primary text-white shadow-primary/40 ring-4 ring-primary/50'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
                         }`}
                         title={isAmharic ? 'ፈልግ' : 'Search'}
                       >
-                        <Icon className="material-symbols-outlined text-[26px]">search</Icon>
+                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">search</Icon>
                       </button>
 
-                      {/* 2. Photo Gallery Upload */}
+                      {/* 3. Photo Gallery Upload */}
                       <button
                         type="button"
                         onClick={() => {
@@ -853,36 +867,36 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                             fileInputRef.current.click();
                           }
                         }}
-                        className="w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ምስል ስካን' : 'Select Photo'}
                       >
-                        <Icon className="material-symbols-outlined text-[26px]">image</Icon>
+                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">image</Icon>
                       </button>
 
-                      {/* 3. Flashlight / Torch Toggle */}
+                      {/* 4. Flashlight / Torch Toggle */}
                       <button
                         type="button"
                         onClick={handleToggleTorch}
-                        className={`w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           isTorchOn
                             ? 'bg-amber-400 text-amber-950 shadow-amber-400/40 ring-4 ring-amber-300/60'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
                         }`}
                         title={isAmharic ? 'ፍላሽ' : 'Flashlight'}
                       >
-                        <Icon className="material-symbols-outlined text-[26px]">
+                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">
                           {isTorchOn ? 'flashlight_on' : 'flashlight_off'}
                         </Icon>
                       </button>
 
-                      {/* 4. Switch Camera (Front/Rear) */}
+                      {/* 5. Switch Camera (Front/Rear) */}
                       <button
                         type="button"
                         onClick={() => setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'))}
-                        className="w-13 h-13 sm:w-14 sm:h-14 min-w-[50px] min-h-[50px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ካሜራ ቀይር' : 'Switch Camera'}
                       >
-                        <Icon className="material-symbols-outlined text-[26px]">cameraswitch</Icon>
+                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">cameraswitch</Icon>
                       </button>
                     </div>
                   </div>

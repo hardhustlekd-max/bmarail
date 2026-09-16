@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from './ui/Icon';
 import { formatEthiopianDateTime } from '../utils/ethiopianCalendar';
-import { Scanner } from '@yudiel/react-qr-scanner';
 import jsQR from 'jsqr';
 import { Language, MotorcycleRegistration, UserRole, VerificationLog } from '../types';
 import { QRCodeCard } from './QRCodeCard';

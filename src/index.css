@@ -944,7 +944,7 @@ html.dark .printable-a4-document,
   animation: whiteLaser 2.2s ease-in-out infinite;
 }
 
-@keyframes redLaser {
+@keyframes scannerLaser {
   0% {
     top: 5%;
     opacity: 0.8;
@@ -959,8 +959,8 @@ html.dark .printable-a4-document,
   }
 }
 
-.animate-red-laser {
-  animation: redLaser 2.2s ease-in-out infinite;
+.animate-scanner-laser {
+  animation: scannerLaser 2.2s ease-in-out infinite;
 }
 
 /* Global Dropdown Arrow Fix */
