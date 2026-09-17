@@ -1264,11 +1264,11 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       </div>
                       <div>
                         <div className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider">{isAmharic ? 'በመጠባበቅ' : 'Pending'}</div>
-                        <div className="text-sm font-black text-amber-600 dark:text-amber-400">{pendingCount}</div>
+                        <div className="text-sm font-black text-on-surface">{pendingCount}</div>
                       </div>
                       <div>
                         <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">{isAmharic ? 'የጸደቀ' : 'Approved'}</div>
-                        <div className="text-sm font-black text-emerald-600 dark:text-emerald-400">{approvedCount}</div>
+                        <div className="text-sm font-black text-on-surface">{approvedCount}</div>
                       </div>
                     </div>
                   </div>
@@ -1474,25 +1474,25 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           <div className="grid grid-cols-4 gap-1.5 sm:gap-3 pt-2">
             <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
               <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የሚጠብቁ' : 'Pending'}</div>
-              <div className="text-base sm:text-2xl font-black text-amber-600 tracking-tight leading-tight">
+              <div className="text-base sm:text-2xl font-black text-on-surface tracking-tight leading-tight">
                 {registrations.filter((r) => r.status === 'pending_approval').length}
               </div>
             </div>
             <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
               <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የጸደቁ' : 'Approved'}</div>
-              <div className="text-base sm:text-2xl font-black text-emerald-600 tracking-tight leading-tight">
+              <div className="text-base sm:text-2xl font-black text-on-surface tracking-tight leading-tight">
                 {registrations.filter((r) => r.status === 'approved').length}
               </div>
             </div>
             <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
               <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የተከለከሉ' : 'Rejected'}</div>
-              <div className="text-base sm:text-2xl font-black text-red-600 tracking-tight leading-tight">
+              <div className="text-base sm:text-2xl font-black text-on-surface tracking-tight leading-tight">
                 {registrations.filter((r) => r.status === 'rejected').length}
               </div>
             </div>
             <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
               <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የታተሙ' : 'Printed'}</div>
-              <div className="text-base sm:text-2xl font-black text-slate-700 tracking-tight leading-tight">
+              <div className="text-base sm:text-2xl font-black text-on-surface tracking-tight leading-tight">
                 {registrations.filter((r) => r.status === 'printed').length}
               </div>
             </div>

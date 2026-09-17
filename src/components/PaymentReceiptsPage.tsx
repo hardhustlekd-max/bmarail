@@ -576,7 +576,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </Icon>
             </div>
             <div className="mt-1.5 flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-black text-emerald-900 dark:text-emerald-300 font-mono">
+              <span className="text-lg sm:text-xl font-black text-slate-950 dark:text-white font-mono">
                 {metrics.activeCount}
               </span>
               <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-400">
@@ -599,7 +599,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </Icon>
             </div>
             <div className="mt-1.5 flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-black text-amber-900 dark:text-amber-300 font-mono">
+              <span className="text-lg sm:text-xl font-black text-slate-950 dark:text-white font-mono">
                 {metrics.expiringCount}
               </span>
               <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-400">
@@ -622,7 +622,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </Icon>
             </div>
             <div className="mt-1.5 flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-black text-rose-900 dark:text-rose-300 font-mono">
+              <span className="text-lg sm:text-xl font-black text-slate-950 dark:text-white font-mono">
                 {metrics.expiredCount}
               </span>
               <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-400">
