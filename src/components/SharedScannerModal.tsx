@@ -232,7 +232,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     return {
       transformOrigin: '0px 0px',
       transform: `translate(${translateX.toFixed(2)}px, ${translateY.toFixed(2)}px) scale(${zoom.toFixed(3)})`,
-      transition: 'transform 0.65s cubic-bezier(0.22, 1, 0.36, 1)',
+      transition: 'none',
     };
   };
 
@@ -240,6 +240,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const handleClose = () => {
     setIsLocked(false);
     setQrLockStyle({});
+    if (videoRef.current && videoRef.current.paused) {
+      videoRef.current.play().catch(() => {});
+    }
     onClose();
   };
 
@@ -250,8 +253,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     setScannedRegResult(null);
     setCapturedFrameSrc(null);
     setUploadedImageSrc(null);
-    setIsProcessingScan(false);
+    setIsScanning(true);
+    isProcessingRef.current = false;
     setCameraError('');
+    if (videoRef.current && videoRef.current.paused) {
+      videoRef.current.play().catch(() => {});
+    }
   };
 
   const openDocumentCarousel = (targetUrl: string, fallbackTitle?: string) => {
@@ -538,18 +545,26 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     const lockStyle = computeQrLockStyle(detected.boundingBox, video.videoWidth, video.videoHeight);
                     setQrLockStyle(lockStyle);
                     
-                    // Wait for the spring animation to center the QR code before processing
+                    try {
+                      video.pause();
+                    } catch (e) {}
+
+                    // Hold the centered and focused QR code for 2 seconds before processing
                     setTimeout(() => {
                       if (active) {
                         active = false;
                         isProcessingRef.current = false;
                         processQRData(detected.rawValue);
                       }
-                    }, 800);
+                    }, 2000);
                   } else {
-                    active = false;
-                    isProcessingRef.current = false;
-                    processQRData(detected.rawValue);
+                    setTimeout(() => {
+                      if (active) {
+                        active = false;
+                        isProcessingRef.current = false;
+                        processQRData(detected.rawValue);
+                      }
+                    }, 2000);
                   }
                   return;
                 }
@@ -714,16 +729,16 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           const lockStyle = computeQrLockStyle(detected.boundingBox, origW, origH);
           setQrLockStyle(lockStyle);
 
-          // Wait for the spring animation to center the QR code inside the bracket while blue laser line is scanning
+          // Hold the centered and focused QR code for 2 seconds before processing
           setTimeout(() => {
             isProcessingRef.current = false;
             processQRData(detected.rawValue, instantPreviewUrl);
-          }, 800);
+          }, 2000);
         } else {
           setTimeout(() => {
             isProcessingRef.current = false;
             processQRData(detected.rawValue, instantPreviewUrl);
-          }, 700);
+          }, 2000);
         }
       } else {
         setTimeout(() => {
@@ -817,7 +832,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                 {/* Top Active Scanning Status Badge (Shown only for live camera processing, disabled for image upload scanning) */}
                 {isProcessingScan && !uploadedImageSrc && (
-                  <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-white font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md animate-bounce">
+                  <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-white font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md">
                     <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
                     <span>
                       {isAmharic ? 'QR ኮድ በመተንተን እና በመቃኘት ላይ...' : 'Capturing & Processing QR Code...'}
@@ -883,14 +898,18 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       className="relative w-56 h-56 sm:w-64 sm:h-64 max-w-[70vw] max-h-[50vh] border border-white/25 rounded-xl flex-shrink-0"
                       style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
                     >
-                      {/* 4 Vibrant Blue Corner Brackets */}
-                      <div className="absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] border-[#3b82f6] rounded-tl-sm z-20" />
-                      <div className="absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] border-[#3b82f6] rounded-tr-sm z-20" />
-                      <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-[#3b82f6] rounded-bl-sm z-20" />
-                      <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-[#3b82f6] rounded-br-sm z-20" />
+                      {/* 4 Corner Brackets - Green/Emerald glow when locked & focused, Vivid Blue when scanning */}
+                      <div className={`absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tl-sm z-20 transition-colors duration-150`} />
+                      <div className={`absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tr-sm z-20 transition-colors duration-150`} />
+                      <div className={`absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-bl-sm z-20 transition-colors duration-150`} />
+                      <div className={`absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-br-sm z-20 transition-colors duration-150`} />
 
-                      {/* Animated Blue Scanning Line */}
-                      <div className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20 animate-scanner-laser" />
+                      {/* Scanning Line: animated blue when searching; steady emerald line when locked & focused */}
+                      {!isLocked ? (
+                        <div className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20 animate-scanner-laser" />
+                      ) : (
+                        <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-[2px] bg-emerald-400 shadow-[0_0_12px_#34d399] rounded-full z-20" />
+                      )}
                     </div>
                   </div>
 

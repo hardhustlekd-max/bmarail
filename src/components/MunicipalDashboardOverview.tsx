@@ -584,7 +584,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* Inline QR Scanner (In-Page instead of Modal) */}
       {showLookupModal && (
-        <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-4 shadow-sm space-y-3 animate-in slide-in-from-top-4 duration-200">
+        <div className="p-4 sm:p-5 space-y-3 animate-in slide-in-from-top-4 duration-200">
           <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
             <div className="flex items-center gap-2">
               <Icon className="material-symbols-outlined text-primary text-[22px]">qr_code_scanner</Icon>
@@ -685,10 +685,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* ==================== STANDALONE METRIC SECTIONS (FOR SUPER ADMIN & MANAGER) ==================== */}
       {(userRole === 'superadmin' || userRole === 'admin') && (
-        <div className="space-y-4">
+        <>
           {/* 1. Payment Receipts & Compliance Metrics (Super Admin Only) */}
           {(userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
-            <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
+            <div className="p-4 sm:p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
                 <div className="flex items-center gap-2.5">
                   <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">payments</Icon>
@@ -771,6 +771,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             registrations={registrations}
             lang={lang}
             isLoading={isLoading}
+            borderless={true}
             onSelectStatusFilter={(statusKey) => {
               if (onQuickAction) {
                 if (statusKey === 'pending_approval') {
@@ -787,7 +788,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           />
 
           {/* 3. Field Officer Patrol & Inspection Hub */}
-          <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
+          <div className="p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
               <div className="flex items-center gap-2.5">
                 <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>
@@ -857,12 +858,12 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               </button>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* ==================== FIELD OFFICER PATROL HUB (FOR OFFICER ROLE ONLY) ==================== */}
       {userRole === 'officer' && getPermissionState(userRole, 10) !== 'deny' && (
-        <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-3 sm:p-4 shadow-xs space-y-3">
+        <div className="p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
               <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>

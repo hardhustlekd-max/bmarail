@@ -583,7 +583,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
   return (
     <div className="space-y-4 font-sans text-on-surface">
       {/* 1-Column Responsive Full-Width Layout with a Dropdown Selector */}
-      <div className="bg-surface-container-lowest rounded-lg border border-outline-variant/80 shadow-xs overflow-hidden flex flex-col w-full">
+      <div className="rounded-lg border border-outline-variant/80 overflow-hidden flex flex-col w-full">
         
         {/* Top Bar: Selected Role & Active Status & Create Button */}
         <div className="p-3.5 sm:p-4 border-b border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container/30">
@@ -870,7 +870,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
         </div>
 
       {/* ================= CLERK RBAC MATRIX & QUICK ACTIONS GOVERNANCE CENTER ================= */}
-      <div className="bg-surface-container-lowest p-4 sm:p-5 rounded-lg border border-blue-200/80 dark:border-blue-900/50 shadow-xs space-y-4">
+      <div className="pt-5 border-t border-outline-variant/60 space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-lg bg-slate-700/10 dark:bg-blue-500/20 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0">

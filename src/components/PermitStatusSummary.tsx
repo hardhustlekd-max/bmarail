@@ -83,7 +83,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       id="permit-status-summary"
       className={
         borderless
-          ? 'space-y-4'
+          ? 'p-4 sm:p-5 space-y-4'
           : 'bg-surface-container-lowest border border-outline-variant/70 rounded-lg p-4 sm:p-5 shadow-xs space-y-4'
       }
     >

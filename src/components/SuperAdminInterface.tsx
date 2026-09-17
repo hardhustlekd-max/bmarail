@@ -825,7 +825,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           ) : (
             <div className="space-y-4">
               {/* Controls & Search Bar */}
-              <div className="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pb-2">
                 <div className="flex-1 flex flex-col sm:flex-row items-center gap-2.5">
                   <div className="relative w-full sm:w-80">
                     <input
@@ -879,7 +879,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </div>
 
               {/* Users Responsive Table & Mobile Cards */}
-              <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
+              <div className="rounded-lg border border-outline-variant/80 overflow-hidden">
                 {/* Desktop View Table */}
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse">
@@ -1178,7 +1178,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {/* ================= TAB 2: SUBCITY GOVERNANCE ================= */}
       {activeTab === 'subcities' && (
         <div className="space-y-5">
-          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="pb-4 border-b border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
                 <Icon className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">location_city</Icon>
@@ -1314,7 +1314,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         <div className="space-y-4">
           {/* Security Controls */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-sm flex items-center justify-between">
+            <div className="bg-surface-container/60 p-3.5 rounded-lg border border-outline-variant/60 flex items-center justify-between">
               <div>
                 <div className="font-extrabold text-xs text-on-surface">{isAmharic ? '2FA አስገዳጅነት' : 'Enforce 2FA'}</div>
                 <div className="text-[10px] text-outline">{isAmharic ? 'ለሁሉም የአድሚን አካውንቶች' : 'All Admin Roles'}</div>
@@ -1333,7 +1333,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </button>
             </div>
 
-            <div className="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-sm flex items-center justify-between">
+            <div className="bg-surface-container/60 p-3.5 rounded-lg border border-outline-variant/60 flex items-center justify-between">
               <div>
                 <div className="font-extrabold text-xs text-on-surface">{isAmharic ? 'የስጋት መለየት (AI)' : 'High Risk Auto-Flag'}</div>
                 <div className="text-[10px] text-outline">{isAmharic ? 'ተደጋጋሚ መታወቂያዎች' : 'Duplicate Chassis Alert'}</div>
@@ -1352,7 +1352,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </button>
             </div>
 
-            <div className="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-sm flex items-center justify-between">
+            <div className="bg-surface-container/60 p-3.5 rounded-lg border border-outline-variant/60 flex items-center justify-between">
               <div>
                 <div className="font-extrabold text-xs text-on-surface">{isAmharic ? 'ሎንግ ፖሊንግ (Long Polling)' : 'Firestore Polling'}</div>
                 <div className="text-[10px] text-outline">{isAmharic ? 'የኔትወርክ መረጋጋት' : 'Stable Realtime Sync'}</div>
@@ -1371,7 +1371,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </button>
             </div>
 
-            <div className="bg-surface-container-lowest p-4 rounded-lg border border-outline-variant shadow-sm flex items-center justify-between">
+            <div className="bg-surface-container/60 p-3.5 rounded-lg border border-outline-variant/60 flex items-center justify-between">
               <div>
                 <div className="font-extrabold text-xs text-on-surface">{isAmharic ? 'አውቶማቲክ እገዳ' : 'Auto Emergency Lock'}</div>
                 <div className="text-[10px] text-outline">{isAmharic ? 'ከ3 ያልተሳኩ ሙከራዎች በኋላ' : 'After 3 Failed Logins'}</div>
@@ -1392,7 +1392,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {/* Real-Time Audit Log Table */}
-          <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
+          <div className="rounded-lg border border-outline-variant/80 overflow-hidden">
             <div className="p-4 border-b border-outline-variant flex items-center justify-between">
               <h3 className="font-extrabold text-sm text-on-surface flex items-center gap-2">
                 <Icon className="material-symbols-outlined text-[18px] text-purple-600">history</Icon>
@@ -1454,48 +1454,46 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {/* ================= TAB 4: MASTER PERMITS CONTROLS ================= */}
       {activeTab === 'permits' && (
         <div className="space-y-4">
-          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="font-extrabold text-base text-on-surface">
-                  {isAmharic ? 'የሞተር ብስክሌቶች ፈቃድ የበላይ ውሳኔ' : 'Master Registration Approvals & Overrides'}
-                </h3>
-              </div>
-
-              <button
-                onClick={handleMasterApproveAllPending}
-                className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-md transition-all shadow-md active:scale-95 flex items-center gap-1.5"
-              >
-                <Icon className="material-symbols-outlined text-[18px]">done_all</Icon>
-                {isAmharic ? 'የሚጠብቁትን ሁሉ በጅምላ አጽድቅ' : 'Bulk Approve Pending Permits'}
-              </button>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant/60 pb-3">
+            <div>
+              <h3 className="font-extrabold text-base text-on-surface">
+                {isAmharic ? 'የሞተር ብስክሌቶች ፈቃድ የበላይ ውሳኔ' : 'Master Registration Approvals & Overrides'}
+              </h3>
             </div>
 
-            {/* Quick Master Summary */}
-            <div className="grid grid-cols-4 gap-1.5 sm:gap-3 pt-2">
-              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የሚጠብቁ' : 'Pending'}</div>
-                <div className="text-base sm:text-2xl font-black text-amber-600 tracking-tight leading-tight">
-                  {registrations.filter((r) => r.status === 'pending_approval').length}
-                </div>
+            <button
+              onClick={handleMasterApproveAllPending}
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-md transition-all shadow-md active:scale-95 flex items-center gap-1.5"
+            >
+              <Icon className="material-symbols-outlined text-[18px]">done_all</Icon>
+              {isAmharic ? 'የሚጠብቁትን ሁሉ በጅምላ አጽድቅ' : 'Bulk Approve Pending Permits'}
+            </button>
+          </div>
+
+          {/* Quick Master Summary */}
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-3 pt-2">
+            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የሚጠብቁ' : 'Pending'}</div>
+              <div className="text-base sm:text-2xl font-black text-amber-600 tracking-tight leading-tight">
+                {registrations.filter((r) => r.status === 'pending_approval').length}
               </div>
-              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የጸደቁ' : 'Approved'}</div>
-                <div className="text-base sm:text-2xl font-black text-emerald-600 tracking-tight leading-tight">
-                  {registrations.filter((r) => r.status === 'approved').length}
-                </div>
+            </div>
+            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የጸደቁ' : 'Approved'}</div>
+              <div className="text-base sm:text-2xl font-black text-emerald-600 tracking-tight leading-tight">
+                {registrations.filter((r) => r.status === 'approved').length}
               </div>
-              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የተከለከሉ' : 'Rejected'}</div>
-                <div className="text-base sm:text-2xl font-black text-red-600 tracking-tight leading-tight">
-                  {registrations.filter((r) => r.status === 'rejected').length}
-                </div>
+            </div>
+            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የተከለከሉ' : 'Rejected'}</div>
+              <div className="text-base sm:text-2xl font-black text-red-600 tracking-tight leading-tight">
+                {registrations.filter((r) => r.status === 'rejected').length}
               </div>
-              <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የታተሙ' : 'Printed'}</div>
-                <div className="text-base sm:text-2xl font-black text-slate-700 tracking-tight leading-tight">
-                  {registrations.filter((r) => r.status === 'printed').length}
-                </div>
+            </div>
+            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
+              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የታተሙ' : 'Printed'}</div>
+              <div className="text-base sm:text-2xl font-black text-slate-700 tracking-tight leading-tight">
+                {registrations.filter((r) => r.status === 'printed').length}
               </div>
             </div>
           </div>
@@ -1506,7 +1504,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {activeTab === 'maintenance' && (
         <div className="space-y-6">
           {/* Section 1: Live Database Health & Cloud Synchronization Hub */}
-          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
+          <div className="space-y-4 pb-6 border-b border-outline-variant/60">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
               <div>
                 <h3 className="font-black text-base text-on-surface flex items-center gap-2">
@@ -1577,7 +1575,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {/* Section 2: Backup & Restoration Center */}
-          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
+          <div className="space-y-4 pb-6 border-b border-outline-variant/60">
             <h3 className="font-black text-base text-on-surface flex items-center gap-2">
               <Icon className="material-symbols-outlined text-emerald-600 text-[22px]">backup</Icon>
               {isAmharic ? 'የሲስተም ዳታቤዝ ባክአፕና መልሶ ማግኛ (Backup & Restore)' : 'System Backup & Restoration'}
@@ -1653,7 +1651,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {/* Section 3: Live System Audit Trail */}
-          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
+          <div className="space-y-4 pb-6 border-b border-outline-variant/60">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
               <div>
                 <h3 className="font-black text-base text-on-surface flex items-center gap-2">
@@ -1812,7 +1810,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {/* Section 4: Scanner Result Page Theme Selector (Super Admin Only) */}
-          <div className="bg-surface-container-lowest p-5 rounded-lg border border-outline-variant shadow-sm space-y-4">
+          <div className="space-y-4 pt-1">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
               <div>
                 <div className="flex items-center gap-2">

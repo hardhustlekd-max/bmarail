@@ -190,42 +190,40 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
   return (
     <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto pb-10">
-      {/* INTEGRATED HEADER CONTAINER (MATCHING TABLES PAGE PATTERN) */}
-      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
-        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
-          <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">settings</Icon>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
-                {isAmharic ? 'ቅንብሮች' : 'Settings'}
-              </h3>
-            </div>
+      {/* HEADER */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-outline-variant/60">
+        <div className="flex items-center gap-2.5">
+          <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">settings</Icon>
+          <div>
+            <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+              {isAmharic ? 'ቅንብሮች' : 'Settings'}
+            </h3>
           </div>
+        </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                userRole === 'superadmin'
-                  ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800'
-                  : userRole === 'admin'
-                  ? 'bg-blue-500/10 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
-                  : userRole === 'officer'
-                  ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
-                  : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
-              }`}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-              <span>
-                {userRole === 'superadmin'
-                  ? 'Super Admin'
-                  : userRole === 'admin'
-                  ? 'Manager / Admin'
-                  : userRole === 'clerk'
-                  ? 'Secretary / Clerk'
-                  : 'Field Officer'}
-              </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <span
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+              userRole === 'superadmin'
+                ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800'
+                : userRole === 'admin'
+                ? 'bg-blue-500/10 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
+                : userRole === 'officer'
+                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
+                : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+            }`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+            <span>
+              {userRole === 'superadmin'
+                ? 'Super Admin'
+                : userRole === 'admin'
+                ? 'Manager / Admin'
+                : userRole === 'clerk'
+                ? 'Secretary / Clerk'
+                : 'Field Officer'}
             </span>
-          </div>
+          </span>
         </div>
       </div>
 
