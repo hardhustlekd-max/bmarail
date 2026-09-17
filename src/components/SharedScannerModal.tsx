@@ -164,7 +164,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const [capturedFrameSrc, setCapturedFrameSrc] = useState<string | null>(null);
   const [isProcessingScan, setIsProcessingScan] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
-  const [qrLockStyle, setQrLockStyle] = useState<React.CSSProperties>({});
+  const [croppedQrSrc, setCroppedQrSrc] = useState<string | null>(null);
+  const [scannedVerificationState, setScannedVerificationState] = useState<'idle' | 'verified'>('idle');
   const [showNotesSection, setShowNotesSection] = useState(false);
   const [showDigitalIdModal, setShowDigitalIdModal] = useState(false);
   const [showTopMenu, setShowTopMenu] = useState(false);
@@ -180,66 +181,45 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
   const isProcessingRef = useRef(false);
 
-  // Computes precise 2D affine translation + scale to bring detected QR code directly into bracket center
-  const computeQrLockStyle = (
-    detectedBox: { x: number; y: number; width: number; height: number; centerX: number; centerY: number },
+  // Captures and crops ONLY the detected QR code with a safe margin
+  const captureCroppedQr = (
+    source: HTMLVideoElement | HTMLImageElement,
+    boundingBox: { x: number; y: number; width: number; height: number; centerX: number; centerY: number },
     mediaWidth: number,
     mediaHeight: number
-  ): React.CSSProperties => {
-    const container = cameraContainerRef.current;
-    const reticle = viewfinderReticleRef.current;
+  ): string | null => {
+    try {
+      // Add safe margin (25% of width/height) to ensure QR pattern isn't clipped
+      const marginX = boundingBox.width * 0.25;
+      const marginY = boundingBox.height * 0.25;
+      
+      const cropX = Math.max(0, boundingBox.x - marginX);
+      const cropY = Math.max(0, boundingBox.y - marginY);
+      const cropW = Math.min(mediaWidth - cropX, boundingBox.width + marginX * 2);
+      const cropH = Math.min(mediaHeight - cropY, boundingBox.height + marginY * 2);
 
-    if (!container || !reticle || !mediaWidth || !mediaHeight || !detectedBox) {
-      return {};
+      if (cropW <= 0 || cropH <= 0) return null;
+
+      // Create off-screen canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = cropW;
+      canvas.height = cropH;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      ctx.drawImage(source, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+      return canvas.toDataURL('image/jpeg', 0.95);
+    } catch (e) {
+      console.warn("Failed to crop QR:", e);
+      return null;
     }
-
-    const containerRect = container.getBoundingClientRect();
-    const reticleRect = reticle.getBoundingClientRect();
-
-    const cW = containerRect.width;
-    const cH = containerRect.height;
-    if (cW <= 0 || cH <= 0) return {};
-
-    // Exact scale factor used by CSS `object-fit: cover`
-    const scaleCover = Math.max(cW / mediaWidth, cH / mediaHeight);
-    const renderedW = mediaWidth * scaleCover;
-    const renderedH = mediaHeight * scaleCover;
-    const offsetX = (cW - renderedW) / 2;
-    const offsetY = (cH - renderedH) / 2;
-
-    // Center of the detected QR code in container coordinate space
-    const qrScreenX = offsetX + detectedBox.centerX * scaleCover;
-    const qrScreenY = offsetY + detectedBox.centerY * scaleCover;
-
-    // Center of the blue bracket viewfinder in container coordinate space
-    const targetX = reticleRect.left + reticleRect.width / 2 - containerRect.left;
-    const targetY = reticleRect.top + reticleRect.height / 2 - containerRect.top;
-
-    // Target zoom: fit the QR code comfortably inside the bracket (~72% of reticle size)
-    const qrScreenWidth = Math.max((detectedBox.width || 80) * scaleCover, 20);
-    const desiredQrWidth = Math.max(reticleRect.width * 0.72, 120);
-    let zoom = desiredQrWidth / qrScreenWidth;
-
-    if (isNaN(zoom) || !isFinite(zoom)) {
-      zoom = 1.6;
-    }
-    zoom = Math.min(Math.max(zoom, 1.25), 3.2);
-
-    // Exact translation to place the QR center precisely at the bracket center
-    const translateX = targetX - qrScreenX * zoom;
-    const translateY = targetY - qrScreenY * zoom;
-
-    return {
-      transformOrigin: '0px 0px',
-      transform: `translate(${translateX.toFixed(2)}px, ${translateY.toFixed(2)}px) scale(${zoom.toFixed(3)})`,
-      transition: 'none',
-    };
   };
 
   // When closing, reset everything
   const handleClose = () => {
     setIsLocked(false);
-    setQrLockStyle({});
+    setCroppedQrSrc(null);
+    setScannedVerificationState('idle');
     if (videoRef.current && videoRef.current.paused) {
       videoRef.current.play().catch(() => {});
     }
@@ -249,7 +229,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   // Restart scanning
   const handleRestartScan = () => {
     setIsLocked(false);
-    setQrLockStyle({});
+    setCroppedQrSrc(null);
+    setScannedVerificationState('idle');
     setScannedRegResult(null);
     setCapturedFrameSrc(null);
     setUploadedImageSrc(null);
@@ -542,21 +523,27 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   
                   if (detected.boundingBox && video.videoWidth && video.videoHeight) {
                     setIsLocked(true);
-                    const lockStyle = computeQrLockStyle(detected.boundingBox, video.videoWidth, video.videoHeight);
-                    setQrLockStyle(lockStyle);
+                    const croppedSrc = captureCroppedQr(video, detected.boundingBox, video.videoWidth, video.videoHeight);
+                    if (croppedSrc) {
+                      setCroppedQrSrc(croppedSrc);
+                    }
                     
                     try {
                       video.pause();
                     } catch (e) {}
 
-                    // Hold the centered and focused QR code for 2 seconds before processing
                     setTimeout(() => {
                       if (active) {
-                        active = false;
-                        isProcessingRef.current = false;
-                        processQRData(detected.rawValue);
+                        setScannedVerificationState('verified');
+                        setTimeout(() => {
+                          if (active) {
+                            active = false;
+                            isProcessingRef.current = false;
+                            processQRData(detected.rawValue);
+                          }
+                        }, 500);
                       }
-                    }, 2000);
+                    }, 1500);
                   } else {
                     setTimeout(() => {
                       if (active) {
@@ -714,7 +701,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     setIsProcessingScan(true);
     isProcessingRef.current = true;
     setIsLocked(false);
-    setQrLockStyle({});
+    setCroppedQrSrc(null);
+    setScannedVerificationState('idle');
 
     const img = new Image();
     img.onload = async () => {
@@ -726,14 +714,18 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
         if (detected.boundingBox && origW && origH) {
           setIsLocked(true);
-          const lockStyle = computeQrLockStyle(detected.boundingBox, origW, origH);
-          setQrLockStyle(lockStyle);
+          const croppedSrc = captureCroppedQr(img, detected.boundingBox, origW, origH);
+          if (croppedSrc) {
+            setCroppedQrSrc(croppedSrc);
+          }
 
-          // Hold the centered and focused QR code for 2 seconds before processing
           setTimeout(() => {
-            isProcessingRef.current = false;
-            processQRData(detected.rawValue, instantPreviewUrl);
-          }, 2000);
+            setScannedVerificationState('verified');
+            setTimeout(() => {
+              isProcessingRef.current = false;
+              processQRData(detected.rawValue, instantPreviewUrl);
+            }, 500);
+          }, 1500);
         } else {
           setTimeout(() => {
             isProcessingRef.current = false;
@@ -801,20 +793,51 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           {/* Camera View Box - Full viewpoint height & width */}
           <div className="relative bg-slate-950 rounded-none w-full flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center border-0">
             {isScanning ? (
-              <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden">
-                {uploadedImageSrc ? (
+              <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
+                {croppedQrSrc ? (
+                  <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 z-20">
+                    <div className="relative max-w-[80vw] max-h-[60vh] flex items-center justify-center">
+                      <img
+                        src={croppedQrSrc}
+                        alt="Cropped QR"
+                        className="max-w-full max-h-[60vh] object-contain rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] border border-slate-800"
+                      />
+                      {/* Scanner Animation Overlay */}
+                      {scannedVerificationState === 'idle' && (
+                        <div className="absolute inset-0 overflow-hidden rounded-xl z-30 pointer-events-none">
+                          <motion.div
+                            className="w-full h-[3px] bg-primary shadow-[0_0_15px_#3b82f6] absolute top-0"
+                            animate={{ top: ['0%', '98%', '0%'] }}
+                            transition={{ duration: 1.5, ease: 'linear', repeat: Infinity }}
+                          />
+                        </div>
+                      )}
+                      {/* Verification Success Animation Overlay */}
+                      {scannedVerificationState === 'verified' && (
+                        <div className="absolute inset-0 bg-emerald-500/20 backdrop-blur-[2px] rounded-xl flex items-center justify-center z-40 animate-in fade-in duration-300">
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                            className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg"
+                          >
+                            <Icon className="material-symbols-outlined text-[36px] text-white">check</Icon>
+                          </motion.div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : uploadedImageSrc ? (
                   <img
                     src={uploadedImageSrc}
                     alt="Uploaded QR Image"
                     className="absolute inset-0 w-full h-full object-cover bg-slate-950"
-                    style={{ ...qrLockStyle, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : capturedFrameSrc ? (
                   <img
                     src={capturedFrameSrc}
                     alt="Captured Camera Frame"
                     className="absolute inset-0 w-full h-full object-cover bg-slate-950"
-                    style={{ ...qrLockStyle, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
                   <video 
@@ -823,15 +846,14 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     playsInline
                     muted
                     className="absolute inset-0 w-full h-full object-cover"
-                    style={{ ...qrLockStyle, width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 )}
 
                 {/* Dark Vignette Overlay for Camera Feed */}
-                <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />
+                {!croppedQrSrc && <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />}
 
                 {/* Top Active Scanning Status Badge (Shown only for live camera processing, disabled for image upload scanning) */}
-                {isProcessingScan && !uploadedImageSrc && (
+                {isProcessingScan && !uploadedImageSrc && !croppedQrSrc && (
                   <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-white font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md">
                     <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
                     <span>
@@ -892,26 +914,28 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   </div>
 
                   {/* 2. CENTER VIEWFINDER (Compact Reticle Size & Semi-Transparent Viewport Overlay) */}
-                  <div className="flex flex-col items-center justify-center my-auto pointer-events-none">
-                    <div
-                      ref={viewfinderReticleRef}
-                      className="relative w-56 h-56 sm:w-64 sm:h-64 max-w-[70vw] max-h-[50vh] border border-white/25 rounded-xl flex-shrink-0"
-                      style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
-                    >
-                      {/* 4 Corner Brackets - Green/Emerald glow when locked & focused, Vivid Blue when scanning */}
-                      <div className={`absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tl-sm z-20 transition-colors duration-150`} />
-                      <div className={`absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tr-sm z-20 transition-colors duration-150`} />
-                      <div className={`absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-bl-sm z-20 transition-colors duration-150`} />
-                      <div className={`absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-br-sm z-20 transition-colors duration-150`} />
+                  {!croppedQrSrc && (
+                    <div className="flex flex-col items-center justify-center my-auto pointer-events-none">
+                      <div
+                        ref={viewfinderReticleRef}
+                        className="relative w-56 h-56 sm:w-64 sm:h-64 max-w-[70vw] max-h-[50vh] border border-white/25 rounded-xl flex-shrink-0"
+                        style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
+                      >
+                        {/* 4 Corner Brackets - Green/Emerald glow when locked & focused, Vivid Blue when scanning */}
+                        <div className={`absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tl-sm z-20 transition-colors duration-150`} />
+                        <div className={`absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tr-sm z-20 transition-colors duration-150`} />
+                        <div className={`absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-bl-sm z-20 transition-colors duration-150`} />
+                        <div className={`absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-br-sm z-20 transition-colors duration-150`} />
 
-                      {/* Scanning Line: animated blue when searching; steady emerald line when locked & focused */}
-                      {!isLocked ? (
-                        <div className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20 animate-scanner-laser" />
-                      ) : (
-                        <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-[2px] bg-emerald-400 shadow-[0_0_12px_#34d399] rounded-full z-20" />
-                      )}
+                        {/* Scanning Line: animated blue when searching; steady emerald line when locked & focused */}
+                        {!isLocked ? (
+                          <div className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20 animate-scanner-laser" />
+                        ) : (
+                          <div className="absolute left-2 right-2 top-1/2 -translate-y-1/2 h-[2px] bg-emerald-400 shadow-[0_0_12px_#34d399] rounded-full z-20" />
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* 3. BOTTOM SECTION: Guide Text & ACTION BUTTONS WITH BACK BUTTON */}
                   <div className="pointer-events-auto flex flex-col items-center w-full max-w-md mx-auto px-4 pb-6 z-30 shrink-0 gap-2 sm:gap-2.5">
