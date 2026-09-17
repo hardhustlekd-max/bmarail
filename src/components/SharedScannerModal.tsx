@@ -802,34 +802,37 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           {/* Camera View Box - Full viewpoint height & width */}
           <div className="relative bg-slate-950 rounded-none w-full flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center border-0">
             {isScanning ? (
-              <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-black overflow-hidden">
-                {uploadedImageSrc ? (
-                  <img
-                    src={uploadedImageSrc}
-                    alt="Uploaded QR Image"
-                    className="absolute inset-0 w-full h-full object-cover bg-slate-950"
-                  />
-                ) : capturedFrameSrc ? (
-                  <img
-                    src={capturedFrameSrc}
-                    alt="Captured Camera Frame"
-                    className="absolute inset-0 w-full h-full object-cover bg-slate-950"
-                  />
-                ) : (
-                  <video 
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
+              <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
+                {/* Remove full background camera feed/image once QR code is extracted */}
+                {!croppedQrSrc && (
+                  uploadedImageSrc ? (
+                    <img
+                      src={uploadedImageSrc}
+                      alt="Uploaded QR Image"
+                      className="absolute inset-0 w-full h-full object-cover bg-slate-950"
+                    />
+                  ) : capturedFrameSrc ? (
+                    <img
+                      src={capturedFrameSrc}
+                      alt="Captured Camera Frame"
+                      className="absolute inset-0 w-full h-full object-cover bg-slate-950"
+                    />
+                  ) : (
+                    <video 
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )
                 )}
 
                 {/* Dark Vignette Overlay for Camera Feed */}
-                <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />
+                {!croppedQrSrc && <div className="absolute inset-0 bg-black/25 pointer-events-none z-0" />}
 
                 {/* Top Active Scanning Status Badge */}
-                {isProcessingScan && !uploadedImageSrc && (
+                {isProcessingScan && !uploadedImageSrc && !croppedQrSrc && (
                   <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-white font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md">
                     <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
                     <span>
@@ -920,21 +923,18 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         </div>
                       )}
 
-                      {/* 4 Corner Brackets - Green/Emerald glow when locked & focused, Vivid Blue when scanning */}
-                      <div className={`absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tl-sm z-20 transition-colors duration-150`} />
-                      <div className={`absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-tr-sm z-20 transition-colors duration-150`} />
-                      <div className={`absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-bl-sm z-20 transition-colors duration-150`} />
-                      <div className={`absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] ${isLocked ? 'border-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]' : 'border-[#3b82f6]'} rounded-br-sm z-20 transition-colors duration-150`} />
+                      {/* 4 Corner Brackets - Keep existing blue color */}
+                      <div className="absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-tl-sm z-20" />
+                      <div className="absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-tr-sm z-20" />
+                      <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-bl-sm z-20" />
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-br-sm z-20" />
 
-                      {/* Scanning Line:
-                          Animated horizontal laser line traversing the reticle scanner box.
-                          Displays vivid blue when scanning, emerald when focused on the extracted QR code.
-                      */}
+                      {/* Scanning Line: Keep existing blue color */}
                       {scannedVerificationState === 'idle' && (
                         <motion.div
-                          className={`absolute left-2 right-2 h-[2.5px] ${croppedQrSrc ? 'bg-emerald-400 shadow-[0_0_14px_#34d399]' : 'bg-[#3b82f6] shadow-[0_0_14px_#3b82f6]'} rounded-full z-20`}
+                          className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20"
                           animate={{ top: ['6%', '90%', '6%'] }}
-                          transition={{ duration: croppedQrSrc ? 1.2 : 1.6, ease: 'easeInOut', repeat: Infinity }}
+                          transition={{ duration: 1.5, ease: 'easeInOut', repeat: Infinity }}
                         />
                       )}
                     </div>
