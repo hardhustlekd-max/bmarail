@@ -183,7 +183,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const streamRef = useRef<MediaStream | null>(null);
   const isProcessingRef = useRef(false);
 
-  // Captures and crops ONLY the detected QR code with a safe margin
+  // Captures and crops ONLY the detected QR code cleanly without black borders
   const captureCroppedQr = (
     source: HTMLVideoElement | HTMLImageElement,
     boundingBox: { x: number; y: number; width: number; height: number; centerX: number; centerY: number },
@@ -191,9 +191,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     mediaHeight: number
   ): string | null => {
     try {
-      // Add safe margin (25% of width/height) to ensure QR pattern isn't clipped
-      const marginX = boundingBox.width * 0.25;
-      const marginY = boundingBox.height * 0.25;
+      // Clean tight margin (5%) so QR pattern is intact without picking up outer dark borders or table surfaces
+      const marginX = boundingBox.width * 0.05;
+      const marginY = boundingBox.height * 0.05;
       
       const cropX = Math.max(0, boundingBox.x - marginX);
       const cropY = Math.max(0, boundingBox.y - marginY);
@@ -209,8 +209,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
 
+      // Pre-fill white background so no black border or canvas conversion artifacts appear
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, cropW, cropH);
+
       ctx.drawImage(source, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
-      return canvas.toDataURL('image/jpeg', 0.95);
+      return canvas.toDataURL('image/png');
     } catch (e) {
       console.warn("Failed to crop QR:", e);
       return null;
@@ -583,6 +587,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   
                   if (detected.boundingBox && video.videoWidth && video.videoHeight) {
                     setIsLocked(true);
+                    playShutterSound();
                     const initialOffset = computeQrInitialOffset(detected.boundingBox, video.videoWidth, video.videoHeight);
                     setQrMotionOffset(initialOffset);
                     const croppedSrc = captureCroppedQr(video, detected.boundingBox, video.videoWidth, video.videoHeight);
@@ -594,25 +599,27 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       video.pause();
                     } catch (e) {}
 
-                    // Background stays kept during the float-to-center spring transition, then removed
+                    // Background stays kept while QR is picked from fullscreen image (500ms), then smoothly removed
                     setTimeout(() => {
                       if (active) {
                         setIsBackgroundRemoved(true);
                       }
-                    }, 450);
+                    }, 500);
 
+                    // Paced scanning: allow laser line to sweep across the docked QR code before verifying
                     setTimeout(() => {
                       if (active) {
                         setScannedVerificationState('verified');
+                        playScanFeedback(true);
                         setTimeout(() => {
                           if (active) {
                             active = false;
                             isProcessingRef.current = false;
                             processQRData(detected.rawValue);
                           }
-                        }, 500);
+                        }, 900);
                       }
-                    }, 1500);
+                    }, 2600);
                   } else {
                     setTimeout(() => {
                       if (active) {
@@ -620,7 +627,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         isProcessingRef.current = false;
                         processQRData(detected.rawValue);
                       }
-                    }, 2000);
+                    }, 2500);
                   }
                   return;
                 }
@@ -687,8 +694,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     const cleanData = qrData.trim();
     if (!cleanData) return;
 
-    // Play shutter sound instantly upon capturing a valid QR code
-    playShutterSound();
     setIsProcessingScan(true);
 
     if (imageOverride) {
@@ -705,7 +710,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
     setIsProcessingScan(false);
     if (match) {
-      playScanFeedback(true);
       autoSaveLog(match);
       setScannedRegResult(match);
       setIsScanning(false);
@@ -783,6 +787,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
         if (detected.boundingBox && origW && origH) {
           setIsLocked(true);
+          playShutterSound();
           const initialOffset = computeQrInitialOffset(detected.boundingBox, origW, origH);
           setQrMotionOffset(initialOffset);
           const croppedSrc = captureCroppedQr(img, detected.boundingBox, origW, origH);
@@ -790,23 +795,25 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             setCroppedQrSrc(croppedSrc);
           }
 
-          // Background stays kept during the float-to-center spring transition, then removed
+          // Background stays kept while QR is picked from fullscreen image (500ms), then smoothly removed
           setTimeout(() => {
             setIsBackgroundRemoved(true);
-          }, 450);
+          }, 500);
 
+          // Paced scanning: allow laser line to sweep across the docked QR code before verifying
           setTimeout(() => {
             setScannedVerificationState('verified');
+            playScanFeedback(true);
             setTimeout(() => {
               isProcessingRef.current = false;
               processQRData(detected.rawValue, instantPreviewUrl);
-            }, 500);
-          }, 1500);
+            }, 900);
+          }, 2600);
         } else {
           setTimeout(() => {
             isProcessingRef.current = false;
             processQRData(detected.rawValue, instantPreviewUrl);
-          }, 2000);
+          }, 2500);
         }
       } else {
         setTimeout(() => {
@@ -882,7 +889,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
               <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
                 {/* Full background camera feed/image: KEPT visible while QR floats to center, then smoothly removed */}
                 <div
-                  className={`absolute inset-0 w-full h-full transition-opacity duration-300 ease-out ${
+                  className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-out ${
                     isBackgroundRemoved ? 'opacity-0 pointer-events-none' : 'opacity-100'
                   }`}
                 >
@@ -980,37 +987,34 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       className="relative w-56 h-56 sm:w-64 sm:h-64 max-w-[70vw] max-h-[50vh] border border-white/25 rounded-xl flex-shrink-0"
                       style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
                     >
-                      {/* Inside scanner box: Extracted QR Code with Move-to-Center Spring Transition */}
+                      {/* Inside scanner box: Extracted QR Code picked from fullscreen image */}
                       {croppedQrSrc && (
                         <div className="absolute inset-0 flex items-center justify-center p-2.5 sm:p-3.5 z-30">
                           <motion.div
                             initial={{
-                              x: qrMotionOffset.x,
-                              y: qrMotionOffset.y,
-                              scale: qrMotionOffset.scale,
-                              opacity: 0.9,
+                              scale: 0.9,
+                              opacity: 0,
+                              y: 6,
                             }}
                             animate={{
-                              x: 0,
-                              y: 0,
-                              scale: 1,
+                              scale: [0.9, 1.05, 1],
                               opacity: 1,
+                              y: 0,
                             }}
                             transition={{
-                              type: 'spring',
-                              stiffness: 220,
-                              damping: 24,
-                              mass: 0.85,
+                              duration: 0.45,
+                              times: [0, 0.65, 1],
+                              ease: 'easeOut',
                             }}
                             onAnimationComplete={() => {
                               setIsBackgroundRemoved(true);
                             }}
-                            className="relative w-full h-full rounded-xl bg-slate-950/90 backdrop-blur-xs flex items-center justify-center p-2 shadow-2xl border border-white/10 overflow-hidden"
+                            className="relative w-full h-full flex items-center justify-center overflow-hidden"
                           >
                             <img
                               src={croppedQrSrc}
                               alt="Extracted QR Code"
-                              className="max-w-full max-h-full object-contain rounded-lg shadow-lg border border-white/10"
+                              className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
                             />
                             {/* Verification Success Animation Overlay inside reticle */}
                             {scannedVerificationState === 'verified' && (
@@ -1035,12 +1039,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-bl-sm z-20" />
                       <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-br-sm z-20" />
 
-                      {/* Scanning Line: Keep existing blue color */}
+                      {/* Scanning Line: Keep existing blue color with smooth, high-precision sweep */}
                       {scannedVerificationState === 'idle' && (
                         <motion.div
-                          className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] rounded-full z-20"
-                          animate={{ top: ['6%', '90%', '6%'] }}
-                          transition={{ duration: 1.5, ease: 'easeInOut', repeat: Infinity }}
+                          className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_16px_#3b82f6] rounded-full z-20"
+                          animate={{ top: ['8%', '88%', '8%'] }}
+                          transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }}
                         />
                       )}
                     </div>
@@ -1052,8 +1056,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     <div className="text-center pointer-events-none select-none">
                       <span className="text-xs sm:text-sm font-semibold text-white/90 drop-shadow-md">
                         {croppedQrSrc
-                          ? isAmharic
-                            ? 'QR ኮድ ተለይቷል - በመረጋገጥ ላይ...'
+                          ? scannedVerificationState === 'verified'
+                            ? isAmharic
+                              ? 'QR ኮድ ተረጋግጧል!'
+                              : 'QR Code Verified!'
+                            : isAmharic
+                            ? 'QR ኮድ ተለይቷል - በመተንተን ላይ...'
                             : 'QR Code Detected - Verifying...'
                           : isAmharic
                           ? 'የQR ኮዱን ሳጥኑ ውስጥ ያስገቡ'
