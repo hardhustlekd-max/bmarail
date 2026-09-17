@@ -500,7 +500,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">group</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{users.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{users.length}</p>
             </div>
 
             {/* Super Admins & Admins */}
@@ -514,7 +514,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">shield_person</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
                 {users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length}
               </p>
             </div>
@@ -530,7 +530,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">person_off</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
                 {users.filter((u) => u.status === 'disabled').length}
               </p>
             </div>
@@ -546,7 +546,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">two_wheeler</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{registrations.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{registrations.length}</p>
             </div>
 
             {/* Pending Approvals */}
@@ -560,7 +560,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">pending_actions</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
                 {registrations.filter((r) => r.status === 'pending_approval').length}
               </p>
             </div>
@@ -576,7 +576,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">security</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">99.9%</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">99.9%</p>
             </div>
           </div>
         </div>
@@ -638,7 +638,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">folder_open</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{registrations.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{registrations.length}</p>
             </button>
 
             <button
@@ -651,7 +651,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">pending</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{pendingCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{pendingCount}</p>
             </button>
 
             <button
@@ -664,7 +664,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{approvedCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{approvedCount}</p>
             </button>
 
             <button
@@ -677,7 +677,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">cancel</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{illegalVehiclesCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{illegalVehiclesCount}</p>
             </button>
           </div>
         </div>
@@ -712,7 +712,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                     </span>
                     <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">receipt</Icon>
                   </div>
-                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{paymentMetrics.total}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{paymentMetrics.total}</p>
                 </div>
 
                 {/* Active Valid (1 month) */}
@@ -726,7 +726,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                     </span>
                     <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">verified</Icon>
                   </div>
-                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
                     {paymentMetrics.activeCount}
                   </p>
                 </div>
@@ -742,7 +742,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                     </span>
                     <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">alarm</Icon>
                   </div>
-                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
                     {paymentMetrics.expiringSoonCount}
                   </p>
                 </div>
@@ -758,7 +758,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                     </span>
                     <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">cancel</Icon>
                   </div>
-                  <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
                     {paymentMetrics.expiredCount}
                   </p>
                 </div>
@@ -812,7 +812,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   </span>
                   <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
                 </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{totalLogsCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{totalLogsCount}</p>
               </button>
 
               <button
@@ -826,7 +826,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   </span>
                   <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">two_wheeler</Icon>
                 </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{approvedCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{approvedCount}</p>
               </button>
 
               <button
@@ -840,7 +840,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   </span>
                   <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">warning</Icon>
                 </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{warningLogsCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{warningLogsCount}</p>
               </button>
 
               <button
@@ -854,7 +854,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   </span>
                   <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">block</Icon>
                 </div>
-                <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{illegalVehiclesCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{illegalVehiclesCount}</p>
               </button>
             </div>
           </div>
@@ -888,7 +888,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{totalLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{totalLogsCount}</p>
             </button>
 
             <button
@@ -902,7 +902,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">two_wheeler</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{approvedCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{approvedCount}</p>
             </button>
 
             <button
@@ -916,7 +916,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">warning</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{warningLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{warningLogsCount}</p>
             </button>
 
             <button
@@ -930,7 +930,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">block</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{illegalVehiclesCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{illegalVehiclesCount}</p>
             </button>
           </div>
         </div>

@@ -116,7 +116,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
                 </span>
                 <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">{card.icon}</Icon>
               </div>
-              <p className="text-lg sm:text-2xl lg:text-3xl font-black text-on-surface tracking-tight leading-tight">{card.count}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{card.count}</p>
             </div>
           );
         })}

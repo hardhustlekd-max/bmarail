@@ -555,7 +555,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </Icon>
             </div>
             <div className="mt-1.5 flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-black text-slate-950 dark:text-white font-mono">
+              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.totalRevenue.toLocaleString()}
               </span>
               <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300">ETB</span>
@@ -576,7 +576,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </Icon>
             </div>
             <div className="mt-1.5 flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-black text-slate-950 dark:text-white font-mono">
+              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.activeCount}
               </span>
               <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-400">
@@ -599,7 +599,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </Icon>
             </div>
             <div className="mt-1.5 flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-black text-slate-950 dark:text-white font-mono">
+              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.expiringCount}
               </span>
               <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-400">
@@ -622,7 +622,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </Icon>
             </div>
             <div className="mt-1.5 flex items-baseline gap-1">
-              <span className="text-lg sm:text-xl font-black text-slate-950 dark:text-white font-mono">
+              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.expiredCount}
               </span>
               <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-400">
