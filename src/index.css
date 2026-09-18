@@ -63,63 +63,63 @@ html {
 }
 
 :root, html.light {
-  --color-primary: #1e293b;
-  --color-primary-hover: #0f172a;
+  --color-primary: #3C50E0;
+  --color-primary-hover: #2C3EC2;
   --color-primary-container: #F1F5F9;
   --color-primary-light: #F1F5F9;
   --color-secondary-container: #F1F5F9;
-  --color-surface: #F8F9FA;
-  --color-on-surface: #0F172A;
-  --color-on-surface-variant: #1E293B;
-  --color-surface-container: #F1F5F9;
+  --color-surface: #F1F5F9;
+  --color-on-surface: #1C2434;
+  --color-on-surface-variant: #64748B;
+  --color-surface-container: #FFFFFF;
   --color-surface-container-lowest: #ffffff;
   --color-surface-container-low: #F8F9FA;
-  --color-surface-container-high: #e2e8f0;
-  --color-surface-container-highest: #cbd5e1;
+  --color-surface-container-high: #E2E8F0;
+  --color-surface-container-highest: #CBD5E1;
   --color-surface-bright: #ffffff;
-  --color-surface-dim: #F8F9FA;
+  --color-surface-dim: #F1F5F9;
   --color-surface-variant: #F1F5F9;
-  --color-secondary: #334155; /* Slate 700 - high contrast WCAG AAA */
-  --color-outline: #64748b; /* Slate 500 - legible muted text and icon tint */
-  --color-outline-variant: #cbd5e1; /* Slate 300 - container borders */
-  --color-brand-indigo: #1e293b;
-  --color-topnav: #1e293b;
-  --color-topnav-hover: #0f172a;
-  --color-topnav-dark: #020617;
-  --color-sidebar-bg: #1e293b;
-  --color-sidebar-hover: #0f172a;
-  --color-sidebar-text: #e2e8f0;
+  --color-secondary: #64748B;
+  --color-outline: #94A3B8;
+  --color-outline-variant: #E2E8F0;
+  --color-brand-indigo: #3C50E0;
+  --color-topnav: #ffffff;
+  --color-topnav-hover: #F8F9FA;
+  --color-topnav-dark: #24303F;
+  --color-sidebar-bg: #1C2434;
+  --color-sidebar-hover: #333A48;
+  --color-sidebar-text: #DEE4EE;
   --color-sidebar-active-text: #ffffff;
   color-scheme: light;
 }
 
 html.dark {
-  --color-primary: #94a3b8;
-  --color-primary-hover: #cbd5e1;
-  --color-primary-container: #1e293b;
-  --color-primary-light: #0f172a;
-  --color-secondary-container: #1e293b;
-  --color-surface: #0b0f19;
-  --color-on-surface: #f8fafc;
-  --color-on-surface-variant: #e2e8f0;
-  --color-surface-container: #1e293b;
-  --color-surface-container-lowest: #0b0f19;
-  --color-surface-container-low: #0f172a;
-  --color-surface-container-high: #334155;
-  --color-surface-container-highest: #475569;
-  --color-surface-bright: #1e293b;
-  --color-surface-dim: #0b0f19;
-  --color-surface-variant: #1e293b;
-  --color-secondary: #cbd5e1; /* Slate 300 - clearly legible in dark mode */
-  --color-outline: #94a3b8; /* Slate 400 */
-  --color-outline-variant: #334155; /* Slate 700 */
-  --color-brand-indigo: #94a3b8;
-  --color-topnav: #1e293b;
-  --color-topnav-hover: #334155;
-  --color-topnav-dark: #0f172a;
-  --color-sidebar-bg: #1a2226;
-  --color-sidebar-hover: #11181a;
-  --color-sidebar-text: #cbd5e1;
+  --color-primary: #3C50E0;
+  --color-primary-hover: #5A6BE8;
+  --color-primary-container: #24303F;
+  --color-primary-light: #1A222C;
+  --color-secondary-container: #24303F;
+  --color-surface: #1A222C;
+  --color-on-surface: #FFFFFF;
+  --color-on-surface-variant: #8A99AD;
+  --color-surface-container: #24303F;
+  --color-surface-container-lowest: #24303F;
+  --color-surface-container-low: #1A222C;
+  --color-surface-container-high: #2E3A47;
+  --color-surface-container-highest: #333A48;
+  --color-surface-bright: #24303F;
+  --color-surface-dim: #1A222C;
+  --color-surface-variant: #24303F;
+  --color-secondary: #8A99AD;
+  --color-outline: #64748B;
+  --color-outline-variant: #2E3A47;
+  --color-brand-indigo: #3C50E0;
+  --color-topnav: #24303F;
+  --color-topnav-hover: #1A222C;
+  --color-topnav-dark: #1A222C;
+  --color-sidebar-bg: #1C2434;
+  --color-sidebar-hover: #333A48;
+  --color-sidebar-text: #DEE4EE;
   --color-sidebar-active-text: #ffffff;
   color-scheme: dark;
 }
@@ -155,6 +155,18 @@ html.dark {
   --color-sidebar-hover: var(--color-sidebar-hover);
   --color-sidebar-text: var(--color-sidebar-text);
   --color-sidebar-active-text: var(--color-sidebar-active-text);
+
+  /* TailAdmin Theme Specific Tokens */
+  --color-stroke: #E2E8F0;
+  --color-strokedark: #2E3A47;
+  --color-boxdark: #24303F;
+  --color-boxdark-2: #1A222C;
+  --color-whiten: #F1F5F9;
+  --color-tailadmin-sidebar: #1C2434;
+  --color-tailadmin-hover: #333A48;
+  --color-tailadmin-text: #DEE4EE;
+  --color-tailadmin-muted: #8A99AD;
+  --color-tailadmin-primary: #3C50E0;
 
   /* Page & Section Palette Overrides */
   --color-slate-50: #F8F9FA;

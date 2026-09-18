@@ -1442,7 +1442,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
             setIsSidebarCollapsed(!isSidebarCollapsed);
           }
         }}
-        className={`hidden md:flex md:flex-col md:fixed md:inset-y-0 md:z-50 md:bg-[#0A1838] md:text-white md:border-r md:border-[#16274E] md:justify-between md:shadow-2xl transition-all duration-300 ease-in-out select-none ${
+        className={`hidden md:flex md:flex-col md:fixed md:inset-y-0 md:z-50 md:bg-[#1C2434] md:text-[#DEE4EE] md:border-r md:border-[#2E3A47] md:justify-between md:shadow-2xl transition-all duration-300 ease-in-out select-none ${
           isCollapsed ? 'md:w-16 md:p-2 items-center' : 'md:w-64 md:p-3.5'
         }`}
       >
@@ -1450,7 +1450,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
           {/* Desktop Brand & Logo Header */}
           <div
             onClick={() => handleSideMenuClick('dashboard', 'dashboard')}
-            className={`flex items-center cursor-pointer hover:opacity-90 transition-all select-none sidebar-logo-container ${
+            className={`flex items-center cursor-pointer hover:opacity-95 transition-all select-none sidebar-logo-container ${
               isCollapsed ? 'justify-center p-0.5 mb-6' : 'gap-3 px-1 py-1 mb-5'
             }`}
             title={isAmharic ? 'ወደ ዋና ገፅ ሂድ (ለመቀየር ጠቅ ያድርጉ)' : 'Go to Dashboard (Click to toggle sidebar)'}
@@ -1463,21 +1463,24 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 <h1 id="desktop-header-text" className={`text-white leading-tight truncate whitespace-nowrap ${isAmharic ? 'font-black text-sm lg:text-[15px]' : 'font-black text-xs lg:text-sm tracking-tight'}`}>
                   {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'BAHIRDAR MOTORIST ASSOCIATION'}
                 </h1>
+                <p className="text-[10px] text-[#8A99AD] font-medium tracking-wide">
+                  {isAmharic ? 'የሞተር ብስክሌት ማህበር' : 'Motorist Admin System'}
+                </p>
               </div>
             )}
           </div>
 
           {/* Desktop Main Menu Items Navigation List */}
-          <nav className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-white/20 w-full">
+          <nav className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin scrollbar-thumb-[#333A48] w-full">
             {/* GROUP 1: OVERVIEW */}
             <div>
               {!isCollapsed ? (
-                <p className="text-[10px] font-black text-[#60A5FA] uppercase tracking-wider px-2.5 mb-1 flex items-center gap-1.5 opacity-80">
+                <p className="text-[11px] font-semibold text-[#8A99AD] uppercase tracking-wider px-2.5 mb-1.5 flex items-center gap-1.5">
                   <Icon className="material-symbols-outlined text-[13px] shrink-0">dashboard</Icon>
-                  <span>{isAmharic ? 'ዋና ገፅ' : 'Overview'}</span>
+                  <span>{isAmharic ? 'ዋና ማውጫ' : 'Menu'}</span>
                 </p>
               ) : (
-                <div className="border-b border-white/10 my-2" />
+                <div className="border-b border-[#2E3A47] my-2" />
               )}
               <button
                 type="button"
@@ -1487,26 +1490,26 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     setActivePage('superadmin_owners' as any);
                   }
                 }}
-                className={`w-full flex items-center rounded-md text-xs lg:text-[13px] font-bold transition-all cursor-pointer whitespace-nowrap truncate active:scale-[0.97] active:bg-slate-700 active:text-white ${
-                  isCollapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3 py-2'
+                className={`w-full flex items-center rounded-sm text-xs lg:text-[13px] font-medium transition-all cursor-pointer whitespace-nowrap truncate active:scale-[0.98] ${
+                  isCollapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3.5 py-2.5'
                 } ${
                   activePage === 'dashboard'
-                    ? 'bg-[#0f172a] text-white font-black shadow-md border-l-4 border-yellow-400'
-                    : 'text-slate-300 hover:text-white hover:bg-white/15 hover:border-white/20 hover:translate-x-0.5'
+                    ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-4 border-[#3C50E0]'
+                    : 'text-[#DEE4EE] hover:text-white hover:bg-[#333A48]'
                 }`}
                 title={isAmharic ? 'ዋና ገፅ' : 'Dashboard'}
               >
-                <Icon className="material-symbols-outlined text-[18px] shrink-0">space_dashboard</Icon>
+                <Icon className={`material-symbols-outlined text-[18px] shrink-0 ${activePage === 'dashboard' ? 'text-[#3C50E0]' : ''}`}>space_dashboard</Icon>
                 {!isCollapsed && <span className="truncate">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>}
               </button>
             </div>
 
             {/* GROUP 2: REGISTRATIONS & PERMITS (Expandable Accordion Submenu) */}
-            <div className="pt-1.5 border-t border-white/10">
+            <div className="pt-1.5 border-t border-[#2E3A47]">
               <button
                 type="button"
                 onClick={() => toggleGroup('registrations')}
-                className={`w-full flex items-center justify-between rounded-md text-[11px] font-black uppercase tracking-wider text-[#60A5FA] hover:text-white hover:bg-white/10 active:scale-[0.98] transition-all cursor-pointer select-none ${
+                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                   isCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-1.5'
                 }`}
                 title={isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}
@@ -1516,7 +1519,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {!isCollapsed && <span className="truncate">{isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}</span>}
                 </div>
                 {!isCollapsed && (
-                  <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.registrations ? 'rotate-180 text-yellow-400' : 'text-slate-400'}`}>
+                  <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.registrations ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
                     expand_more
                   </Icon>
                 )}
@@ -1524,17 +1527,17 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
               <div className={`collapsible-grid ${expandedGroups.registrations && !isCollapsed ? 'expanded' : ''}`}>
                 <div className="collapsible-grid-inner">
-                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 py-0.5">
+                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-[#2E3A47] ml-3 py-0.5">
                     {userRole === 'clerk' ? (
                       <>
                         {(settings.showClerkNewRegistrationAction ?? true) && isTaskViewable(userRole, 1) && (
                           <button
                             type="button"
                             onClick={() => setActivePage('forms')}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'forms'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[17px] shrink-0">how_to_reg</Icon>
@@ -1546,10 +1549,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           <button
                             type="button"
                             onClick={() => setActivePage('today_submissions_adjust')}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'today_submissions_adjust'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[17px] shrink-0">edit_note</Icon>
@@ -1561,10 +1564,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           <button
                             type="button"
                             onClick={() => setActivePage('tables')}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'tables'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[17px] shrink-0">folder_open</Icon>
@@ -1579,10 +1582,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setTableInitialTab('approved');
                               setActivePage('tables');
                             }}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'tables'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[17px] shrink-0">verified</Icon>
@@ -1596,10 +1599,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           <button
                             type="button"
                             onClick={() => setActivePage('forms')}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'forms'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[17px] shrink-0">how_to_reg</Icon>
@@ -1611,10 +1614,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           <button
                             type="button"
                             onClick={() => setActivePage('tables')}
-                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'tables'
-                                ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                                : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[17px] shrink-0">table_chart</Icon>
@@ -1629,11 +1632,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </div>
 
             {/* GROUP 3: VERIFICATION & PATROL (Expandable Accordion Submenu) */}
-            <div className="pt-1.5 border-t border-white/10">
+            <div className="pt-1.5 border-t border-[#2E3A47]">
               <button
                 type="button"
                 onClick={() => toggleGroup('verification')}
-                className={`w-full flex items-center justify-between rounded-md text-[11px] font-black uppercase tracking-wider text-[#60A5FA] hover:text-white hover:bg-white/10 active:scale-[0.98] transition-all cursor-pointer select-none ${
+                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                   isCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-1.5'
                 }`}
                 title={isAmharic ? 'ቁጥጥር እና ፍተሻ' : 'Verification & Patrol'}
@@ -1643,7 +1646,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {!isCollapsed && <span className="truncate">{isAmharic ? 'ቁጥጥር እና ፍተሻ' : 'Verification & Patrol'}</span>}
                 </div>
                 {!isCollapsed && (
-                  <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.verification ? 'rotate-180 text-yellow-400' : 'text-slate-400'}`}>
+                  <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.verification ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
                     expand_more
                   </Icon>
                 )}
@@ -1651,15 +1654,15 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
               <div className={`collapsible-grid ${expandedGroups.verification && !isCollapsed ? 'expanded' : ''}`}>
                 <div className="collapsible-grid-inner">
-                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 py-0.5">
+                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-[#2E3A47] ml-3 py-0.5">
                     {isTaskViewable(userRole, 5) && (
                       <button
                         type="button"
                         onClick={() => setActivePage('scan')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'scan'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[17px] shrink-0">qr_code_scanner</Icon>
@@ -1674,10 +1677,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           setInspectionInitialFilter('all');
                           setActivePage('inspection_report');
                         }}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'inspection_report'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[17px] shrink-0">analytics</Icon>
@@ -1689,10 +1692,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <button
                         type="button"
                         onClick={() => setActivePage('report_unregistered')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'report_unregistered'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[17px] text-amber-400 shrink-0">report_problem</Icon>
@@ -1704,10 +1707,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <button
                         type="button"
                         onClick={() => setActivePage('unregistered_list')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'unregistered_list'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[17px] text-red-400 shrink-0">no_drinks</Icon>
@@ -1721,11 +1724,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
             {/* GROUP 4: SUPER ADMIN GOVERNANCE (Expandable Accordion Submenu) */}
             {userRole === 'superadmin' && (
-              <div className="pt-1.5 border-t border-white/10">
+              <div className="pt-1.5 border-t border-[#2E3A47]">
                 <button
                   type="button"
                   onClick={() => toggleGroup('superadmin')}
-                  className={`w-full flex items-center justify-between rounded-md text-[11px] font-black uppercase tracking-wider text-[#60A5FA] hover:text-white hover:bg-white/10 active:scale-[0.98] transition-all cursor-pointer select-none ${
+                  className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                     isCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-1.5'
                   }`}
                   title={isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin'}
@@ -1735,7 +1738,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     {!isCollapsed && <span className="truncate">{isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin'}</span>}
                   </div>
                   {!isCollapsed && (
-                    <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.superadmin ? 'rotate-180 text-yellow-400' : 'text-slate-400'}`}>
+                    <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.superadmin ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
                       expand_more
                     </Icon>
                   )}
@@ -1743,14 +1746,14 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
                 <div className={`collapsible-grid ${expandedGroups.superadmin && !isCollapsed ? 'expanded' : ''}`}>
                   <div className="collapsible-grid-inner">
-                    <div className="mt-1 space-y-1 pl-2 border-l-2 border-purple-400/40 ml-3 py-0.5">
+                    <div className="mt-1 space-y-1 pl-2 border-l-2 border-[#2E3A47] ml-3 py-0.5">
                       <button
                         type="button"
                         onClick={() => setActivePage('superadmin_users')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_users' || activePage === 'superadmin'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[16px] shrink-0">manage_accounts</Icon>
@@ -1760,10 +1763,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <button
                         type="button"
                         onClick={() => setActivePage('superadmin_subcities')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_subcities'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[16px] shrink-0">location_city</Icon>
@@ -1773,10 +1776,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <button
                         type="button"
                         onClick={() => setActivePage('superadmin_permits')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_permits'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[16px] shrink-0">verified</Icon>
@@ -1786,10 +1789,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <button
                         type="button"
                         onClick={() => setActivePage('superadmin_maintenance')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_maintenance'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[16px] shrink-0">database</Icon>
@@ -1799,10 +1802,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <button
                         type="button"
                         onClick={() => setActivePage('payment_receipts')}
-                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                        className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'payment_receipts'
-                            ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                            : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[16px] text-emerald-400 shrink-0">receipt_long</Icon>
@@ -1815,11 +1818,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
             )}
 
             {/* GROUP 5: SYSTEM & SETTINGS (Expandable Accordion Submenu) */}
-            <div className="pt-1.5 border-t border-white/10">
+            <div className="pt-1.5 border-t border-[#2E3A47]">
               <button
                 type="button"
                 onClick={() => toggleGroup('settings')}
-                className={`w-full flex items-center justify-between rounded-md text-[11px] font-black uppercase tracking-wider text-[#60A5FA] hover:text-white hover:bg-white/10 active:scale-[0.98] transition-all cursor-pointer select-none ${
+                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                   isCollapsed ? 'justify-center p-2.5' : 'px-2.5 py-1.5'
                 }`}
                 title={isAmharic ? 'ቅንብሮችና ስርዓት' : 'System & Settings'}
@@ -1829,7 +1832,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {!isCollapsed && <span className="truncate">{isAmharic ? 'ቅንብሮችና ስርዓት' : 'System & Settings'}</span>}
                 </div>
                 {!isCollapsed && (
-                  <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.settings ? 'rotate-180 text-yellow-400' : 'text-slate-400'}`}>
+                  <Icon className={`material-symbols-outlined text-[16px] transition-transform duration-200 shrink-0 ${expandedGroups.settings ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
                     expand_more
                   </Icon>
                 )}
@@ -1837,17 +1840,17 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
               <div className={`collapsible-grid ${expandedGroups.settings && !isCollapsed ? 'expanded' : ''}`}>
                 <div className="collapsible-grid-inner">
-                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-white/20 ml-3 py-0.5">
+                  <div className="mt-1 space-y-1 pl-2 border-l-2 border-[#2E3A47] ml-3 py-0.5">
                     <button
                       type="button"
                       onClick={() => {
                         setActivePage('settings');
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer active:scale-[0.97] active:bg-slate-700 ${
+                      className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                         activePage === 'settings'
-                          ? 'bg-[#0f172a] text-white font-black shadow-md border-l-2 border-yellow-400'
-                          : 'text-slate-300 hover:text-white hover:bg-white/15 hover:translate-x-0.5'
+                          ? 'bg-[#333A48] text-white font-semibold shadow-xs border-l-2 border-[#3C50E0]'
+                          : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                       }`}
                     >
                       <Icon className="material-symbols-outlined text-[17px] shrink-0">tune</Icon>
@@ -1859,40 +1862,40 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </div>
           </nav>
 
-          {/* Sidebar Bottom Profile Card & Logout (Matching Image Exact Structure) */}
-          <div className="pt-3 border-t border-[#1E3466] space-y-2 mt-auto w-full">
-            <div className={`bg-[#112248] border border-[#1E3466] rounded-md text-white shadow-xs transition-all flex items-center ${
+          {/* Sidebar Bottom Profile Card & Logout (TailAdmin Dark Card Style) */}
+          <div className="pt-3 border-t border-[#2E3A47] space-y-2 mt-auto w-full">
+            <div className={`bg-[#24303F] border border-[#2E3A47] rounded-sm text-white shadow-xs transition-all flex items-center ${
               isCollapsed ? 'p-1 justify-center' : 'p-2.5 gap-2.5'
             }`}>
-              <div className="w-9 h-9 rounded-full bg-slate-200 border-2 border-amber-400 shrink-0 overflow-hidden shadow-xs flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full bg-slate-700 border-2 border-[#3C50E0] shrink-0 overflow-hidden shadow-xs flex items-center justify-center">
                 <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </div>
               {!isCollapsed && (
                 <div className="min-w-0 flex-1">
-                  <span className="text-xs font-black text-white block truncate leading-tight">
+                  <span className="text-xs font-semibold text-white block truncate leading-tight">
                     {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                   </span>
-                  <span className="text-[10px] text-slate-300 font-medium block truncate">
+                  <span className="text-[11px] text-[#8A99AD] font-normal block truncate">
                     {userRole === 'superadmin' ? 'Super Admin' : userRole === 'admin' ? 'Manager' : userRole === 'clerk' ? 'Secretary' : 'Officer'}
                   </span>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    <span className="text-[10px] text-emerald-400 font-bold">Online</span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                    <span className="text-[10px] text-[#10B981] font-medium">Online</span>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Bottom Non-Red Logout Button (With Confirmation Modal) */}
+            {/* Bottom TailAdmin Style Logout Button */}
             <button
               type="button"
               onClick={() => setIsLogoutModalOpen(true)}
-              className={`w-full bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] font-extrabold text-xs rounded-md flex items-center justify-center transition-all cursor-pointer active:scale-98 ${
+              className={`w-full bg-[#24303F] hover:bg-[#333A48] text-[#DEE4EE] hover:text-white border border-[#2E3A47] font-medium text-xs rounded-sm flex items-center justify-center transition-all cursor-pointer active:scale-98 ${
                 isCollapsed ? 'p-2.5' : 'py-2 gap-2'
               }`}
               title={isAmharic ? 'ወጣ (Logout)' : 'Logout'}
             >
-              <Icon className="material-symbols-outlined text-[16px] text-amber-400 shrink-0">logout</Icon>
+              <Icon className="material-symbols-outlined text-[16px] text-[#F87171] shrink-0">logout</Icon>
               {!isCollapsed && <span>{isAmharic ? 'ወጣ (Logout)' : 'Logout'}</span>}
             </button>
           </div>
@@ -2616,29 +2619,52 @@ const HomePageShell: React.FC<HomePageProps> = ({
           </div>
 
         {/* DESKTOP TOP BAR (hidden md:flex) */}
-        <header className="hidden md:flex items-center justify-between px-4 sm:px-6 py-3 bg-white text-slate-900 sticky top-0 z-40 shadow-2xs relative overflow-hidden">
+        <header className="hidden md:flex items-center justify-between px-4 sm:px-6 md:px-8 py-2.5 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0] dark:border-[#2E3A47] sticky top-0 z-40 shadow-xs relative overflow-hidden transition-colors">
           {/* Animated Navbar Action Loading Progress Bar (Under top navbar) */}
           {actionLoadingState.isLoading && (
             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-blue-100 dark:bg-slate-800 overflow-hidden z-50 pointer-events-none">
-              <div className="h-full bg-gradient-to-r from-blue-600 via-amber-400 to-blue-600 animate-navbar-progress rounded-full" />
+              <div className="h-full bg-gradient-to-r from-[#3C50E0] via-amber-400 to-[#3C50E0] animate-navbar-progress rounded-full" />
             </div>
           )}
 
-          {/* Left Side: Empty flex container to maintain layout balance */}
-          <div className="flex items-center gap-3"></div>
+          {/* Left Side: Sidebar Toggle Button & Current Context */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="w-8.5 h-8.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+              title={isCollapsed ? (isAmharic ? 'ሳይድባር ዘርጋ' : 'Expand Sidebar') : (isAmharic ? 'ሳይድባር አሳንስ' : 'Collapse Sidebar')}
+              aria-label="Toggle Sidebar"
+            >
+              <Icon className="material-symbols-outlined text-[20px]">
+                {isCollapsed ? 'menu_open' : 'menu'}
+              </Icon>
+            </button>
+
+            {/* Context breadcrumb snippet on desktop */}
+            <div className="hidden lg:flex items-center gap-2">
+              <span className="text-xs font-semibold text-[#64748B] dark:text-[#8A99AD]">
+                {isAmharic ? 'ባህር ዳር ሞተረኞች' : 'Bahir Dar Motorist'}
+              </span>
+              <span className="text-xs text-[#CBD5E1] dark:text-[#2E3A47]">/</span>
+              <span className="text-xs font-bold text-[#1C2434] dark:text-white capitalize">
+                {breadcrumbItems[breadcrumbItems.length - 1]?.label}
+              </span>
+            </div>
+          </div>
 
           {/* Right Side Tools: Language, Theme, Notifications, Date Dropdown, User Dropdown */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-2">
             {/* Desktop Language Selector Toggle */}
             {onToggleLang && (
               <button
                 type="button"
                 onClick={onToggleLang}
-                className="h-9 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-extrabold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95 select-none"
+                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 select-none"
                 title={isAmharic ? 'ወደ እንግሊዝኛ ቀይር' : 'Switch to Amharic'}
                 aria-label="Toggle Language"
               >
-                <Icon className="material-symbols-outlined text-[17px] text-primary dark:text-sky-400">translate</Icon>
+                <Icon className="material-symbols-outlined text-[16px] text-[#3C50E0]">translate</Icon>
                 <span className="font-bold">{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
               </button>
             )}
@@ -2648,11 +2674,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={onToggleTheme}
-                className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 select-none"
+                className="w-8.5 h-8.5 rounded-full border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 select-none"
                 title={currentTheme === 'dark' ? (isAmharic ? 'ወደ ብርሃን ገጽታ ቀይር' : 'Switch to Light Mode') : (isAmharic ? 'ወደ ጨለማ ገጽታ ቀይር' : 'Switch to Dark Mode')}
                 aria-label="Toggle Dark Mode"
               >
-                <Icon className="material-symbols-outlined text-[19px] text-amber-600 dark:text-amber-400">
+                <Icon className="material-symbols-outlined text-[18px] text-amber-500">
                   {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
                 </Icon>
               </button>
@@ -2663,17 +2689,17 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer relative ${
+                className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center transition-all cursor-pointer relative shadow-xs ${
                   isNotificationOpen
-                    ? 'bg-primary text-white border border-primary shadow-xs'
-                    : 'bg-slate-100 hover:bg-slate-200 border border-slate-200/90 text-slate-700'
+                    ? 'border-[#3C50E0] bg-[#3C50E0] text-white'
+                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white'
                 }`}
                 title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                 aria-label="Notifications"
               >
-                <Icon className="material-symbols-outlined text-[20px]">notifications</Icon>
+                <Icon className="material-symbols-outlined text-[19px]">notifications</Icon>
                 {unreadNotificationCount > 0 && (
-                  <span className="bg-rose-500 text-white text-[10px] font-black min-w-[18px] h-4.5 px-1 rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-2xs border-2 border-white">
+                  <span className="bg-[#FB5454] text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-2xs border border-white dark:border-[#1C2434]">
                     {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                   </span>
                 )}
@@ -2682,7 +2708,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               {/* Desktop Notification Dropdown */}
               {isNotificationOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-84 sm:w-96 bg-surface-container-lowest border border-outline-variant/80 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 text-on-surface"
+                  className="absolute right-0 mt-2 w-84 sm:w-96 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
                   onTouchStart={(e) => e.stopPropagation()}
@@ -2707,15 +2733,15 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-                className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-xs font-bold px-3 py-1.5 rounded-md flex items-center gap-2 cursor-pointer transition-all shadow-2xs select-none"
+                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all shadow-xs select-none hover:border-[#3C50E0]"
                 title={isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian Calendar'}
               >
-                <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[18px]">calendar_month</Icon>
-                <span className="font-extrabold">{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
-                <span className="hidden lg:inline text-[10px] bg-amber-500/15 text-amber-800 dark:text-amber-300 font-mono px-1.5 py-0.5 rounded font-bold">
+                <Icon className="material-symbols-outlined text-amber-500 text-[17px]">calendar_month</Icon>
+                <span className="font-bold">{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
+                <span className="hidden lg:inline text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-300 font-mono px-1.5 py-0.5 rounded font-bold">
                   {isAmharic ? ethDate.timeAm : ethDate.timeEn}
                 </span>
-                <Icon className="material-symbols-outlined text-slate-400 text-[16px]">
+                <Icon className="material-symbols-outlined text-[#8A99AD] text-[15px]">
                   {isDateDropdownOpen ? 'expand_less' : 'expand_more'}
                 </Icon>
               </button>
@@ -2723,45 +2749,45 @@ const HomePageShell: React.FC<HomePageProps> = ({
               {/* Interactive Ethiopian Calendar Dropdown */}
               {isDateDropdownOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-80 sm:w-88 bg-surface-container-lowest border border-outline-variant/80 rounded-xl shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-on-surface"
+                  className="absolute right-0 mt-2 w-80 sm:w-88 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Municipal Calendar Header */}
-                  <div className="bg-[#1e293b] text-white p-3.5 rounded-lg border-b-2 border-yellow-500 space-y-1 shadow-xs">
+                  <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-[#3C50E0] space-y-1 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold text-yellow-400 uppercase tracking-wider flex items-center gap-1">
+                      <span className="text-[10px] font-extrabold text-[#3C50E0] dark:text-[#6574F5] uppercase tracking-wider flex items-center gap-1">
                         <Icon className="material-symbols-outlined text-[14px]">event</Icon>
                         {isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian National Calendar'}
                       </span>
-                      <span className="text-[11px] font-black bg-yellow-500/20 text-yellow-300 px-2 py-0.5 rounded">
+                      <span className="text-[11px] font-black bg-[#3C50E0]/20 text-[#6574F5] px-2 py-0.5 rounded">
                         {ethDate.weekdayAm} ({ethDate.weekdayEn})
                       </span>
                     </div>
                     <div className="text-base font-black tracking-tight text-white">
                       {ethDate.monthNameAm} {ethDate.day} ቀን {ethDate.year} ዓ.ም
                     </div>
-                    <div className="text-xs text-slate-300 font-medium">
+                    <div className="text-xs text-[#8A99AD] font-medium">
                       {ethDate.monthNameEn} {ethDate.day}, {ethDate.year} EC
                     </div>
                   </div>
 
                   {/* Real-time Digital Clocks */}
                   <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-                    <div className="bg-surface-container p-2.5 rounded-lg border border-outline-variant">
-                      <span className="text-[11px] text-secondary block font-bold">
+                    <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
                         {isAmharic ? 'መደበኛ ሰዓት' : 'Standard Time'}
                       </span>
-                      <span className="font-mono font-black text-xs text-primary flex items-center gap-1 mt-0.5">
+                      <span className="font-mono font-black text-xs text-[#3C50E0] flex items-center gap-1 mt-0.5">
                         <Icon className="material-symbols-outlined text-[14px] text-amber-500">schedule</Icon>
                         {isAmharic ? ethDate.timeAm : ethDate.timeEn}
                       </span>
                     </div>
 
-                    <div className="bg-surface-container p-2.5 rounded-lg border border-outline-variant">
-                      <span className="text-[11px] text-secondary block font-bold">
+                    <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
                         {isAmharic ? 'የሀገር ባህል ሰዓት' : 'Ethiopian Local Time'}
                       </span>
-                      <span className="font-mono font-black text-xs text-amber-800 dark:text-amber-300 flex items-center gap-1 mt-0.5">
+                      <span className="font-mono font-black text-xs text-amber-600 dark:text-amber-300 flex items-center gap-1 mt-0.5">
                         <Icon className="material-symbols-outlined text-[14px]">sunny</Icon>
                         {ethDate.traditionalTimeAm}
                       </span>
@@ -2769,43 +2795,43 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   </div>
 
                   {/* Ethiopian Calendar Date & GMT+3 Standard */}
-                  <div className="mt-3 bg-surface-container/60 p-2.5 rounded-lg border border-outline-variant flex items-center justify-between text-xs">
+                  <div className="mt-3 bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between text-xs">
                     <div>
-                      <span className="text-[11px] text-secondary block font-bold">
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
                         {isAmharic ? 'የኢትዮጵያ ካሌንደር (GMT+3)' : 'Ethiopian Calendar (GMT+3)'}
                       </span>
-                      <span className="font-bold text-on-surface">
+                      <span className="font-bold text-[#1C2434] dark:text-white">
                         {isAmharic ? ethDate.formattedAm : ethDate.formattedEn}
                       </span>
                     </div>
-                    <span className="text-xs font-mono font-extrabold text-amber-800 dark:text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-1 rounded">
+                    <span className="text-xs font-mono font-extrabold text-[#3C50E0] bg-[#3C50E0]/10 border border-[#3C50E0]/30 px-2 py-1 rounded-sm">
                       GMT+3
                     </span>
                   </div>
 
                   {/* Calendar Quick Month Navigation Grid for Visual Display */}
-                  <div className="mt-3 pt-3 border-t border-outline-variant">
+                  <div className="mt-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-extrabold text-on-surface">
+                      <span className="text-xs font-extrabold text-[#1C2434] dark:text-white">
                         {isAmharic ? `የወሩ ቀናት (${ethDate.monthNameAm})` : `Days of ${ethDate.monthNameEn}`}
                       </span>
-                      <span className="text-xs font-extrabold text-amber-800 dark:text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded">
+                      <span className="text-xs font-extrabold text-[#3C50E0] bg-[#3C50E0]/10 border border-[#3C50E0]/30 px-2 py-0.5 rounded-sm">
                         {isAmharic ? 'ዛሬ: ' + ethDate.day : 'Today: ' + ethDate.day}
                       </span>
                     </div>
                     <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold">
                       {['እ', 'ሰ', 'ማ', 'ረ', 'ሐ', 'ዓ', 'ቅ'].map((day, idx) => (
-                        <div key={idx} className="text-secondary text-[11px] font-black py-0.5">
+                        <div key={idx} className="text-[#8A99AD] text-[11px] font-black py-0.5">
                           {day}
                         </div>
                       ))}
                       {Array.from({ length: ethDate.isPagume ? 6 : 30 }, (_, i) => i + 1).map((d) => (
                         <div
                           key={d}
-                          className={`py-1 rounded font-mono font-bold text-xs ${
+                          className={`py-1 rounded-sm font-mono font-bold text-xs ${
                             d === ethDate.day
-                              ? 'bg-[#1e293b] text-yellow-300 font-black shadow-xs ring-2 ring-yellow-400'
-                              : 'text-on-surface hover:bg-surface-container'
+                              ? 'bg-[#3C50E0] text-white font-black shadow-xs'
+                              : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
                           }`}
                         >
                           {d}
@@ -2815,11 +2841,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   </div>
 
                   {/* Close / Dismiss */}
-                  <div className="mt-3 pt-2 border-t border-outline-variant/60 flex justify-end">
+                  <div className="mt-3 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex justify-end">
                     <button
                       type="button"
                       onClick={() => setIsDateDropdownOpen(false)}
-                      className="px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-xs font-bold text-on-surface transition-colors cursor-pointer border border-outline-variant"
+                      className="px-3.5 py-1.5 rounded-sm bg-[#F1F5F9] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-xs font-semibold text-[#1C2434] dark:text-white transition-colors cursor-pointer border border-[#E2E8F0] dark:border-[#2E3A47]"
                     >
                       {isAmharic ? 'ዝጋ' : 'Close'}
                     </button>
@@ -2833,35 +2859,35 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                className="bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface text-xs font-bold px-3 py-1.5 rounded-md flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
+                className="h-8.5 px-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:border-[#3C50E0] flex items-center gap-2 transition-all cursor-pointer shadow-xs"
               >
-                <div className="w-6 h-6 rounded-full bg-[#1e293b] text-white flex items-center justify-center shrink-0 border border-slate-200">
-                  <Icon className="material-symbols-outlined text-[14px]">person</Icon>
+                <div className="w-6 h-6 rounded-full bg-[#1C2434] border border-[#3C50E0] text-white flex items-center justify-center shrink-0 overflow-hidden">
+                  <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="text-left hidden sm:block">
-                  <span className="text-xs font-black text-on-surface block leading-tight">
+                  <span className="text-xs font-semibold text-[#1C2434] dark:text-white block leading-tight truncate max-w-[110px]">
                     {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                   </span>
                 </div>
-                <Icon className="material-symbols-outlined text-secondary text-[18px]">expand_more</Icon>
+                <Icon className="material-symbols-outlined text-[#8A99AD] text-[16px]">expand_more</Icon>
               </button>
 
               {/* User Dropdown Menu */}
               {isUserDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-on-surface">
-                  <div className="px-4 py-2 border-b border-outline-variant/60">
-                    <p className="text-xs font-black text-on-surface">
+                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]">
+                  <div className="px-4 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <p className="text-xs font-bold text-[#1C2434] dark:text-white">
                       {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                     </p>
-                    <p className="text-xs text-secondary font-semibold capitalize">
+                    <p className="text-xs text-[#8A99AD] font-medium capitalize">
                       {userRole === 'superadmin' ? 'Super Admin' : userRole === 'admin' ? 'Manager' : userRole === 'clerk' ? 'Secretary' : 'Officer'}
                     </p>
                   </div>
 
                   {/* Role Switcher in Dropdown */}
                   {onSwitchRole && (
-                    <div className="px-3 py-2 border-b border-outline-variant/60 space-y-1">
-                      <p className="text-[11px] font-extrabold uppercase text-secondary tracking-wider">
+                    <div className="px-3 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] space-y-1">
+                      <p className="text-[10px] font-bold uppercase text-[#8A99AD] tracking-wider">
                         {isAmharic ? 'ሚና ቀይር' : 'Switch Role'}
                       </p>
                       <div className="grid grid-cols-2 gap-1">
@@ -2873,10 +2899,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               onSwitchRole(r);
                               setIsUserDropdownOpen(false);
                             }}
-                            className={`px-2 py-1 rounded-md text-[11px] font-bold capitalize text-left transition-all ${
+                            className={`px-2 py-1 rounded-sm text-[11px] font-medium capitalize text-left transition-all ${
                               userRole === r
-                                ? 'bg-primary text-white font-black'
-                                : 'text-on-surface hover:bg-surface-container'
+                                ? 'bg-[#3C50E0] text-white font-semibold'
+                                : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
                             }`}
                           >
                             {r === 'admin' ? (isAmharic ? 'ሥራ አስኪያጅ' : 'Manager') : r === 'superadmin' ? (isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin') : r}
@@ -2894,9 +2920,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         setActivePage('settings');
                         setIsUserDropdownOpen(false);
                       }}
-                      className="w-full px-3 py-2 text-xs font-bold text-on-surface hover:bg-surface-container flex items-center gap-2 text-left cursor-pointer transition-colors"
+                      className="w-full px-3 py-2 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] flex items-center gap-2 text-left cursor-pointer transition-colors"
                     >
-                      <Icon className="material-symbols-outlined text-[18px] text-secondary">settings</Icon>
+                      <Icon className="material-symbols-outlined text-[17px] text-[#8A99AD]">settings</Icon>
                       <span>{isAmharic ? 'ቅንብሮች (Settings)' : 'Settings'}</span>
                     </button>
                     <button
@@ -2905,9 +2931,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         setIsUserDropdownOpen(false);
                         setIsLogoutModalOpen(true);
                       }}
-                      className="w-full px-3 py-2 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 text-left cursor-pointer transition-colors border-t border-outline-variant/40"
+                      className="w-full px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 flex items-center gap-2 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
                     >
-                      <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400">logout</Icon>
+                      <Icon className="material-symbols-outlined text-[17px] text-rose-600 dark:text-rose-400">logout</Icon>
                       <span>{isAmharic ? 'ውጣ (Sign Out)' : 'Sign Out'}</span>
                     </button>
                   </div>
@@ -2925,14 +2951,14 @@ const HomePageShell: React.FC<HomePageProps> = ({
         }>
           {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (
-            <nav aria-label="Breadcrumb" className="bg-transparent px-0 py-0 mb-1 sm:mb-1.5 md:mb-2 flex items-center overflow-x-auto scrollbar-none transition-all">
-              <ol className="flex items-center gap-1 sm:gap-1.5 text-xs font-semibold text-secondary min-w-0">
+            <nav aria-label="Breadcrumb" className="bg-transparent px-0 py-0 mb-2 sm:mb-3 flex items-center overflow-x-auto scrollbar-none transition-all">
+              <ol className="flex items-center gap-1 sm:gap-1.5 text-xs font-medium text-[#64748B] dark:text-[#8A99AD] min-w-0">
                 {breadcrumbItems.map((item, index) => {
                   const isLast = index === breadcrumbItems.length - 1;
                   return (
                     <li key={index} className="flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
                       {index > 0 && (
-                        <Icon className="material-symbols-outlined text-[13px] text-secondary shrink-0 opacity-60">
+                        <Icon className="material-symbols-outlined text-[13px] text-[#8A99AD] shrink-0 opacity-70">
                           chevron_right
                         </Icon>
                       )}
@@ -2940,10 +2966,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         type="button"
                         onClick={() => setActivePage(item.page as any)}
                         disabled={isLast}
-                        className={`flex items-center py-0.5 px-2 rounded-md transition-all text-xs ${
+                        className={`flex items-center py-1 px-2.5 rounded-sm transition-all text-xs ${
                           isLast
-                            ? 'text-on-surface font-extrabold cursor-default bg-surface-container/60'
-                            : 'text-secondary hover:text-on-surface hover:bg-surface-container font-semibold cursor-pointer'
+                            ? 'text-[#3C50E0] font-semibold cursor-default bg-[#3C50E0]/10 dark:bg-[#3C50E0]/20'
+                            : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white hover:bg-[#E2E8F0]/50 dark:hover:bg-[#2E3A47]/50 font-medium cursor-pointer'
                         }`}
                       >
                         <span className="truncate max-w-[130px] sm:max-w-[220px]">{item.label}</span>
