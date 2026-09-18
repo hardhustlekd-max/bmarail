@@ -117,8 +117,9 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
       }
 
       setMotorModel(registration.motorModel || '');
-      setEngineOrSerialNo(registration.engineOrSerialNo || '');
-      setChassisNumber(registration.chassisNumber || '');
+      const resolvedChassis = registration.chassisNumber || (registration.engineOrSerialNo && registration.engineOrSerialNo !== 'N/A' ? registration.engineOrSerialNo : '') || '';
+      setEngineOrSerialNo(registration.engineOrSerialNo && registration.engineOrSerialNo !== 'N/A' ? registration.engineOrSerialNo : resolvedChassis);
+      setChassisNumber(resolvedChassis);
 
       setUserPortraitPhoto(registration.userPortraitPhoto || (registration as any).ownerPhoto || '');
       setNationalIdPhoto(registration.nationalIdPhoto || '');
@@ -163,8 +164,8 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
       return;
     }
 
-    if (!plateNumber.trim() && !engineOrSerialNo.trim()) {
-      setFormError(isAmharic ? 'እባክዎን የሰሌዳ ቁጥር ወይም የሞተር ሴሪያል ቁጥር ያስገቡ' : 'Please provide a plate number or serial number');
+    if (!plateNumber.trim() && !chassisNumber.trim() && !engineOrSerialNo.trim()) {
+      setFormError(isAmharic ? 'እባክዎን የሰሌዳ ቁጥር ወይም የቻሲስ ቁጥር ያስገቡ' : 'Please provide a plate number or Chasis number');
       setActiveTab('vehicle');
       return;
     }
@@ -174,6 +175,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
     try {
       const finalBrand = motorBrand === 'Other' ? customBrand.trim() || 'Other' : motorBrand;
+      const finalChassis = chassisNumber.trim().toUpperCase() || engineOrSerialNo.trim().toUpperCase();
 
       const updates: Partial<MotorcycleRegistration> = {
         fullName: fullName.trim(),
@@ -184,8 +186,8 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         plateNumber: plateNumber.trim().toUpperCase(),
         motorBrand: finalBrand,
         motorModel: motorModel.trim(),
-        engineOrSerialNo: engineOrSerialNo.trim().toUpperCase(),
-        chassisNumber: chassisNumber.trim().toUpperCase(),
+        engineOrSerialNo: finalChassis || 'N/A',
+        chassisNumber: finalChassis,
         userPortraitPhoto: userPortraitPhoto || undefined,
         nationalIdPhoto: nationalIdPhoto || undefined,
         nationalIdBackPhoto: nationalIdBackPhoto || undefined,
@@ -266,7 +268,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 )}
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
-                ID: {registration.id} • {registration.fullName} • {registration.plateNumber || registration.engineOrSerialNo}
+                ID: {registration.id} • {registration.fullName} • {registration.plateNumber || registration.chassisNumber || registration.engineOrSerialNo}
               </p>
             </div>
           </div>
@@ -562,29 +564,33 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1">
                   <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የሞተር / ሴሪያል ቁጥር (Engine/Serial No) *' : 'Engine / Serial Number *'}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    disabled={!canEdit}
-                    placeholder="e.g. 152FMH-1234567"
-                    value={engineOrSerialNo}
-                    onChange={(e) => setEngineOrSerialNo(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የሻሲ ቁጥር (Chassis Number - አማራጭ)' : 'Chassis Number (Optional)'}
+                    {isAmharic ? 'የቻሲስ ቁጥር (Chasis) *' : 'Chasis Number *'}
                   </label>
                   <input
                     type="text"
                     disabled={!canEdit}
                     placeholder="e.g. LBB1001293847"
                     value={chassisNumber}
-                    onChange={(e) => setChassisNumber(e.target.value)}
+                    onChange={(e) => {
+                      setChassisNumber(e.target.value.toUpperCase());
+                      if (!engineOrSerialNo || engineOrSerialNo === 'N/A') {
+                        setEngineOrSerialNo(e.target.value.toUpperCase());
+                      }
+                    }}
+                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
+                    {isAmharic ? 'የሞተር ቁጥር (Engine No - አማራጭ)' : 'Engine Number (Optional)'}
+                  </label>
+                  <input
+                    type="text"
+                    disabled={!canEdit}
+                    placeholder="e.g. 152FMH-1234567"
+                    value={engineOrSerialNo === 'N/A' ? '' : engineOrSerialNo}
+                    onChange={(e) => setEngineOrSerialNo(e.target.value.toUpperCase())}
                     className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   />
                 </div>

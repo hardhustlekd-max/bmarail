@@ -858,7 +858,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
       motorBrand: motorBrand.trim(),
       motorModel: motorModel.trim(),
       chassisNumber: chassisNumber.trim().toUpperCase(),
-      engineOrSerialNo: engineOrSerialNo.trim(),
+      engineOrSerialNo: chassisNumber.trim().toUpperCase() || (engineOrSerialNo && engineOrSerialNo !== 'N/A' ? engineOrSerialNo.trim() : '') || 'N/A',
       plateNumber: plateNumber.trim().toUpperCase(),
       registrationDate: new Date().toISOString().split('T')[0],
       status: 'pending_approval',
@@ -1683,14 +1683,14 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       )}
                     </div>
 
-                    {/* Chassis Number / የሻንሺ ቁጥር */}
+                    {/* Chassis Number / የሻሲ ቁጥር */}
                     <div>
                       <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                        {isAmharic ? 'የሻንሺ ቁጥር' : 'Chassis Number'}
+                        {isAmharic ? 'የቻሲስ ቁጥር' : 'Chasis'}
                       </label>
                       <input
                         type="text"
-                        placeholder={isAmharic ? 'የሻንሺ ቁጥር ያስገቡ...' : 'CHS-123456789'}
+                        placeholder={isAmharic ? 'የቻሲስ ቁጥር ያስገቡ...' : 'CHS-123456789'}
                         value={chassisNumber}
                         onChange={(e) => setChassisNumber(e.target.value.toUpperCase())}
                         className="w-full bg-surface-container/70 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-on-surface dark:text-white uppercase focus:outline-hidden focus:border-blue-500"

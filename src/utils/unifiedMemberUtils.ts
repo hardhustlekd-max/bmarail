@@ -122,3 +122,32 @@ export function getUnifiedPaymentCompliance(
     };
   }
 }
+
+/**
+ * Resolves the genuine Chasis number from a registration record in the database,
+ * prioritizing chassisNumber, chassis_number, chassisNo, and fallback engineOrSerialNo/engineNumber.
+ */
+export function getChassisNumber(reg?: Partial<MotorcycleRegistration> | any | null): string {
+  if (!reg) return '';
+  const rawChassis = reg.chassisNumber ?? reg.chassis_number ?? reg.chassisNo ?? reg.chassis_no;
+  if (typeof rawChassis === 'string' && rawChassis.trim() && rawChassis.trim().toUpperCase() !== 'N/A') {
+    return rawChassis.trim().toUpperCase();
+  }
+  const rawEngine = reg.engineOrSerialNo ?? reg.engine_or_serial_no;
+  if (typeof rawEngine === 'string' && rawEngine.trim() && rawEngine.trim().toUpperCase() !== 'N/A') {
+    return rawEngine.trim().toUpperCase();
+  }
+  const engineNum = reg.engineNumber ?? reg.engine_number;
+  if (typeof engineNum === 'string' && engineNum.trim() && engineNum.trim().toUpperCase() !== 'N/A') {
+    return engineNum.trim().toUpperCase();
+  }
+  return '';
+}
+
+/**
+ * Returns formatted Chasis number for UI presentation with a fallback dash.
+ */
+export function getChassisDisplay(reg?: Partial<MotorcycleRegistration> | any | null, fallback = '—'): string {
+  const val = getChassisNumber(reg);
+  return val || fallback;
+}

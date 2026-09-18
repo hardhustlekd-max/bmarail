@@ -5,6 +5,7 @@ import { formatEthiopianDate } from '../utils/ethiopianCalendar';
 import { MotorcycleRegistration, Language, APP_LOGO } from '../types';
 import { SmartImage } from './SmartImage';
 import { triggerDocumentPrint } from '../utils/printUtils';
+import { getChassisDisplay } from '../utils/unifiedMemberUtils';
 
 interface A4PermitPaperProps {
   registration: Partial<MotorcycleRegistration>;
@@ -56,7 +57,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
   const name = registration.fullName || '—';
   const phone = registration.phone || '—';
   const plate = registration.plateNumber || '—';
-  const chassis = registration.engineOrSerialNo || (registration as any).chassisNo || 'N/A';
+  const chassis = getChassisDisplay(registration, 'N/A');
   const motorBrand = registration.motorBrand || '—';
   const motorModel = registration.motorModel || '—';
   const category = registration.vehicleCategory === 'electric' ? (isAmharic ? 'ኢቪ' : 'Electric (EV)') : (isAmharic ? 'ቤንዚን' : 'Gasoline (<110cc)');
@@ -212,7 +213,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(መ) የቻሲስ / የሞተር ቁጥር (Chassis Number)</div>
+                      <div className="col-span-5 text-slate-700">{isAmharic ? '(መ) የቻሲስ ቁጥር (Chasis)' : '(D) Chasis Number (Chasis)'}</div>
                       <div className="col-span-7 font-mono font-bold text-black">{chassis}</div>
                     </div>
 

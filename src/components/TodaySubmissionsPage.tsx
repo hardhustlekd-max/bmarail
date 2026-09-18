@@ -25,6 +25,7 @@ import {
 } from './FullscreenDocumentCarouselModal';
 import { checkDuplicateRegistration } from '../utils/validation';
 import { LoadingSpinner } from './ui/Skeleton';
+import { getChassisDisplay, getChassisNumber } from '../utils/unifiedMemberUtils';
 
 interface TodaySubmissionsPageProps {
   lang: Language;
@@ -101,7 +102,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     setEditFullName(reg.fullName || '');
     setEditPhone(reg.phone || '');
     setEditPlateNumber(reg.plateNumber || '');
-    setEditEngineNo(reg.engineOrSerialNo || '');
+    setEditEngineNo(getChassisNumber(reg) || reg.engineOrSerialNo || '');
     setEditVehicleCategory(reg.vehicleCategory || 'gas_under_110cc');
     setEditMotorBrand(reg.motorBrand || '');
     setEditMotorModel(reg.motorModel || '');
@@ -188,6 +189,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         phone: editPhone.trim(),
         plateNumber: editPlateNumber.trim().toUpperCase(),
         engineOrSerialNo: editEngineNo.trim().toUpperCase(),
+        chassisNumber: editEngineNo.trim().toUpperCase(),
         vehicleCategory: editVehicleCategory,
         motorBrand: editMotorBrand.trim(),
         motorModel: editMotorModel.trim(),
@@ -348,6 +350,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         (reg.fullName || '').toLowerCase().includes(q) ||
         (reg.plateNumber || '').toLowerCase().includes(q) ||
         (reg.phone || '').toLowerCase().includes(q) ||
+        (reg.chassisNumber || '').toLowerCase().includes(q) ||
         (reg.engineOrSerialNo || '').toLowerCase().includes(q) ||
         (reg.subCity || '').toLowerCase().includes(q) ||
         (reg.motorBrand || '').toLowerCase().includes(q) ||
@@ -412,7 +415,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 setSearchQuery(e.target.value);
                 setPage(1);
               }}
-              placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chassis...'}
+              placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
               className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-[#3C50E0] active:border-[#3C50E0] dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
             />
             {searchQuery && (
@@ -555,7 +558,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   <th className="py-4 px-3 font-medium">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
                   <th className="py-4 px-4 font-medium">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
                   <th className="py-4 px-3 font-medium">{isAmharic ? 'አይነት' : 'Category'}</th>
-                  <th className="py-4 px-4 font-medium">{isAmharic ? 'ሴሪያል / ቻሲስ ቁጥር' : 'Chassis / Serial'}</th>
+                  <th className="py-4 px-4 font-medium">{isAmharic ? 'ቻሲስ' : 'Chasis'}</th>
                   <th className="py-4 px-3 font-medium">{isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}</th>
                   <th className="py-4 px-3 font-medium">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
                   <th className="py-4 px-3 font-medium">{isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}</th>
@@ -664,9 +667,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             )}
                           </td>
 
-                          {/* 6. Standalone Chassis / Serial */}
-                          <td className="py-4 px-4 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] max-w-[140px] truncate" title={reg.engineOrSerialNo || reg.chassisNumber || ''}>
-                            {reg.engineOrSerialNo || reg.chassisNumber || '—'}
+                          {/* 6. Standalone Chasis */}
+                          <td className="py-4 px-4 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] max-w-[140px] truncate" title={getChassisDisplay(reg)}>
+                            {getChassisDisplay(reg)}
                           </td>
 
                           {/* 7. Standalone Brand & Model */}
@@ -735,7 +738,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                         {renderStatusBadge(reg.status)}
                                       </div>
                                       <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                                        {reg.fullName || '—'} • {reg.plateNumber || reg.chassisNumber || reg.id}
+                                        {reg.fullName || '—'} • {reg.plateNumber || getChassisDisplay(reg) || reg.id}
                                       </span>
                                     </div>
                                   </div>
@@ -933,7 +936,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                     {isExpanded && (
                       <div className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-md space-y-2 text-xs text-slate-600 dark:text-slate-300">
-                        <p><span className="font-bold">{isAmharic ? 'ሞተር/ቻሲስ:' : 'Chassis/Engine:'}</span> {reg.engineOrSerialNo || '—'}</p>
+                        <p><span className="font-bold">{isAmharic ? 'ቻሲስ:' : 'Chasis:'}</span> {getChassisDisplay(reg)}</p>
                         <p><span className="font-bold">{isAmharic ? 'የሞተር ምርት/ሞዴል:' : 'Brand/Model:'}</span> {reg.motorBrand || ''} {reg.motorModel || ''}</p>
                         <p><span className="font-bold">{isAmharic ? 'የምዝገባ ቀን:' : 'Registered:'}</span> {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}</p>
                         {reg.status === 'rejected' && reg.rejectionReason && (
@@ -1217,7 +1220,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold text-on-surface dark:text-slate-300 mb-1">
-                      {isAmharic ? 'የሞተር / ሻንሲ ቁጥር *' : 'Engine / Chassis No *'}
+                      {isAmharic ? 'የቻሲስ ቁጥር *' : 'Chasis *'}
                     </label>
                     <input
                       type="text"

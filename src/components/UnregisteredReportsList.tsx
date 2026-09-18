@@ -590,8 +590,8 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
               </div>
 
               <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'የሞተር / ሴሪያል ቁጥር' : 'Engine / Serial'}</p>
-                <p className="font-mono font-black text-sm text-on-surface">{selectedReport.engineOrSerialNo || '—'}</p>
+                <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'የቻሲስ ቁጥር' : 'Chasis'}</p>
+                <p className="font-mono font-black text-sm text-on-surface">{selectedReport.chassisNumber || (selectedReport.engineOrSerialNo && selectedReport.engineOrSerialNo !== 'N/A' ? selectedReport.engineOrSerialNo : '') || selectedReport.engineOrSerialNo || '—'}</p>
               </div>
 
               <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">

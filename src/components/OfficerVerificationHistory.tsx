@@ -507,7 +507,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-2">
                           <DataField label={isAmharic ? 'ማስታወሻ፡' : 'Officer Notes:'} value={log.officerNotes || 'No notes attached.'} className="col-span-2" />
                           <DataField label={isAmharic ? 'ስልክ፡' : 'Phone:'} value={log.phone} isMono />
-                          <DataField label={isAmharic ? 'ሴሪያል፡' : 'Serial:'} value={log.engineOrSerialNo} isMono />
+                          <DataField label={isAmharic ? 'ቻሲስ፡' : 'Chasis:'} value={(log as any).chassisNumber || log.engineOrSerialNo} isMono />
                         </div>
 
                         <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-1 md:pt-0">

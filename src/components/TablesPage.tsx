@@ -11,7 +11,7 @@ import {
   PaymentReceipt,
 } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus } from '../utils/paymentUtils';
-import { getReceiptsForRegistration, getLatestReceiptForRegistration, getUnifiedPaymentCompliance } from '../utils/unifiedMemberUtils';
+import { getReceiptsForRegistration, getLatestReceiptForRegistration, getUnifiedPaymentCompliance, getChassisDisplay, getChassisNumber } from '../utils/unifiedMemberUtils';
 import { uploadDocumentPhoto } from '../services/storageService';
 import { DocumentUploadInput } from './DocumentUploadInput';
 import { QRCodeCard } from './QRCodeCard';
@@ -252,6 +252,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         (r.fullName || '').toLowerCase().includes(q) ||
         (r.phone || '').toLowerCase().includes(q) ||
         (r.chassisNumber || '').toLowerCase().includes(q) ||
+        (r.engineOrSerialNo || '').toLowerCase().includes(q) ||
         (r.engineNumber || '').toLowerCase().includes(q) ||
         (r.subCity || '').toLowerCase().includes(q) ||
         (r.id || '').toLowerCase().includes(q);
@@ -477,7 +478,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 }
                 setRegPage(1);
               }}
-              placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chassis...'}
+              placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
               className="w-full pl-9 pr-8 py-2 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-[#3C50E0] focus:outline-none transition-colors"
             />
             {regSearchQuery && (
@@ -583,7 +584,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'አይነት / ነዳጅ' : 'Category'}</th>
-                    <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'ሴሪያል / ቻሲስ ቁጥር' : 'Chassis / Serial'}</th>
+                    <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'ቻሲስ' : 'Chasis'}</th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}</th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}</th>
@@ -700,10 +701,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 )}
                               </td>
 
-                              {/* Standalone Column 5: Chassis / Engine Serial */}
+                              {/* Standalone Column 5: Chasis */}
                               <td className="px-4 py-3 align-middle h-16 whitespace-nowrap">
-                                <span className="font-mono font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[140px] truncate" title={reg.engineOrSerialNo}>
-                                  {reg.engineOrSerialNo || '—'}
+                                <span className="font-mono font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[140px] truncate" title={getChassisDisplay(reg)}>
+                                  {getChassisDisplay(reg)}
                                 </span>
                               </td>
 
@@ -772,7 +773,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             {renderStatusBadge(reg.status)}
                                           </div>
                                           <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                                            {getDisplayName(reg)} • {reg.plateNumber || reg.engineOrSerialNo || reg.id}
+                                            {getDisplayName(reg)} • {reg.plateNumber || getChassisDisplay(reg) || reg.id}
                                           </span>
                                         </div>
                                       </div>
@@ -1093,7 +1094,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               <DataField label={isAmharic ? 'የማህደር መለያ:' : 'Record ID:'} value={reg.id} isMono />
                               <DataField label={isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:'} value={reg.phone || '—'} isMono />
                               <DataField label={isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:'} value={reg.subCity || '—'} />
-                              <DataField label={isAmharic ? 'ሴሪያል ቁጥር:' : 'Serial No:'} value={reg.engineOrSerialNo || '—'} isMono />
+                              <DataField label={isAmharic ? 'ቻሲስ:' : 'Chasis:'} value={getChassisDisplay(reg)} isMono />
                               <DataField label={isAmharic ? 'የተመዘገበበት ቀን:' : 'Registered Date:'} value={reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'} isMono />
                               <DataField label={isAmharic ? 'የመዘገበው:' : 'Registered By:'} value={reg.registeredBy || '—'} isMono />
                             </div>
@@ -1553,7 +1554,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     isPrimary 
                   />
                   <DataField label={isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:'} value={selectedRegForDetails.plateNumber || '—'} isMono />
-                  <DataField label={isAmharic ? 'ሴሪያል / ቻሲስ ቁጥር:' : 'Engine / Chassis No:'} value={selectedRegForDetails.engineOrSerialNo || '—'} isMono />
+                  <DataField label={isAmharic ? 'ቻሲስ:' : 'Chasis:'} value={getChassisDisplay(selectedRegForDetails)} isMono />
                   <DataField label={isAmharic ? 'የሞተር ምርት እና ሞዴል:' : 'Brand & Model:'} value={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`} />
                 </div>
               </div>
@@ -2028,7 +2029,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     {isAmharic ? 'የወርሃዊ ክፍያ ደረሰኝ መመዝገቢያ' : 'Record Monthly Payment Receipt'}
                   </h3>
                   <p className="text-[11px] text-slate-500 font-mono">
-                    {renewalModalReg.fullName} • {renewalModalReg.plateNumber || renewalModalReg.engineOrSerialNo}
+                    {renewalModalReg.fullName} • {renewalModalReg.plateNumber || getChassisDisplay(renewalModalReg)}
                   </p>
                 </div>
               </div>
