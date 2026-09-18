@@ -1088,15 +1088,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         </form>
       )}
 
-      {/* TABLE SECTION: High-Contrast, Flattened, Non-Nested */}
+      {/* TABLE SECTION: TailAdmin DataTable Design */}
       {canViewTable && (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden">
-          {/* SEARCH & STATUS FILTER TOOLBAR */}
-          <div className="p-3 sm:p-4 bg-slate-50 dark:bg-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800">
+        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
+          {/* SEARCH & STATUS FILTER TOOLBAR (TAILADMIN DESIGN) */}
+          <div className="p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             {/* Search Bar */}
             <div className="relative flex-1 min-w-0 max-w-md">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-500">
-                <Icon className="material-symbols-outlined text-[16px]">search</Icon>
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+                <Icon className="material-symbols-outlined text-[18px]">search</Icon>
               </div>
               <input
                 type="text"
@@ -1107,13 +1107,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
                     : 'Search receipt #, owner name, or plate...'
                 }
-                className="w-full pl-8 pr-8 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-900 shadow-2xs"
+                className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-[#3C50E0] active:border-[#3C50E0] dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-2.5 flex items-center text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer font-bold text-xs"
+                  className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer font-bold text-xs"
                 >
                   ✕
                 </button>
@@ -1134,18 +1134,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     key={tab.key}
                     type="button"
                     onClick={() => setStatusFilter(tab.key)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                       isActive
-                        ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs'
-                        : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800'
+                        ? 'bg-[#3C50E0] text-white shadow-xs'
+                        : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'
                     }`}
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-black ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold ${
                         isActive
-                          ? 'bg-white/20 text-white dark:bg-slate-900/20 dark:text-slate-900'
-                          : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200'
+                          ? 'bg-white/20 text-white'
+                          : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >
                       {tab.count}
@@ -1156,31 +1156,34 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           </div>
 
-          {/* DESKTOP TABLE VIEW (>= md) WITH ELEVATED ETHIOPIAN DUAL-CALENDAR TIMELINES */}
+          {/* DESKTOP TABLE VIEW (>= md) WITH STANDALONE COLUMNS & TAILADMIN DESIGN */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full table-auto text-left border-collapse">
               <thead>
-                <tr className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs uppercase tracking-wider font-black border-b border-slate-200 dark:border-slate-700">
-                  <th className="px-4 py-3.5 text-center w-12">#</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt #'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'የባለቤት ስም & ሰሌዳ' : 'Owner & Vehicle'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date (Eth/GC)'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'የ1 ወር ማብቂያ ቀን & ሁኔታ' : 'Expiration & Status'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'መጠን (ብር)' : 'Amount'}</th>
-                  <th className="px-4 py-3.5 text-center">{isAmharic ? 'ማረጋገጫ ፎቶ' : 'Proof'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'መዝጋቢ' : 'Clerk'}</th>
-                  <th className="px-4 py-3.5 text-right">{isAmharic ? 'ማስታረቂያ / እርምጃ' : 'Reconcile / Actions'}</th>
+                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <th className="py-4 px-3 text-center w-12 font-medium">#</th>
+                  <th className="py-4 px-4 font-medium">{isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt #'}</th>
+                  <th className="py-4 px-4 font-medium">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'የማብቂያ ቀን' : 'Expiration Date'}</th>
+                  <th className="py-4 px-4 text-center font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'መጠን' : 'Amount'}</th>
+                  <th className="py-4 px-3 text-center font-medium">{isAmharic ? 'ማረጋገጫ' : 'Proof'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'መዝጋቢ' : 'Clerk'}</th>
+                  <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+              <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
                 {filteredReceipts.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="p-12 text-center text-slate-700 dark:text-slate-300">
+                    <td colSpan={12} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center space-y-2">
-                        <Icon className="material-symbols-outlined text-[36px] text-slate-500">
+                        <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD]">
                           find_in_page
                         </Icon>
-                        <p className="font-bold text-sm">
+                        <p className="font-semibold text-sm text-[#1C2434] dark:text-white">
                           {isAmharic
                             ? 'ምንም የተመዘገበ የክፍያ ደረሰኝ አልተገኘም።'
                             : 'No payment receipts found matching criteria.'}
@@ -1195,20 +1198,20 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     return (
                       <tr
                         key={rc.id}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                        className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]"
                       >
-                        {/* Index */}
-                        <td className="px-4 py-3 text-center font-mono font-bold text-slate-600 dark:text-slate-400">
+                        {/* 1. Index */}
+                        <td className="py-4 px-3 text-center font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
                           {idx + 1}
                         </td>
 
-                        {/* Receipt Number */}
-                        <td className="px-4 py-3 font-mono font-black text-slate-900 dark:text-white">
+                        {/* 2. Standalone Receipt Number */}
+                        <td className="py-4 px-4 font-mono font-medium text-[#1C2434] dark:text-white whitespace-nowrap">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <button
                               type="button"
                               onClick={() => setReconcileReceipt(rc)}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 font-medium hover:bg-[#3C50E0] hover:text-white transition-colors cursor-pointer text-xs"
                               title={isAmharic ? 'የማስታረቂያ ዝርዝር ክፈት' : 'Open Reconciliation Drawer'}
                             >
                               <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
@@ -1216,7 +1219,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             </button>
                             {rc.verifiedByCheki && (
                               <span
-                                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-400"
+                                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm text-[9px] font-semibold uppercase bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20"
                                 title={`Verified on Bank System via Cheki API (${rc.chekiBank || 'Bank'})`}
                               >
                                 <Icon className="material-symbols-outlined text-[11px]">verified</Icon>
@@ -1226,79 +1229,91 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           </div>
                         </td>
 
-                        {/* Owner & Vehicle Details */}
-                        <td className="px-4 py-3">
-                          <div className="font-black text-slate-950 dark:text-white">{rc.ownerName}</div>
-                          <div className="flex items-center gap-2 text-[11px] text-slate-700 dark:text-slate-300 mt-0.5">
-                            {rc.plateNumber && (
-                              <span className="font-mono font-black bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100">
-                                {rc.plateNumber}
-                              </span>
-                            )}
-                            {rc.phone && <span className="font-mono">{rc.phone}</span>}
-                          </div>
+                        {/* 3. Standalone Owner Name */}
+                        <td className="py-4 px-4">
+                          <span className="font-semibold text-[#1C2434] dark:text-white block truncate max-w-[160px]">
+                            {rc.ownerName}
+                          </span>
                         </td>
 
-                        {/* Payment Date: Primary Ethiopian Calendar */}
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="font-black text-slate-950 dark:text-white text-xs">
+                        {/* 4. Standalone Plate Number */}
+                        <td className="py-4 px-3 whitespace-nowrap">
+                          {rc.plateNumber ? (
+                            <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block shadow-2xs">
+                              {rc.plateNumber}
+                            </span>
+                          ) : (
+                            <span className="text-[#64748B] dark:text-[#8A99AD]">—</span>
+                          )}
+                        </td>
+
+                        {/* 5. Standalone Phone Number */}
+                        <td className="py-4 px-3 font-mono text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
+                          {rc.phone || '—'}
+                        </td>
+
+                        {/* 6. Standalone Payment Date */}
+                        <td className="py-4 px-3 whitespace-nowrap">
+                          <div className="font-medium text-[#1C2434] dark:text-white text-xs">
                             {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
                           </div>
                           {!isAmharic && (
-                            <div className="font-mono text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
+                            <div className="font-mono text-[10px] text-[#64748B] dark:text-[#8A99AD]">
                               GC: {rc.paymentDate}
                             </div>
                           )}
                         </td>
 
-                        {/* Expiration Date: Primary Ethiopian Calendar + Status Badge */}
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="font-mono font-black text-slate-950 dark:text-white text-xs">
+                        {/* 7. Standalone Expiration Date */}
+                        <td className="py-4 px-3 whitespace-nowrap">
+                          <div className="font-mono font-medium text-[#1C2434] dark:text-white text-xs">
                             {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
                           </div>
                           {!isAmharic && (
-                            <div className="font-mono text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
+                            <div className="font-mono text-[10px] text-[#64748B] dark:text-[#8A99AD]">
                               GC: {rc.expirationDate}
                             </div>
                           )}
-                          <div className="mt-1">
-                            {status === 'active' && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-400">
-                                <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
-                                <span>
-                                  {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን ይቀራል' : 'd left'})
-                                </span>
-                              </span>
-                            )}
-                            {status === 'expiring_soon' && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 border border-amber-400">
-                                <Icon className="material-symbols-outlined text-[12px]">alarm</Icon>
-                                <span>
-                                  {isAmharic ? 'ሊያልቅ ነው' : 'Due Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
-                                </span>
-                              </span>
-                            )}
-                            {status === 'expired' && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-black uppercase bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-300 border border-rose-400">
-                                <Icon className="material-symbols-outlined text-[12px]">error</Icon>
-                                <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
-                              </span>
-                            )}
-                          </div>
                         </td>
 
-                        {/* Amount */}
-                        <td className="px-4 py-3 font-black whitespace-nowrap text-slate-950 dark:text-white font-mono">
+                        {/* 8. Standalone Status Badge */}
+                        <td className="py-4 px-4 text-center whitespace-nowrap">
+                          {status === 'active' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 shadow-2xs">
+                              <Icon className="material-symbols-outlined text-[13px]">verified</Icon>
+                              <span>
+                                {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን ይቀራል' : 'd left'})
+                              </span>
+                            </span>
+                          )}
+                          {status === 'expiring_soon' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 shadow-2xs">
+                              <Icon className="material-symbols-outlined text-[13px]">alarm</Icon>
+                              <span>
+                                {isAmharic ? 'ሊያልቅ ነው' : 'Due Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
+                              </span>
+                            </span>
+                          )}
+                          {status === 'expired' && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shadow-2xs">
+                              <Icon className="material-symbols-outlined text-[13px]">error</Icon>
+                              <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
+                            </span>
+                          )}
+                        </td>
+
+                        {/* 9. Standalone Amount */}
+                        <td className="py-4 px-3 font-semibold whitespace-nowrap text-[#1C2434] dark:text-white font-mono">
                           {rc.amount || '500 ETB'}
                         </td>
 
-                        {/* Proof Screenshot Thumbnail */}
-                        <td className="px-4 py-3 text-center">
+                        {/* 10. Standalone Proof Screenshot Thumbnail */}
+                        <td className="py-4 px-3 text-center">
                           {rc.receiptScreenshot ? (
                             <button
                               type="button"
                               onClick={() => setReconcileReceipt(rc)}
-                              className="inline-block relative w-10 h-10 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shadow-2xs hover:scale-105 transition-transform cursor-pointer group bg-black"
+                              className="inline-block relative w-9 h-9 rounded-sm overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs hover:scale-105 transition-transform cursor-pointer group bg-black"
                               title={isAmharic ? 'ስክሪንሾት በትልቅ መጠን ይመልከቱ' : 'View screenshot in drawer'}
                             >
                               <img
@@ -1311,26 +1326,26 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                               </div>
                             </button>
                           ) : (
-                            <span className="text-[10px] text-slate-500 font-bold italic">
+                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">
                               {isAmharic ? 'ምንም ፎቶ የለም' : 'No Proof'}
                             </span>
                           )}
                         </td>
 
-                        {/* Entered By Clerk */}
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="text-[11px] font-mono font-bold text-slate-800 dark:text-slate-200">
+                        {/* 11. Standalone Entered By Clerk */}
+                        <td className="py-4 px-3 whitespace-nowrap">
+                          <span className="text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
                             {rc.enteredBy}
                           </span>
                         </td>
 
-                        {/* Actions: Open Reconciliation Drawer or Delete */}
-                        <td className="px-4 py-3 text-right whitespace-nowrap">
+                        {/* 12. Actions: Open Reconciliation Drawer or Delete */}
+                        <td className="py-4 px-4 text-right whitespace-nowrap">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               type="button"
                               onClick={() => setReconcileReceipt(rc)}
-                              className="px-2.5 py-1 rounded-md bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-black hover:bg-slate-800 dark:hover:bg-white transition-all flex items-center gap-1 cursor-pointer"
+                              className="px-3 py-1.5 rounded-sm bg-[#3C50E0] text-white text-xs font-medium hover:bg-opacity-90 transition-all flex items-center gap-1 cursor-pointer shadow-xs"
                               title={isAmharic ? 'የባንክ ማስታረቂያ' : 'Reconcile Bank Reference'}
                             >
                               <Icon className="material-symbols-outlined text-[15px]">compare_arrows</Icon>
@@ -1339,7 +1354,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             <button
                               type="button"
                               onClick={() => setDeleteConfirmId(rc.id)}
-                              className="p-1.5 rounded-md text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all cursor-pointer"
+                              className="p-1.5 rounded-sm text-[#FB5454] hover:bg-[#FB5454]/10 transition-all cursor-pointer border border-transparent hover:border-[#FB5454]/20"
                               title={isAmharic ? 'ሰርዝ' : 'Delete'}
                             >
                               <Icon className="material-symbols-outlined text-[18px]">delete</Icon>

@@ -247,33 +247,33 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     });
   };
 
-  // Render Status Badge matching Records Page
+  // Render Status Badge matching TailAdmin theme
   const renderStatusBadge = (status?: string) => {
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-2xs">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">check_circle</Icon>
             <span>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-800 shadow-2xs">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">print</Icon>
             <span>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800 shadow-2xs">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">layers</Icon>
             <span>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
         );
       case 'rejected':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-800 shadow-2xs">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">cancel</Icon>
             <span>{isAmharic ? 'ውድቅ' : 'Rejected'}</span>
           </span>
@@ -282,7 +282,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800 shadow-2xs">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
             <span>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
@@ -367,17 +367,22 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* SINGLE UNIFIED TABLE CONTAINER MATCHING RECORDS PAGE STYLE */}
-      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
+      {/* SINGLE UNIFIED TABLE CONTAINER (TAILADMIN DESIGN) */}
+      <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
 
-        {/* CONTAINER SECTION HEADER (MATCHING RECORDS PAGE STYLE) */}
-        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
-          <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">edit_note</Icon>
+        {/* CONTAINER SECTION HEADER (TAILADMIN DESIGN) */}
+        <div className="py-4 px-4 md:px-6 xl:px-7.5 flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-sm bg-[#3C50E0]/10 flex items-center justify-center text-[#3C50E0]">
+              <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
+            </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+              <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
                 {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
               </h3>
+              <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">
+                {isAmharic ? 'የተመዘገቡ የሞተር ብስክሌቶች ማመልከቻዎች ዝርዝር' : 'Review, inspect and update vehicle registration submissions'}
+              </p>
             </div>
           </div>
 
@@ -385,7 +390,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             <button
               type="button"
               onClick={onNavigateToNewRegistration}
-              className="hidden sm:flex px-3.5 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-[#1e293b] font-extrabold text-xs rounded-md shadow-xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+              className="hidden sm:inline-flex items-center justify-center gap-2 rounded-sm bg-[#3C50E0] py-2 px-5 text-center font-medium text-white hover:bg-opacity-90 cursor-pointer text-xs shadow-xs"
             >
               <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
               <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
@@ -393,12 +398,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           )}
         </div>
 
-        {/* SUB-FILTER SLIDE BAR (SEARCH, DATE TOGGLE & STATUS SLIDE PILLS) */}
-        <div className="p-2.5 sm:p-3 bg-slate-50/70 dark:bg-slate-900/60 flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/40 dark:border-slate-800">
+        {/* SUB-FILTER SLIDE BAR (SEARCH, DATE TOGGLE & STATUS SLIDE PILLS - TAILADMIN DESIGN) */}
+        <div className="p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
           {/* Live Search Input */}
-          <div className="relative flex-1 min-w-[180px] max-w-sm">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
-              <Icon className="material-symbols-outlined text-[16px]">search</Icon>
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
             </div>
             <input
               type="text"
@@ -408,13 +413,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 setPage(1);
               }}
               placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chassis...'}
-              className="w-full pl-8 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-2xs"
+              className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-[#3C50E0] active:border-[#3C50E0] dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[15px]">close</Icon>
               </button>
@@ -422,19 +427,19 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
 
           {/* Status & Date Filter Segmented Slide Pills */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-wrap">
             {/* Date Pill Toggle */}
-            <div className="relative inline-flex items-center p-0.5 rounded-full bg-slate-200/70 dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700/90 shadow-inner">
+            <div className="inline-flex items-center p-1 rounded-sm bg-[#E2E8F0] dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47]">
               <button
                 type="button"
                 onClick={() => {
                   setDateFilter('today');
                   setPage(1);
                 }}
-                className={`relative z-10 px-2.5 py-1 rounded-full text-xs font-bold transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer ${
                   dateFilter === 'today'
-                    ? 'bg-white dark:bg-slate-700 text-[#1e293b] dark:text-white shadow-xs font-extrabold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    ? 'bg-[#3C50E0] text-white shadow-xs'
+                    : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                 }`}
               >
                 {isAmharic ? 'የዛሬ ብቻ' : "Today's Only"}
@@ -445,24 +450,24 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   setDateFilter('all');
                   setPage(1);
                 }}
-                className={`relative z-10 px-2.5 py-1 rounded-full text-xs font-bold transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer ${
                   dateFilter === 'all'
-                    ? 'bg-white dark:bg-slate-700 text-[#1e293b] dark:text-white shadow-xs font-extrabold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    ? 'bg-[#3C50E0] text-white shadow-xs'
+                    : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                 }`}
               >
                 {isAmharic ? 'ሁሉንም ቀናት' : 'All Dates'}
               </button>
             </div>
 
-            {/* Status Filter Tabs in Clean Compact Pill Style */}
-            <div className="flex items-center gap-1 flex-wrap shrink-0">
+            {/* Status Filter Tabs in TailAdmin Pill Style */}
+            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
               {[
                 {
                   id: 'all',
                   label: isAmharic ? 'ሁሉም' : 'All',
                   count: dateFilteredRegs.length,
-                  badgeColor: 'bg-surface-container-highest text-secondary',
+                  badgeColor: 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
                 },
                 {
                   id: 'pending_approval',
@@ -470,14 +475,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   count: pendingCount,
                   badgeColor:
                     pendingCount > 0
-                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                      : 'bg-surface-container-highest text-secondary',
+                      ? 'bg-[#F59E0B]/20 text-[#F59E0B]'
+                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
                 },
                 {
                   id: 'approved',
                   label: isAmharic ? 'የፀደቁ' : 'Approved',
                   count: approvedCount,
-                  badgeColor: 'bg-surface-container-highest text-secondary',
+                  badgeColor: 'bg-[#10B981]/20 text-[#10B981]',
                 },
                 {
                   id: 'rejected',
@@ -485,8 +490,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   count: rejectedCount,
                   badgeColor:
                     rejectedCount > 0
-                      ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300'
-                      : 'bg-surface-container-highest text-secondary',
+                      ? 'bg-[#FB5454]/20 text-[#FB5454]'
+                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
                 },
               ].map((tab) => {
                 const isActive = statusFilter === tab.id;
@@ -498,15 +503,15 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setStatusFilter(tab.id);
                       setPage(1);
                     }}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all duration-200 active:scale-105 cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap rounded-sm ${
                       isActive
-                        ? 'bg-primary text-white font-extrabold shadow-2xs'
-                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                        ? 'bg-[#3C50E0] text-white shadow-xs'
+                        : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'
                     }`}
                   >
-                    <span className="tracking-tight">{tab.label}</span>
+                    <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold ${
                         isActive
                           ? 'bg-white/20 text-white'
                           : tab.badgeColor
@@ -529,7 +534,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   setDateFilter('today');
                   setPage(1);
                 }}
-                className="px-2.5 py-1 rounded-full text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-2.5 py-1 rounded-sm text-xs font-medium text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer"
                 title={isAmharic ? 'ማጣሪያዎችን አጽዳ' : 'Reset Filters'}
               >
                 <span>{isAmharic ? 'አጽዳ' : 'Clear'}</span>
@@ -538,32 +543,36 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
         </div>
 
-        {/* --- REGISTRATIONS DATA TABLE --- */}
+        {/* --- REGISTRATIONS DATA TABLE (TAILADMIN DATATABLE DESIGN) --- */}
         <div className="min-h-[500px] flex flex-col justify-between">
           {/* Desktop Data Table (>= md) */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full table-auto text-left border-collapse">
               <thead>
-                <tr className="bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider font-extrabold border-b border-slate-200 dark:border-slate-700">
-                  <th className="px-4 py-3.5 text-center w-12">#</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'የሰሌዳ ቁጥር & አይነት' : 'Plate No & Category'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'ሴሪያል / ቻሲስ ቁጥር' : 'Chassis / Engine Serial'}</th>
-                  <th className="px-4 py-3.5">{isAmharic ? 'ክፍለ ከተማ & ቀን' : 'Sub-City & Date'}</th>
-                  <th className="px-4 py-3.5 text-center">{isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}</th>
-                  <th className="px-4 py-3.5 text-right">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
+                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <th className="py-4 px-3 text-center w-12 font-medium">#</th>
+                  <th className="py-4 px-4 font-medium">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
+                  <th className="py-4 px-4 font-medium">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'አይነት' : 'Category'}</th>
+                  <th className="py-4 px-4 font-medium">{isAmharic ? 'ሴሪያል / ቻሲስ ቁጥር' : 'Chassis / Serial'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
+                  <th className="py-4 px-3 font-medium">{isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}</th>
+                  <th className="py-4 px-4 text-center font-medium">{isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}</th>
+                  <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+              <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
                 {registrations.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-12 text-center text-slate-500 dark:text-slate-400">
+                    <td colSpan={11} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
-                        <Icon className="material-symbols-outlined text-[36px] text-slate-400 dark:text-slate-600">inbox</Icon>
-                        <span className="font-bold text-sm text-slate-700 dark:text-slate-200">
+                        <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD]">inbox</Icon>
+                        <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
                           {isAmharic ? 'ምንም የተመዘገቡ መረጃዎች የሉም' : 'No Vehicle Submissions Found'}
                         </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                        <span className="text-xs text-[#64748B] dark:text-[#8A99AD]">
                           {isAmharic
                             ? 'አዲስ የሞተር ብስክሌት መረጃዎች ሲመዘገቡ በዚህ ሰንጠረዥ ውስጥ ይዘረዘራሉ።'
                             : 'Submissions will appear in this table once registered.'}
@@ -573,10 +582,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   </tr>
                 ) : finalFilteredRegs.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-10 text-center text-slate-500 dark:text-slate-400">
+                    <td colSpan={11} className="py-14 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 py-4">
-                        <Icon className="material-symbols-outlined text-[32px] text-slate-400 dark:text-slate-600">search_off</Icon>
-                        <span className="font-bold text-sm text-slate-700 dark:text-slate-300">
+                        <Icon className="material-symbols-outlined text-[32px] text-[#8A99AD]">search_off</Icon>
+                        <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
                           {isAmharic ? 'ምንም የሚመሳሰል ማመልከቻ አልተገኘም' : 'No matching applications found.'}
                         </span>
                         {dateFilter === 'today' && (
@@ -586,7 +595,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               setDateFilter('all');
                               setPage(1);
                             }}
-                            className="px-3 py-1.5 bg-yellow-500 text-[#1e293b] font-extrabold text-xs rounded-md shadow-xs hover:bg-yellow-400 cursor-pointer"
+                            className="mt-2 px-4 py-2 bg-[#3C50E0] text-white font-medium text-xs rounded-sm hover:bg-opacity-90 cursor-pointer shadow-xs"
                           >
                             {isAmharic ? 'ሁሉንም ቀናት አሳይ' : 'Show All Dates'}
                           </button>
@@ -599,21 +608,21 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     const isExpanded = !!expandedRegs[reg.id];
                     return (
                       <React.Fragment key={reg.id}>
-                        <tr className="h-16 align-middle hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
-                          {/* Index Number & Expand Toggle */}
-                          <td className="px-3 py-2.5 align-middle h-16 text-center font-mono font-bold text-slate-400">
-                            <div className="flex items-center justify-center gap-1">
+                        <tr className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                          {/* 1. Index & Expand */}
+                          <td className="py-4 px-3 text-center align-middle font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
+                            <div className="flex items-center justify-center gap-1.5">
                               <button
                                 type="button"
                                 onClick={() => toggleRegExpand(reg.id)}
-                                className={`w-6 h-6 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
+                                className={`w-6 h-6 rounded-sm flex items-center justify-center transition-colors cursor-pointer ${
                                   isExpanded
-                                    ? 'bg-yellow-500 text-[#1e293b]'
-                                    : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
+                                    ? 'bg-[#3C50E0] text-white shadow-xs'
+                                    : 'text-[#64748B] dark:text-[#8A99AD] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47]'
                                 }`}
                                 title={isExpanded ? (isAmharic ? 'አጣጥፍ' : 'Collapse') : (isAmharic ? 'ሰነዶችን እና ዝርዝር አሳይ' : 'Expand Documents & Details')}
                               >
-                                <Icon className="material-symbols-outlined text-[18px]">
+                                <Icon className="material-symbols-outlined text-[16px]">
                                   {isExpanded ? 'expand_less' : 'expand_more'}
                                 </Icon>
                               </button>
@@ -621,65 +630,84 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             </div>
                           </td>
 
-                          {/* Owner Name */}
-                          <td className="px-4 py-2.5 align-middle h-16">
-                            <div className="min-w-0">
-                              <span className="font-black text-sm text-slate-900 dark:text-white truncate max-w-[200px] block">
-                                {reg.fullName || '—'}
-                              </span>
-                              <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 block truncate">
-                                {reg.phone || '—'}
-                              </span>
-                            </div>
+                          {/* 2. Standalone Owner Name */}
+                          <td className="py-4 px-4 align-middle">
+                            <span className="font-semibold text-xs text-[#1C2434] dark:text-white block truncate max-w-[160px]">
+                              {reg.fullName || '—'}
+                            </span>
                           </td>
 
-                          {/* Plate & Category */}
-                          <td className="px-4 py-2.5 align-middle h-16">
-                            <span className="font-mono font-black text-xs px-2.5 py-1 rounded-md bg-yellow-100 dark:bg-yellow-950/60 text-yellow-900 dark:text-yellow-200 border border-yellow-300/80 inline-block shadow-2xs">
+                          {/* 3. Standalone Phone Number */}
+                          <td className="py-4 px-3 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
+                            {reg.phone || '—'}
+                          </td>
+
+                          {/* 4. Standalone Plate Number */}
+                          <td className="py-4 px-4 align-middle whitespace-nowrap">
+                            <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block shadow-2xs">
                               {reg.plateNumber || '—'}
                             </span>
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                              {reg.motorBrand || ''} {reg.motorModel || ''}
-                            </span>
                           </td>
 
-                          {/* Chassis & Engine */}
-                          <td className="px-4 py-2.5 align-middle h-16 font-mono text-xs text-slate-700 dark:text-slate-300">
-                            <span className="font-semibold">{reg.engineOrSerialNo || '—'}</span>
+                          {/* 5. Standalone Category */}
+                          <td className="py-4 px-3 align-middle text-xs whitespace-nowrap">
+                            {reg.vehicleCategory === 'electric' ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
+                                <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
+                                <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20">
+                                <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
+                                <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
+                              </span>
+                            )}
                           </td>
 
-                          {/* Sub-City & Date */}
-                          <td className="px-4 py-2.5 align-middle h-16">
-                            <span className="font-bold text-slate-900 dark:text-white block">{reg.subCity || '—'}</span>
-                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono block">
-                              {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                            </span>
+                          {/* 6. Standalone Chassis / Serial */}
+                          <td className="py-4 px-4 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] max-w-[140px] truncate" title={reg.engineOrSerialNo || reg.chassisNumber || ''}>
+                            {reg.engineOrSerialNo || reg.chassisNumber || '—'}
                           </td>
 
-                          {/* Status Badge */}
-                          <td className="px-4 py-2.5 align-middle h-16 text-center">
+                          {/* 7. Standalone Brand & Model */}
+                          <td className="py-4 px-3 align-middle text-xs text-[#1C2434] dark:text-white whitespace-nowrap">
+                            {reg.motorBrand || ''} {reg.motorModel || (reg.motorBrand ? '' : '—')}
+                          </td>
+
+                          {/* 8. Standalone Sub-City */}
+                          <td className="py-4 px-3 align-middle text-xs text-[#1C2434] dark:text-white whitespace-nowrap">
+                            {reg.subCity || '—'}
+                          </td>
+
+                          {/* 9. Standalone Registered Date */}
+                          <td className="py-4 px-3 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
+                            {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                          </td>
+
+                          {/* 10. Status Badge */}
+                          <td className="py-4 px-4 align-middle text-center whitespace-nowrap">
                             <div className="inline-flex flex-col items-center gap-1">
                               {renderStatusBadge(reg.status)}
                               {reg.status === 'rejected' && reg.rejectionReason && (
-                                <span className="text-[10px] text-rose-600 dark:text-rose-400 max-w-[140px] truncate" title={reg.rejectionReason}>
+                                <span className="text-[10px] text-[#FB5454] max-w-[120px] truncate" title={reg.rejectionReason}>
                                   {reg.rejectionReason}
                                 </span>
                               )}
                             </div>
                           </td>
 
-                          {/* Actions (Edit & Inspect) */}
-                          <td className="px-4 py-2.5 align-middle h-16 text-right">
+                          {/* 11. Actions */}
+                          <td className="py-4 px-4 align-middle text-right whitespace-nowrap">
                             <div className="flex items-center justify-end gap-1.5">
                               {/* Hide edit button for approved/printed records */}
                               {reg.status !== 'approved' && reg.status !== 'printed' && reg.status !== 'ordered_print' && (
                                 <button
                                   type="button"
                                   onClick={() => handleOpenEdit(reg)}
-                                  className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-slate-800 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 dark:text-blue-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                                  className="px-2.5 py-1.5 bg-[#3C50E0]/10 hover:bg-[#3C50E0] text-[#3C50E0] hover:text-white rounded-sm text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer"
                                   title={isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit application'}
                                 >
-                                  <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
+                                  <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
                                   <span>{isAmharic ? 'አስተካክል' : 'Edit'}</span>
                                 </button>
                               )}
@@ -688,7 +716,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                 <button
                                   type="button"
                                   onClick={() => setInspectReg(reg)}
-                                  className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                                  className="p-1.5 text-[#64748B] hover:text-[#3C50E0] hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] rounded-sm transition-colors cursor-pointer border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#2E3A47]"
                                   title={isAmharic ? 'ፈቃድ እይ' : 'Inspect permit card'}
                                 >
                                   <Icon className="material-symbols-outlined text-[18px]">badge</Icon>
@@ -698,10 +726,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               <button
                                 type="button"
                                 onClick={() => toggleRegExpand(reg.id)}
-                                className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                                className={`p-1.5 rounded-sm transition-colors cursor-pointer ${
                                   isExpanded
-                                    ? 'bg-yellow-500 text-[#1e293b] shadow-2xs'
-                                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                    ? 'bg-[#3C50E0] text-white shadow-xs'
+                                    : 'border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD]'
                                 }`}
                                 title={isExpanded ? (isAmharic ? 'ሰነዶችን ደብቅ' : 'Hide Documents') : (isAmharic ? 'ሰነዶችን ዘርጋ' : 'Expand Documents')}
                               >
@@ -715,8 +743,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                         {/* Desktop Collapsible Attached Documents Sub-row */}
                         {isExpanded && (
-                          <tr className="bg-slate-50/90 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-700">
-                            <td colSpan={7} className="px-6 py-3.5">
+                          <tr className="bg-[#F7F9FC]/80 dark:bg-[#24303F]/60 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                            <td colSpan={11} className="px-6 py-4">
                               <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                   <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -949,52 +977,54 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             )}
           </div>
 
-          {/* PAGINATION BAR (MATCHING RECORDS PAGE STYLE) */}
+          {/* PAGINATION BAR (TAILADMIN DESIGN) */}
           {totalPages > 1 && (
-            <div className="p-3 sm:p-4 bg-slate-50/70 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
-              <div className="flex items-center gap-2">
-                <span>{isAmharic ? 'በአንድ ገጽ:' : 'Per Page:'}</span>
+            <div className="bg-white dark:bg-[#1C2434] px-4 sm:px-6 py-4 flex flex-row items-center justify-between gap-3 text-xs text-[#64748B] dark:text-[#8A99AD] border-t border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="font-medium text-[#1C2434] dark:text-white">{isAmharic ? 'በአንድ ገጽ:' : 'Rows per page:'}</span>
                 <select
                   value={pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));
                     setPage(1);
                   }}
-                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-700 dark:text-slate-300 font-bold focus:outline-none"
+                  className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-[#3C50E0] focus:outline-none cursor-pointer"
                 >
                   <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={20}>20</option>
                   <option value={50}>50</option>
                 </select>
-                <span>
+                <span className="hidden sm:inline font-medium text-[#64748B] dark:text-[#8A99AD]">
                   {isAmharic
-                    ? `ከ ${totalRegs} ውስጥ ${startIndex + 1} - ${Math.min(startIndex + pageSize, totalRegs)}`
-                    : `Showing ${startIndex + 1} - ${Math.min(startIndex + pageSize, totalRegs)} of ${totalRegs}`}
+                    ? `${startIndex + 1}-${Math.min(startIndex + pageSize, totalRegs)} ከ ${totalRegs} መዝገቦች`
+                    : `Showing ${startIndex + 1}–${Math.min(startIndex + pageSize, totalRegs)} of ${totalRegs} entries`}
                 </span>
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
                   disabled={activePage <= 1}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
                 >
-                  {isAmharic ? 'ቀዳሚ' : 'Previous'}
+                  <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
+                  <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
                 </button>
 
-                <div className="px-2 font-bold text-slate-700 dark:text-slate-200">
+                <span className="px-3 py-1.5 bg-[#3C50E0] text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
                   {activePage} / {totalPages}
-                </div>
+                </span>
 
                 <button
                   type="button"
                   onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                   disabled={activePage >= totalPages}
-                  className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
                 >
-                  {isAmharic ? 'ቀጣይ' : 'Next'}
+                  <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
+                  <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
                 </button>
               </div>
             </div>

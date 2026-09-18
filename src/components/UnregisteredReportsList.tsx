@@ -108,21 +108,21 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
     switch (status) {
       case 'resolved':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 shadow-2xs whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">check_circle</Icon>
             <span>{isAmharic ? 'ተፈቷል' : 'Resolved'}</span>
           </span>
         );
       case 'registered':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-800 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 shadow-2xs whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">how_to_reg</Icon>
             <span>{isAmharic ? 'ተመዝግቧል' : 'Registered'}</span>
           </span>
         );
       case 'under_investigation':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 shadow-2xs whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">search</Icon>
             <span>{isAmharic ? 'በምርመራ' : 'Investigating'}</span>
           </span>
@@ -130,7 +130,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wide bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 shadow-2xs whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">report_problem</Icon>
             <span>{isAmharic ? 'አዲስ' : 'Pending'}</span>
           </span>
@@ -140,14 +140,16 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
   return (
     <div className="space-y-4">
-      {/* SINGLE UNIFIED CONTAINER (MATCHING TABLES PAGE PATTERN) */}
-      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
-        {/* CONTAINER SECTION HEADER */}
-        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
+      {/* SINGLE UNIFIED CONTAINER (TAILADMIN DESIGN) */}
+      <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
+        {/* CONTAINER SECTION HEADER (TAILADMIN DESIGN) */}
+        <div className="p-4 md:px-6 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
           <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-[22px] text-red-600 dark:text-red-400 shrink-0">no_drinks</Icon>
+            <div className="w-9 h-9 rounded-sm bg-[#FB5454]/10 text-[#FB5454] flex items-center justify-center border border-[#FB5454]/20 shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">no_drinks</Icon>
+            </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+              <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
                 {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
               </h3>
             </div>
@@ -157,7 +159,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             <button
               type="button"
               onClick={onNewReportClick}
-              className="hidden sm:flex px-3.5 py-1.5 rounded-md bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-2xs items-center gap-1.5 shrink-0 cursor-pointer active:scale-95"
+              className="hidden sm:flex px-4 py-2 rounded-sm bg-[#3C50E0] hover:bg-opacity-90 text-white text-xs font-medium transition-all shadow-xs items-center gap-1.5 shrink-0 cursor-pointer"
             >
               <Icon className="material-symbols-outlined text-[16px]">add_alert</Icon>
               <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>
@@ -165,11 +167,11 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
           )}
         </div>
 
-        {/* Sub-Filter Toolbar Container */}
-        <div className="p-2.5 sm:p-3 bg-slate-50/70 dark:bg-slate-900/60 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 w-full max-w-full overflow-hidden border-b border-outline-variant/40 dark:border-slate-800">
+        {/* Sub-Filter Toolbar Container (TailAdmin Design) */}
+        <div className="p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 w-full max-w-full overflow-hidden border-b border-[#E2E8F0] dark:border-[#2E3A47]">
           {/* Live Search Input */}
           <div className="relative w-full lg:w-auto lg:flex-1 min-w-0 max-w-full lg:max-w-md">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-secondary">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
               <Icon className="material-symbols-outlined text-[18px]">search</Icon>
             </div>
             <input
@@ -184,7 +186,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ፣ ኦፊሰር ወይም መታወቂያ ፈልግ...'
                   : 'Search plate, driver, location, officer, ID...'
               }
-              className="w-full pl-9 pr-8 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-xs font-semibold text-on-surface placeholder-secondary focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20 shadow-2xs"
+              className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-[#3C50E0] active:border-[#3C50E0] dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
             />
             {searchTerm && (
               <button
@@ -193,52 +195,41 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   setSearchTerm('');
                   setCurrentPage(1);
                 }}
-                className="absolute inset-y-0 right-2.5 flex items-center text-secondary hover:text-on-surface cursor-pointer"
+                className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[16px]">close</Icon>
               </button>
             )}
           </div>
 
-          {/* Status Filter Tabs in Clean Compact Pill Style & Sub-City Dropdown */}
+          {/* Status Filter Tabs & Sub-City Dropdown */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto max-w-full shrink-0">
-            <div className="flex items-center gap-1 flex-wrap shrink-0">
+            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
               {[
                 {
                   id: 'all' as const,
                   label: isAmharic ? 'ሁሉም' : 'All',
                   count: unregisteredReports.length,
-                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'pending' as const,
                   label: isAmharic ? 'አዲስ' : 'Pending',
                   count: pendingCount,
-                  badgeColor:
-                    pendingCount > 0
-                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-                      : 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'under_investigation' as const,
                   label: isAmharic ? 'በምርመራ' : 'Investigation',
                   count: investigationCount,
-                  badgeColor:
-                    investigationCount > 0
-                      ? 'bg-blue-500/20 text-slate-800 dark:text-blue-300'
-                      : 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'resolved' as const,
                   label: isAmharic ? 'የተፈታ' : 'Resolved',
                   count: resolvedCount,
-                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
                 {
                   id: 'registered' as const,
                   label: isAmharic ? 'የተመዘገበ' : 'Registered',
                   count: registeredCount,
-                  badgeColor: 'bg-surface-container-highest text-secondary',
                 },
               ].map((tab) => {
                 const isActive = statusFilter === tab.id;
@@ -250,18 +241,18 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       setStatusFilter(tab.id);
                       setCurrentPage(1);
                     }}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all duration-200 active:scale-105 cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
                       isActive
-                        ? 'bg-primary text-white font-extrabold shadow-2xs'
-                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                        ? 'bg-[#3C50E0] text-white shadow-xs'
+                        : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'
                     }`}
                   >
-                    <span className="tracking-tight">{tab.label}</span>
+                    <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold ${
                         isActive
                           ? 'bg-white/20 text-white'
-                          : tab.badgeColor
+                          : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >
                       {tab.count}
@@ -278,7 +269,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                 setSubCityFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-3 py-1.5 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs font-bold outline-none cursor-pointer"
+              className="py-1.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs focus:border-[#3C50E0] outline-none cursor-pointer"
             >
               <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
               {BAHIR_DAR_SUBCITIES.map((sc) => (
@@ -298,7 +289,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   setSubCityFilter('all');
                   setCurrentPage(1);
                 }}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-2.5 py-1.5 rounded-sm text-xs font-medium text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20"
               >
                 <Icon className="material-symbols-outlined text-[16px]">restart_alt</Icon>
                 <span>{isAmharic ? 'አጽዳ' : 'Reset'}</span>
@@ -310,12 +301,12 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
         {/* Reports Data Table & Card Container */}
         <div>
         {filteredReports.length === 0 ? (
-          <div className="p-12 text-center text-secondary space-y-3">
-            <Icon className="material-symbols-outlined text-[48px] text-outline">report_off</Icon>
-            <p className="font-black text-sm text-on-surface">
+          <div className="p-16 text-center text-[#64748B] dark:text-[#8A99AD] space-y-3">
+            <Icon className="material-symbols-outlined text-[48px] text-[#8A99AD]">report_off</Icon>
+            <p className="font-semibold text-sm text-[#1C2434] dark:text-white">
               {isAmharic ? 'ምንም ያልተመዘገቡ ተሽከርካሪ ሪፖርቶች አልተገኙም' : 'No unregistered vehicle reports found.'}
             </p>
-            <p className="text-xs text-secondary max-w-sm mx-auto">
+            <p className="text-xs text-[#64748B] dark:text-[#8A99AD] max-w-sm mx-auto">
               {isAmharic
                 ? 'በቀረቡት ማጣሪያዎች መሠረት ምንም ሪፖርት አልተገኘም። እባክዎን ማጣሪያዎቹን ይቀይሩ።'
                 : 'No incident reports match your current search criteria or status filters.'}
@@ -323,33 +314,38 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
           </div>
         ) : (
           <>
-            {/* Desktop Data Table */}
+            {/* Desktop Data Table (TailAdmin Design with Standalone Columns) */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+              <table className="w-full table-auto text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-surface-container-low border-b border-outline-variant text-secondary font-black uppercase tracking-wider text-[10px]">
-                    <th className="px-4 py-3.5 text-center w-12">#</th>
-                    <th className="px-4 py-3.5">{isAmharic ? 'ፎቶ' : 'Photo'}</th>
-                    <th className="px-4 py-3.5">{isAmharic ? 'መታወቂያ / ቀን' : 'Report ID / Date'}</th>
-                    <th className="px-4 py-3.5">{isAmharic ? 'የሰሌዳ / አሽከርካሪ' : 'Plate & Driver'}</th>
-                    <th className="px-4 py-3.5">{isAmharic ? 'ቦታ & ክፍለ ከተማ' : 'Location & Sub-City'}</th>
-                    <th className="px-4 py-3.5">{isAmharic ? 'ኦፊሰር' : 'Reporting Officer'}</th>
-                    <th className="px-4 py-3.5 text-center">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                    <th className="px-4 py-3.5 text-right">{isAmharic ? 'ተግባር' : 'Actions'}</th>
+                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <th className="py-4 px-3 text-center w-12 font-medium">#</th>
+                    <th className="py-4 px-3 text-center font-medium">{isAmharic ? 'ፎቶ' : 'Photo'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የሪፖርት #' : 'Report ID'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የተዘገበበት ቀን' : 'Reported Date'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
+                    <th className="py-4 px-4 font-medium">{isAmharic ? 'አሽከርካሪ / ተጠርጣሪ' : 'Driver / Suspect'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'ዝርዝር ቦታ' : 'Location'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የኦፊሰር ባጅ' : 'Officer Badge'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የኦፊሰር ስም' : 'Officer Name'}</th>
+                    <th className="py-4 px-3 text-center font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                    <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'ተግባር' : 'Actions'}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant">
+                <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
                   {paginatedReports.map((rep, idx) => (
-                    <tr key={rep.id} className="hover:bg-surface-container-low/60 transition-colors">
-                      <td className="px-4 py-3.5 text-center font-mono font-bold text-secondary text-[11px]">
+                    <tr key={rep.id} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                      {/* 1. Standalone Index */}
+                      <td className="py-4 px-3 text-center font-mono font-medium text-[#64748B] dark:text-[#8A99AD] text-xs">
                         {startIndex + idx + 1}
                       </td>
 
-                      {/* Evidence Photo */}
-                      <td className="px-4 py-3.5">
+                      {/* 2. Standalone Evidence Photo */}
+                      <td className="py-4 px-3 text-center">
                         <div
                           onClick={() => rep.evidencePhoto && setZoomedImage({ url: rep.evidencePhoto, title: rep.id })}
-                          className="w-10 h-10 rounded-lg overflow-hidden border border-outline-variant bg-surface-container shrink-0 cursor-pointer group relative shadow-2xs"
+                          className="w-10 h-10 rounded-sm overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shrink-0 cursor-pointer group relative shadow-2xs mx-auto"
                         >
                           <SmartImage
                             src={rep.evidencePhoto}
@@ -360,41 +356,68 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         </div>
                       </td>
 
-                      {/* Report ID & Date */}
-                      <td className="px-4 py-3.5 font-mono">
-                        <p className="font-bold text-amber-700 dark:text-amber-400">{rep.id}</p>
-                        <p className="text-[10px] text-secondary">{rep.reportedAt ? formatEthiopianDateTime(rep.reportedAt, isAmharic ? 'am' : 'en') : '—'}</p>
+                      {/* 3. Standalone Report ID */}
+                      <td className="py-4 px-3 font-mono font-medium text-[#3C50E0] whitespace-nowrap">
+                        {rep.id}
                       </td>
 
-                      {/* Plate & Driver Info */}
-                      <td className="px-4 py-3.5">
-                        <p className="font-mono font-black text-on-surface">{rep.plateNumber || '[ሰሌዳ የለውም]'}</p>
-                        <p className="text-[11px] text-secondary font-medium">
-                          {rep.driverName ? `${rep.driverName} ${rep.driverPhone ? `(${rep.driverPhone})` : ''}` : '—'}
-                        </p>
+                      {/* 4. Standalone Reported Date */}
+                      <td className="py-4 px-3 whitespace-nowrap text-xs text-[#1C2434] dark:text-white">
+                        {rep.reportedAt ? formatEthiopianDateTime(rep.reportedAt, isAmharic ? 'am' : 'en') : '—'}
                       </td>
 
-                      {/* Sub-City & Location */}
-                      <td className="px-4 py-3.5">
-                        <p className="font-bold text-on-surface">{rep.subCity}</p>
-                        <p className="text-[10px] text-secondary truncate max-w-[150px]">{rep.locationName}</p>
+                      {/* 5. Standalone Plate Number */}
+                      <td className="py-4 px-3 whitespace-nowrap">
+                        {rep.plateNumber ? (
+                          <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block shadow-2xs">
+                            {rep.plateNumber}
+                          </span>
+                        ) : (
+                          <span className="text-[#FB5454] font-medium text-xs">[ሰሌዳ የለውም]</span>
+                        )}
                       </td>
 
-                      {/* Officer Badge */}
-                      <td className="px-4 py-3.5 font-mono text-secondary">
-                        <p className="font-bold text-xs text-on-surface">{rep.officerBadgeId}</p>
-                        <p className="text-[10px] truncate max-w-[110px]">{rep.officerName || 'Patrol Officer'}</p>
+                      {/* 6. Standalone Driver / Suspect */}
+                      <td className="py-4 px-4">
+                        <div className="font-semibold text-[#1C2434] dark:text-white">
+                          {rep.driverName || '—'}
+                        </div>
+                        {rep.driverPhone && (
+                          <div className="text-[11px] font-mono text-[#64748B] dark:text-[#8A99AD]">
+                            {rep.driverPhone}
+                          </div>
+                        )}
                       </td>
 
-                      {/* Status */}
-                      <td className="px-4 py-3.5 text-center">{getStatusBadge(rep.status)}</td>
+                      {/* 7. Standalone Sub-City */}
+                      <td className="py-4 px-3 whitespace-nowrap font-medium text-[#1C2434] dark:text-white">
+                        {rep.subCity}
+                      </td>
 
-                      {/* Actions */}
-                      <td className="px-4 py-3.5 text-right">
+                      {/* 8. Standalone Location */}
+                      <td className="py-4 px-3 text-xs text-[#64748B] dark:text-[#8A99AD] max-w-[140px] truncate">
+                        {rep.locationName}
+                      </td>
+
+                      {/* 9. Standalone Officer Badge */}
+                      <td className="py-4 px-3 font-mono font-medium text-xs text-[#1C2434] dark:text-white whitespace-nowrap">
+                        {rep.officerBadgeId}
+                      </td>
+
+                      {/* 10. Standalone Officer Name */}
+                      <td className="py-4 px-3 text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
+                        {rep.officerName || 'Patrol Officer'}
+                      </td>
+
+                      {/* 11. Standalone Status */}
+                      <td className="py-4 px-3 text-center whitespace-nowrap">{getStatusBadge(rep.status)}</td>
+
+                      {/* 12. Standalone Actions */}
+                      <td className="py-4 px-4 text-right whitespace-nowrap">
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3 py-1.5 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer shadow-2xs inline-flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-sm bg-[#3C50E0] hover:bg-opacity-90 text-white text-xs font-medium transition-all cursor-pointer shadow-xs inline-flex items-center gap-1"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ዝርዝር' : 'View Details'}</span>
@@ -480,27 +503,27 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
               })}
             </div>
 
-            {/* Pagination Controls Bar */}
-            <div className="bg-surface-container-low/50 border-t border-outline-variant px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-secondary font-medium">
+            {/* Pagination Controls Bar (TailAdmin Design) */}
+            <div className="bg-white dark:bg-[#1C2434] px-4 sm:px-6 py-4 flex flex-row items-center justify-between gap-3 text-xs text-[#64748B] dark:text-[#8A99AD] border-t border-[#E2E8F0] dark:border-[#2E3A47]">
               <div className="flex items-center gap-2">
-                <span>{isAmharic ? 'በአንድ ገጽ:' : 'Per page:'}</span>
+                <span className="font-medium text-[#1C2434] dark:text-white">{isAmharic ? 'በአንድ ገጽ:' : 'Rows per page:'}</span>
                 <select
                   value={pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="px-2 py-1 bg-surface border border-outline-variant rounded-md text-xs font-bold text-on-surface outline-none cursor-pointer"
+                  className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-[#3C50E0] outline-none cursor-pointer"
                 >
                   <option value={5}>5</option>
                   <option value={10}>10</option>
                   <option value={20}>20</option>
                   <option value={50}>50</option>
                 </select>
-                <span>
+                <span className="hidden sm:inline font-medium text-[#64748B] dark:text-[#8A99AD]">
                   {isAmharic
                     ? `${startIndex + 1}-${Math.min(startIndex + pageSize, totalItems)} ከ ${totalItems} መዝገቦች`
-                    : `Showing ${startIndex + 1}-${Math.min(startIndex + pageSize, totalItems)} of ${totalItems} entries`}
+                    : `Showing ${startIndex + 1}–${Math.min(startIndex + pageSize, totalItems)} of ${totalItems} entries`}
                 </span>
               </div>
 
@@ -509,13 +532,13 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   type="button"
                   disabled={activePage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className="px-2.5 py-1 bg-surface hover:bg-surface-container border border-outline-variant rounded-lg disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
-                  <span>{isAmharic ? 'ቀዳሚ' : 'Prev'}</span>
+                  <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
                 </button>
 
-                <span className="px-2 font-bold font-mono text-on-surface">
+                <span className="px-3 py-1.5 bg-[#3C50E0] text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
                   {activePage} / {totalPages}
                 </span>
 
@@ -523,7 +546,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   type="button"
                   disabled={activePage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className="px-2.5 py-1 bg-surface hover:bg-surface-container border border-outline-variant rounded-lg disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
                 >
                   <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
                   <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>

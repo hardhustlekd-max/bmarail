@@ -878,69 +878,75 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </div>
               </div>
 
-              {/* Users Responsive Table & Mobile Cards */}
-              <div className="rounded-lg border border-outline-variant/80 overflow-hidden">
+              {/* Users Responsive Table & Mobile Cards (TailAdmin Design) */}
+              <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
                 {/* Desktop View Table */}
                 <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full table-auto text-left border-collapse">
                     <thead>
-                      <tr className="bg-surface-container text-on-surface-variant text-[11px] font-black uppercase tracking-wider border-b border-outline-variant">
-                        <th className="p-3.5 pl-4">{isAmharic ? 'ተጠቃሚ' : 'User Details'}</th>
-                        <th className="p-3.5">{isAmharic ? 'የመታወቂያ ቁጥር' : 'Badge ID'}</th>
-                        <th className="p-3.5">{isAmharic ? 'ሚና' : 'Role'}</th>
-                        <th className="p-3.5">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
-                        <th className="p-3.5">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                        <th className="p-3.5 text-right pr-4">{isAmharic ? 'ተግባራት' : 'Actions'}</th>
+                      <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                        <th className="py-4 px-4 font-medium">{isAmharic ? 'ተጠቃሚ' : 'User'}</th>
+                        <th className="py-4 px-4 font-medium">{isAmharic ? 'የኢሜል አድራሻ' : 'Email Address'}</th>
+                        <th className="py-4 px-3 font-medium">{isAmharic ? 'የመታወቂያ ቁጥር' : 'Badge ID'}</th>
+                        <th className="py-4 px-3 font-medium">{isAmharic ? 'ሚና' : 'Role'}</th>
+                        <th className="py-4 px-3 font-medium">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
+                        <th className="py-4 px-3 font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                        <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'ተግባራት' : 'Actions'}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-outline-variant/60 text-xs font-semibold">
+                    <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs font-medium">
                       {filteredUsers.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="text-center p-8 text-outline">
+                          <td colSpan={7} className="text-center py-12 px-4 text-[#64748B] dark:text-[#8A99AD]">
                             <Icon className="material-symbols-outlined text-4xl block mb-2 opacity-40">person_off</Icon>
                             {isAmharic ? 'ምንም ተጠቃሚ አልተገኘም' : 'No users matching criteria'}
                           </td>
                         </tr>
                       ) : (
                         filteredUsers.map((user) => (
-                          <tr key={user.uid} className="hover:bg-surface-container/50 transition-colors">
-                            <td className="p-3.5 pl-4">
+                          <tr key={user.uid} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                            {/* Standalone User Name & Avatar */}
+                            <td className="py-4 px-4">
                               <div className="flex items-center gap-3">
                                 <div
-                                  className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-xs text-white shrink-0 shadow-2xs ${
+                                  className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-2xs ${
                                     user.role === 'superadmin'
                                       ? 'bg-purple-600'
                                       : user.role === 'admin'
-                                      ? 'bg-slate-700'
+                                      ? 'bg-[#3C50E0]'
                                       : user.role === 'officer'
-                                      ? 'bg-amber-600'
-                                      : 'bg-emerald-600'
+                                      ? 'bg-[#F59E0B]'
+                                      : 'bg-[#10B981]'
                                   }`}
                                 >
                                   {(user.fullName || 'U').charAt(0).toUpperCase()}
                                 </div>
-                                <div>
-                                  <div className="font-extrabold text-on-surface">{user.fullName}</div>
-                                  <div className="text-[11px] text-outline font-normal">{user.email}</div>
-                                </div>
+                                <div className="font-semibold text-[#1C2434] dark:text-white">{user.fullName}</div>
                               </div>
                             </td>
 
-                            <td className="p-3.5 font-mono font-bold text-on-surface">{user.badgeId}</td>
+                            {/* Standalone Email Address */}
+                            <td className="py-4 px-4 font-mono text-xs text-[#64748B] dark:text-[#8A99AD]">
+                              {user.email}
+                            </td>
 
-                            <td className="p-3.5">
+                            {/* Standalone Badge ID */}
+                            <td className="py-4 px-3 font-mono font-medium text-[#1C2434] dark:text-white">{user.badgeId}</td>
+
+                            {/* Standalone Role */}
+                            <td className="py-4 px-3 whitespace-nowrap">
                               <span
-                                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${
                                   user.role === 'superadmin'
-                                    ? 'bg-purple-100 text-purple-800 border border-purple-300'
+                                    ? 'bg-purple-500/10 text-purple-600 border border-purple-500/20'
                                     : user.role === 'admin'
-                                    ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                                    ? 'bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20'
                                     : user.role === 'officer'
-                                    ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                    : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                    ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
+                                    : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
                                 }`}
                               >
-                                <Icon className="material-symbols-outlined text-[12px]">
+                                <Icon className="material-symbols-outlined text-[13px]">
                                   {user.role === 'superadmin'
                                     ? 'verified_user'
                                     : user.role === 'admin'
@@ -953,14 +959,16 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               </span>
                             </td>
 
-                            <td className="p-3.5 text-on-surface-variant">{user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ'}</td>
+                            {/* Standalone Sub-City */}
+                            <td className="py-4 px-3 text-[#64748B] dark:text-[#8A99AD]">{user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ'}</td>
 
-                            <td className="p-3.5">
+                            {/* Standalone Status */}
+                            <td className="py-4 px-3 whitespace-nowrap">
                               <span
-                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold ${
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                                   user.status === 'disabled'
-                                    ? 'bg-red-100 text-red-800 border border-red-200'
-                                    : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                    ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
+                                    : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
                                 }`}
                               >
                                 <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
@@ -974,12 +982,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               </span>
                             </td>
 
-                            <td className="p-3.5 text-right pr-4">
+                            {/* Standalone Actions */}
+                            <td className="py-4 px-4 text-right whitespace-nowrap">
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
                                   onClick={() => setEditingUser(user)}
                                   title={isAmharic ? 'አስተካክል' : 'Edit User'}
-                                  className="p-1.5 hover:bg-surface-container rounded-lg text-outline hover:text-on-surface transition-colors cursor-pointer"
+                                  className="p-1.5 hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] rounded-sm text-[#64748B] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer"
                                 >
                                   <Icon className="material-symbols-outlined text-[18px]">edit</Icon>
                                 </button>
@@ -995,8 +1004,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                       ? 'አካውንት እገድ'
                                       : 'Disable Account'
                                   }
-                                  className={`p-1.5 hover:bg-surface-container rounded-lg transition-colors cursor-pointer ${
-                                    user.status === 'disabled' ? 'text-emerald-600' : 'text-amber-600'
+                                  className={`p-1.5 rounded-sm transition-colors cursor-pointer ${
+                                    user.status === 'disabled'
+                                      ? 'text-[#10B981] hover:bg-[#10B981]/10'
+                                      : 'text-[#F59E0B] hover:bg-[#F59E0B]/10'
                                   }`}
                                 >
                                   <Icon className="material-symbols-outlined text-[18px]">
@@ -1008,7 +1019,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                   <button
                                     onClick={() => setDeletingUser(user)}
                                     title={isAmharic ? 'ሰርዝ' : 'Delete User'}
-                                    className="p-1.5 hover:bg-red-50 rounded-lg text-red-600 transition-colors cursor-pointer"
+                                    className="p-1.5 hover:bg-[#FB5454]/10 rounded-sm text-[#FB5454] transition-colors cursor-pointer"
                                   >
                                     <Icon className="material-symbols-outlined text-[18px]">delete</Icon>
                                   </button>
@@ -1391,51 +1402,72 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </div>
           </div>
 
-          {/* Real-Time Audit Log Table */}
-          <div className="rounded-lg border border-outline-variant/80 overflow-hidden">
-            <div className="p-4 border-b border-outline-variant flex items-center justify-between">
-              <h3 className="font-extrabold text-sm text-on-surface flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[18px] text-purple-600">history</Icon>
+          {/* Real-Time Audit Log Table (TailAdmin Design) */}
+          <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
+            <div className="p-4 md:px-6 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between">
+              <h3 className="font-semibold text-sm text-[#1C2434] dark:text-white flex items-center gap-2">
+                <Icon className="material-symbols-outlined text-[18px] text-[#3C50E0]">history</Icon>
                 {isAmharic ? 'የሲስተም ኦዲት ታሪክ (System Audit Logs)' : 'System Audit Trail'}
               </h3>
-              <span className="text-xs text-outline font-mono">{auditLogs.length} Records</span>
+              <span className="text-xs text-[#64748B] dark:text-[#8A99AD] font-mono">{auditLogs.length} Records</span>
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
+              <table className="w-full table-auto text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-surface-container text-on-surface-variant font-black uppercase tracking-wider border-b border-outline-variant text-[10px]">
-                    <th className="p-3 pl-4">{isAmharic ? 'ጊዜ' : 'Timestamp'}</th>
-                    <th className="p-3">{isAmharic ? 'ፈጻሚ' : 'Actor'}</th>
-                    <th className="p-3">{isAmharic ? 'ተግባር' : 'Action'}</th>
-                    <th className="p-3">{isAmharic ? 'ዝርዝር መረጃ' : 'Details'}</th>
-                    <th className="p-3 pr-4">{isAmharic ? 'ስጋት ደረጃ' : 'Severity'}</th>
+                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <th className="py-4 px-4 font-medium">{isAmharic ? 'ጊዜ' : 'Timestamp'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የፈጻሚ መታወቂያ' : 'Actor Badge ID'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የፈጻሚ ሚና' : 'Actor Role'}</th>
+                    <th className="py-4 px-3 font-medium">{isAmharic ? 'ተግባር' : 'Action'}</th>
+                    <th className="py-4 px-4 font-medium">{isAmharic ? 'ዝርዝር መረጃ' : 'Details'}</th>
+                    <th className="py-4 px-4 font-medium">{isAmharic ? 'ስጋት ደረጃ' : 'Severity'}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/60 font-semibold">
+                <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] font-medium">
                   {auditLogs.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="text-center p-8 text-outline">
+                      <td colSpan={6} className="text-center py-12 px-4 text-[#64748B] dark:text-[#8A99AD]">
                         {isAmharic ? 'ምንም የኦዲት ማህደር አልተመዘገበም' : 'No audit records logged yet.'}
                       </td>
                     </tr>
                   ) : (
                     auditLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-surface-container/50 transition-colors">
-                        <td className="p-3 pl-4 font-mono text-[11px] text-outline">
+                      <tr key={log.id} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                        {/* Standalone Timestamp */}
+                        <td className="py-4 px-4 font-mono text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
                           {formatEthiopianDateTime(log.timestamp, isAmharic ? 'am' : 'en')}
                         </td>
-                        <td className="p-3 font-mono font-bold text-on-surface">{log.actorBadgeId}</td>
-                        <td className="p-3 font-mono font-extrabold text-purple-700">{log.action}</td>
-                        <td className="p-3 text-on-surface">{log.details}</td>
-                        <td className="p-3 pr-4">
+
+                        {/* Standalone Actor Badge */}
+                        <td className="py-4 px-3 font-mono font-medium text-[#1C2434] dark:text-white whitespace-nowrap">
+                          {log.actorBadgeId}
+                        </td>
+
+                        {/* Standalone Actor Role */}
+                        <td className="py-4 px-3 text-[#64748B] dark:text-[#8A99AD] capitalize whitespace-nowrap">
+                          {log.actorRole || 'system'}
+                        </td>
+
+                        {/* Standalone Action */}
+                        <td className="py-4 px-3 whitespace-nowrap">
+                          <span className="px-2.5 py-1 bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 rounded-sm font-mono text-xs font-medium inline-block">
+                            {log.action}
+                          </span>
+                        </td>
+
+                        {/* Standalone Details */}
+                        <td className="py-4 px-4 text-[#1C2434] dark:text-white max-w-sm">{log.details}</td>
+
+                        {/* Standalone Severity */}
+                        <td className="py-4 px-4 whitespace-nowrap">
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium uppercase ${
                               log.severity === 'critical'
-                                ? 'bg-red-100 text-red-800'
+                                ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-blue-100 text-blue-800'
+                                ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
+                                : 'bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20'
                             }`}
                           >
                             {log.severity}
@@ -1727,19 +1759,20 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </div>
             </div>
 
-            {/* Audit Logs Table */}
-            <div className="border border-outline-variant rounded-md overflow-x-auto max-h-80 overflow-y-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-surface-container sticky top-0 z-10 border-b border-outline-variant">
+            {/* Audit Logs Table (TailAdmin Design) */}
+            <div className="rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] overflow-x-auto max-h-96 overflow-y-auto">
+              <table className="w-full table-auto text-left text-xs border-collapse">
+                <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white uppercase font-semibold sticky top-0 z-10 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                   <tr>
-                    <th className="p-2.5 font-extrabold text-on-surface">{isAmharic ? 'ቀንና ሰዓት' : 'Timestamp'}</th>
-                    <th className="p-2.5 font-extrabold text-on-surface">{isAmharic ? 'ፈጻሚ (Actor)' : 'Actor'}</th>
-                    <th className="p-2.5 font-extrabold text-on-surface">{isAmharic ? 'ድርጊት (Action)' : 'Action'}</th>
-                    <th className="p-2.5 font-extrabold text-on-surface">{isAmharic ? 'ደረጃ (Severity)' : 'Severity'}</th>
-                    <th className="p-2.5 font-extrabold text-on-surface">{isAmharic ? 'ዝርዝር መግለጫ' : 'Details'}</th>
+                    <th className="py-3.5 px-4 font-medium">{isAmharic ? 'ቀንና ሰዓት' : 'Timestamp'}</th>
+                    <th className="py-3.5 px-3 font-medium">{isAmharic ? 'የፈጻሚ መታወቂያ' : 'Actor Badge'}</th>
+                    <th className="py-3.5 px-3 font-medium">{isAmharic ? 'የፈጻሚ ሚና' : 'Actor Role'}</th>
+                    <th className="py-3.5 px-3 font-medium">{isAmharic ? 'ድርጊት' : 'Action'}</th>
+                    <th className="py-3.5 px-3 font-medium">{isAmharic ? 'ደረጃ' : 'Severity'}</th>
+                    <th className="py-3.5 px-4 font-medium">{isAmharic ? 'ዝርዝር መግለጫ' : 'Details'}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-outline-variant/50 font-medium">
+                <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] font-medium">
                   {auditLogs
                     .filter((log) => {
                       if (auditSeverityFilter !== 'all' && (log.severity || 'info') !== auditSeverityFilter) {
@@ -1755,39 +1788,55 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     })
                     .slice(0, auditViewLimit)
                     .map((log) => (
-                      <tr key={log.id} className="hover:bg-surface-container/60 transition-colors">
-                        <td className="p-2.5 text-outline text-[11px] whitespace-nowrap">
+                      <tr key={log.id} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                        {/* Standalone Timestamp */}
+                        <td className="py-3.5 px-4 text-[#64748B] dark:text-[#8A99AD] text-xs font-mono whitespace-nowrap">
                           {formatEthiopianDateTime(log.timestamp, currentLang)}
                         </td>
-                        <td className="p-2.5 font-mono font-bold text-on-surface whitespace-nowrap">
-                          {log.actorBadgeId} <span className="text-[10px] text-outline font-sans">({log.actorRole})</span>
+
+                        {/* Standalone Actor Badge */}
+                        <td className="py-3.5 px-3 font-mono font-medium text-[#1C2434] dark:text-white whitespace-nowrap">
+                          {log.actorBadgeId}
                         </td>
-                        <td className="p-2.5 font-bold text-on-surface whitespace-nowrap">
-                          <span className="px-2 py-0.5 bg-surface-container rounded-sm border border-outline-variant/60 font-mono text-[10px]">
+
+                        {/* Standalone Actor Role */}
+                        <td className="py-3.5 px-3 text-[#64748B] dark:text-[#8A99AD] capitalize whitespace-nowrap">
+                          <span className="px-2 py-0.5 rounded-sm bg-[#E2E8F0] dark:bg-[#2E3A47] text-[11px] font-medium">
+                            {log.actorRole}
+                          </span>
+                        </td>
+
+                        {/* Standalone Action */}
+                        <td className="py-3.5 px-3 whitespace-nowrap">
+                          <span className="px-2.5 py-1 bg-[#3C50E0]/10 text-[#3C50E0] rounded-sm border border-[#3C50E0]/20 font-mono text-xs font-medium">
                             {log.action}
                           </span>
                         </td>
-                        <td className="p-2.5 whitespace-nowrap">
+
+                        {/* Standalone Severity */}
+                        <td className="py-3.5 px-3 whitespace-nowrap">
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase inline-block ${
                               log.severity === 'critical'
-                                ? 'bg-red-100 text-red-800 border border-red-300'
+                                ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'
-                                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                                : 'bg-blue-100 text-blue-800 border border-blue-300'
+                                ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
+                                : 'bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20'
                             }`}
                           >
                             {log.severity || 'info'}
                           </span>
                         </td>
-                        <td className="p-2.5 text-on-surface text-[11px] max-w-xs truncate" title={log.details}>
+
+                        {/* Standalone Details */}
+                        <td className="py-3.5 px-4 text-[#1C2434] dark:text-white text-xs max-w-sm truncate" title={log.details}>
                           {log.details}
                         </td>
                       </tr>
                     ))}
                   {auditLogs.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-xs text-outline font-medium">
+                      <td colSpan={6} className="py-12 px-4 text-center text-xs text-[#64748B] dark:text-[#8A99AD] font-medium">
                         {isAmharic ? 'ምንም የኦዲት ማህደር አልተገኘም' : 'No audit trail logs recorded yet.'}
                       </td>
                     </tr>
