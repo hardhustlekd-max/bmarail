@@ -108,21 +108,21 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
     switch (status) {
       case 'resolved':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">check_circle</Icon>
             <span>{isAmharic ? 'ተፈቷል' : 'Resolved'}</span>
           </span>
         );
       case 'registered':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">how_to_reg</Icon>
             <span>{isAmharic ? 'ተመዝግቧል' : 'Registered'}</span>
           </span>
         );
       case 'under_investigation':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">search</Icon>
             <span>{isAmharic ? 'በምርመራ' : 'Investigating'}</span>
           </span>
@@ -130,7 +130,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">report_problem</Icon>
             <span>{isAmharic ? 'አዲስ' : 'Pending'}</span>
           </span>

@@ -936,7 +936,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             {/* Standalone Role */}
                             <td className="py-4 px-3 whitespace-nowrap">
                               <span
-                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium uppercase tracking-wider ${
                                   user.role === 'superadmin'
                                     ? 'bg-purple-500/10 text-purple-600 border border-purple-500/20'
                                     : user.role === 'admin'
@@ -965,7 +965,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             {/* Standalone Status */}
                             <td className="py-4 px-3 whitespace-nowrap">
                               <span
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium ${
                                   user.status === 'disabled'
                                     ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                     : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
@@ -1462,7 +1462,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         {/* Standalone Severity */}
                         <td className="py-4 px-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium uppercase ${
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium uppercase ${
                               log.severity === 'critical'
                                 ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'
@@ -1816,7 +1816,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         {/* Standalone Severity */}
                         <td className="py-3.5 px-3 whitespace-nowrap">
                           <span
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase inline-block ${
+                            className={`px-2.5 py-1 rounded-sm text-xs font-medium uppercase inline-block ${
                               log.severity === 'critical'
                                 ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'

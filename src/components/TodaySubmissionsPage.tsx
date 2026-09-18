@@ -254,28 +254,28 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">check_circle</Icon>
             <span>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">print</Icon>
             <span>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">layers</Icon>
             <span>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
         );
       case 'rejected':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">cancel</Icon>
             <span>{isAmharic ? 'ውድቅ' : 'Rejected'}</span>
           </span>
@@ -284,7 +284,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
             <span>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
@@ -647,7 +647,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                           {/* 4. Standalone Plate Number */}
                           <td className="py-4 px-4 align-middle whitespace-nowrap">
-                            <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block shadow-2xs">
+                            <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block">
                               {reg.plateNumber || '—'}
                             </span>
                           </td>
@@ -655,12 +655,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                           {/* 5. Standalone Category */}
                           <td className="py-4 px-3 align-middle text-xs whitespace-nowrap">
                             {reg.vehicleCategory === 'electric' ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
                                 <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
                                 <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20">
                                 <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
                                 <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
                               </span>

@@ -114,21 +114,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 shadow-2xs" title={isAmharic ? 'የተፈቀደ' : 'Approved'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20" title={isAmharic ? 'የተፈቀደ' : 'Approved'}>
             <Icon className="material-symbols-outlined text-[13px] shrink-0">check_circle</Icon>
             <span className={textClass}>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 shadow-2xs" title={isAmharic ? 'የታተመ' : 'Printed'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20" title={isAmharic ? 'የታተመ' : 'Printed'}>
             <Icon className="material-symbols-outlined text-[13px] shrink-0">print</Icon>
             <span className={textClass}>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20 shadow-2xs" title={isAmharic ? 'በሕትመት' : 'In Print'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20" title={isAmharic ? 'በሕትመት' : 'In Print'}>
             <Icon className="material-symbols-outlined text-[13px] shrink-0">layers</Icon>
             <span className={textClass}>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
@@ -136,7 +136,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'rejected':
       case 'expired':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shadow-2xs" title={status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20" title={status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}>
             <Icon className="material-symbols-outlined text-[13px] shrink-0">cancel</Icon>
             <span className={textClass}>{status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}</span>
           </span>
@@ -145,7 +145,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 shadow-2xs" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
             <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
             <span className={textClass}>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
@@ -689,12 +689,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               {/* Standalone Column 4: Vehicle Category (Fuel / EV) */}
                               <td className="px-4 py-3 align-middle h-16 whitespace-nowrap">
                                 {reg.vehicleCategory === 'electric' ? (
-                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
                                     <Icon className="material-symbols-outlined text-[12px]">electric_bolt</Icon>
                                     <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20">
+                                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20">
                                     <Icon className="material-symbols-outlined text-[12px]">local_gas_station</Icon>
                                     <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
                                   </span>
@@ -1574,7 +1574,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <span>{isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}</span>
                     </h4>
                     <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${compliance.badgeClass}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-bold ${compliance.badgeClass}`}>
                         <Icon className="material-symbols-outlined text-[13px]">
                           {compliance.status === 'active' ? 'check_circle' : compliance.status === 'expiring_soon' ? 'alarm' : 'cancel'}
                         </Icon>
@@ -1665,7 +1665,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     <td className="px-3 py-2.5 font-mono text-[#1C2434] dark:text-white">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</td>
                                     <td className="px-3 py-2.5 font-bold text-[#1C2434] dark:text-white">{rc.amount ? `${rc.amount} ETB` : '—'}</td>
                                     <td className="px-3 py-2.5">
-                                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                                      <span className={`px-2 py-0.5 text-xs font-medium rounded-sm ${
                                         rcStatus.status === 'active'
                                           ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
                                           : rcStatus.status === 'expiring_soon'

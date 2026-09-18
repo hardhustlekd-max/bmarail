@@ -1279,7 +1279,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         {/* 8. Standalone Status Badge */}
                         <td className="py-4 px-4 text-center whitespace-nowrap">
                           {status === 'active' && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 shadow-2xs">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
                               <Icon className="material-symbols-outlined text-[13px]">verified</Icon>
                               <span>
                                 {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን ይቀራል' : 'd left'})
@@ -1287,7 +1287,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             </span>
                           )}
                           {status === 'expiring_soon' && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20 shadow-2xs">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20">
                               <Icon className="material-symbols-outlined text-[13px]">alarm</Icon>
                               <span>
                                 {isAmharic ? 'ሊያልቅ ነው' : 'Due Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
@@ -1295,7 +1295,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             </span>
                           )}
                           {status === 'expired' && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shadow-2xs">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20">
                               <Icon className="material-symbols-outlined text-[13px]">error</Icon>
                               <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
                             </span>
