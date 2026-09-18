@@ -696,72 +696,97 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             </div>
                           </td>
 
-                          {/* 11. Actions */}
+                          {/* 11. Actions Column: Clean Expand / Action Trigger */}
                           <td className="py-4 px-4 align-middle text-right whitespace-nowrap">
-                            <div className="flex items-center justify-end gap-1.5">
-                              {/* Hide edit button for approved/printed records */}
-                              {reg.status !== 'approved' && reg.status !== 'printed' && reg.status !== 'ordered_print' && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenEdit(reg)}
-                                  className="px-2.5 py-1.5 bg-[#3C50E0]/10 hover:bg-[#3C50E0] text-[#3C50E0] hover:text-white rounded-sm text-xs font-medium transition-colors flex items-center gap-1 cursor-pointer"
-                                  title={isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit application'}
-                                >
-                                  <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
-                                  <span>{isAmharic ? 'አስተካክል' : 'Edit'}</span>
-                                </button>
-                              )}
-
-                              {userRole !== 'clerk' && (
-                                <button
-                                  type="button"
-                                  onClick={() => setInspectReg(reg)}
-                                  className="p-1.5 text-[#64748B] hover:text-[#3C50E0] hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] rounded-sm transition-colors cursor-pointer border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#2E3A47]"
-                                  title={isAmharic ? 'ፈቃድ እይ' : 'Inspect permit card'}
-                                >
-                                  <Icon className="material-symbols-outlined text-[18px]">badge</Icon>
-                                </button>
-                              )}
-
-                              <button
-                                type="button"
-                                onClick={() => toggleRegExpand(reg.id)}
-                                className={`p-1.5 rounded-sm transition-colors cursor-pointer ${
-                                  isExpanded
-                                    ? 'bg-[#3C50E0] text-white shadow-xs'
-                                    : 'border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD]'
-                                }`}
-                                title={isExpanded ? (isAmharic ? 'ሰነዶችን ደብቅ' : 'Hide Documents') : (isAmharic ? 'ሰነዶችን ዘርጋ' : 'Expand Documents')}
-                              >
-                                <Icon className="material-symbols-outlined text-[18px]">
-                                  {isExpanded ? 'expand_less' : 'expand_more'}
-                                </Icon>
-                              </button>
-                            </div>
+                            <button
+                              type="button"
+                              onClick={() => toggleRegExpand(reg.id)}
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer ${
+                                isExpanded
+                                  ? 'bg-[#3C50E0] text-white shadow-xs'
+                                  : 'border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0]'
+                              }`}
+                              title={isExpanded ? (isAmharic ? 'ተግባራትን እና ሰነዶችን ዝጋ' : 'Close Actions & Documents') : (isAmharic ? 'ተግባራትን እና ሰነዶችን ዘርጋ' : 'Expand Actions & Documents')}
+                            >
+                              <span>{isExpanded ? (isAmharic ? 'ዝጋ' : 'Close') : (isAmharic ? 'ተግባራት' : 'Actions')}</span>
+                              <Icon className="material-symbols-outlined text-[16px]">
+                                {isExpanded ? 'expand_less' : 'expand_more'}
+                              </Icon>
+                            </button>
                           </td>
                         </tr>
 
-                        {/* Desktop Collapsible Attached Documents Sub-row */}
+                        {/* Desktop Collapsible Sub-row: Action Buttons & Attached Documents */}
                         {isExpanded && (
-                          <tr className="bg-[#F7F9FC]/80 dark:bg-[#24303F]/60 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                          <tr className="bg-[#F7F9FC]/90 dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                             <td colSpan={11} className="px-6 py-4">
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                                    <Icon className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">photo_library</Icon>
-                                    <span>{isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ተጫን):' : 'Attached Documents (Click to Zoom):'}</span>
-                                  </span>
-                                  {userRole !== 'clerk' && (
-                                    <button
-                                      type="button"
-                                      onClick={() => setInspectReg(reg)}
-                                      className="text-xs font-extrabold text-slate-700 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
-                                    >
-                                      <span>{isAmharic ? 'ሙሉ ፈቃድ መርምር' : 'Inspect Full Permit'}</span>
-                                      <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
-                                    </button>
-                                  )}
+                              <div className="space-y-4">
+                                {/* Action Buttons Toolbar (TailAdmin Style) */}
+                                <div className="p-3.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-xs flex flex-wrap items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] flex items-center justify-center border border-[#3C50E0]/20 shrink-0">
+                                      <Icon className="material-symbols-outlined text-[18px]">touch_app</Icon>
+                                    </div>
+                                    <div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-semibold text-xs text-[#1C2434] dark:text-white uppercase tracking-wider">
+                                          {isAmharic ? 'የተግባር አዝራሮች (Action Buttons)' : 'Action Buttons'}
+                                        </span>
+                                        {renderStatusBadge(reg.status)}
+                                      </div>
+                                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                                        {reg.fullName || '—'} • {reg.plateNumber || reg.chassisNumber || reg.id}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    {/* Edit Button (if not approved/printed/ordered_print) */}
+                                    {reg.status !== 'approved' && reg.status !== 'printed' && reg.status !== 'ordered_print' && (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleOpenEdit(reg)}
+                                        className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                        title={isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit application'}
+                                      >
+                                        <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
+                                        <span>{isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit Application'}</span>
+                                      </button>
+                                    )}
+
+                                    {/* Inspect Permit Card */}
+                                    {userRole !== 'clerk' && (
+                                      <button
+                                        type="button"
+                                        onClick={() => setInspectReg(reg)}
+                                        className="px-3 py-1.5 bg-[#3C50E0] hover:bg-opacity-90 text-white font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                                        title={isAmharic ? 'ፈቃድ እይ' : 'Inspect permit card'}
+                                      >
+                                        <Icon className="material-symbols-outlined text-[16px]">badge</Icon>
+                                        <span>{isAmharic ? 'ፈቃድ መርምር' : 'Inspect Permit'}</span>
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
+
+                                {/* Attached Documents Gallery */}
+                                <div className="space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                                      <Icon className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">photo_library</Icon>
+                                      <span>{isAmharic ? 'የተያያዙ ሰነዶች (ለማጉላት ተጫን):' : 'Attached Documents (Click to Zoom):'}</span>
+                                    </span>
+                                    {userRole !== 'clerk' && (
+                                      <button
+                                        type="button"
+                                        onClick={() => setInspectReg(reg)}
+                                        className="text-xs font-extrabold text-slate-700 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+                                      >
+                                        <span>{isAmharic ? 'ሙሉ ፈቃድ መርምር' : 'Inspect Full Permit'}</span>
+                                        <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
+                                      </button>
+                                    )}
+                                  </div>
 
                                 {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto) ? (
                                   <div className="flex items-center gap-3 overflow-x-auto pb-1">
@@ -829,6 +854,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                 ) : (
                                   <p className="text-xs text-slate-400 italic">{isAmharic ? 'ምንም የተያያዘ ሰነድ የለም' : 'No attached documents uploaded.'}</p>
                                 )}
+                              </div>
                               </div>
                             </td>
                           </tr>
