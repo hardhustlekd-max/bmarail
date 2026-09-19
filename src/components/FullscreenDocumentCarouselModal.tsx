@@ -431,7 +431,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             className="h-8 sm:h-9 px-2 sm:px-2.5 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1 transition-all cursor-pointer border border-white/10"
           >
             <span>{Math.round(scale * 100)}%</span>
-            {scale !== 1 && <Icon className="material-symbols-outlined text-[14px]">refresh</Icon>}
+            {scale !== 1 && <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>}
           </button>
 
           {/* Zoom In */}

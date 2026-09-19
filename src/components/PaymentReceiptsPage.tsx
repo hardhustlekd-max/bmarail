@@ -545,91 +545,91 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {canViewKPIs && (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
           {/* Total Revenue */}
-          <div className="bg-slate-50 dark:bg-slate-900/30 p-3.5 rounded-xl shadow-xs">
+          <div className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold uppercase text-slate-700 dark:text-slate-300 tracking-wider">
-                {isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
-              </span>
               <Icon className="material-symbols-outlined text-slate-900 dark:text-slate-100 text-[20px]">
                 payments
               </Icon>
+              <span className="text-[11px] font-extrabold uppercase text-slate-700 dark:text-slate-300 tracking-wider">
+                {isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
+              </span>
             </div>
-            <div className="mt-1.5 flex items-baseline gap-1">
+            <div className="mt-1.5 text-center">
               <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.totalRevenue.toLocaleString()}
               </span>
-              <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300">ETB</span>
+              <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300 ml-1">ETB</span>
             </div>
-            <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">
+            <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 block text-center">
               {metrics.totalReceipts} {isAmharic ? 'የተመዘገቡ ደረሰኞች' : 'receipts recorded'}
             </span>
           </div>
 
           {/* Active / Current */}
-          <div className="bg-emerald-50 dark:bg-emerald-900/30 p-3.5 rounded-xl shadow-xs">
+          <div className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 tracking-wider">
-                {isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
-              </span>
               <Icon className="material-symbols-outlined text-emerald-700 dark:text-emerald-400 text-[20px]">
                 check_circle
               </Icon>
+              <span className="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 tracking-wider">
+                {isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
+              </span>
             </div>
-            <div className="mt-1.5 flex items-baseline gap-1">
+            <div className="mt-1.5 text-center">
               <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.activeCount}
               </span>
-              <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-400">
+              <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-400 ml-1">
                 {isAmharic ? 'ባለቤቶች' : 'owners'}
               </span>
             </div>
-            <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 mt-0.5 block">
+            <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 mt-0.5 block text-center">
               {isAmharic ? 'የ1 ወር ክፍያቸው ያልተጠናቀቀ' : 'Payment term up to date'}
             </span>
           </div>
 
           {/* Expiring Soon (DUE) */}
-          <div className="bg-amber-50 dark:bg-amber-900/30 p-3.5 rounded-xl shadow-xs">
+          <div className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold uppercase text-amber-800 dark:text-amber-300 tracking-wider">
-                {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
-              </span>
               <Icon className="material-symbols-outlined text-amber-700 dark:text-amber-400 text-[20px]">
                 alarm
               </Icon>
+              <span className="text-[11px] font-extrabold uppercase text-amber-800 dark:text-amber-300 tracking-wider">
+                {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
+              </span>
             </div>
-            <div className="mt-1.5 flex items-baseline gap-1">
+            <div className="mt-1.5 text-center">
               <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.expiringCount}
               </span>
-              <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-400">
+              <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-400 ml-1">
                 {isAmharic ? 'ባለቤቶች' : 'owners'}
               </span>
             </div>
-            <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400 mt-0.5 block">
+            <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400 mt-0.5 block text-center">
               {isAmharic ? 'በ 7 ቀናት ውስጥ የሚያልቅ' : 'Expires within 7 days'}
             </span>
           </div>
 
           {/* Delinquent / Expired */}
-          <div className="bg-rose-50 dark:bg-rose-900/30 p-3.5 rounded-xl shadow-xs">
+          <div className="p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-extrabold uppercase text-rose-800 dark:text-rose-300 tracking-wider">
-                {isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}
-              </span>
               <Icon className="material-symbols-outlined text-rose-700 dark:text-rose-400 text-[20px]">
                 error
               </Icon>
+              <span className="text-[11px] font-extrabold uppercase text-rose-800 dark:text-rose-300 tracking-wider">
+                {isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}
+              </span>
             </div>
-            <div className="mt-1.5 flex items-baseline gap-1">
+            <div className="mt-1.5 text-center">
               <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
                 {metrics.expiredCount}
               </span>
-              <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-400">
+              <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-400 ml-1">
                 {isAmharic ? 'ባለቤቶች' : 'owners'}
               </span>
             </div>
-            <span className="text-[10px] font-bold text-rose-800 dark:text-rose-400 mt-0.5 block">
+            <span className="text-[10px] font-bold text-rose-800 dark:text-rose-400 mt-0.5 block text-center">
               {isAmharic ? 'ክፍያ ያልፈፀሙ / ዕዳ ያለባቸው' : 'Overdue terms requiring renewal'}
             </span>
           </div>
@@ -1211,7 +1211,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             <button
                               type="button"
                               onClick={() => setReconcileReceipt(rc)}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 font-medium hover:bg-[#3C50E0] hover:text-white transition-colors cursor-pointer text-xs"
+                              className="inline-flex items-center gap-1.5 font-bold text-[#3C50E0] hover:underline cursor-pointer text-xs"
                               title={isAmharic ? 'የማስታረቂያ ዝርዝር ክፈት' : 'Open Reconciliation Drawer'}
                             >
                               <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
@@ -1219,10 +1219,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             </button>
                             {rc.verifiedByCheki && (
                               <span
-                                className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm text-[9px] font-semibold uppercase bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20"
+                                className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-[#10B981]"
                                 title={`Verified on Bank System via Cheki API (${rc.chekiBank || 'Bank'})`}
                               >
-                                <Icon className="material-symbols-outlined text-[11px]">verified</Icon>
+                                <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
                                 <span>Cheki</span>
                               </span>
                             )}
@@ -1239,7 +1239,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         {/* 4. Standalone Plate Number */}
                         <td className="py-4 px-3 whitespace-nowrap">
                           {rc.plateNumber ? (
-                            <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block shadow-2xs">
+                            <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white">
                               {rc.plateNumber}
                             </span>
                           ) : (
@@ -1279,24 +1279,24 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         {/* 8. Standalone Status Badge */}
                         <td className="py-4 px-4 text-center whitespace-nowrap">
                           {status === 'active' && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
-                              <Icon className="material-symbols-outlined text-[13px]">verified</Icon>
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
+                              <Icon className="material-symbols-outlined text-[14px]">verified</Icon>
                               <span>
                                 {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን ይቀራል' : 'd left'})
                               </span>
                             </span>
                           )}
                           {status === 'expiring_soon' && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20">
-                              <Icon className="material-symbols-outlined text-[13px]">alarm</Icon>
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]">
+                              <Icon className="material-symbols-outlined text-[14px]">alarm</Icon>
                               <span>
                                 {isAmharic ? 'ሊያልቅ ነው' : 'Due Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
                               </span>
                             </span>
                           )}
                           {status === 'expired' && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20">
-                              <Icon className="material-symbols-outlined text-[13px]">error</Icon>
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#FB5454]">
+                              <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                               <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
                             </span>
                           )}
@@ -1390,16 +1390,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     {/* Top Header Row: Receipt # & Status Badge */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-mono font-black text-xs">
+                        <span className="inline-flex items-center gap-1 font-mono font-bold text-xs text-[#3C50E0]">
                           <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
                           <span>{rc.receiptNumber}</span>
                         </span>
                         {rc.verifiedByCheki && (
                           <span
-                            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-400"
+                            className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-[#10B981]"
                             title={`Verified on Bank System via Cheki (${rc.chekiBank || 'Bank'})`}
                           >
-                            <Icon className="material-symbols-outlined text-[10px]">verified</Icon>
+                            <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
                             <span>Cheki</span>
                           </span>
                         )}
@@ -1407,24 +1407,24 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
                       <div>
                         {status === 'active' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-400">
-                            <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
+                            <Icon className="material-symbols-outlined text-[13px]">verified</Icon>
                             <span>
                               {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
                             </span>
                           </span>
                         )}
                         {status === 'expiring_soon' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-400">
-                            <Icon className="material-symbols-outlined text-[12px]">alarm</Icon>
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]">
+                            <Icon className="material-symbols-outlined text-[13px]">alarm</Icon>
                             <span>
                               {isAmharic ? 'ሊያልቅ ነው' : 'Due Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
                             </span>
                           </span>
                         )}
                         {status === 'expired' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-400">
-                            <Icon className="material-symbols-outlined text-[12px]">error</Icon>
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#FB5454]">
+                            <Icon className="material-symbols-outlined text-[13px]">error</Icon>
                             <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
                           </span>
                         )}
@@ -1438,7 +1438,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       </h4>
                       <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 mt-0.5">
                         {rc.plateNumber && (
-                          <span className="font-mono font-black bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100">
+                          <span className="font-mono font-bold text-slate-900 dark:text-white">
                             {rc.plateNumber}
                           </span>
                         )}

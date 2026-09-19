@@ -556,7 +556,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       case 'manager':
         return (
           <div className="w-11 h-11 rounded-full bg-[#1E293B] border-2 border-slate-600 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
-            <Icon className="material-symbols-outlined text-[26px] text-amber-400">person_filled</Icon>
+            <Icon className="material-symbols-outlined text-[26px] text-amber-400">assignment_ind</Icon>
           </div>
         );
       case 'it':

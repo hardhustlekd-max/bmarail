@@ -730,8 +730,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[22px] sm:text-[24px] shrink-0">
               {activeTab === 'users' && 'manage_accounts'}
               {activeTab === 'subcities' && 'location_city'}
-              {activeTab === 'permits' && 'verified'}
-              {activeTab === 'maintenance' && 'database'}
+              {activeTab === 'permits' && 'workspace_premium'}
+              {activeTab === 'maintenance' && 'storage'}
             </Icon>
             <h2 className="text-xs sm:text-base font-black text-on-surface truncate">
               {activeTab === 'users' && (isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions')}

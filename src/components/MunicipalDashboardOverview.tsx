@@ -250,7 +250,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             key: 'new_registration',
             title: isAmharic ? 'አዲስ ምዝገባ' : 'New Registration',
             subtitle: isAmharic ? 'የባለቤትና ሞተር ቅጽ' : 'Register Motor & Owner',
-            icon: 'how_to_reg',
+            icon: 'app_registration',
             badge: isAmharic ? 'ቅጽ' : 'Form',
             iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
           });
@@ -356,7 +356,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               key: 'unregistered_list',
               title: isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry',
               subtitle: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'incidents logged'}`,
-              icon: 'no_drinks',
+              icon: 'policy',
               badge: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'Reports'}`,
               iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
             },
@@ -492,29 +492,29 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Total Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:shadow-md active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-slate-700">
+              <div className="flex items-center justify-between gap-1.5 text-slate-700 dark:text-blue-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">group</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-slate-700">
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">group</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{users.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{users.length}</p>
             </div>
 
             {/* Super Admins & Admins */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:shadow-md active:scale-105 active:bg-purple-600/20 dark:active:bg-purple-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <div className="flex justify-between items-center text-purple-600 dark:text-purple-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-purple-600">
+              <div className="flex items-center justify-between gap-1.5 text-purple-600 dark:text-purple-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">shield_person</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-purple-600">
                   {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">shield_person</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                 {users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length}
               </p>
             </div>
@@ -522,15 +522,15 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Blocked Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:shadow-md active:scale-105 active:bg-rose-600/20 dark:active:bg-rose-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <div className="flex justify-between items-center text-rose-600 dark:text-rose-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-rose-600">
+              <div className="flex items-center justify-between gap-1.5 text-rose-600 dark:text-rose-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">person_off</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-rose-600">
                   {isAmharic ? 'የታገዱ' : 'Blocked'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">person_off</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                 {users.filter((u) => u.status === 'disabled').length}
               </p>
             </div>
@@ -538,29 +538,29 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Registrations Total */}
             <div
               onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:shadow-md active:scale-105 active:bg-teal-600/20 dark:active:bg-teal-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <div className="flex justify-between items-center text-teal-600 dark:text-teal-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-teal-600">
+              <div className="flex items-center justify-between gap-1.5 text-teal-600 dark:text-teal-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">two_wheeler</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-teal-600">
                   {isAmharic ? 'ፈቃዶች' : 'Permits'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">two_wheeler</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{registrations.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{registrations.length}</p>
             </div>
 
             {/* Pending Approvals */}
             <div
               onClick={() => onQuickAction && onQuickAction('pending_approvals')}
-              className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:shadow-md active:scale-105 active:bg-amber-600/20 dark:active:bg-amber-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <div className="flex justify-between items-center text-amber-600 dark:text-amber-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-amber-600">
+              <div className="flex items-center justify-between gap-1.5 text-amber-600 dark:text-amber-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">pending_actions</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-amber-600">
                   {isAmharic ? 'የሚጠብቁ' : 'Pending'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">pending_actions</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                 {registrations.filter((r) => r.status === 'pending_approval').length}
               </p>
             </div>
@@ -568,15 +568,15 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* System Security Score */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:shadow-md active:scale-105 active:bg-emerald-600/20 dark:active:bg-emerald-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-emerald-600">
+              <div className="flex items-center justify-between gap-1.5 text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">security</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-emerald-600">
                   {isAmharic ? 'ደህንነት' : 'Security'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">security</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">99.9%</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">99.9%</p>
             </div>
           </div>
         </div>
@@ -630,54 +630,54 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
             <button
               onClick={() => onQuickAction && onQuickAction('view_submissions')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:shadow-md active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-slate-700 dark:text-blue-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">folder_open</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'ጠቅላላ የቀረቡ' : 'Submitted'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">folder_open</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{registrations.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{registrations.length}</p>
             </button>
 
             <button
               onClick={() => onQuickAction && onQuickAction('kpi_pending')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:shadow-md active:scale-105 active:bg-amber-600/20 dark:active:bg-amber-500/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30 min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30 min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-amber-600 dark:text-amber-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-amber-600 dark:text-amber-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">pending</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'የሚጠበቁ' : 'Review'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">pending</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{pendingCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{pendingCount}</p>
             </button>
 
             <button
               onClick={() => onQuickAction && onQuickAction('kpi_approved')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:shadow-md active:scale-105 active:bg-emerald-600/20 dark:active:bg-emerald-500/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'የጸደቁ' : 'Approved'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{approvedCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
             </button>
 
             <button
               onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:shadow-md active:scale-105 active:bg-rose-600/20 dark:active:bg-rose-500/30 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-500/30 min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-500/30 min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-rose-600 dark:text-rose-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-rose-600 dark:text-rose-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">cancel</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'ውድቅ' : 'Rejected'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">cancel</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{illegalVehiclesCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
             </button>
           </div>
         </div>
@@ -704,29 +704,29 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 {/* Total Receipts */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:shadow-md active:scale-105 active:bg-slate-700/20 dark:active:bg-blue-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
-                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-slate-700">
+                  <div className="flex items-center justify-between gap-1.5 text-slate-700 dark:text-blue-400 mb-1 sm:mb-1.5">
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">receipt</Icon>
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-slate-700">
                       {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
                     </span>
-                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">receipt</Icon>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{paymentMetrics.total}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{paymentMetrics.total}</p>
                 </div>
 
                 {/* Active Valid (1 month) */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:shadow-md active:scale-105 active:bg-emerald-600/20 dark:active:bg-emerald-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 mb-1">
-                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-emerald-600">
+                  <div className="flex items-center justify-between gap-1.5 text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-1.5">
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">verified</Icon>
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-emerald-600">
                       {isAmharic ? 'ትክክለኛ' : 'Valid'}
                     </span>
-                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">verified</Icon>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                     {paymentMetrics.activeCount}
                   </p>
                 </div>
@@ -734,15 +734,15 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 {/* Expiring Soon */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:shadow-md active:scale-105 active:bg-amber-600/20 dark:active:bg-amber-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <div className="flex justify-between items-center text-amber-600 dark:text-amber-400 mb-1">
-                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-amber-600">
+                  <div className="flex items-center justify-between gap-1.5 text-amber-600 dark:text-amber-400 mb-1 sm:mb-1.5">
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">alarm</Icon>
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-amber-600">
                       {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring'}
                     </span>
-                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">alarm</Icon>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                     {paymentMetrics.expiringSoonCount}
                   </p>
                 </div>
@@ -750,15 +750,15 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 {/* Expired */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:shadow-md active:scale-105 active:bg-rose-600/20 dark:active:bg-rose-500/30 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <div className="flex justify-between items-center text-rose-600 dark:text-rose-400 mb-1">
-                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-rose-600">
+                  <div className="flex items-center justify-between gap-1.5 text-rose-600 dark:text-rose-400 mb-1 sm:mb-1.5">
+                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">cancel</Icon>
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-rose-600">
                       {isAmharic ? 'ያለፈበት' : 'Expired'}
                     </span>
-                    <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">cancel</Icon>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                     {paymentMetrics.expiredCount}
                   </p>
                 </div>
@@ -804,57 +804,57 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
               >
-                <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+                <div className="flex items-center justify-between gap-1.5 text-slate-700 dark:text-blue-400 mb-1 sm:mb-1.5">
+                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                     {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                   </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
                 </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{totalLogsCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
               >
-                <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+                <div className="flex items-center justify-between gap-1.5 text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-1.5">
+                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">two_wheeler</Icon>
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                     {isAmharic ? 'የፀደቁ' : 'Valid'}
                   </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">two_wheeler</Icon>
                 </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{approvedCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
               >
-                <div className="flex justify-between items-center text-amber-600 dark:text-amber-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+                <div className="flex items-center justify-between gap-1.5 text-amber-600 dark:text-amber-400 mb-1 sm:mb-1.5">
+                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">warning</Icon>
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                     {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                   </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">warning</Icon>
                 </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{warningLogsCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
               >
-                <div className="flex justify-between items-center text-rose-600 dark:text-rose-400 mb-1">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+                <div className="flex items-center justify-between gap-1.5 text-rose-600 dark:text-rose-400 mb-1 sm:mb-1.5">
+                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">block</Icon>
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                     {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                   </span>
-                  <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">block</Icon>
                 </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{illegalVehiclesCount}</p>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
               </button>
             </div>
           </div>
@@ -880,57 +880,57 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-slate-700 dark:text-blue-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-slate-700 dark:text-blue-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">verified</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{totalLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
             </button>
 
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-emerald-600 dark:text-emerald-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">two_wheeler</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'የፀደቁ' : 'Valid'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">two_wheeler</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{approvedCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
             </button>
 
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-amber-600 dark:text-amber-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-amber-600 dark:text-amber-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">warning</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">warning</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{warningLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
             </button>
 
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
             >
-              <div className="flex justify-between items-center text-rose-600 dark:text-rose-400 mb-1">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate">
+              <div className="flex items-center justify-between gap-1.5 text-rose-600 dark:text-rose-400 mb-1 sm:mb-1.5">
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">block</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right">
                   {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0">block</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{illegalVehiclesCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
             </button>
           </div>
         </div>

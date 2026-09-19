@@ -598,7 +598,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
           <div className="bg-surface-container-lowest sm:border border-outline-variant rounded-none sm:rounded-lg p-5 max-w-xl w-full h-full sm:h-auto space-y-4 shadow-xl sm:max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-outline-variant pb-3 shrink-0">
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-primary text-[22px]">directions_car</Icon>
+                <Icon className="material-symbols-outlined text-primary text-[22px]">two_wheeler</Icon>
                 <h3 className="font-bold text-sm text-on-surface">
                   {isAmharic ? 'የተፈተሸ ተሽከርካሪ ዝርዝር መረጃ' : 'Scanned Vehicle & Permit Audit Details'}
                 </h3>

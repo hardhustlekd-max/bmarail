@@ -269,7 +269,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       case 'ordered_print':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">layers</Icon>
+            <Icon className="material-symbols-outlined text-[13px] shrink-0">local_printshop</Icon>
             <span>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
         );

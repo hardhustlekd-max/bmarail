@@ -108,15 +108,15 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
             <div
               key={card.key}
               onClick={() => onSelectStatusFilter && onSelectStatusFilter(card.key)}
-              className={`p-2 sm:p-3 rounded-lg ${card.bg} hover:shadow-md active:scale-105 active:bg-[#0f172a]/25 dark:active:bg-[#0f172a]/40 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
+              className={`p-2 sm:p-3 rounded-lg ${card.bg} hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
             >
-              <div className={`flex justify-between items-center ${card.textClass} mb-1`}>
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate group-hover:text-primary transition-colors">
+              <div className={`flex items-center justify-between gap-1.5 ${card.textClass} mb-1 sm:mb-1.5`}>
+                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">{card.icon}</Icon>
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate text-right group-hover:text-primary transition-colors">
                   {card.label}
                 </span>
-                <Icon className="material-symbols-outlined text-[15px] sm:text-[18px] shrink-0 group-hover:scale-110 transition-transform">{card.icon}</Icon>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">{card.count}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{card.count}</p>
             </div>
           );
         })}
