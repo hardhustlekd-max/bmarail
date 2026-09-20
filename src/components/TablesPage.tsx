@@ -173,6 +173,23 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     }
   };
 
+  // Status border class helper for rectangular avatar
+  const getStatusBorderClass = (status?: string, reg?: MotorcycleRegistration) => {
+    if (status === 'approved' || status === 'printed') {
+      return 'border-[#10B981] dark:border-[#10B981] ring-1 ring-[#10B981]/30';
+    }
+    if (status === 'ordered_print') {
+      return 'border-[#6366F1] dark:border-[#6366F1] ring-1 ring-[#6366F1]/30';
+    }
+    if (status === 'rejected' || status === 'expired') {
+      return 'border-[#FB5454] dark:border-[#FB5454] ring-1 ring-[#FB5454]/30';
+    }
+    if (reg?.isCorrection || reg?.lastRejectionReason) {
+      return 'border-amber-500 dark:border-amber-500 ring-1 ring-amber-500/30';
+    }
+    return 'border-[#F59E0B] dark:border-[#F59E0B] ring-1 ring-[#F59E0B]/30';
+  };
+
   // If user role is Officer, render the dedicated Verification History & Scanned Vehicles Log
   if (userRole === 'officer') {
     return (
@@ -1500,8 +1517,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
                             />
 
-                            {/* Rectangular Avatar with Clean Neutral Border */}
-                            <div className="w-12 h-14 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
+                            {/* Status-Bordered Rectangular Avatar */}
+                            <div className={`w-12 h-14 rounded-md border-2 ${getStatusBorderClass(reg.status, reg)} bg-slate-100 dark:bg-slate-800 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center`}>
                               {(reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto) ? (
                                 <img
                                   src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
@@ -1516,13 +1533,29 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                             {/* Header Details */}
                             <div className="min-w-0 flex-1 space-y-1">
+                              {/* Member Name */}
                               <h4 className="text-sm sm:text-base font-extrabold text-[#1C2434] dark:text-white leading-tight truncate">
-                                {getDisplayName(reg)} <span className="text-slate-500 dark:text-slate-400 font-bold text-xs">({reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')})</span>
+                                {getDisplayName(reg)}
                               </h4>
 
-                              <div>
-                                <span className="inline-block px-2.5 py-0.5 bg-[#F1F5F9] dark:bg-[#2E3A47] text-[#1C2434] dark:text-white text-[11px] font-black rounded-md tracking-wider">
-                                  {reg.plateNumber || reg.id}
+                              <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
+                                {/* Motor Type Tag */}
+                                {reg.vehicleCategory === 'electric' ? (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30">
+                                    <Icon className="material-symbols-outlined text-[11px]">electric_bolt</Icon>
+                                    <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3C50E0]/15 text-[#3C50E0] border border-[#3C50E0]/30">
+                                    <Icon className="material-symbols-outlined text-[11px]">local_gas_station</Icon>
+                                    <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
+                                  </span>
+                                )}
+
+                                {/* Badge ID Pill */}
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F1F5F9] dark:bg-[#2E3A47] text-[#1C2434] dark:text-white text-[10px] sm:text-[11px] font-mono font-bold rounded-md tracking-wider border border-slate-200 dark:border-slate-700">
+                                  <Icon className="material-symbols-outlined text-[12px] text-[#64748B] dark:text-[#8A99AD]">badge</Icon>
+                                  <span>{reg.plateNumber || reg.id}</span>
                                 </span>
                               </div>
                             </div>

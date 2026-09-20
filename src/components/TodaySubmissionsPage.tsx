@@ -437,6 +437,23 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     }
   };
 
+  // Status border class helper for rectangular avatar
+  const getStatusBorderClass = (status?: string, reg?: MotorcycleRegistration) => {
+    if (status === 'approved' || status === 'printed') {
+      return 'border-[#10B981] dark:border-[#10B981] ring-1 ring-[#10B981]/30';
+    }
+    if (status === 'ordered_print') {
+      return 'border-[#6366F1] dark:border-[#6366F1] ring-1 ring-[#6366F1]/30';
+    }
+    if (status === 'rejected') {
+      return 'border-[#FB5454] dark:border-[#FB5454] ring-1 ring-[#FB5454]/30';
+    }
+    if (reg?.isCorrection || reg?.lastRejectionReason) {
+      return 'border-amber-500 dark:border-amber-500 ring-1 ring-amber-500/30';
+    }
+    return 'border-[#F59E0B] dark:border-[#F59E0B] ring-1 ring-[#F59E0B]/30';
+  };
+
   // 1. Role-specific & Submission Correction filtering (contains only rejection corrections and pending approval submissions waiting for approval)
   const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const roleFilteredRegs = registrations.filter((reg) => {
@@ -1233,45 +1250,94 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             ) : (
               paginatedRegistrations.map((reg, index) => {
                 const isExpanded = !!expandedRegs[reg.id];
+                const isCardSelected = selectedRegIds.has(reg.id);
                 return (
-                  <div key={reg.id} className="p-3.5 bg-surface-container-lowest dark:bg-slate-900 space-y-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
+                  <div
+                    key={reg.id}
+                    className={`p-3.5 sm:p-4 transition-colors space-y-2.5 ${
+                      isCardSelected
+                        ? 'bg-[#3C50E0]/8 dark:bg-[#3C50E0]/15'
+                        : 'bg-surface-container-lowest dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/40'
+                    }`}
+                  >
+                    {/* Unexpanded Record Header - New Header Section Layout */}
+                    <div
+                      className="flex items-center justify-between gap-3 cursor-pointer select-none"
+                      onClick={() => toggleRegExpand(reg.id)}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         {canApproveBulk && (
                           <input
                             type="checkbox"
-                            checked={selectedRegIds.has(reg.id)}
-                            onChange={() => toggleSelectRow(reg.id)}
+                            checked={isCardSelected}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              toggleSelectRow(reg.id);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
                             className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer shrink-0"
                             title={isAmharic ? 'ይምረጡ' : 'Select'}
                           />
                         )}
-                        <div className="min-w-0">
-                          <p className="font-black text-xs text-slate-900 dark:text-white truncate">{reg.fullName || '—'}</p>
-                          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">{reg.phone || '—'}</p>
+
+                        {/* Status-Bordered Rectangular Avatar */}
+                        <div className={`w-12 h-14 rounded-md border-2 ${getStatusBorderClass(reg.status, reg)} bg-slate-100 dark:bg-slate-800 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center`}>
+                          {(reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto) ? (
+                            <img
+                              src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                              alt={reg.fullName || 'Avatar'}
+                              className="w-full h-full object-cover rounded-xs"
+                              onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                            />
+                          ) : (
+                            <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-0.5 rounded-xs" />
+                          )}
+                        </div>
+
+                        {/* Header Details */}
+                        <div className="min-w-0 flex-1 space-y-1">
+                          {/* Member Name */}
+                          <h4 className="text-sm sm:text-base font-extrabold text-[#1C2434] dark:text-white leading-tight truncate">
+                            {reg.fullName || '—'}
+                          </h4>
+
+                          <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
+                            {/* Motor Type Tag */}
+                            {reg.vehicleCategory === 'electric' ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30">
+                                <Icon className="material-symbols-outlined text-[11px]">electric_bolt</Icon>
+                                <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3C50E0]/15 text-[#3C50E0] border border-[#3C50E0]/30">
+                                <Icon className="material-symbols-outlined text-[11px]">local_gas_station</Icon>
+                                <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
+                              </span>
+                            )}
+
+                            {/* Badge ID Pill */}
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F1F5F9] dark:bg-[#2E3A47] text-[#1C2434] dark:text-white text-[10px] sm:text-[11px] font-mono font-bold rounded-md tracking-wider border border-slate-200 dark:border-slate-700">
+                              <Icon className="material-symbols-outlined text-[12px] text-[#64748B] dark:text-[#8A99AD]">badge</Icon>
+                              <span>{reg.plateNumber || reg.id}</span>
+                            </span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
-                        {renderStatusBadge(reg.status)}
-                        <button
-                          type="button"
-                          onClick={() => toggleRegExpand(reg.id)}
-                          className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md cursor-pointer"
-                        >
-                          <Icon className="material-symbols-outlined text-[18px]">
+                      {/* Right Side Expand Toggle */}
+                      <div className="shrink-0 pl-1">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors shadow-2xs">
+                          <Icon className="material-symbols-outlined text-[20px]">
                             {isExpanded ? 'expand_less' : 'expand_more'}
                           </Icon>
-                        </button>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-slate-100 dark:border-slate-800">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs px-2 py-0.5 rounded bg-yellow-100 dark:bg-yellow-950/60 text-yellow-900 dark:text-yellow-200 border border-yellow-300/80">
-                          {reg.plateNumber || '—'}
-                        </span>
-                        <span className="text-[11px] text-slate-500">{reg.subCity || '—'}</span>
+                        {renderStatusBadge(reg.status, reg)}
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">{reg.subCity || '—'}</span>
                       </div>
 
                       <div className="flex items-center gap-1.5">
@@ -1307,7 +1373,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                           <button
                             type="button"
                             onClick={() => setInspectReg(reg)}
-                            className="p-1 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg"
+                            className="p-1 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-lg cursor-pointer"
+                            title={isAmharic ? 'ዝርዝር መርምር' : 'Inspect'}
                           >
                             <Icon className="material-symbols-outlined text-[16px]">badge</Icon>
                           </button>
@@ -1316,9 +1383,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     </div>
 
                     {isExpanded && (
-                      <div className="space-y-3">
+                      <div className="space-y-3 pt-2">
                         {/* Member Information Card (Redesigned Style) */}
                         <ExpandableMemberCard
+                          showHeader={false}
                           fullName={reg.fullName || (isAmharic ? 'ያልታወቀ አባል' : 'Unknown Member')}
                           roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                           badgeId={reg.plateNumber || reg.id}
