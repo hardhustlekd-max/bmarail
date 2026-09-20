@@ -1,3 +1,4 @@
+import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState } from 'react';
 import { Icon } from './ui/Icon';
 import { motion } from 'motion/react';
@@ -915,6 +916,26 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                           <tr className="bg-[#F7F9FC]/90 dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                             <td colSpan={canApproveBulk ? 12 : 11} className="px-6 py-4">
                               <div className="space-y-4">
+                                {/* Member Information Card (Redesigned Style) */}
+                                <ExpandableMemberCard
+                                  fullName={reg.fullName || (isAmharic ? 'ያልታወቀ አባል' : 'Unknown Member')}
+                                  roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                                  badgeId={reg.plateNumber || reg.id}
+                                  statusText={reg.status === 'approved' ? (isAmharic ? 'ንቁ አባል (Active Member)' : 'Active Member') : (isAmharic ? 'ንቁ መለያ (Active Registration)' : 'Active Registration')}
+                                  isActive={reg.status !== 'rejected'}
+                                  portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                                  isAmharic={isAmharic}
+                                  fields={[
+                                    { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: reg.email || `${reg.phone || 'member'}@permit.gov.et` },
+                                    { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
+                                    { label: isAmharic ? 'የስራ ድርሻ:' : 'Role / Category:', value: reg.vehicleCategory === 'electric' ? 'ELECTRIC MOTOR' : 'GASOLINE MOTOR' },
+                                    { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: reg.phone || '—' },
+                                    { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
+                                    { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },
+                                    { label: isAmharic ? 'የተመዘገበበት ቀን:' : 'Registered Date:', value: reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—' }
+                                  ]}
+                                />
+
                                 {/* Action Buttons Toolbar (TailAdmin Style) */}
                                 <div className="p-3.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-xs flex flex-wrap items-center justify-between gap-3">
                                   <div className="flex items-center gap-2.5">
@@ -1155,13 +1176,26 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     </div>
 
                     {isExpanded && (
-                      <div className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-md space-y-2 text-xs text-slate-600 dark:text-slate-300">
-                        <p><span className="font-bold">{isAmharic ? 'ቻሲስ:' : 'Chasis:'}</span> {getChassisDisplay(reg)}</p>
-                        <p><span className="font-bold">{isAmharic ? 'የሞተር ምርት/ሞዴል:' : 'Brand/Model:'}</span> {reg.motorBrand || ''} {reg.motorModel || ''}</p>
-                        <p><span className="font-bold">{isAmharic ? 'የምዝገባ ቀን:' : 'Registered:'}</span> {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}</p>
-                        {reg.status === 'rejected' && reg.rejectionReason && (
-                          <p className="text-rose-600 font-semibold"><span className="font-bold">{isAmharic ? 'የውድቅ ምክንያት:' : 'Rejection Reason:'}</span> {reg.rejectionReason}</p>
-                        )}
+                      <div className="space-y-3">
+                        {/* Member Information Card (Redesigned Style) */}
+                        <ExpandableMemberCard
+                          fullName={reg.fullName || (isAmharic ? 'ያልታወቀ አባል' : 'Unknown Member')}
+                          roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                          badgeId={reg.plateNumber || reg.id}
+                          statusText={reg.status === 'approved' ? (isAmharic ? 'ንቁ አባል (Active Member)' : 'Active Member') : (isAmharic ? 'ንቁ መለያ (Active Registration)' : 'Active Registration')}
+                          isActive={reg.status !== 'rejected'}
+                          portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                          isAmharic={isAmharic}
+                          fields={[
+                            { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: reg.email || `${reg.phone || 'member'}@permit.gov.et` },
+                            { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
+                            { label: isAmharic ? 'የስራ ድርሻ:' : 'Role / Category:', value: reg.vehicleCategory === 'electric' ? 'ELECTRIC MOTOR' : 'GASOLINE MOTOR' },
+                            { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: reg.phone || '—' },
+                            { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
+                            { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },
+                            { label: isAmharic ? 'የተመዘገበበት ቀን:' : 'Registered Date:', value: reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—' }
+                          ]}
+                        />
 
                         {/* On-Demand Attached Documents Preview */}
                         {(reg.userPortraitPhoto || reg.ownerPhoto || reg.nationalIdPhoto || reg.nationalIdBackPhoto || reg.drivingLicensePhoto || reg.drivingPermitPhoto) && (

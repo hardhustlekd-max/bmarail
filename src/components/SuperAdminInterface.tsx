@@ -1,3 +1,4 @@
+import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import {
@@ -1114,19 +1115,22 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             </div>
                           </div>
 
-                          {/* Collapsible Mobile Body Drawer */}
+                          {/* Collapsible Mobile/Desktop Body Drawer */}
                           {isExpanded && (
-                            <div className="mt-3.5 pt-3.5 border-t border-outline-variant space-y-3 bg-surface-container/60 p-3.5 rounded-lg border">
-                              <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div>
-                                  <span className="text-outline text-[11px] block">{isAmharic ? 'ኢሜይል' : 'Email Address'}</span>
-                                  <span className="font-semibold text-on-surface truncate block">{user.email || '—'}</span>
-                                </div>
-                                <div>
-                                  <span className="text-outline text-[11px] block">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</span>
-                                  <span className="font-bold text-on-surface">{user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ'}</span>
-                                </div>
-                              </div>
+                            <div className="mt-3.5">
+                              <ExpandableMemberCard
+                                fullName={user.fullName || (isAmharic ? 'ያልታወቀ ተጠቃሚ' : 'Unknown User')}
+                                roleOrTitle={user.role ? user.role.toUpperCase() : 'CLERK'}
+                                badgeId={user.badgeId || user.uid}
+                                statusText={user.status === 'disabled' ? (isAmharic ? 'የታገደ' : 'Disabled') : (isAmharic ? 'ንቁ መለያ (Active Session)' : 'Active Session')}
+                                isActive={user.status !== 'disabled'}
+                                isAmharic={isAmharic}
+                                fields={[
+                                  { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: user.email || 'clerk@permit.gov.et' },
+                                  { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
+                                  { label: isAmharic ? 'የስራ ድርሻ:' : 'Role:', value: (user.role || 'CLERK').toUpperCase() },
+                                ]}
+                              />
 
                               {/* Mobile Actions Toolbar */}
                               <div className="pt-2 border-t border-outline-variant flex items-center justify-end gap-2">

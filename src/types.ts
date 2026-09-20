@@ -47,6 +47,7 @@ export interface MotorcycleRegistration {
   lastRejectionReason?: string;
   isCorrection?: boolean;
   subCity?: string;
+  email?: string;
   bloodGroup?: string;
   hideFromOtherUsers?: boolean;
   receiptNumber?: string;
