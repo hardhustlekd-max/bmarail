@@ -70,6 +70,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Bulk selection state for Admin / Super Admin
+  const [selectedRegIds, setSelectedRegIds] = useState<Set<string>>(new Set());
+  const [isSubmittingBulk, setIsSubmittingBulk] = useState(false);
+  const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
+  const canApproveBulk = userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin';
+
   // Mobile collapsed card states
   const [expandedRegs, setExpandedRegs] = useState<Record<string, boolean>>({});
   const toggleRegExpand = (id: string) => {
@@ -91,7 +97,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   const [editNationalIdBackPhoto, setEditNationalIdBackPhoto] = useState('');
   const [editDrivingLicensePhoto, setEditDrivingLicensePhoto] = useState('');
   const [editDrivingPermitPhoto, setEditDrivingPermitPhoto] = useState('');
-  const [editReSubmitPending, setEditReSubmitPending] = useState(true);
 
   // Today's date string (YYYY-MM-DD)
   const todayStr = new Date().toISOString().split('T')[0];
@@ -113,7 +118,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     setEditNationalIdBackPhoto(reg.nationalIdBackPhoto || '');
     setEditDrivingLicensePhoto(reg.drivingLicensePhoto || '');
     setEditDrivingPermitPhoto(reg.drivingPermitPhoto || '');
-    setEditReSubmitPending(reg.status === 'rejected');
   };
 
   // Handle Photo File Upload
@@ -178,10 +182,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
     setIsSubmitting(true);
     try {
-      const newStatus =
-        editReSubmitPending && editingReg.status === 'rejected'
-          ? 'pending_approval'
-          : editingReg.status;
+      // Corrected submissions automatically transition from rejected to pending_approval waiting for manager/superadmin review
+      const isWasRejected = editingReg.status === 'rejected';
+      const newStatus = isWasRejected ? 'pending_approval' : editingReg.status;
 
       const updatedRecord: MotorcycleRegistration = {
         ...editingReg,
@@ -201,8 +204,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         drivingLicensePhoto: editDrivingLicensePhoto || editingReg.drivingLicensePhoto,
         drivingPermitPhoto: editDrivingPermitPhoto || editingReg.drivingPermitPhoto,
         status: newStatus,
+        isCorrection: isWasRejected || editingReg.isCorrection,
+        lastRejectionReason: isWasRejected ? editingReg.rejectionReason : editingReg.lastRejectionReason,
         rejectionReason:
-          newStatus === 'pending_approval' && editingReg.status === 'rejected'
+          newStatus === 'pending_approval'
             ? undefined
             : editingReg.rejectionReason,
       };
@@ -212,15 +217,15 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         actorBadgeId: userBadgeId || 'CLERK-01',
         actorRole: userRole,
         action: 'SUBMISSION_ADJUSTED',
-        details: `Clerk updated application details for Plate ${updatedRecord.plateNumber} (${updatedRecord.fullName})`,
+        details: `Clerk updated application details for Plate ${updatedRecord.plateNumber} (${updatedRecord.fullName}) - Resubmitted as ተስተካክሎ የቀረበ`,
         severity: 'info',
       });
 
       if (onShowToast) {
         onShowToast(
           isAmharic
-            ? `የማመልከቻ ቁጥር ${updatedRecord.plateNumber} መረጃ በተሳካ ሁኔታ ተስተካክሎ ቀርቧል!`
-            : `Application ${updatedRecord.plateNumber} updated & submitted successfully!`,
+            ? `የማመልከቻ ቁጥር ${updatedRecord.plateNumber} ማስተካከያ "ተስተካክሎ የቀረበ" ተብሎ ለስራ አስኪያጅና ሱፐር አድሚን ማፅደቂያ በተሳካ ሁኔታ ተልኳል!`
+            : `Correction for Plate ${updatedRecord.plateNumber} successfully resubmitted with status "Corrected & Resubmitted" for manager review!`,
           'success'
         );
       }
@@ -238,6 +243,83 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     }
   };
 
+  // Bulk Approval Selection Handlers for Admin / Super Admin
+  const toggleSelectRow = (id: string) => {
+    const next = new Set(selectedRegIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    setSelectedRegIds(next);
+  };
+
+  const triggerBulkApprove = () => {
+    if (selectedRegIds.size === 0) return;
+    if (isReadOnly) {
+      if (onShowToast) {
+        onShowToast(
+          isAmharic ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ ማፅደቅ አይፈቀድም።' : 'Read-only mode active: Approval disabled.',
+          'error'
+        );
+      }
+      return;
+    }
+    setShowBulkConfirmModal(true);
+  };
+
+  const executeBulkApprove = async () => {
+    if (selectedRegIds.size === 0) return;
+    setIsSubmittingBulk(true);
+    try {
+      const selectedIds = Array.from(selectedRegIds);
+      let approvedCount = 0;
+
+      for (const id of selectedIds) {
+        const reg = registrations.find((r) => r.id === id);
+        if (reg) {
+          const updatedRecord: MotorcycleRegistration = {
+            ...reg,
+            status: 'approved',
+            rejectionReason: undefined,
+          };
+          await saveRegistrationToDb(updatedRecord);
+          approvedCount++;
+        }
+      }
+
+      await addAuditLogToDb({
+        actorBadgeId: userBadgeId || 'ADMIN-01',
+        actorRole: userRole,
+        action: 'BULK_REGISTRATIONS_APPROVED',
+        details: `Admin bulk approved ${approvedCount} corrected submissions (${selectedIds.slice(0, 5).join(', ')})`,
+        severity: 'info',
+      });
+
+      if (onShowToast) {
+        onShowToast(
+          isAmharic
+            ? `${approvedCount} ማመልከቻዎች በጅምላ በተሳካ ሁኔታ ጸድቀዋል!`
+            : `Successfully approved ${approvedCount} selected corrected submissions!`,
+          'success'
+        );
+      }
+
+      setSelectedRegIds(new Set());
+      setShowBulkConfirmModal(false);
+    } catch (err: any) {
+      console.error('Bulk approval failed:', err);
+      if (onShowToast) {
+        onShowToast(
+          isAmharic ? 'በጅምላ ማጽደቅ ላይ ስህተት ተፈጥሯል' : 'Error performing bulk approval',
+          'error'
+        );
+      }
+    } finally {
+      setIsSubmittingBulk(false);
+    }
+  };
+
   // Open Fullscreen Document Carousel
   const openDocumentCarousel = (targetUrl: string, reg: MotorcycleRegistration) => {
     if (!targetUrl) return;
@@ -250,7 +332,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   };
 
   // Render Status Badge matching TailAdmin theme
-  const renderStatusBadge = (status?: string) => {
+  const renderStatusBadge = (status?: string, reg?: MotorcycleRegistration) => {
     switch (status) {
       case 'approved':
         return (
@@ -283,6 +365,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       case 'pending_approval':
       case 'pending':
       default:
+        if (reg?.isCorrection || reg?.lastRejectionReason) {
+          return (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-2xs">
+              <Icon className="material-symbols-outlined text-[14px] shrink-0">edit_note</Icon>
+              <span>{isAmharic ? 'ተስተካክሎ የቀረበ' : 'Corrected & Resubmitted'}</span>
+            </span>
+          );
+        }
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
@@ -292,10 +382,15 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     }
   };
 
-  // 1. Role-specific filtering (clerk only sees their own submissions; hides hidden records for non-superadmin)
+  // 1. Role-specific & Submission Correction filtering (contains only rejection corrections and pending approval submissions waiting for approval)
   const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const roleFilteredRegs = registrations.filter((reg) => {
     if (!isSuperAdmin && reg.hideFromOtherUsers) {
+      return false;
+    }
+    // Submission Correction table strictly contains rejection corrections & pending approval records
+    const isCorrectionOrPending = reg.status === 'rejected' || reg.status === 'pending_approval' || (reg.status as string) === 'pending';
+    if (!isCorrectionOrPending) {
       return false;
     }
     if (userRole === 'clerk') {
@@ -368,6 +463,24 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   const startIndex = (activePage - 1) * pageSize;
   const paginatedRegistrations = finalFilteredRegs.slice(startIndex, startIndex + pageSize);
 
+  // Bulk Selection Helpers (All actionable records in current filter)
+  const allSelectableRegs = finalFilteredRegs.filter(
+    (r) => r.status === 'pending_approval' || (r.status as string) === 'pending' || r.status === 'rejected'
+  );
+  const isAllSelected =
+    allSelectableRegs.length > 0 &&
+    allSelectableRegs.every((r) => selectedRegIds.has(r.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedRegIds(new Set());
+    } else {
+      const next = new Set<string>();
+      allSelectableRegs.forEach((r) => next.add(r.id));
+      setSelectedRegIds(next);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* SINGLE UNIFIED TABLE CONTAINER (TAILADMIN DESIGN) */}
@@ -384,7 +497,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">
-                {isAmharic ? 'የተመዘገቡ የሞተር ብስክሌቶች ማመልከቻዎች ዝርዝር' : 'Review, inspect and update vehicle registration submissions'}
+                {isAmharic ? 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ' : 'Rejection corrections by the clerk waiting for manager approval'}
               </p>
             </div>
           </div>
@@ -468,32 +581,26 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               {[
                 {
                   id: 'all',
-                  label: isAmharic ? 'ሁሉም' : 'All',
+                  label: isAmharic ? 'ሁሉም' : 'All Corrections',
                   count: dateFilteredRegs.length,
                   badgeColor: 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
                 },
                 {
-                  id: 'pending_approval',
-                  label: isAmharic ? 'የሚጠበቁ' : 'Pending',
-                  count: pendingCount,
-                  badgeColor:
-                    pendingCount > 0
-                      ? 'bg-[#F59E0B]/20 text-[#F59E0B]'
-                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-                {
-                  id: 'approved',
-                  label: isAmharic ? 'የፀደቁ' : 'Approved',
-                  count: approvedCount,
-                  badgeColor: 'bg-[#10B981]/20 text-[#10B981]',
-                },
-                {
                   id: 'rejected',
-                  label: isAmharic ? 'ውድቅ' : 'Rejected',
+                  label: isAmharic ? 'ውድቅ የተደረጉ (ማስተካከያ የሚሹ)' : 'Rejected (Needs Correction)',
                   count: rejectedCount,
                   badgeColor:
                     rejectedCount > 0
                       ? 'bg-[#FB5454]/20 text-[#FB5454]'
+                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
+                },
+                {
+                  id: 'pending_approval',
+                  label: isAmharic ? 'ማፅደቂያ በመጠባበቅ ላይ' : 'Waiting for Approval',
+                  count: pendingCount,
+                  badgeColor:
+                    pendingCount > 0
+                      ? 'bg-[#F59E0B]/20 text-[#F59E0B]'
                       : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
                 },
               ].map((tab) => {
@@ -546,6 +653,52 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
         </div>
 
+        {/* --- BULK APPROVAL ACTION BANNER FOR ADMIN / SUPER ADMIN --- */}
+        {canApproveBulk && selectedRegIds.size > 0 && (
+          <div className="m-4 p-3 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-sm flex flex-wrap items-center justify-between gap-3 animate-fade-in shadow-xs">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-sm bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                <Icon className="material-symbols-outlined text-[20px]">checklist</Icon>
+              </div>
+              <div>
+                <span className="font-bold text-xs text-emerald-800 dark:text-emerald-300">
+                  {isAmharic
+                    ? `${selectedRegIds.size} ማመልከቻዎች ተመርጠዋል`
+                    : `${selectedRegIds.size} submission(s) selected`}
+                </span>
+                <p className="text-[11px] text-emerald-700/80 dark:text-emerald-400/80">
+                  {isAmharic
+                    ? 'የተመረጡትን ማመልከቻዎች በአንድ ጊዜ በጅምላ ማጽደቅ ይችላሉ'
+                    : 'You can approve all selected corrected submissions at once'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedRegIds(new Set())}
+                className="px-3 py-1.5 rounded-sm border border-emerald-500/30 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+              >
+                {isAmharic ? 'ምርጫውን ሰርዝ' : 'Clear Selection'}
+              </button>
+              <button
+                type="button"
+                onClick={triggerBulkApprove}
+                disabled={isSubmittingBulk || isReadOnly}
+                className="px-4 py-1.5 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isSubmittingBulk ? (
+                  <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+                ) : (
+                  <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                )}
+                <span>{isAmharic ? 'በጅምላ አጽድቅ (Approve Selected)' : 'Approve Selected'}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* --- REGISTRATIONS DATA TABLE (TAILADMIN DATATABLE DESIGN) --- */}
         <div className="min-h-[500px] flex flex-col justify-between">
           {/* Desktop Data Table (>= md) */}
@@ -553,6 +706,31 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             <table className="w-full table-auto text-left border-collapse">
               <thead>
                 <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                  {canApproveBulk && (
+                    <th className="py-3 px-3 text-center min-w-[110px] font-medium align-middle">
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <label
+                          className="inline-flex items-center gap-1.5 cursor-pointer select-none"
+                          title={isAmharic ? 'ሁሉንም መዝገቦች ምረጥ/ሰርዝ' : 'Select/Deselect All Records'}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isAllSelected}
+                            onChange={toggleSelectAll}
+                            className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer"
+                          />
+                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white uppercase tracking-wider">
+                            {isAmharic ? 'ሁሉንም' : 'All'}
+                          </span>
+                        </label>
+                        {selectedRegIds.size > 0 && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-[#3C50E0] text-white animate-fade-in shadow-2xs whitespace-nowrap">
+                            {isAmharic ? `${selectedRegIds.size} ተመርጠዋል` : `${selectedRegIds.size} selected`}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                  )}
                   <th className="py-4 px-3 text-center w-12 font-medium">#</th>
                   <th className="py-4 px-4 font-medium">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
                   <th className="py-4 px-3 font-medium">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
@@ -569,7 +747,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
                 {registrations.length === 0 ? (
                   <tr>
-                    <td colSpan={11} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
+                    <td colSpan={canApproveBulk ? 12 : 11} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
                         <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD]">inbox</Icon>
                         <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
@@ -585,7 +763,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   </tr>
                 ) : finalFilteredRegs.length === 0 ? (
                   <tr>
-                    <td colSpan={11} className="py-14 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
+                    <td colSpan={canApproveBulk ? 12 : 11} className="py-14 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 py-4">
                         <Icon className="material-symbols-outlined text-[32px] text-[#8A99AD]">search_off</Icon>
                         <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
@@ -612,6 +790,19 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     return (
                       <React.Fragment key={reg.id}>
                         <tr className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                          {/* Bulk Select Checkbox Column */}
+                          {canApproveBulk && (
+                            <td className="py-4 px-3 text-center align-middle" onClick={(e) => e.stopPropagation()}>
+                              <input
+                                type="checkbox"
+                                checked={selectedRegIds.has(reg.id)}
+                                onChange={() => toggleSelectRow(reg.id)}
+                                className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer"
+                                title={isAmharic ? 'ይምረጡ' : 'Select'}
+                              />
+                            </td>
+                          )}
+
                           {/* 1. Index & Expand */}
                           <td className="py-4 px-3 text-center align-middle font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
                             <div className="flex items-center justify-center gap-1.5">
@@ -690,7 +881,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                           {/* 10. Status Badge */}
                           <td className="py-4 px-4 align-middle text-center whitespace-nowrap">
                             <div className="inline-flex flex-col items-center gap-1">
-                              {renderStatusBadge(reg.status)}
+                              {renderStatusBadge(reg.status, reg)}
                               {reg.status === 'rejected' && reg.rejectionReason && (
                                 <span className="text-[10px] text-[#FB5454] max-w-[120px] truncate" title={reg.rejectionReason}>
                                   {reg.rejectionReason}
@@ -722,7 +913,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                         {/* Desktop Collapsible Sub-row: Action Buttons & Attached Documents */}
                         {isExpanded && (
                           <tr className="bg-[#F7F9FC]/90 dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                            <td colSpan={11} className="px-6 py-4">
+                            <td colSpan={canApproveBulk ? 12 : 11} className="px-6 py-4">
                               <div className="space-y-4">
                                 {/* Action Buttons Toolbar (TailAdmin Style) */}
                                 <div className="p-3.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-xs flex flex-wrap items-center justify-between gap-3">
@@ -735,7 +926,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                         <span className="font-semibold text-xs text-[#1C2434] dark:text-white uppercase tracking-wider">
                                           {isAmharic ? 'የተግባር አዝራሮች (Action Buttons)' : 'Action Buttons'}
                                         </span>
-                                        {renderStatusBadge(reg.status)}
+                                        {renderStatusBadge(reg.status, reg)}
                                       </div>
                                       <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
                                         {reg.fullName || '—'} • {reg.plateNumber || getChassisDisplay(reg) || reg.id}
@@ -872,6 +1063,24 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
           {/* Mobile Card List (< md) */}
           <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+            {canApproveBulk && allSelectableRegs.length > 0 && (
+              <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/60 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between">
+                <label className="inline-flex items-center gap-2 text-xs font-bold text-[#1C2434] dark:text-white cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer"
+                  />
+                  <span>{isAmharic ? 'ሁሉንም መዝገቦች ምረጥ (Select All)' : 'Select All Records'}</span>
+                </label>
+                {selectedRegIds.size > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3C50E0] text-white shadow-2xs">
+                    {isAmharic ? `${selectedRegIds.size} ተመርጠዋል` : `${selectedRegIds.size} selected`}
+                  </span>
+                )}
+              </div>
+            )}
             {finalFilteredRegs.length === 0 ? (
               <div className="p-8 text-center text-slate-500 dark:text-slate-400">
                 <Icon className="material-symbols-outlined text-[32px] text-slate-400">search_off</Icon>
@@ -883,9 +1092,20 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 return (
                   <div key={reg.id} className="p-3.5 bg-surface-container-lowest dark:bg-slate-900 space-y-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-black text-xs text-slate-900 dark:text-white truncate">{reg.fullName || '—'}</p>
-                        <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">{reg.phone || '—'}</p>
+                      <div className="flex items-center gap-2 min-w-0">
+                        {canApproveBulk && (
+                          <input
+                            type="checkbox"
+                            checked={selectedRegIds.has(reg.id)}
+                            onChange={() => toggleSelectRow(reg.id)}
+                            className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer shrink-0"
+                            title={isAmharic ? 'ይምረጡ' : 'Select'}
+                          />
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-black text-xs text-slate-900 dark:text-white truncate">{reg.fullName || '—'}</p>
+                          <p className="font-mono text-[11px] text-slate-500 dark:text-slate-400">{reg.phone || '—'}</p>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-1.5">
@@ -1109,18 +1329,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     <Icon className="material-symbols-outlined text-[18px]">error</Icon>
                     <span>{isAmharic ? 'ውድቅ የተደረገበት ምክንያት:' : 'Rejection Reason from Manager:'}</span>
                   </div>
-                  <p className="text-xs text-red-700 dark:text-red-300 pl-6">
+                  <p className="text-xs text-red-700 dark:text-red-300 pl-6 font-medium">
                     {editingReg.rejectionReason || (isAmharic ? 'ተጨማሪ ማብራሪያ አልተሰጠም' : 'No rejection note specified.')}
                   </p>
-                  <label className="flex items-center gap-2 pt-1 pl-6 text-xs font-bold text-on-surface dark:text-white cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={editReSubmitPending}
-                      onChange={(e) => setEditReSubmitPending(e.target.checked)}
-                      className="w-4 h-4 rounded text-slate-700 accent-blue-600"
-                    />
-                    <span>{isAmharic ? 'መረጃውን አስተካክለህ እንደገና ለማፅደቂያ አቅርብ (Re-submit for Review)' : 'Re-submit as Pending Approval'}</span>
-                  </label>
                 </div>
               )}
 
@@ -1367,7 +1578,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       <Icon className="material-symbols-outlined text-[18px]">cloud_upload</Icon>
                     )}
                     <span>
-                      {editReSubmitPending && editingReg.status === 'rejected'
+                      {editingReg.status === 'rejected'
                         ? (isAmharic ? 'አስተካክለህ እንደገና አቅርብ' : 'Save & Re-Submit')
                         : (isAmharic ? 'አስቀምጥና አቅርብ' : 'Save & Submit')}
                     </span>
@@ -1402,6 +1613,96 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           onClose={() => setCarouselModal(null)}
           lang={lang}
         />
+      )}
+
+      {/* ==================== BULK APPROVAL CONFIRMATION MODAL ==================== */}
+      {showBulkConfirmModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm max-w-lg w-full p-6 shadow-2xl space-y-5">
+            {/* Modal Header */}
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                <Icon className="material-symbols-outlined text-[24px]">verified</Icon>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-base text-[#1C2434] dark:text-white">
+                  {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}
+                </h3>
+                <p className="text-xs text-[#64748B] dark:text-[#8A99AD] mt-0.5">
+                  {isAmharic
+                    ? `ለተመረጡት ${selectedRegIds.size} ማመልከቻዎች ማፅደቅ እርግጠኛ ነዎት?`
+                    : `Are you sure you want to approve ${selectedRegIds.size} selected submission(s)?`}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBulkConfirmModal(false)}
+                className="text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+              </button>
+            </div>
+
+            {/* Selected Items List Preview */}
+            <div className="bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm p-3 max-h-48 overflow-y-auto space-y-1.5">
+              <p className="text-[11px] font-bold text-[#1C2434] dark:text-white uppercase tracking-wider mb-2">
+                {isAmharic ? 'የተመረጡት ማመልከቻዎች ዝርዝር:' : 'Selected Submissions List:'}
+              </p>
+              {Array.from(selectedRegIds).map((id, idx) => {
+                const reg = registrations.find((r) => r.id === id);
+                return (
+                  <div key={id} className="flex items-center justify-between text-xs py-1 px-2 bg-white dark:bg-[#1C2434] rounded border border-[#E2E8F0]/80 dark:border-[#2E3A47]/80">
+                    <span className="font-semibold text-[#1C2434] dark:text-white">
+                      {idx + 1}. {reg?.fullName || '—'}
+                    </span>
+                    <span className="font-mono text-[#3C50E0] dark:text-blue-400 font-bold">
+                      {reg?.plateNumber || '—'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Warning Message */}
+            <div className="p-3 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 rounded-sm text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
+              <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">warning</Icon>
+              <span>
+                {isAmharic
+                  ? 'እነዚህን ማመልከቻዎች በአንድ ጊዜ በማፅደቅ የባለቤትነት ሁኔታቸው ይጸድቃል፤ መዝገቦቹም በተሳካ ሁኔታ ወደ ስርዓቱ ገቢ ይሆናሉ።'
+                  : 'Approving these submissions will change their status to Approved and update the database records. This action will process all selected records at once.'}
+              </span>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+              <button
+                type="button"
+                onClick={() => setShowBulkConfirmModal(false)}
+                className="px-4 py-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] transition-colors cursor-pointer"
+              >
+                {isAmharic ? 'ሰርዝ (Cancel)' : 'Cancel'}
+              </button>
+
+              <button
+                type="button"
+                onClick={executeBulkApprove}
+                disabled={isSubmittingBulk}
+                className="px-5 py-2 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isSubmittingBulk ? (
+                  <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+                ) : (
+                  <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                )}
+                <span>
+                  {isAmharic
+                    ? `አጽድቅ (${selectedRegIds.size})`
+                    : `Confirm Approve (${selectedRegIds.size})`}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

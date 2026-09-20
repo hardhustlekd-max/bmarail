@@ -109,7 +109,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     }
   };
 
-  const renderStatusBadge = (status?: string, alwaysShowText: boolean = false) => {
+  const renderStatusBadge = (status?: string, alwaysShowText: boolean = false, reg?: MotorcycleRegistration) => {
     const textClass = alwaysShowText ? 'inline' : 'hidden sm:inline';
     switch (status) {
       case 'approved':
@@ -144,6 +144,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'pending_approval':
       case 'pending':
       default:
+        if (reg?.isCorrection || reg?.lastRejectionReason) {
+          return (
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400" title={isAmharic ? 'ተስተካክሎ የቀረበ' : 'Corrected & Resubmitted'}>
+              <Icon className="material-symbols-outlined text-[14px] shrink-0">edit_note</Icon>
+              <span className={textClass}>{isAmharic ? 'ተስተካክሎ የቀረበ' : 'Corrected & Resubmitted'}</span>
+            </span>
+          );
+        }
         return (
           <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">schedule</Icon>
@@ -731,7 +739,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                               {/* Permit Status */}
                               <td className="px-4 py-3 align-middle h-16 text-center whitespace-nowrap">
-                                {renderStatusBadge(reg.status)}
+                                {renderStatusBadge(reg.status, false, reg)}
                               </td>
 
                               {/* Actions Column: Clean Expand / Action Trigger */}

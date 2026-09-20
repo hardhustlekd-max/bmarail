@@ -44,6 +44,8 @@ export interface MotorcycleRegistration {
   qrCodeData: string;
   registeredBy: string;
   rejectionReason?: string;
+  lastRejectionReason?: string;
+  isCorrection?: boolean;
   subCity?: string;
   bloodGroup?: string;
   hideFromOtherUsers?: boolean;
