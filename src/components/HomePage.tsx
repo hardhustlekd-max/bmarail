@@ -751,15 +751,15 @@ const HomePageShell: React.FC<HomePageProps> = ({
     // =========================================================================
     if (isManager || isSuperAdmin) {
       const pendingRegs = registrations.filter((r) => r.status === 'pending_approval');
-      if (pendingRegs.length > 0) {
+      if (pendingRegs.length > 1) {
         list.push({
           id: `pending_regs_summary_${pendingRegs.length}`,
           title: isAmharic
-            ? `${pendingRegs.length} አዳዲስ ማመልከቻዎች ማፅደቅ ይጠብቃሉ`
-            : `${pendingRegs.length} Submissions Awaiting Approval`,
+            ? `${pendingRegs.length} አዳዲስ ማመልከቻዎች የስራ አስኪያጅ ውሳኔ ይጠብቃሉ`
+            : `${pendingRegs.length} Registration Submissions Awaiting Approval`,
           description: isAmharic
-            ? 'በፀሐፊዎች የተመዘገቡ አዳዲስ ማመልከቻዎች የእርስዎን ማረጋገጫና ውሳኔ ይፈልጋሉ።'
-            : 'New motor registration submissions require manager verification and decision.',
+            ? `በፀሐፊዎች የተመዘገቡ ${pendingRegs.length} አዳዲስ የሞተር ምዝገባ ማመልከቻዎች የስራ አስኪያጅ ማረጋገጫና ውሳኔ ይፈልጋሉ።`
+            : `${pendingRegs.length} new motor registration applications submitted by clerks require manager verification and approval.`,
           type: 'pending_approval',
           icon: 'how_to_reg',
           iconBg: 'bg-[#3C50E0]/15 text-[#3C50E0] dark:text-blue-400',
@@ -768,51 +768,40 @@ const HomePageShell: React.FC<HomePageProps> = ({
           badgeText: 'text-[#3C50E0] dark:text-blue-300',
           actionPage: 'tables',
           actionTab: 'pending',
-        });
-
-        const correctionPending = pendingRegs.filter((r) => r.isCorrection || r.lastRejectionReason);
-        const standardPending = pendingRegs.filter((r) => !r.isCorrection && !r.lastRejectionReason);
-
-        // Resubmitted corrections requiring manager approval
-        correctionPending.slice(0, 3).forEach((reg) => {
-          list.push({
-            id: `reg_correction_done_${reg.id}`,
-            title: isAmharic
-              ? `ማስተካከያ ተደርጎ የቀረበ: ${reg.fullName} (${reg.plateNumber || reg.id})`
-              : `Correction Resubmitted: ${reg.fullName} (${reg.plateNumber || reg.id})`,
-            description: isAmharic
-              ? `የማመልከቻ ቁጥር ${reg.plateNumber || reg.id} በፀሐፊ ተስተካክሎ ለስራ አስኪያጅ ማፅደቂያ ቀርቧል።`
-              : `Correction for registration ${reg.plateNumber || reg.id} was resubmitted by clerk for manager approval.`,
-            time: reg.registrationDate,
-            type: 'pending_approval',
-            icon: 'edit_note',
-            iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
-            badgeLabel: isAmharic ? 'ተስተካክሎ የቀረበ' : 'Correction Ready',
-            badgeBg: 'bg-amber-500/20',
-            badgeText: 'text-amber-700 dark:text-amber-300',
-            actionPage: 'today_submissions_adjust',
-            actionTab: 'pending',
-          });
-        });
-
-        // Standard pending registrations requiring manager approval
-        standardPending.slice(0, 3).forEach((reg) => {
-          list.push({
-            id: `reg_pending_${reg.id}`,
+          subItems: pendingRegs.map((reg) => ({
+            id: `sub_pending_${reg.id}`,
             title: `${reg.fullName} (${reg.plateNumber || reg.id})`,
-            description: isAmharic
-              ? `አዲስ የተሽከርካሪ ምዝገባ ማመልከቻ ለውሳኔ ቀርቧል - ${reg.subCity || 'ባህር ዳር'}`
-              : `New motor registration submitted for manager approval - ${reg.subCity || 'Bahir Dar'}`,
+            description: reg.isCorrection || reg.lastRejectionReason
+              ? (isAmharic
+                  ? `ተስተካክሎ የቀረበ ማመልከቻ - ክፍለ ከተማ: ${reg.subCity || 'ባህር ዳር'}`
+                  : `Resubmitted Correction - Subcity: ${reg.subCity || 'Bahir Dar'}`)
+              : (isAmharic
+                  ? `አዲስ የተሽከርካሪ ምዝገባ - ክፍለ ከተማ: ${reg.subCity || 'ባህር ዳር'}`
+                  : `New Motor Registration - Subcity: ${reg.subCity || 'Bahir Dar'}`),
             time: reg.registrationDate,
-            type: 'pending_approval',
-            icon: 'motorcycle',
-            iconBg: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400',
-            badgeLabel: isAmharic ? 'አዲስ ማመልከቻ' : 'New Submission',
-            badgeBg: 'bg-indigo-500/20',
-            badgeText: 'text-indigo-700 dark:text-indigo-300',
-            actionPage: 'tables',
+            actionPage: (reg.isCorrection || reg.lastRejectionReason) ? 'today_submissions_adjust' : 'tables',
             actionTab: 'pending',
-          });
+          })),
+        });
+      } else if (pendingRegs.length === 1) {
+        const reg = pendingRegs[0];
+        list.push({
+          id: `reg_pending_single_${reg.id}`,
+          title: reg.isCorrection || reg.lastRejectionReason
+            ? (isAmharic ? `ማስተካከያ ተደርጎ የቀረበ: ${reg.fullName} (${reg.plateNumber || reg.id})` : `Correction Resubmitted: ${reg.fullName} (${reg.plateNumber || reg.id})`)
+            : (isAmharic ? `አዲስ ማመልከቻ: ${reg.fullName} (${reg.plateNumber || reg.id})` : `New Submission: ${reg.fullName} (${reg.plateNumber || reg.id})`),
+          description: isAmharic
+            ? `የማመልከቻ ቁጥር ${reg.plateNumber || reg.id} በፀሐፊ ተመዝግቦ የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።`
+            : `Registration application for ${reg.fullName} (${reg.plateNumber || reg.id}) submitted by clerk is waiting for manager decision.`,
+          time: reg.registrationDate,
+          type: 'pending_approval',
+          icon: 'how_to_reg',
+          iconBg: 'bg-[#3C50E0]/15 text-[#3C50E0] dark:text-blue-400',
+          badgeLabel: isAmharic ? 'ማፅደቂያ' : 'Approval Needed',
+          badgeBg: 'bg-[#3C50E0]/20',
+          badgeText: 'text-[#3C50E0] dark:text-blue-300',
+          actionPage: (reg.isCorrection || reg.lastRejectionReason) ? 'today_submissions_adjust' : 'tables',
+          actionTab: 'pending',
         });
       }
 
@@ -820,15 +809,43 @@ const HomePageShell: React.FC<HomePageProps> = ({
       const flaggedLogs = verificationLogs.filter(
         (l) => l.verificationStatus === 'flagged' || l.verificationStatus === 'warning'
       );
-      if (flaggedLogs.length > 0) {
+      if (flaggedLogs.length > 1) {
         list.push({
           id: `flagged_logs_summary_${flaggedLogs.length}`,
           title: isAmharic
-            ? `${flaggedLogs.length} የፍተሻ ጥሰቶች/ማስጠንቀቂያዎች ተመዝግበዋል`
+            ? `${flaggedLogs.length} የፍተሻ ጥሰቶችና ማስጠንቀቂያዎች ተመዝግበዋል`
             : `${flaggedLogs.length} Field Inspection Violations Logged`,
           description: isAmharic
-            ? 'በመንገድ ፍተሻ ወቅት በኦፊሰሮች የተመዘገቡ የህግ ጥሰቶች ግምገማ ይፈልጋሉ።'
-            : 'Patrol officers reported non-compliant or flagged vehicle violations.',
+            ? 'በመንገድ ፍተሻ ወቅት በኦፊሰሮች የተመዘገቡ የህግ ጥሰቶች የስራ አስኪያጅ ግምገማ ይፈልጋሉ።'
+            : 'Patrol officers reported non-compliant vehicle violations needing manager review.',
+          type: 'flagged_inspection',
+          icon: 'warning',
+          iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+          badgeLabel: isAmharic ? 'የጥሰት ሪፖርት' : 'Violation Report',
+          badgeBg: 'bg-rose-500/20',
+          badgeText: 'text-rose-700 dark:text-rose-300',
+          actionPage: 'inspection_report',
+          subItems: flaggedLogs.map((log) => ({
+            id: `sub_flagged_${log.id}`,
+            title: `${log.plateNumber} - ${log.notes || 'ጥሰት/ማስጠንቀቂያ'}`,
+            description: isAmharic
+              ? `በኦፊሰር የተመዘገበ ጥሰት - ቦታ: ${log.locationName || 'ባህር ዳር'}`
+              : `Flagged during road inspection - Location: ${log.locationName || 'Bahir Dar'}`,
+            time: log.timestamp || log.scannedAt,
+            actionPage: 'inspection_report',
+          })),
+        });
+      } else if (flaggedLogs.length === 1) {
+        const log = flaggedLogs[0];
+        list.push({
+          id: `flagged_log_single_${log.id}`,
+          title: isAmharic
+            ? `የፍተሻ ጥሰት ሪፖርት: ${log.plateNumber}`
+            : `Inspection Violation: ${log.plateNumber}`,
+          description: isAmharic
+            ? `በኦፊሰር የተመዘገበ ጥሰት: ${log.notes || 'የሰነድ/የፈቃድ ጉድለት'} | ቦታ: ${log.locationName || 'ባህር ዳር'}`
+            : `Flagged violation reported by officer: ${log.notes || 'Licensing/Document Issue'} | Location: ${log.locationName || 'Bahir Dar'}`,
+          time: log.timestamp || log.scannedAt,
           type: 'flagged_inspection',
           icon: 'warning',
           iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
@@ -840,15 +857,43 @@ const HomePageShell: React.FC<HomePageProps> = ({
       }
 
       // Unregistered vehicle reports logged by patrol officers
-      if (unregisteredReports.length > 0) {
+      if (unregisteredReports.length > 1) {
         list.push({
           id: `unreg_reports_summary_${unregisteredReports.length}`,
           title: isAmharic
-            ? `${unregisteredReports.length} ያልተመዘገቡ ሞተሮች ጥቆማ ቀርቧል`
+            ? `${unregisteredReports.length} ያልተመዘገቡ ሞተሮች ጥቆማዎች ቀርበዋል`
             : `${unregisteredReports.length} Unregistered Vehicle Patrol Reports`,
           description: isAmharic
-            ? 'በኦፊሰሮች በሜዳ ላይ የተገኙ ያልተመዘገቡ ተሽከርካሪዎች ሪፖርት ቀርቧል።'
-            : 'Field officers reported unregistered motorcycle incidents on duty.',
+            ? 'በኦፊሰሮች በሜዳ ላይ የተገኙ ያልተመዘገቡ ተሽከርካሪዎች ሪፖርቶች ለክትትል ቀርበዋል።'
+            : 'Field officers reported unregistered motorcycle incidents during patrol duty.',
+          type: 'unregistered_alert',
+          icon: 'no_crash',
+          iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+          badgeLabel: isAmharic ? 'ያልተመዘገበ' : 'Unregistered Alert',
+          badgeBg: 'bg-amber-500/20',
+          badgeText: 'text-amber-800 dark:text-amber-300',
+          actionPage: 'unregistered_list',
+          subItems: unregisteredReports.map((rep) => ({
+            id: `sub_unreg_${rep.id}`,
+            title: `${rep.driverName || 'ያልተመዘገበ ተሽከርካሪ'} (${rep.chassisNumber || rep.id})`,
+            description: isAmharic
+              ? `የኦፊሰር ጥቆማ - ቦታ: ${rep.locationName || rep.subCity || 'ባህር ዳር'}`
+              : `Patrol report - Location: ${rep.locationName || rep.subCity || 'Bahir Dar'}`,
+            time: rep.reportedAt,
+            actionPage: 'unregistered_list',
+          })),
+        });
+      } else if (unregisteredReports.length === 1) {
+        const rep = unregisteredReports[0];
+        list.push({
+          id: `unreg_report_single_${rep.id}`,
+          title: isAmharic
+            ? `ያልተመዘገበ ሞተር ጥቆማ: ${rep.driverName || 'ያልታወቀ'}`
+            : `Unregistered Motor Report: ${rep.driverName || 'Unknown'}`,
+          description: isAmharic
+            ? `የቻሲስ ቁጥር: ${rep.chassisNumber || rep.id} | በኦፊሰር የተመዘገበበት ቦታ: ${rep.locationName || rep.subCity || 'ባህር ዳር'}`
+            : `Chassis No: ${rep.chassisNumber || rep.id} | Reported location: ${rep.locationName || rep.subCity || 'Bahir Dar'}`,
+          time: rep.reportedAt,
           type: 'unregistered_alert',
           icon: 'no_crash',
           iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
@@ -861,15 +906,41 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
       // Pending payment deposit receipts requiring verification
       const pendingPayments = paymentReceipts.filter((p) => p.status === 'pending');
-      if (pendingPayments.length > 0) {
+      if (pendingPayments.length > 1) {
         list.push({
           id: `pending_payments_summary_${pendingPayments.length}`,
           title: isAmharic
             ? `${pendingPayments.length} ያልተረጋገጡ የክፍያ ደረሰኞች`
-            : `${pendingPayments.length} Pending Payment Receipts`,
+            : `${pendingPayments.length} Pending Payment Deposit Receipts`,
           description: isAmharic
             ? 'የባንክ ክፍያ ደረሰኞች ማረጋገጫና ቼክ በመጠባበቅ ላይ ናቸው።'
-            : 'Deposit slips waiting for payment verification and clearance.',
+            : 'Deposit slips waiting for bank payment clearance and verification.',
+          type: 'pending_payment',
+          icon: 'receipt_long',
+          iconBg: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
+          badgeLabel: isAmharic ? 'ክፍያ ማረጋገጫ' : 'Payment Verification',
+          badgeBg: 'bg-teal-500/20',
+          badgeText: 'text-teal-700 dark:text-teal-300',
+          actionPage: 'payment_receipts',
+          subItems: pendingPayments.map((p) => ({
+            id: `sub_payment_${p.id}`,
+            title: `ደረሰኝ #${p.receiptNumber} (${p.amount || 0} ETB)`,
+            description: isAmharic
+              ? `ክፍያ ከ ${p.ownerName || p.enteredBy} - ማረጋገጫ በመጠባበቅ ላይ`
+              : `Deposit slip from ${p.ownerName || p.enteredBy} - Pending verification`,
+            actionPage: 'payment_receipts',
+          })),
+        });
+      } else if (pendingPayments.length === 1) {
+        const p = pendingPayments[0];
+        list.push({
+          id: `pending_payment_single_${p.id}`,
+          title: isAmharic
+            ? `የክፍያ ደረሰኝ ማረጋገጫ: #${p.receiptNumber}`
+            : `Deposit Receipt Pending: #${p.receiptNumber}`,
+          description: isAmharic
+            ? `ክፍያ ከ ${p.ownerName || p.enteredBy} (${p.amount || 0} ETB) የማረጋገጫ ቼክ ይፈልጋል።`
+            : `Payment receipt from ${p.ownerName || p.enteredBy} (${p.amount || 0} ETB) requires bank verification.`,
           type: 'pending_payment',
           icon: 'receipt_long',
           iconBg: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
@@ -888,54 +959,108 @@ const HomePageShell: React.FC<HomePageProps> = ({
     if (isClerk || isSuperAdmin) {
       // Approved submissions notification for Clerks
       const approvedRegs = registrations.filter((r) => r.status === 'approved');
-      if (approvedRegs.length > 0) {
-        approvedRegs.slice(0, 3).forEach((reg) => {
-          const isWasCorrection = reg.isCorrection || reg.lastRejectionReason;
-          list.push({
-            id: `reg_approved_clerk_${reg.id}`,
-            title: isWasCorrection
-              ? (isAmharic ? `ማስተካከያው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Correction Approved by Manager: ${reg.fullName}`)
-              : (isAmharic ? `ማመልከቻው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Application Approved by Manager: ${reg.fullName}`),
+      if (approvedRegs.length > 1) {
+        list.push({
+          id: `approved_regs_summary_${approvedRegs.length}`,
+          title: isAmharic
+            ? `${approvedRegs.length} ማመልከቻዎች በስራ አስኪያጅ ጸድቀዋል`
+            : `${approvedRegs.length} Registration Submissions Approved by Manager`,
+          description: isAmharic
+            ? 'የተረጋገጡ አዳዲስ የሞተር ፈቃዶች፤ የባጅ/ሰሌዳ ህትመት ማከናወን ወይም ለባለቤቱ መስጠት ይችላሉ።'
+            : 'Newly approved motor registration applications ready for permit card printing and issuing.',
+          type: 'print_order',
+          icon: 'check_circle',
+          iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+          badgeLabel: isAmharic ? 'በስራ አስኪያጅ ጸድቋል' : 'Approved by Manager',
+          badgeBg: 'bg-emerald-500/20',
+          badgeText: 'text-emerald-700 dark:text-emerald-300',
+          actionPage: 'tables',
+          actionTab: 'approved',
+          subItems: approvedRegs.map((reg) => ({
+            id: `sub_approved_${reg.id}`,
+            title: `${reg.fullName} (${reg.plateNumber || reg.id})`,
             description: isAmharic
-              ? `ለ ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'}) የቀረበው ማመልከቻ ጸድቋል፤ የባጅ/ሰሌዳ ፈቃድ ማተም ወይም ማረጋገጫ መስጠት ይችላሉ።`
-              : `Registration for ${reg.fullName} (${reg.plateNumber || 'Plate'}) was approved by manager. Ready for permit issue.`,
+              ? 'በስራ አስኪያጅ የተረጋገጠ - ለፈቃድ አሰጣጥ ዝግጁ'
+              : 'Approved by manager - Ready for permit issuance',
             time: reg.registrationDate,
-            type: 'print_order',
-            icon: 'check_circle',
-            iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
-            badgeLabel: isAmharic ? 'በስራ አስኪያጅ ጸድቋል' : 'Approved by Manager',
-            badgeBg: 'bg-emerald-500/20',
-            badgeText: 'text-emerald-700 dark:text-emerald-300',
             actionPage: 'tables',
             actionTab: 'approved',
-          });
+          })),
+        });
+      } else if (approvedRegs.length === 1) {
+        const reg = approvedRegs[0];
+        const isWasCorrection = reg.isCorrection || reg.lastRejectionReason;
+        list.push({
+          id: `reg_approved_single_${reg.id}`,
+          title: isWasCorrection
+            ? (isAmharic ? `ማስተካከያው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Correction Approved by Manager: ${reg.fullName}`)
+            : (isAmharic ? `ማመልከቻው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Application Approved by Manager: ${reg.fullName}`),
+          description: isAmharic
+            ? `ለ ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'}) የቀረበው ማመልከቻ ጸድቋል፤ የባጅ/ሰሌዳ ፈቃድ ማተም ይችላሉ።`
+            : `Registration for ${reg.fullName} (${reg.plateNumber || 'Plate'}) was approved by manager. Ready for permit issue.`,
+          time: reg.registrationDate,
+          type: 'print_order',
+          icon: 'check_circle',
+          iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+          badgeLabel: isAmharic ? 'በስራ አስኪያጅ ጸድቋል' : 'Approved by Manager',
+          badgeBg: 'bg-emerald-500/20',
+          badgeText: 'text-emerald-700 dark:text-emerald-300',
+          actionPage: 'tables',
+          actionTab: 'approved',
         });
       }
 
       // Rejected / Correction Needed submissions notification for Clerks
       const rejectedRegs = registrations.filter((r) => r.status === 'rejected');
-      if (rejectedRegs.length > 0) {
-        rejectedRegs.slice(0, 3).forEach((reg) => {
-          const reasonText = reg.rejectionReason
-            ? (isAmharic ? `የስራ አስኪያጅ አስተያየት: ${reg.rejectionReason}` : `Manager Rejection Reason: ${reg.rejectionReason}`)
-            : (isAmharic ? 'የስራ አስኪያጅ አስተያየት: ሰነዶች አልሟሉም ወይም ማስተካከያ ይፈልጋል' : 'Manager Rejection Reason: Documents incomplete or require correction');
-
-          list.push({
-            id: `reg_rejected_clerk_${reg.id}`,
-            title: isAmharic
-              ? `ማስተካከያ ይፈልጋል (ውድቅ): ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'})`
-              : `Correction Required (Rejected): ${reg.fullName} (${reg.plateNumber || 'Plate'})`,
-            description: reasonText,
+      if (rejectedRegs.length > 1) {
+        list.push({
+          id: `rejected_regs_summary_${rejectedRegs.length}`,
+          title: isAmharic
+            ? `${rejectedRegs.length} ማመልከቻዎች ማስተካከያ ይፈልጋሉ (ውድቅ ተደርገዋል)`
+            : `${rejectedRegs.length} Applications Require Correction (Rejected)`,
+          description: isAmharic
+            ? 'በስራ አስኪያጅ አስተያየት ተሰጥቶባቸው የተመለሱ ማመልከቻዎች፤ እባክዎን በCorrection Table አስተካክለው ድጋሚ ያቅርቡ።'
+            : 'Applications returned by manager with correction notes. Please update and resubmit in Submission Correction table.',
+          type: 'flagged_inspection',
+          icon: 'published_with_changes',
+          iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+          badgeLabel: isAmharic ? 'ማስተካከያ ይፈልጋል' : 'Needs Correction',
+          badgeBg: 'bg-rose-500/20',
+          badgeText: 'text-rose-700 dark:text-rose-300',
+          actionPage: 'today_submissions_adjust',
+          actionTab: 'pending',
+          subItems: rejectedRegs.map((reg) => ({
+            id: `sub_rejected_${reg.id}`,
+            title: `${reg.fullName} (${reg.plateNumber || reg.id})`,
+            description: reg.rejectionReason
+              ? (isAmharic ? `ምክንያት: ${reg.rejectionReason}` : `Reason: ${reg.rejectionReason}`)
+              : (isAmharic ? 'ምክንያት: ሰነዶች አልሟሉም ወይም ማስተካከያ ይፈልጋል' : 'Reason: Documents incomplete or require correction'),
             time: reg.registrationDate,
-            type: 'flagged_inspection',
-            icon: 'published_with_changes',
-            iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
-            badgeLabel: isAmharic ? 'ማስተካከያ ይፈልጋል' : 'Needs Correction',
-            badgeBg: 'bg-rose-500/20',
-            badgeText: 'text-rose-700 dark:text-rose-300',
             actionPage: 'today_submissions_adjust',
             actionTab: 'pending',
-          });
+          })),
+        });
+      } else if (rejectedRegs.length === 1) {
+        const reg = rejectedRegs[0];
+        const reasonText = reg.rejectionReason
+          ? (isAmharic ? `የስራ አስኪያጅ አስተያየት: ${reg.rejectionReason}` : `Manager Rejection Reason: ${reg.rejectionReason}`)
+          : (isAmharic ? 'የስራ አስኪያጅ አስተያየት: ሰነዶች አልሟሉም ወይም ማስተካከያ ይፈልጋል' : 'Manager Rejection Reason: Documents incomplete or require correction');
+
+        list.push({
+          id: `reg_rejected_single_${reg.id}`,
+          title: isAmharic
+            ? `ማስተካከያ ይፈልጋል (ውድቅ): ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'})`
+            : `Correction Required (Rejected): ${reg.fullName} (${reg.plateNumber || 'Plate'})`,
+          description: reasonText,
+          time: reg.registrationDate,
+          type: 'flagged_inspection',
+          icon: 'published_with_changes',
+          iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+          badgeLabel: isAmharic ? 'ማስተካከያ ይፈልጋል' : 'Needs Correction',
+          badgeBg: 'bg-rose-500/20',
+          badgeText: 'text-rose-700 dark:text-rose-300',
+          actionPage: 'today_submissions_adjust',
+          actionTab: 'pending',
         });
       }
 
