@@ -573,10 +573,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
         {/* CONTAINER SECTION HEADER (TAILADMIN DESIGN) */}
         <div className="py-4 px-4 md:px-6 xl:px-7.5 flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-sm bg-[#3C50E0]/10 flex items-center justify-center text-[#3C50E0]">
-              <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
-            </div>
+          <div className="flex items-center gap-2.5">
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">edit_note</Icon>
             <div>
               <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
                 {isAmharic
@@ -1411,9 +1409,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-outline-variant dark:border-slate-800 flex items-center justify-between bg-surface-container/30 dark:bg-slate-800/40">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-md bg-slate-700 text-white flex items-center justify-center shadow-xs">
-                  <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
-                </div>
+                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">edit_note</Icon>
                 <div>
                   <h3 className="font-black text-sm sm:text-base text-on-surface dark:text-white">
                     {isAmharic ? 'የማመልከቻ መረጃ ማስተካከያና ማቅረቢያ' : 'Edit & Re-Submit Application'}
@@ -1461,7 +1457,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               {/* Section 1: Owner Info */}
               <div className="space-y-3">
                 <h4 className="text-xs font-black text-on-surface dark:text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
-                  <Icon className="material-symbols-outlined text-[16px] text-slate-700">person</Icon>
+                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">person</Icon>
                   <span>{isAmharic ? '1. የባለቤት መረጃ' : '1. Owner Information'}</span>
                 </h4>
 
@@ -1534,7 +1530,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               {/* Section 2: Vehicle Info */}
               <div className="space-y-3 pt-2">
                 <h4 className="text-xs font-black text-on-surface dark:text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
-                  <Icon className="material-symbols-outlined text-[16px] text-slate-700">two_wheeler</Icon>
+                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">two_wheeler</Icon>
                   <span>{isAmharic ? '2. የተሽከርካሪ መረጃ' : '2. Vehicle Information'}</span>
                 </h4>
 
@@ -1743,10 +1739,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm max-w-lg w-full p-6 shadow-2xl space-y-5">
             {/* Modal Header */}
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-                <Icon className="material-symbols-outlined text-[24px]">verified</Icon>
-              </div>
+            <div className="flex items-start gap-2.5">
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0 mt-0.5">verified</Icon>
               <div className="flex-1">
                 <h3 className="font-bold text-base text-[#1C2434] dark:text-white">
                   {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}

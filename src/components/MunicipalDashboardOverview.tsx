@@ -467,7 +467,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* ==================== UNIFIED OVERVIEW CONTAINER ==================== */}
       <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-xs overflow-hidden mb-6">
         <div className="flex items-center gap-2.5 border-b border-outline-variant/60 px-4 sm:px-5 py-3.5 bg-slate-50/50 dark:bg-slate-900/50">
-          <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">dashboard</Icon>
+          <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">dashboard</Icon>
           <h2 className="font-black text-sm sm:text-base text-on-surface uppercase tracking-wider">
             {isAmharic ? 'አጠቃላይ እይታ' : 'Overview'}
           </h2>
@@ -479,7 +479,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[22px] text-amber-600 shrink-0">admin_panel_settings</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">admin_panel_settings</Icon>
               <div>
                 <h3 className="text-sm sm:text-base font-black text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'የበላይ አስተዳዳሪ ቁጥጥር ማዕከል' : 'Super Admin Governance Metrics'}
@@ -581,7 +581,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-5 space-y-3 animate-in slide-in-from-top-4 duration-200">
           <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
             <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-primary text-[22px]">qr_code_scanner</Icon>
+              <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[16px] shrink-0">qr_code_scanner</Icon>
               <h3 className="font-extrabold text-sm text-on-surface">
                 {isAmharic ? 'የቀጥታ QR እና ሰሌዳ መለያ ፍተሻ' : 'Live QR & License Plate Scanner'}
               </h3>
@@ -612,7 +612,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">badge</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">badge</Icon>
               <div>
                 <h3 className="text-sm sm:text-base font-black text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'የምዝገባ መረጃዎች' : 'Clerk Intake Dashboard Metrics'}
@@ -681,7 +681,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <div className="p-4 sm:p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">payments</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">payments</Icon>
                   <div>
                     <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
                       {isAmharic ? 'የገቢዎችና ደረሰኞች ቁጥጥር' : 'Revenue Ledger & Compliance'}
@@ -777,7 +777,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <div className="p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
               <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>
+                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
                 <div>
                   <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
                     {isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub'}
@@ -848,7 +848,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
               <div>
                 <h2 className="font-extrabold text-sm sm:text-base text-on-surface uppercase tracking-wider">
                   {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
@@ -922,7 +922,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-6 bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-2xs space-y-4">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
             <div className="flex items-center gap-3">
-              <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">{currentRoleConfig.headerIcon}</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">{currentRoleConfig.headerIcon}</Icon>
               <h3 className="text-sm sm:text-base font-extrabold text-on-surface">
                 {currentRoleConfig.title}
               </h3>
@@ -966,7 +966,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-4 shadow-xs space-y-3">
           <div className="flex justify-between items-center border-b border-outline-variant pb-2.5">
             <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-primary text-[20px]">history</Icon>
+              <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[16px] sm:text-[18px] shrink-0">history</Icon>
               <h3 className="text-sm sm:text-base font-bold text-on-surface uppercase tracking-wider">
                 {isAmharic ? 'የቅርብ ጊዜ የመስክ ፍተሻዎች' : 'Recent Field Verifications'}
               </h3>

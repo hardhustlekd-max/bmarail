@@ -79,9 +79,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       {/* Header Bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#F1F5F9] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-full bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-[#3C50E0]/20 dark:text-blue-400 flex items-center justify-center shrink-0">
-            <Icon className="material-symbols-outlined text-[18px]">notifications_active</Icon>
-          </div>
+          <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">notifications_active</Icon>
           <div className="min-w-0">
             <h3 className="font-extrabold text-xs sm:text-sm tracking-tight break-words text-[#1C2434] dark:text-white">
               {isAmharic ? 'የስርዓት ማሳወቂያዎች' : 'System Notifications'}

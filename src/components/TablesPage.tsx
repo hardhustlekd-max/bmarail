@@ -664,9 +664,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         {/* CONTAINER HEADER */}
         <div className="px-3.5 py-2.5 sm:px-5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434]">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[18px]">table_chart</Icon>
-            </div>
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">table_chart</Icon>
             <div>
               <h3 className="font-semibold text-sm sm:text-base text-[#1C2434] dark:text-white">
                 {userRole === 'clerk'
@@ -1843,10 +1841,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-md bg-[#1e293b] text-yellow-400 flex items-center justify-center font-bold shadow-xs">
-                  <Icon className="material-symbols-outlined text-[24px]">two_wheeler</Icon>
-                </div>
+              <div className="flex items-center gap-2.5">
+                <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">two_wheeler</Icon>
                 <div>
                   <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
                     {isAmharic ? 'የተሟላ የሞተር ሳይክል ምዝገባ መረጃ' : 'Motorcycle Registration Record Details'}
@@ -1890,7 +1886,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2">
                 <h4 className="font-extrabold text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center gap-1.5">
-                  <Icon className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">person</Icon>
+                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">person</Icon>
                   <span>{isAmharic ? 'የባለቤት መረጃ' : 'Owner Information'}</span>
                 </h4>
                 <div className="space-y-1.5">
@@ -1903,7 +1899,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
               <div className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2">
                 <h4 className="font-extrabold text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center gap-1.5">
-                  <Icon className="material-symbols-outlined text-[16px] text-yellow-600 dark:text-yellow-400">electric_moped</Icon>
+                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">electric_moped</Icon>
                   <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Specifications'}</span>
                 </h4>
                 <div className="space-y-1.5">
@@ -1929,7 +1925,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <div className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
                     <h4 className="font-extrabold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <Icon className="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">receipt_long</Icon>
+                      <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">receipt_long</Icon>
                       <span>{isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}</span>
                     </h4>
                     <div className="flex items-center gap-2">
@@ -2167,7 +2163,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             {/* Document Photos */}
             <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800">
               <h4 className="font-extrabold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-[18px] text-yellow-600 dark:text-yellow-400">photo_library</Icon>
+                <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">photo_library</Icon>
                 <span>{isAmharic ? 'የተያያዙ ፎቶዎች እና ሰነዶች (Click to Zoom)' : 'Uploaded Document Photos (Click to Zoom)'}</span>
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
@@ -2380,9 +2376,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-md bg-emerald-600 text-white flex items-center justify-center font-bold shadow-xs">
-                  <Icon className="material-symbols-outlined text-[22px]">add_card</Icon>
-                </div>
+                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">add_card</Icon>
                 <div>
                   <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
                     {isAmharic ? 'የወርሃዊ ክፍያ ደረሰኝ መመዝገቢያ' : 'Record Monthly Payment Receipt'}
@@ -2568,9 +2562,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-[#10B981]/15 text-[#10B981] flex items-center justify-center font-bold">
-                  <Icon className="material-symbols-outlined text-[20px]">check_circle</Icon>
-                </div>
+                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">check_circle</Icon>
                 <div>
                   <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}
@@ -2647,9 +2639,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           <div className="bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-[#FB5454]/15 text-[#FB5454] flex items-center justify-center font-bold">
-                  <Icon className="material-symbols-outlined text-[20px]">warning</Icon>
-                </div>
+                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">warning</Icon>
                 <div>
                   <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የጅምላ መሰረዝ ማረጋገጫ' : 'Confirm Bulk Deletion'}
@@ -2733,9 +2723,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             {/* Modal Header */}
             <div className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between bg-[#F7F9FC] dark:bg-[#24303F]">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-md bg-[#3C50E0] text-white flex items-center justify-center">
-                  <Icon className="material-symbols-outlined text-[18px]">print</Icon>
-                </div>
+                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">print</Icon>
                 <div>
                   <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የተመረጡ አባላት ዝርዝር ማህደር' : 'Selected Members Roster'}

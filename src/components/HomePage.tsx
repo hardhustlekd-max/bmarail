@@ -3160,10 +3160,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         type="button"
                         onClick={() => setActivePage(item.page as any)}
                         disabled={isLast}
-                        className={`flex items-center py-1 px-2.5 rounded-sm transition-all text-xs ${
+                        className={`flex items-center py-0.5 px-1 transition-all text-xs ${
                           isLast
-                            ? 'text-[#3C50E0] font-semibold cursor-default bg-[#3C50E0]/10 dark:bg-[#3C50E0]/20'
-                            : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white hover:bg-[#E2E8F0]/50 dark:hover:bg-[#2E3A47]/50 font-medium cursor-pointer'
+                            ? 'text-slate-500 dark:text-slate-400 font-medium cursor-default'
+                            : 'text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white font-medium cursor-pointer'
                         }`}
                       >
                         <span className="truncate max-w-[130px] sm:max-w-[220px]">{item.label}</span>
@@ -3388,10 +3388,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
             className="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-xl shadow-2xl p-5 sm:p-6 space-y-4 animate-in zoom-in-95 duration-200 text-on-surface"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-[#1e293b] text-amber-400 flex items-center justify-center shrink-0 border border-yellow-500/40 shadow-xs">
-                <Icon className="material-symbols-outlined text-[20px]">logout</Icon>
-              </div>
+            <div className="flex items-center gap-2.5">
+              <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">logout</Icon>
               <div>
                 <h3 className="text-base font-black text-on-surface tracking-tight">
                   {isAmharic ? 'ከሲስተም መውጣት ማረጋገጫ' : 'Confirm System Logout'}

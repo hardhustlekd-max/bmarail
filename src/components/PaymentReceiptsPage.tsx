@@ -516,7 +516,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
         <div>
           <h2 className="text-lg sm:text-xl font-black text-slate-950 dark:text-white tracking-tight flex items-center gap-2">
-            <Icon className="material-symbols-outlined text-slate-900 dark:text-slate-100 text-[26px]">
+            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px] text-slate-700 dark:text-slate-300 shrink-0">
               account_balance_wallet
             </Icon>
             <span>{isAmharic ? 'የክፍያ ደረሰኝ & የሂሳብ መዝገብ' : 'Payment Receipts & Revenue Ledger'}</span>
@@ -632,7 +632,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         >
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-slate-900 dark:text-slate-100 text-[22px]">
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">
                 add_card
               </Icon>
               <h3 className="text-sm font-black text-slate-950 dark:text-white uppercase tracking-wider">
@@ -1519,7 +1519,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-emerald-400 text-[22px]">
+                  <Icon className="material-symbols-outlined text-slate-300 text-[16px] sm:text-[18px] shrink-0">
                     compare_arrows
                   </Icon>
                   <h3 className="text-sm sm:text-base font-black uppercase tracking-wide">
@@ -1546,7 +1546,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
                   <div className="flex items-center gap-1.5">
-                    <Icon className="material-symbols-outlined text-slate-900 dark:text-slate-100 text-[18px]">
+                    <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400 shrink-0">
                       account_balance
                     </Icon>
                     <span className="font-black text-slate-950 dark:text-white uppercase">
@@ -1655,7 +1655,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* DUAL-CALENDAR TIMELINE CARD */}
               <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
                 <div className="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-700 pb-2">
-                  <Icon className="material-symbols-outlined text-slate-900 dark:text-slate-100 text-[18px]">
+                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400 shrink-0">
                     calendar_month
                   </Icon>
                   <span className="font-black text-slate-950 dark:text-white uppercase">

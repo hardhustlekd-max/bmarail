@@ -248,10 +248,8 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-lg bg-yellow-500 text-[#1e293b] flex items-center justify-center font-bold shrink-0 shadow-xs">
-              <Icon className="material-symbols-outlined text-[24px]">edit_document</Icon>
-            </div>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">edit_document</Icon>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-black text-sm sm:text-base text-slate-900 dark:text-white truncate">
