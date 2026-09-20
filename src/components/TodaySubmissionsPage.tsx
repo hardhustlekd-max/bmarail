@@ -553,15 +553,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   ? (isAdminOrSuperAdmin ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
                   : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Submission Correction')}
               </h3>
-              <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">
-                {isAmharic
-                  ? (isAdminOrSuperAdmin
-                      ? 'በጸሐፊ ተስተካክለው የቀረቡ እና ማፅደቅ የሚጠባበቁ ማመልከቻዎች ዝርዝር'
-                      : 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ')
-                  : (isAdminOrSuperAdmin
-                      ? 'List of resubmitted corrections waiting for review and approval'
-                      : 'Rejection corrections by the clerk waiting for manager approval')}
-              </p>
+              {!isAdminOrSuperAdmin && (
+                <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">
+                  {isAmharic
+                    ? 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ'
+                    : 'Rejection corrections by the clerk waiting for manager approval'}
+                </p>
+              )}
             </div>
           </div>
 
