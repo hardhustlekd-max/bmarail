@@ -766,8 +766,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             {/* Desktop Collapsible Sub-row: Action Buttons & Attached Documents */}
                             {isExpanded && (
                               <tr className="bg-[#F7F9FC]/90 dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                                <td colSpan={11} className="px-6 py-4">
-                                  <div className="space-y-4">
+                                <td colSpan={11} className="px-5 py-3">
+                                  <div className="space-y-3">
                                     {/* Member Information Card (Redesigned Style) */}
                                     <ExpandableMemberCard
                                       fullName={getDisplayName(reg)}
@@ -1076,11 +1076,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           onClick={() => toggleRegExpand(reg.id)}
                         >
                           <div className="flex items-center gap-3 min-w-0 flex-1">
-                            {/* Rectangular Avatar with Registration Status Border */}
-                            <div className={`w-12 h-14 rounded-md border-2 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center ${
-                              reg.status === 'approved' ? 'border-emerald-500 bg-emerald-50/20' :
-                              reg.status === 'rejected' ? 'border-rose-500 bg-rose-50/20' : 'border-amber-500 bg-amber-50/20'
-                            }`}>
+                            {/* Rectangular Avatar with Clean Neutral Border */}
+                            <div className="w-12 h-14 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
                               {(reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto) ? (
                                 <img
                                   src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}

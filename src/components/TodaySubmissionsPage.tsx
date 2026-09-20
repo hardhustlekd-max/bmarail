@@ -914,8 +914,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                         {/* Desktop Collapsible Sub-row: Action Buttons & Attached Documents */}
                         {isExpanded && (
                           <tr className="bg-[#F7F9FC]/90 dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                            <td colSpan={canApproveBulk ? 12 : 11} className="px-6 py-4">
-                              <div className="space-y-4">
+                            <td colSpan={canApproveBulk ? 12 : 11} className="px-5 py-3">
+                              <div className="space-y-3">
                                 {/* Member Information Card (Redesigned Style) */}
                                 <ExpandableMemberCard
                                   fullName={reg.fullName || (isAmharic ? 'ያልታወቀ አባል' : 'Unknown Member')}

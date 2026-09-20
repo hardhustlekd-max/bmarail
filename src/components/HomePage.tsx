@@ -2293,7 +2293,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               </div>
 
               {/* Mobile Main Navigation Links */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <p className="text-[10px] font-extrabold text-yellow-400/80 uppercase tracking-wider px-1 mb-1">
                   {isAmharic ? 'ዋና ክፍሎች' : 'Navigation Pages'}
                 </p>
@@ -2305,7 +2305,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     setActivePage('dashboard');
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-2.5 py-2 min-h-[40px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] active:bg-slate-700 ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 min-h-[42px] rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] active:bg-slate-700 ${
                     activePage === 'dashboard'
                       ? 'bg-yellow-500 text-[#1e293b] shadow-2xs font-black'
                       : 'bg-white/5 border border-white/10 text-white hover:bg-white/15'
@@ -2321,13 +2321,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 </button>
 
                 {/* Expandable Group: Registrations & Permits */}
-                <div className="pt-1.5">
+                <div className="pt-1">
                   <button
                     type="button"
                     onClick={() => toggleGroup('registrations')}
-                    className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-white/5 border border-white/10 text-xs font-black uppercase text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
+                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[40px] rounded-lg bg-white/5 border border-white/10 text-xs font-black uppercase text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       <Icon className="material-symbols-outlined text-[18px] text-yellow-400">assignment</Icon>
                       <span>{isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}</span>
                     </div>
@@ -2338,7 +2338,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
                   <div className={`collapsible-grid ${expandedGroups.registrations ? 'expanded' : ''}`}>
                     <div className="collapsible-grid-inner">
-                      <div className="mt-0.5 space-y-0.5 pl-2 border-l-2 border-yellow-500/30 ml-2 py-0.5">
+                      <div className="mt-1 space-y-1 pl-2.5 border-l-2 border-yellow-500/30 ml-2 py-1">
                         {userRole === 'clerk' ? (
                           <>
                             {(settings.showClerkNewRegistrationAction ?? true) && (
