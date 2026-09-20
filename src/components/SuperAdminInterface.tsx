@@ -723,18 +723,12 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
   return (
     <div className="space-y-6 pb-12 font-sans text-on-surface">
-      {/* Container with header with icon and header text */}
-      <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
-        {/* Header with Icon and Text */}
-        <div className="px-4 sm:px-5 py-3.5 sm:py-4 bg-surface-container border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Container with header with header text */}
+      <div className="bg-surface-container-lowest rounded-lg border border-outline-variant/60 shadow-xs overflow-hidden">
+        {/* Header with Text */}
+        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-surface-container/60 border-b border-outline-variant/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[22px] sm:text-[24px] shrink-0">
-              {activeTab === 'users' && 'manage_accounts'}
-              {activeTab === 'subcities' && 'location_city'}
-              {activeTab === 'permits' && 'workspace_premium'}
-              {activeTab === 'maintenance' && 'storage'}
-            </Icon>
-            <h2 className="text-xs sm:text-base font-black text-on-surface truncate">
+            <h2 className="text-xs sm:text-base font-semibold text-on-surface truncate">
               {activeTab === 'users' && (isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions')}
               {activeTab === 'subcities' && (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')}
               {activeTab === 'permits' && (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')}

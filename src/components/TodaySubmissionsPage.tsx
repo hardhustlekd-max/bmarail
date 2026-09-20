@@ -572,25 +572,20 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
 
         {/* CONTAINER SECTION HEADER (TAILADMIN DESIGN) */}
-        <div className="py-4 px-4 md:px-6 xl:px-7.5 flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-sm bg-[#3C50E0]/10 flex items-center justify-center text-[#3C50E0]">
-              <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
-            </div>
-            <div>
-              <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
+        <div className="py-3 px-4 md:px-6 flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+          <div>
+            <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
+              {isAmharic
+                ? (isAdminOrSuperAdmin ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
+                : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Submission Correction')}
+            </h3>
+            {!isAdminOrSuperAdmin && (
+              <p className="text-xs text-[#64748B] dark:text-[#8A99AD] mt-0.5">
                 {isAmharic
-                  ? (isAdminOrSuperAdmin ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
-                  : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Submission Correction')}
-              </h3>
-              {!isAdminOrSuperAdmin && (
-                <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">
-                  {isAmharic
-                    ? 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ'
-                    : 'Rejection corrections by the clerk waiting for manager approval'}
-                </p>
-              )}
-            </div>
+                  ? 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ'
+                  : 'Rejection corrections by the clerk waiting for manager approval'}
+              </p>
+            )}
           </div>
 
           <div className="flex items-center gap-2">

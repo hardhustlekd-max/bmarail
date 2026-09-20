@@ -663,19 +663,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
         {/* CONTAINER HEADER */}
         <div className="px-3.5 py-2.5 sm:px-5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434]">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[18px]">table_chart</Icon>
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm sm:text-base text-[#1C2434] dark:text-white">
-                {userRole === 'clerk'
-                  ? (activeTableTab === 'approved'
-                      ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
-                      : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
-                  : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')}
-              </h3>
-            </div>
+          <div>
+            <h3 className="font-semibold text-sm sm:text-base text-[#1C2434] dark:text-white">
+              {userRole === 'clerk'
+                ? (activeTableTab === 'approved'
+                    ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
+                    : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
+                : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')}
+            </h3>
           </div>
 
           <div className="flex items-center gap-2">

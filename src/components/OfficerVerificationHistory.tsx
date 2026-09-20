@@ -325,13 +325,10 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
       <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden divide-y divide-outline-variant/60 dark:divide-slate-800">
         {/* CONTAINER SECTION HEADER */}
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900">
-          <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">analytics</Icon>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
-                {isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}
-              </h3>
-            </div>
+          <div>
+            <h3 className="font-semibold text-sm sm:text-base text-on-surface dark:text-white">
+              {isAmharic ? 'የፍተሻ ሪፖርት' : 'Inspection Report'}
+            </h3>
           </div>
 
           <div className="hidden sm:flex items-center gap-2">
