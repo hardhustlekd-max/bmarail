@@ -209,6 +209,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
   // Search & secondary filter states
   const [regSearchQuery, setRegSearchQuery] = useState('');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [regCategoryFilter, setRegCategoryFilter] = useState<'all' | 'private' | 'commercial' | 'governmental'>('all');
   const [regSubCityFilter, setRegSubCityFilter] = useState<string>('all');
 
@@ -454,21 +455,78 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             </div>
           </div>
 
-          {showHiddenControls && isSuperAdmin && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FB5454]/10 border border-[#FB5454]/20 text-[#FB5454] rounded-sm text-xs font-semibold shadow-2xs">
-              <Icon className="material-symbols-outlined text-[16px]">visibility_off</Icon>
-              <span>
-                {isAmharic ? 'ጠቅላላ የተደበቁ:' : 'Total Hidden:'}{' '}
-                {registrations.filter((r) => r.hideFromOtherUsers).length}
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {showHiddenControls && isSuperAdmin && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FB5454]/10 border border-[#FB5454]/20 text-[#FB5454] rounded-sm text-xs font-semibold shadow-2xs">
+                <Icon className="material-symbols-outlined text-[16px]">visibility_off</Icon>
+                <span>
+                  {isAmharic ? 'ጠቅላላ የተደበቁ:' : 'Total Hidden:'}{' '}
+                  {registrations.filter((r) => r.hideFromOtherUsers).length}
+                </span>
+              </div>
+            )}
+
+            {/* Mobile Search Icon Toggle on table header opposite left side */}
+            <button
+              type="button"
+              onClick={() => setIsMobileSearchOpen((prev) => !prev)}
+              className={`sm:hidden w-9 h-9 rounded-sm flex items-center justify-center border transition-colors cursor-pointer ${
+                isMobileSearchOpen || regSearchQuery
+                  ? 'bg-[#3C50E0] text-white border-[#3C50E0]'
+                  : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] border-[#E2E8F0] dark:border-[#2E3A47] hover:text-[#1C2434] dark:hover:text-white'
+              }`}
+              title={isAmharic ? 'ፈልግ' : 'Search'}
+            >
+              <Icon className="material-symbols-outlined text-[18px]">
+                {isMobileSearchOpen ? 'close' : 'search'}
+              </Icon>
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Search Dropdown */}
+        {isMobileSearchOpen && (
+          <div className="sm:hidden p-3 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] animate-fade-in">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#8A99AD]">
+                <Icon className="material-symbols-outlined text-[16px]">search</Icon>
+              </div>
+              <input
+                type="text"
+                autoFocus
+                value={regSearchQuery}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const isSuperUser = isSuperAdmin;
+                  if (isSuperUser && val.toLowerCase().includes('super1212')) {
+                    setShowHiddenControls(true);
+                    const cleaned = val.replace(/super1212/gi, '').trim();
+                    setRegSearchQuery(cleaned);
+                  } else {
+                    setRegSearchQuery(val);
+                  }
+                  setRegPage(1);
+                }}
+                placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
+                className="w-full rounded-sm border border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] py-2 pl-9 pr-8 text-xs text-[#1C2434] dark:text-white outline-none"
+              />
+              {regSearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setRegSearchQuery('')}
+                  className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[15px]">close</Icon>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* SUB-FILTER SLIDE BAR (TAILADMIN DESIGN: LIVE SEARCH & STATUS BUTTONS) */}
         <div className="px-4 py-3 sm:px-6 sm:py-3.5 bg-[#F7F9FC] dark:bg-[#24303F]/60 flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          {/* Live Search Input */}
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
+          {/* Live Search Input (Hidden on mobile, shown in header dropdown) */}
+          <div className="relative flex-1 min-w-[200px] max-w-sm hidden sm:block">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#8A99AD]">
               <Icon className="material-symbols-outlined text-[16px]">search</Icon>
             </div>

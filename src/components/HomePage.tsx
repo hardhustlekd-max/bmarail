@@ -457,7 +457,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
       case 'forms':
         return 'አዲስ ምዝገባ';
       case 'today_submissions_adjust':
-        return 'ማመልከቻ ማስተካከያ';
+        return ['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ';
       case 'tables':
         return userRole === 'clerk'
           ? (tableInitialTab === 'approved' ? 'የፀደቁ ተሽከርካሪዎች' : 'የቀረቡ ማመልከቻዎች')
@@ -523,10 +523,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
     }
 
     if (activePage === 'today_submissions_adjust') {
+      const isPrivileged = ['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole);
       return [
         homeItem,
         {
-          label: isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction',
+          label: isAmharic
+            ? (isPrivileged ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
+            : (isPrivileged ? 'Submitted Corrections' : 'Submission Correction'),
           page: 'today_submissions_adjust',
           icon: 'edit_note',
         },
@@ -1213,11 +1216,12 @@ const HomePageShell: React.FC<HomePageProps> = ({
   }, [systemNotifications, readNotificationIds, userNotificationScope, clearedStorageKey]);
 
   const handleSelectNotification = useCallback(
-    (item: NotificationItem) => {
-      // Mark selected notification as read in DB & local state
+    (item: any) => {
+      // Mark selected notification (and parent item if applicable) as read in DB & local state
       setReadNotificationIds((prev) => {
         const next = new Set(prev);
-        next.add(item.id);
+        if (item.id) next.add(item.id);
+        if (item.parentId) next.add(item.parentId);
         const readArr = Array.from(next) as string[];
         const clearedArr = Array.from(clearedNotificationIds) as string[];
         saveUserNotificationStateToDb(userNotificationScope, readArr, clearedArr);
@@ -1765,7 +1769,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[16px] shrink-0 text-amber-400">edit_note</Icon>
-                            <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
+                            <span>
+                              {isAmharic
+                                ? (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
+                                : (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'Submitted Corrections' : 'Submission Correction')}
+                            </span>
                           </button>
                         )}
 
@@ -2464,7 +2472,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               >
                                 <div className="flex items-center gap-2">
                                   <Icon className="material-symbols-outlined text-[18px] text-amber-400">edit_note</Icon>
-                                  <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
+                                  <span>
+                                    {isAmharic
+                                      ? (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
+                                      : (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'Submitted Corrections' : 'Submission Correction')}
+                                  </span>
                                 </div>
                                 <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
                               </button>

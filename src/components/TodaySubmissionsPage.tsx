@@ -54,11 +54,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   }
 
   const isReadOnly = getPermissionState(userRole, 2) === 'view_only';
+  const isAdminOrSuperAdmin = userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin' || (userRole as string) === 'manager';
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState<'today' | 'all'>('today');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('pending_approval');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -495,30 +497,87 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             </div>
             <div>
               <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
-                {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
+                {isAmharic
+                  ? (isAdminOrSuperAdmin ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
+                  : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Submission Correction')}
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">
-                {isAmharic ? 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ' : 'Rejection corrections by the clerk waiting for manager approval'}
+                {isAmharic
+                  ? (isAdminOrSuperAdmin
+                      ? 'በጸሐፊ ተስተካክለው የቀረቡ እና ማፅደቅ የሚጠባበቁ ማመልከቻዎች ዝርዝር'
+                      : 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ')
+                  : (isAdminOrSuperAdmin
+                      ? 'List of resubmitted corrections waiting for review and approval'
+                      : 'Rejection corrections by the clerk waiting for manager approval')}
               </p>
             </div>
           </div>
 
-          {onNavigateToNewRegistration && (
+          <div className="flex items-center gap-2">
+            {/* Mobile Search Icon Toggle on table header opposite left side */}
             <button
               type="button"
-              onClick={onNavigateToNewRegistration}
-              className="hidden sm:inline-flex items-center justify-center gap-2 rounded-sm bg-[#3C50E0] py-2 px-5 text-center font-medium text-white hover:bg-opacity-90 cursor-pointer text-xs shadow-xs"
+              onClick={() => setIsMobileSearchOpen((prev) => !prev)}
+              className={`sm:hidden w-9 h-9 rounded-sm flex items-center justify-center border transition-colors cursor-pointer ${
+                isMobileSearchOpen || searchQuery
+                  ? 'bg-[#3C50E0] text-white border-[#3C50E0]'
+                  : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] border-[#E2E8F0] dark:border-[#2E3A47] hover:text-[#1C2434] dark:hover:text-white'
+              }`}
+              title={isAmharic ? 'ፈልግ' : 'Search'}
             >
-              <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
-              <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
+              <Icon className="material-symbols-outlined text-[18px]">
+                {isMobileSearchOpen ? 'close' : 'search'}
+              </Icon>
             </button>
-          )}
+
+            {onNavigateToNewRegistration && (
+              <button
+                type="button"
+                onClick={onNavigateToNewRegistration}
+                className="hidden sm:inline-flex items-center justify-center gap-2 rounded-sm bg-[#3C50E0] py-2 px-5 text-center font-medium text-white hover:bg-opacity-90 cursor-pointer text-xs shadow-xs"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
+                <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Mobile Search Dropdown */}
+        {isMobileSearchOpen && (
+          <div className="sm:hidden p-3 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] animate-fade-in">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+                <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+              </div>
+              <input
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
+                placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
+                className="w-full rounded-sm border border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] py-2 pl-9 pr-8 text-xs text-[#1C2434] dark:text-white outline-none"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[15px]">close</Icon>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* SUB-FILTER SLIDE BAR (SEARCH, DATE TOGGLE & STATUS SLIDE PILLS - TAILADMIN DESIGN) */}
         <div className="p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          {/* Live Search Input */}
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
+          {/* Live Search Input (Hidden on mobile, shown in header dropdown instead) */}
+          <div className="relative flex-1 min-w-[200px] max-w-sm hidden sm:block">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
               <Icon className="material-symbols-outlined text-[18px]">search</Icon>
             </div>
@@ -581,27 +640,25 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             <div className="flex items-center gap-1.5 flex-wrap shrink-0">
               {[
                 {
-                  id: 'all',
-                  label: isAmharic ? 'ሁሉም' : 'All Corrections',
-                  count: dateFilteredRegs.length,
-                  badgeColor: 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-                {
-                  id: 'rejected',
-                  label: isAmharic ? 'ውድቅ የተደረጉ (ማስተካከያ የሚሹ)' : 'Rejected (Needs Correction)',
-                  count: rejectedCount,
-                  badgeColor:
-                    rejectedCount > 0
-                      ? 'bg-[#FB5454]/20 text-[#FB5454]'
-                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-                {
                   id: 'pending_approval',
-                  label: isAmharic ? 'ማፅደቂያ በመጠባበቅ ላይ' : 'Waiting for Approval',
+                  label: isAmharic
+                    ? (isAdminOrSuperAdmin ? 'ተስተካክለለው የቀረቡ' : 'ማፅደቂያ በመጠባበቅ ላይ')
+                    : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Waiting for Approval'),
                   count: pendingCount,
                   badgeColor:
                     pendingCount > 0
                       ? 'bg-[#F59E0B]/20 text-[#F59E0B]'
+                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
+                },
+                {
+                  id: 'rejected',
+                  label: isAmharic
+                    ? (isAdminOrSuperAdmin ? 'እዲስተካከሉ የቀረቡ' : 'ውድቅ የተደረጉ (ማስተካከያ የሚሹ)')
+                    : (isAdminOrSuperAdmin ? 'Referred for Correction' : 'Rejected (Needs Correction)'),
+                  count: rejectedCount,
+                  badgeColor:
+                    rejectedCount > 0
+                      ? 'bg-[#FB5454]/20 text-[#FB5454]'
                       : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
                 },
               ].map((tab) => {
@@ -636,12 +693,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             </div>
 
             {/* Reset filter button if filtered */}
-            {(searchQuery || statusFilter !== 'all' || dateFilter !== 'today') && (
+            {(searchQuery || statusFilter !== 'pending_approval' || dateFilter !== 'today') && (
               <button
                 type="button"
                 onClick={() => {
                   setSearchQuery('');
-                  setStatusFilter('all');
+                  setStatusFilter('pending_approval');
                   setDateFilter('today');
                   setPage(1);
                 }}

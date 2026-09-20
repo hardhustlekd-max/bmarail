@@ -13,6 +13,7 @@ export interface NotificationSubItem {
 
 export interface NotificationItem {
   id: string;
+  parentId?: string;
   title: string;
   description: string;
   time?: string;
@@ -32,7 +33,7 @@ interface NotificationDropdownProps {
   readIds: Set<string>;
   onMarkAllAsRead: () => void;
   onClearAll: () => void;
-  onSelectNotification: (item: NotificationItem | { actionPage?: ActiveHomePage; actionTab?: string; id: string }) => void;
+  onSelectNotification: (item: NotificationItem | { actionPage?: ActiveHomePage; actionTab?: string; id: string; parentId?: string }) => void;
   onQuickAction?: (item: NotificationItem) => void;
   onClose: () => void;
   isAmharic: boolean;
@@ -98,21 +99,6 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          {unreadCount > 0 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onMarkAllAsRead();
-              }}
-              className="px-2 py-1 rounded-sm text-[11px] font-bold text-[#3C50E0] dark:text-blue-400 hover:bg-[#3C50E0]/10 transition-colors flex items-center gap-1 cursor-pointer"
-              title={isAmharic ? 'ሁሉንም አንብብ' : 'Mark all as read'}
-            >
-              <Icon className="material-symbols-outlined text-[15px]">done_all</Icon>
-              <span className="hidden sm:inline">{isAmharic ? 'ሁሉንም አንብብ' : 'Mark read'}</span>
-            </button>
-          )}
-
           <button
             type="button"
             onClick={(e) => {
@@ -277,6 +263,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                           e.stopPropagation();
                           onSelectNotification({
                             id: sub.id,
+                            parentId: item.id,
                             title: sub.title,
                             description: sub.description,
                             type: item.type,
