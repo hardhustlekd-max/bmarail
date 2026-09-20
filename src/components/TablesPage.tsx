@@ -1187,8 +1187,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                       ]}
                                     />
 
-                                    {/* Action Buttons Toolbar (TailAdmin Style) */}
-                                    <div className="p-3.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-xs flex flex-wrap items-center justify-between gap-3">
+                                    {/* Action Buttons Toolbar - Flattened without nested card container */}
+                                    <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex flex-wrap items-center justify-between gap-3">
                                       <div className="flex items-center gap-2.5">
                                         <div className="w-8 h-8 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] flex items-center justify-center border border-[#3C50E0]/20 shrink-0">
                                           <Icon className="material-symbols-outlined text-[18px]">touch_app</Icon>
@@ -1214,7 +1214,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             <button
                                               type="button"
                                               onClick={() => onApproveRegistration(reg.id)}
-                                              className="px-3 py-1.5 bg-[#10B981] hover:bg-[#059669] text-white font-medium text-xs rounded-sm shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                                              className="h-8.5 px-3 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
                                             >
                                               <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
                                               <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
@@ -1222,7 +1222,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             <button
                                               type="button"
                                               onClick={() => setRejectingId(reg.id)}
-                                              className="px-3 py-1.5 bg-[#FB5454]/10 text-[#FB5454] hover:bg-[#FB5454]/20 font-medium text-xs rounded-sm border border-[#FB5454]/20 transition-colors cursor-pointer flex items-center gap-1.5"
+                                              className="h-8.5 px-3 rounded-md bg-[#FB5454]/10 text-[#FB5454] hover:bg-[#FB5454]/20 font-semibold text-xs border border-[#FB5454]/20 transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
                                             >
                                               <Icon className="material-symbols-outlined text-[16px]">cancel</Icon>
                                               <span>{isAmharic ? 'ሰርዝ (Reject)' : 'Reject'}</span>
@@ -1236,7 +1236,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             id={`edit-reg-btn-${reg.id}`}
                                             type="button"
                                             onClick={() => setEditingRegistration(reg)}
-                                            className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                            className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
                                             title={isAmharic ? 'የአባል መረጃ አሻሽል (Edit)' : 'Edit Registration'}
                                           >
                                             <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
@@ -1249,7 +1249,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                           <button
                                             type="button"
                                             onClick={() => setSelectedRegForQR(reg)}
-                                            className="px-3 py-1.5 bg-[#3C50E0] hover:bg-opacity-90 text-white font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                                            className="h-8.5 px-3 rounded-md bg-[#3C50E0] hover:bg-opacity-90 text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
                                             title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
                                           >
                                             <Icon className="material-symbols-outlined text-[16px]">badge</Icon>
@@ -1263,7 +1263,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             <button
                                               type="button"
                                               onClick={() => setSelectedRegForA4(reg)}
-                                              className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-medium text-xs rounded-sm transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                              className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-semibold text-xs transition-all cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
                                               title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ ወረቀት አትም' : 'Print Movement Permit Document'}
                                             >
                                               <Icon className="material-symbols-outlined text-[16px]">print</Icon>
@@ -1273,7 +1273,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             <button
                                               type="button"
                                               onClick={() => setSelectedRegForSticker(reg)}
-                                              className="px-3 py-1.5 bg-[#10B981] hover:bg-opacity-90 text-white font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                                              className="h-8.5 px-3 rounded-md bg-[#10B981] hover:bg-opacity-90 text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
                                               title={isAmharic ? 'የሞተር QR ተለጣፊ አትም' : 'Print Vehicle QR Sticker'}
                                             >
                                               <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
@@ -1286,7 +1286,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                         <button
                                           type="button"
                                           onClick={() => setSelectedRegForDetails(reg)}
-                                          className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                          className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
                                           title={isAmharic ? 'ዝርዝር መረጃ ይመልከቱ' : 'View Full Details'}
                                         >
                                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
@@ -1538,24 +1538,25 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 {getDisplayName(reg)}
                               </h4>
 
-                              <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
-                                {/* Motor Type Tag */}
+                              <div className="flex items-center flex-wrap gap-2 pt-0.5">
+                                {/* Motor Type Tag - Clean Text & Icon */}
                                 {reg.vehicleCategory === 'electric' ? (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30">
-                                    <Icon className="material-symbols-outlined text-[11px]">electric_bolt</Icon>
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#10B981]">
+                                    <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
                                     <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3C50E0]/15 text-[#3C50E0] border border-[#3C50E0]/30">
-                                    <Icon className="material-symbols-outlined text-[11px]">local_gas_station</Icon>
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3C50E0]">
+                                    <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
                                     <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
                                   </span>
                                 )}
 
-                                {/* Badge ID Pill */}
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F1F5F9] dark:bg-[#2E3A47] text-[#1C2434] dark:text-white text-[10px] sm:text-[11px] font-mono font-bold rounded-md tracking-wider border border-slate-200 dark:border-slate-700">
-                                  <Icon className="material-symbols-outlined text-[12px] text-[#64748B] dark:text-[#8A99AD]">badge</Icon>
-                                  <span>{reg.plateNumber || reg.id}</span>
+                                <span className="text-slate-300 dark:text-slate-600 font-bold">•</span>
+
+                                {/* Badge ID / Plate - Clean Monospace */}
+                                <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">
+                                  {reg.plateNumber || reg.id}
                                 </span>
                               </div>
                             </div>

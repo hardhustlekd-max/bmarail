@@ -1345,16 +1345,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             <button
                               type="button"
                               onClick={() => setReconcileReceipt(rc)}
-                              className="px-3 py-1.5 rounded-sm bg-[#3C50E0] text-white text-xs font-medium hover:bg-opacity-90 transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                              className="h-8.5 px-3 rounded-md bg-[#3C50E0] text-white text-xs font-semibold hover:bg-opacity-90 transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
                               title={isAmharic ? 'የባንክ ማስታረቂያ' : 'Reconcile Bank Reference'}
                             >
-                              <Icon className="material-symbols-outlined text-[15px]">compare_arrows</Icon>
+                              <Icon className="material-symbols-outlined text-[16px]">compare_arrows</Icon>
                               <span>{isAmharic ? 'አስታርቅ' : 'Reconcile'}</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => setDeleteConfirmId(rc.id)}
-                              className="p-1.5 rounded-sm text-[#FB5454] hover:bg-[#FB5454]/10 transition-all cursor-pointer border border-transparent hover:border-[#FB5454]/20"
+                              className="w-8.5 h-8.5 rounded-md text-[#FB5454] hover:bg-[#FB5454]/10 transition-all cursor-pointer border border-transparent hover:border-[#FB5454]/20 inline-flex items-center justify-center shrink-0"
                               title={isAmharic ? 'ሰርዝ' : 'Delete'}
                             >
                               <Icon className="material-symbols-outlined text-[18px]">delete</Icon>

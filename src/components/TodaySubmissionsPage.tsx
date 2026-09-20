@@ -963,7 +963,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                           {/* 4. Standalone Plate Number */}
                           <td className="py-4 px-4 align-middle whitespace-nowrap">
-                            <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block">
+                            <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white">
                               {reg.plateNumber || '—'}
                             </span>
                           </td>
@@ -971,12 +971,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                           {/* 5. Standalone Category */}
                           <td className="py-4 px-3 align-middle text-xs whitespace-nowrap">
                             {reg.vehicleCategory === 'electric' ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
                                 <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
                                 <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20">
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#3C50E0]">
                                 <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
                                 <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
                               </span>
@@ -1059,23 +1059,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                   ]}
                                 />
 
-                                {/* Action Buttons Toolbar (TailAdmin Style) */}
-                                <div className="p-3.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-xs flex flex-wrap items-center justify-between gap-3">
-                                  <div className="flex items-center gap-2.5">
-                                    <div className="w-8 h-8 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] flex items-center justify-center border border-[#3C50E0]/20 shrink-0">
-                                      <Icon className="material-symbols-outlined text-[18px]">touch_app</Icon>
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-xs text-[#1C2434] dark:text-white uppercase tracking-wider">
-                                          {isAmharic ? 'የተግባር አዝራሮች (Action Buttons)' : 'Action Buttons'}
-                                        </span>
-                                        {renderStatusBadge(reg.status, reg)}
-                                      </div>
-                                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                                        {reg.fullName || '—'} • {reg.plateNumber || getChassisDisplay(reg) || reg.id}
-                                      </span>
-                                    </div>
+                                {/* Action Buttons Toolbar (Flattened, Unified Height) */}
+                                <div className="pt-2 pb-1 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex flex-wrap items-center justify-between gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-bold text-xs text-[#1C2434] dark:text-white uppercase tracking-wider">
+                                      {isAmharic ? 'የተግባር አዝራሮች:' : 'Actions:'}
+                                    </span>
+                                    {renderStatusBadge(reg.status, reg)}
                                   </div>
 
                                   <div className="flex flex-wrap items-center gap-2">
@@ -1086,7 +1076,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                           type="button"
                                           disabled={approvingId === reg.id}
                                           onClick={() => handleSingleApprove(reg)}
-                                          className="px-3 py-1.5 bg-[#10B981] hover:bg-[#10B981]/90 text-white font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+                                          className="h-8.5 px-3 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-2xs disabled:opacity-50 whitespace-nowrap"
                                           title={isAmharic ? 'ማመልከቻውን አጽድቅ' : 'Approve application'}
                                         >
                                           <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
@@ -1100,7 +1090,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                         <button
                                           type="button"
                                           onClick={() => handleOpenEdit(reg)}
-                                          className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                          className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
                                           title={isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit application'}
                                         >
                                           <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
@@ -1114,7 +1104,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                       <button
                                         type="button"
                                         onClick={() => setInspectReg(reg)}
-                                        className="px-3 py-1.5 bg-[#3C50E0] hover:bg-opacity-90 text-white font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                                        className="h-8.5 px-3 rounded-md bg-[#3C50E0] hover:bg-opacity-90 text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
                                         title={isAmharic ? 'ፈቃድ እይ' : 'Inspect permit card'}
                                       >
                                         <Icon className="material-symbols-outlined text-[16px]">badge</Icon>
@@ -1301,24 +1291,25 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             {reg.fullName || '—'}
                           </h4>
 
-                          <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
-                            {/* Motor Type Tag */}
+                          <div className="flex items-center flex-wrap gap-2 pt-0.5">
+                            {/* Motor Type Tag - Clean */}
                             {reg.vehicleCategory === 'electric' ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#10B981]/15 text-[#10B981] border border-[#10B981]/30">
-                                <Icon className="material-symbols-outlined text-[11px]">electric_bolt</Icon>
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#10B981]">
+                                <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
                                 <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3C50E0]/15 text-[#3C50E0] border border-[#3C50E0]/30">
-                                <Icon className="material-symbols-outlined text-[11px]">local_gas_station</Icon>
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#3C50E0]">
+                                <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
                                 <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
                               </span>
                             )}
 
-                            {/* Badge ID Pill */}
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[#F1F5F9] dark:bg-[#2E3A47] text-[#1C2434] dark:text-white text-[10px] sm:text-[11px] font-mono font-bold rounded-md tracking-wider border border-slate-200 dark:border-slate-700">
-                              <Icon className="material-symbols-outlined text-[12px] text-[#64748B] dark:text-[#8A99AD]">badge</Icon>
-                              <span>{reg.plateNumber || reg.id}</span>
+                            <span className="text-slate-300 dark:text-slate-600 font-bold">•</span>
+
+                            {/* Badge ID / Plate - Clean Monospace */}
+                            <span className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">
+                              {reg.plateNumber || reg.id}
                             </span>
                           </div>
                         </div>

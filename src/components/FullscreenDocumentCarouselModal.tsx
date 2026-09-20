@@ -45,8 +45,8 @@ export const buildRegistrationDocumentList = (
     });
   }
 
-  // 3. National ID (Front) - visible only for SuperAdmin if restricted
-  if (isSuperAdmin && reg.nationalIdPhoto && typeof reg.nationalIdPhoto === 'string' && reg.nationalIdPhoto.trim() !== '') {
+  // 3. National ID (Front)
+  if (reg.nationalIdPhoto && typeof reg.nationalIdPhoto === 'string' && reg.nationalIdPhoto.trim() !== '') {
     list.push({
       url: reg.nationalIdPhoto,
       title: isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID (Front)',
@@ -56,8 +56,8 @@ export const buildRegistrationDocumentList = (
     });
   }
 
-  // 4. National ID (Back) - visible only for SuperAdmin if restricted
-  if (isSuperAdmin && reg.nationalIdBackPhoto && typeof reg.nationalIdBackPhoto === 'string' && reg.nationalIdBackPhoto.trim() !== '') {
+  // 4. National ID (Back)
+  if (reg.nationalIdBackPhoto && typeof reg.nationalIdBackPhoto === 'string' && reg.nationalIdBackPhoto.trim() !== '') {
     list.push({
       url: reg.nationalIdBackPhoto,
       title: isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)',
@@ -591,6 +591,34 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             />
           )}
         </div>
+
+        {/* Floating Left / Right Navigation Arrows */}
+        {validItems.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePrev();
+              }}
+              title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
+              className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px]">chevron_left</Icon>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleNext();
+              }}
+              title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
+              className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px]">chevron_right</Icon>
+            </button>
+          </>
+        )}
 
         {/* Mobile Swipe Pagination Dots Indicator */}
         {validItems.length > 1 && (

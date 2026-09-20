@@ -56,10 +56,10 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
                 {fullName} {roleOrTitle && <span className="text-slate-500 dark:text-slate-400 font-bold text-xs">({roleOrTitle})</span>}
               </h4>
 
-              {/* Badge Pill */}
+              {/* Badge ID without box design */}
               {badgeId && (
-                <div>
-                  <span className="inline-block px-2.5 py-0.5 bg-[#F1F5F9] dark:bg-[#2E3A47] text-[#1C2434] dark:text-white text-[11px] sm:text-xs font-black rounded-md tracking-wider">
+                <div className="pt-0.5">
+                  <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300 tracking-wide">
                     {badgeId}
                   </span>
                 </div>
