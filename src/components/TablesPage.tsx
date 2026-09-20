@@ -2,7 +2,18 @@ import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
-import { updateRegistrationInDb, deleteRegistrationFromDb, isTaskAllowed, getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
+import {
+  updateRegistrationInDb,
+  deleteRegistrationFromDb,
+  bulkDeleteRegistrationsFromDb,
+  saveRegistrationToDb,
+  updateRegistrationStatusInDb,
+  addAuditLogToDb,
+  isTaskAllowed,
+  getPermissionState,
+  savePaymentReceiptToDb,
+  deletePaymentReceiptFromDb,
+} from '../services/dbService';
 import {
   Language,
   UserRole,
@@ -336,6 +347,173 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     setExpandedRegs((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  // --- BULK SELECTION & ACTION STATE ---
+  const [selectedRegIds, setSelectedRegIds] = useState<Set<string>>(new Set());
+  const [isSubmittingBulk, setIsSubmittingBulk] = useState(false);
+  const [showBulkApproveModal, setShowBulkApproveModal] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [showBulkPrintRosterModal, setShowBulkPrintRosterModal] = useState(false);
+
+  // Clear selection when switching tabs
+  React.useEffect(() => {
+    setSelectedRegIds(new Set());
+  }, [activeTableTab]);
+
+  const isAllPageSelected =
+    paginatedRegistrations.length > 0 &&
+    paginatedRegistrations.every((r) => selectedRegIds.has(r.id));
+
+  const toggleSelectRow = (id: string) => {
+    setSelectedRegIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAllPage = () => {
+    setSelectedRegIds((prev) => {
+      const next = new Set(prev);
+      const allSelected = paginatedRegistrations.every((r) => next.has(r.id));
+      if (allSelected) {
+        paginatedRegistrations.forEach((r) => next.delete(r.id));
+      } else {
+        paginatedRegistrations.forEach((r) => next.add(r.id));
+      }
+      return next;
+    });
+  };
+
+  const selectAllFiltered = () => {
+    setSelectedRegIds(new Set(filteredRegistrations.map((r) => r.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedRegIds(new Set());
+  };
+
+  const selectedRegsList = React.useMemo(() => {
+    return registrations.filter((r) => selectedRegIds.has(r.id));
+  }, [registrations, selectedRegIds]);
+
+  const selectedPendingCount = React.useMemo(() => {
+    return selectedRegsList.filter(
+      (r) => r.status === 'pending_approval' || (r.status as string) === 'pending'
+    ).length;
+  }, [selectedRegsList]);
+
+  const executeBulkApprove = async () => {
+    if (selectedRegIds.size === 0) return;
+    setIsSubmittingBulk(true);
+    try {
+      const selectedIds = Array.from(selectedRegIds);
+      let approvedCount = 0;
+
+      for (const id of selectedIds) {
+        const reg = registrations.find((r) => r.id === id);
+        if (reg) {
+          const updatedRecord: MotorcycleRegistration = {
+            ...reg,
+            status: 'approved',
+            rejectionReason: undefined,
+          };
+          await saveRegistrationToDb(updatedRecord);
+          await updateRegistrationStatusInDb(id, 'approved');
+          approvedCount++;
+        }
+      }
+
+      await addAuditLogToDb({
+        actorBadgeId: userBadgeId || (isSuperAdmin ? 'SUPERADMIN' : 'ADMIN-01'),
+        actorRole: userRole,
+        action: 'BULK_REGISTRATIONS_APPROVED',
+        details: `${userRole} bulk approved ${approvedCount} member registrations from Records & Tables`,
+        severity: 'info',
+      });
+
+      onShowToast?.(
+        isAmharic
+          ? `${approvedCount} አባላት በጅምላ በተሳካ ሁኔታ ጸድቀዋል!`
+          : `Successfully approved ${approvedCount} selected member(s)!`,
+        'success'
+      );
+
+      setSelectedRegIds(new Set());
+      setShowBulkApproveModal(false);
+    } catch (err: any) {
+      console.error('Bulk approve failed:', err);
+      onShowToast?.(
+        isAmharic ? 'በጅምላ ማጽደቅ ላይ ስህተት ተፈጥሯል' : 'Error performing bulk approval',
+        'error'
+      );
+    } finally {
+      setIsSubmittingBulk(false);
+    }
+  };
+
+  const executeBulkDelete = async () => {
+    if (selectedRegIds.size === 0) return;
+    setIsSubmittingBulk(true);
+    try {
+      const idsToDelete = Array.from(selectedRegIds);
+      await bulkDeleteRegistrationsFromDb(idsToDelete);
+
+      await addAuditLogToDb({
+        actorBadgeId: userBadgeId || (isSuperAdmin ? 'SUPERADMIN' : 'ADMIN'),
+        actorRole: userRole,
+        action: 'BULK_REGISTRATIONS_DELETED',
+        details: `${userRole} bulk deleted ${idsToDelete.length} member registrations`,
+        severity: 'warning',
+      });
+
+      onShowToast?.(
+        isAmharic
+          ? `${idsToDelete.length} የተመረጡ አባላት መረጃ በቋሚነት ተሰርዟል!`
+          : `Successfully deleted ${idsToDelete.length} selected member records!`,
+        'success'
+      );
+
+      setSelectedRegIds(new Set());
+      setShowBulkDeleteModal(false);
+    } catch (err: any) {
+      console.error('Bulk delete failed:', err);
+      onShowToast?.(
+        isAmharic ? 'በጅምላ መሰረዝ ላይ ስህተት ተፈጥሯል' : 'Failed to perform bulk delete',
+        'error'
+      );
+    } finally {
+      setIsSubmittingBulk(false);
+    }
+  };
+
+  const executeBulkToggleHide = async (shouldHide: boolean) => {
+    if (selectedRegIds.size === 0) return;
+    setIsSubmittingBulk(true);
+    try {
+      const ids = Array.from(selectedRegIds);
+      let count = 0;
+      for (const id of ids) {
+        await updateRegistrationInDb(id, { hideFromOtherUsers: shouldHide });
+        count++;
+      }
+      onShowToast?.(
+        isAmharic
+          ? `${count} አባላት ${shouldHide ? 'ተደብቀዋል' : 'ግልፅ ተደርገዋል'}!`
+          : `Successfully ${shouldHide ? 'hidden' : 'unhidden'} ${count} selected records!`,
+        'success'
+      );
+      setSelectedRegIds(new Set());
+    } catch (e) {
+      onShowToast?.(isAmharic ? 'ስህተት ተፈጥሯል' : 'Error updating visibility', 'error');
+    } finally {
+      setIsSubmittingBulk(false);
+    }
+  };
+
   // Renewal receipt logging modal state for members
   const [renewalModalReg, setRenewalModalReg] = useState<MotorcycleRegistration | null>(null);
   const [renewalReceiptNumber, setRenewalReceiptNumber] = useState('');
@@ -638,6 +816,124 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           </div>
         </div>
 
+        {/* --- BULK ACTION BANNER (WHEN RECORDS SELECTED) --- */}
+        {selectedRegIds.size > 0 && (
+          <div className="m-3 sm:m-4 p-3 sm:p-4 bg-gradient-to-r from-[#3C50E0]/12 via-[#3C50E0]/6 to-transparent dark:from-[#3C50E0]/25 dark:via-[#3C50E0]/12 border border-[#3C50E0]/30 rounded-md flex flex-wrap items-center justify-between gap-3 animate-fade-in shadow-xs">
+            {/* Left: Info & Selection count */}
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-md bg-[#3C50E0] text-white flex items-center justify-center shrink-0 shadow-xs">
+                <Icon className="material-symbols-outlined text-[20px]">checklist</Icon>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-extrabold text-xs sm:text-sm text-[#1C2434] dark:text-white">
+                    {isAmharic
+                      ? `${selectedRegIds.size} አባላት ተመርጠዋል`
+                      : `${selectedRegIds.size} member(s) selected`}
+                  </span>
+                  {selectedRegIds.size < filteredRegistrations.length && (
+                    <button
+                      type="button"
+                      onClick={selectAllFiltered}
+                      className="text-[11px] font-bold text-[#3C50E0] hover:underline cursor-pointer"
+                    >
+                      {isAmharic
+                        ? `(ሁሉንም ${filteredRegistrations.length} አባላት ምረጥ)`
+                        : `(Select all ${filteredRegistrations.length})`}
+                    </button>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                  {isAmharic
+                    ? 'በተመረጡት አባላት ላይ የጅምላ እርምጃዎችን መፈጸም ይችላሉ'
+                    : 'Perform bulk actions on the selected member records'}
+                </p>
+              </div>
+            </div>
+
+            {/* Right: Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Bulk Approve Action (if admin or superadmin) */}
+              {(userRole === 'admin' || isSuperAdmin) && (
+                <button
+                  type="button"
+                  onClick={() => setShowBulkApproveModal(true)}
+                  disabled={isSubmittingBulk}
+                  className="px-3 py-1.5 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title={isAmharic ? 'የተመረጡትን በጅምላ አጽድቅ' : 'Bulk Approve Selected'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                  <span>
+                    {isAmharic
+                      ? `በጅምላ አጽድቅ ${selectedPendingCount > 0 ? `(${selectedPendingCount})` : ''}`
+                      : `Bulk Approve ${selectedPendingCount > 0 ? `(${selectedPendingCount})` : ''}`}
+                  </span>
+                </button>
+              )}
+
+              {/* Print / Export Selected List */}
+              <button
+                type="button"
+                onClick={() => setShowBulkPrintRosterModal(true)}
+                className="px-3 py-1.5 rounded-md bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                title={isAmharic ? 'የተመረጡትን ዝርዝር አትም' : 'Print Selected List'}
+              >
+                <Icon className="material-symbols-outlined text-[16px]">print</Icon>
+                <span>{isAmharic ? 'ዝርዝር አትም' : 'Print List'}</span>
+              </button>
+
+              {/* SuperAdmin Bulk Hide/Unhide */}
+              {isSuperAdmin && (
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => executeBulkToggleHide(true)}
+                    disabled={isSubmittingBulk}
+                    className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer flex items-center gap-1"
+                    title={isAmharic ? 'ከተጠቃሚዎች ደብቅ' : 'Hide from other users'}
+                  >
+                    <Icon className="material-symbols-outlined text-[15px]">visibility_off</Icon>
+                    <span>{isAmharic ? 'ደብቅ' : 'Hide'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => executeBulkToggleHide(false)}
+                    disabled={isSubmittingBulk}
+                    className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer flex items-center gap-1"
+                    title={isAmharic ? 'ለሁሉም ግልፅ አድርግ' : 'Show to all users'}
+                  >
+                    <Icon className="material-symbols-outlined text-[15px]">visibility</Icon>
+                    <span>{isAmharic ? 'ግልፅ አድርግ' : 'Unhide'}</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Bulk Delete (if allowed) */}
+              {(isTaskAllowed(userRole, 11) || isSuperAdmin) && (
+                <button
+                  type="button"
+                  onClick={() => setShowBulkDeleteModal(true)}
+                  disabled={isSubmittingBulk}
+                  className="px-3 py-1.5 rounded-md bg-[#FB5454]/10 hover:bg-[#FB5454]/20 border border-[#FB5454]/30 text-[#FB5454] font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title={isAmharic ? 'የተመረጡትን በጅምላ ሰርዝ' : 'Bulk Delete Selected'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
+                  <span>{isAmharic ? 'በጅምላ ሰርዝ' : 'Bulk Delete'}</span>
+                </button>
+              )}
+
+              {/* Clear selection button */}
+              <button
+                type="button"
+                onClick={clearSelection}
+                className="px-2.5 py-1.5 rounded-md text-xs font-semibold text-[#64748B] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer"
+              >
+                {isAmharic ? 'ሰርዝ (Deselect)' : 'Deselect'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* --- VIEW 1: REGISTRATIONS TABLE (FILTERED BY STATUS) --- */}
         {(activeTableTab === 'approved' || activeTableTab === 'pending' || activeTableTab === 'expired') && (
           <div className="min-h-[580px] flex flex-col justify-between">
@@ -646,7 +942,24 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] text-xs uppercase tracking-wider font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <th className="py-4 px-4 text-center w-14">#</th>
+                    <th className="py-3 px-3 text-center min-w-[85px] align-middle">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <label
+                          className="inline-flex items-center gap-1 cursor-pointer select-none"
+                          title={isAmharic ? 'በዚህ ገጽ ያሉትን ሁሉንም ምረጥ/ሰርዝ' : 'Select/Deselect All on Page'}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isAllPageSelected}
+                            onChange={toggleSelectAllPage}
+                            className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer"
+                          />
+                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white uppercase">
+                            {isAmharic ? 'ሁሉም' : 'All'}
+                          </span>
+                        </label>
+                      </div>
+                    </th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</th>
                     <th className="py-4 px-4 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
@@ -699,12 +1012,24 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   ) : (
                       paginatedRegistrations.map((reg, index) => {
                         const isExpanded = !!expandedRegs[reg.id];
+                        const isRowSelected = selectedRegIds.has(reg.id);
                         return (
                           <React.Fragment key={reg.id}>
-                            <tr className="h-16 align-middle hover:bg-[#F7F9FC]/70 dark:hover:bg-[#24303F]/50 transition-colors">
-                              {/* Index Number & Expand Toggle */}
+                            <tr className={`h-16 align-middle transition-colors ${
+                              isRowSelected
+                                ? 'bg-[#3C50E0]/8 dark:bg-[#3C50E0]/15 hover:bg-[#3C50E0]/12 dark:hover:bg-[#3C50E0]/20'
+                                : 'hover:bg-[#F7F9FC]/70 dark:hover:bg-[#24303F]/50'
+                            }`}>
+                              {/* Index Number & Expand Toggle + Bulk Select Checkbox */}
                               <td className="px-3 py-2.5 align-middle h-16 text-center font-mono font-medium text-[#8A99AD]">
                                 <div className="flex items-center justify-center gap-1.5">
+                                  <input
+                                    type="checkbox"
+                                    checked={isRowSelected}
+                                    onChange={() => toggleSelectRow(reg.id)}
+                                    className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer shrink-0"
+                                    title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
+                                  />
                                   <button
                                     type="button"
                                     onClick={() => toggleRegExpand(reg.id)}
@@ -1106,6 +1431,26 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
               {/* Mobile Cards / Collapsed Rows View (< md) */}
               <div className="block md:hidden divide-y divide-slate-200 dark:divide-slate-800">
+                {/* Mobile Select All Header Bar */}
+                {filteredRegistrations.length > 0 && (
+                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between">
+                    <label className="inline-flex items-center gap-2 text-xs font-bold text-[#1C2434] dark:text-white cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={isAllPageSelected}
+                        onChange={toggleSelectAllPage}
+                        className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer"
+                      />
+                      <span>{isAmharic ? 'ሁሉንም አባላት ምረጥ (Select All)' : 'Select All Members'}</span>
+                    </label>
+                    {selectedRegIds.size > 0 && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3C50E0] text-white shadow-2xs">
+                        {isAmharic ? `${selectedRegIds.size} ተመርጠዋል` : `${selectedRegIds.size} selected`}
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 {registrations.length === 0 ? (
                   <div className="p-10 text-center text-slate-500 dark:text-slate-400 space-y-1.5">
                     <Icon className="material-symbols-outlined text-[36px] text-slate-400 dark:text-slate-600 mx-auto block">inbox</Icon>
@@ -1126,14 +1471,35 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 ) : (
                   paginatedRegistrations.map((reg, index) => {
                     const isExpanded = !!expandedRegs[reg.id];
+                    const isCardSelected = selectedRegIds.has(reg.id);
                     return (
-                      <div key={reg.id} className="p-3.5 sm:p-4 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                      <div
+                        key={reg.id}
+                        className={`p-3.5 sm:p-4 transition-colors ${
+                          isCardSelected
+                            ? 'bg-[#3C50E0]/8 dark:bg-[#3C50E0]/15'
+                            : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40'
+                        }`}
+                      >
                         {/* Unexpanded Record Header - Redesigned Style */}
                         <div
                           className="flex items-center justify-between gap-3 cursor-pointer select-none p-1"
                           onClick={() => toggleRegExpand(reg.id)}
                         >
-                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                            {/* Checkbox for selection */}
+                            <input
+                              type="checkbox"
+                              checked={isCardSelected}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                toggleSelectRow(reg.id);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer shrink-0"
+                              title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
+                            />
+
                             {/* Rectangular Avatar with Clean Neutral Border */}
                             <div className="w-12 h-14 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
                               {(reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto) ? (
@@ -2294,6 +2660,291 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           setEditingRegistration(null);
         }}
       />
+
+      {/* --- BULK APPROVE CONFIRMATION MODAL --- */}
+      {showBulkApproveModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-[#10B981]/15 text-[#10B981] flex items-center justify-center font-bold">
+                  <Icon className="material-symbols-outlined text-[20px]">check_circle</Icon>
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
+                    {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}
+                  </h4>
+                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                    {isAmharic
+                      ? `ለተመረጡት ${selectedRegIds.size} አባላት ማፅደቅ እርግጠኛ ነዎት?`
+                      : `Are you sure you want to approve ${selectedRegIds.size} selected member(s)?`}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBulkApproveModal(false)}
+                className="text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+              </button>
+            </div>
+
+            {/* Selected preview list */}
+            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#F7F9FC] dark:bg-[#24303F] rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs divide-y divide-slate-200 dark:divide-slate-700">
+              {selectedRegsList.map((reg, idx) => (
+                <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
+                  <div className="min-w-0 pr-2">
+                    <span className="font-semibold text-[#1C2434] dark:text-white truncate block">
+                      {idx + 1}. {getDisplayName(reg)}
+                    </span>
+                    <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                      {getDisplayPhone(reg)} • {reg.subCity || '—'}
+                    </span>
+                  </div>
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-white shrink-0">
+                    {reg.plateNumber || getChassisDisplay(reg) || reg.id}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowBulkApproveModal(false)}
+                disabled={isSubmittingBulk}
+                className="px-3.5 py-1.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] cursor-pointer"
+              >
+                {isAmharic ? 'ተመለስ' : 'Cancel'}
+              </button>
+              <button
+                type="button"
+                onClick={executeBulkApprove}
+                disabled={isSubmittingBulk}
+                className="px-4 py-1.5 rounded-md bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isSubmittingBulk ? (
+                  <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+                ) : (
+                  <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                )}
+                <span>
+                  {isAmharic
+                    ? `አጽድቅ (${selectedRegIds.size})`
+                    : `Confirm Approve (${selectedRegIds.size})`}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- BULK DELETE CONFIRMATION MODAL --- */}
+      {showBulkDeleteModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-[#FB5454]/15 text-[#FB5454] flex items-center justify-center font-bold">
+                  <Icon className="material-symbols-outlined text-[20px]">warning</Icon>
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
+                    {isAmharic ? 'የጅምላ መሰረዝ ማረጋገጫ' : 'Confirm Bulk Deletion'}
+                  </h4>
+                  <p className="text-[11px] text-[#FB5454] font-medium">
+                    {isAmharic
+                      ? `ማስጠንቀቂያ! የተመረጡትን ${selectedRegIds.size} አባላት በቋሚነት ለመሰረዝ እርግጠኛ ነዎት?`
+                      : `Warning! Are you sure you want to permanently delete ${selectedRegIds.size} selected member(s)?`}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBulkDeleteModal(false)}
+                className="text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+              </button>
+            </div>
+
+            <p className="text-xs text-[#64748B] dark:text-[#8A99AD] leading-relaxed">
+              {isAmharic
+                ? 'ይህ እርምጃ መረጃዎችን ከመረጃ ቋቱ (Database) ሙሉ በሙሉ የሚያጠፋ ሲሆን ወደ ኋላ መመለስ አይቻልም።'
+                : 'This action will permanently remove all selected registrations from the database and cannot be undone.'}
+            </p>
+
+            {/* Selected preview list */}
+            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#FB5454]/5 rounded-md border border-[#FB5454]/20 text-xs divide-y divide-slate-200 dark:divide-slate-700">
+              {selectedRegsList.map((reg, idx) => (
+                <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
+                  <div className="min-w-0 pr-2">
+                    <span className="font-semibold text-[#1C2434] dark:text-white truncate block">
+                      {idx + 1}. {getDisplayName(reg)}
+                    </span>
+                    <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                      {getDisplayPhone(reg)} • {reg.subCity || '—'}
+                    </span>
+                  </div>
+                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 text-[#FB5454] shrink-0">
+                    {reg.plateNumber || getChassisDisplay(reg) || reg.id}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowBulkDeleteModal(false)}
+                disabled={isSubmittingBulk}
+                className="px-3.5 py-1.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] cursor-pointer"
+              >
+                {isAmharic ? 'ተመለስ' : 'Cancel'}
+              </button>
+              <button
+                type="button"
+                onClick={executeBulkDelete}
+                disabled={isSubmittingBulk}
+                className="px-4 py-1.5 rounded-md bg-[#FB5454] hover:bg-[#D34040] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              >
+                {isSubmittingBulk ? (
+                  <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+                ) : (
+                  <Icon className="material-symbols-outlined text-[16px]">delete_forever</Icon>
+                )}
+                <span>
+                  {isAmharic
+                    ? `በቋሚነት ሰርዝ (${selectedRegIds.size})`
+                    : `Delete Permanently (${selectedRegIds.size})`}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- BULK PRINT ROSTER MODAL --- */}
+      {showBulkPrintRosterModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl animate-fade-in">
+            {/* Modal Header */}
+            <div className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between bg-[#F7F9FC] dark:bg-[#24303F]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-[#3C50E0] text-white flex items-center justify-center">
+                  <Icon className="material-symbols-outlined text-[18px]">print</Icon>
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white">
+                    {isAmharic ? 'የተመረጡ አባላት ዝርዝር ማህደር' : 'Selected Members Roster'}
+                  </h3>
+                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                    {isAmharic ? `ጠቅላላ የተመረጡ: ${selectedRegsList.length} አባላት` : `Total Selected: ${selectedRegsList.length} member(s)`}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.print();
+                  }}
+                  className="px-3.5 py-1.5 bg-[#3C50E0] hover:bg-[#3C50E0]/90 text-white font-bold text-xs rounded-md transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">print</Icon>
+                  <span>{isAmharic ? 'ወዲያውኑ አትም' : 'Print Now'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowBulkPrintRosterModal(false)}
+                  className="p-1.5 rounded-md hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+                </button>
+              </div>
+            </div>
+
+            {/* Printable Document Body */}
+            <div className="p-6 overflow-y-auto flex-1 bg-white text-[#1C2434]">
+              {/* Official Document Header */}
+              <div className="text-center pb-4 border-b-2 border-slate-900 space-y-1">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
+                </div>
+                <h4 className="font-extrabold text-xs tracking-wider text-slate-800 uppercase">
+                  {isAmharic ? 'የአማራ ብሔራዊ ክልላዊ መንግሥት የባህር ዳር ከተማ አስተዳደር' : 'Amhara National Regional State Bahir Dar City Administration'}
+                </h4>
+                <h3 className="font-black text-sm tracking-wide text-slate-900 uppercase">
+                  {isAmharic ? 'የትራንስፖርትና ደንብ ማስከበር መምሪያ' : 'Transport & Enforcement Department'}
+                </h3>
+                <h2 className="font-extrabold text-base text-blue-900 uppercase">
+                  {isAmharic ? 'የባህር ዳር ሞተር አሽከርካሪዎች ማህበር — የአባላት ማህደር ሪፖርት' : 'Bahir Dar Motorist Association — Members Registry Report'}
+                </h2>
+                <div className="flex items-center justify-between text-[11px] text-slate-600 font-mono pt-2 border-t border-slate-300 mt-2">
+                  <span>{isAmharic ? 'ቀን:' : 'Date:'} {formatEthiopianDate(new Date().toISOString().split('T')[0], isAmharic ? 'am' : 'en')}</span>
+                  <span>{isAmharic ? 'ጠቅላላ የተመረጡ አባላት:' : 'Total Members:'} <strong>{selectedRegsList.length}</strong></span>
+                  <span>{isAmharic ? 'የተዘጋጀው በ:' : 'Generated By:'} {userRole.toUpperCase()} ({userBadgeId || 'ADMIN'})</span>
+                </div>
+              </div>
+
+              {/* Table */}
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs border border-slate-400">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-900 border-b border-slate-400 font-bold text-[11px]">
+                      <th className="p-2 border-r border-slate-300 text-center w-10">#</th>
+                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</th>
+                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
+                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis No'}</th>
+                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'አይነት' : 'Category'}</th>
+                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
+                      <th className="p-2 border-r border-slate-300 text-center">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                      <th className="p-2 text-center">{isAmharic ? 'የምዝገባ ቀን' : 'Reg Date'}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-300">
+                    {selectedRegsList.map((reg, idx) => (
+                      <tr key={reg.id} className="hover:bg-slate-50">
+                        <td className="p-2 border-r border-slate-300 text-center font-mono">{idx + 1}</td>
+                        <td className="p-2 border-r border-slate-300 font-bold">{getDisplayName(reg)}</td>
+                        <td className="p-2 border-r border-slate-300 font-mono">{getDisplayPhone(reg)}</td>
+                        <td className="p-2 border-r border-slate-300 font-mono font-bold">{reg.plateNumber || '—'}</td>
+                        <td className="p-2 border-r border-slate-300 font-mono text-[10px]">{getChassisDisplay(reg)}</td>
+                        <td className="p-2 border-r border-slate-300">
+                          {reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
+                        </td>
+                        <td className="p-2 border-r border-slate-300">{reg.subCity || '—'}</td>
+                        <td className="p-2 border-r border-slate-300 text-center">
+                          {reg.status === 'approved' || reg.status === 'printed' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'የሚጠበቅ' : 'Pending')}
+                        </td>
+                        <td className="p-2 text-center font-mono text-[10px]">
+                          {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Signatures Footer */}
+              <div className="mt-8 pt-6 border-t border-slate-300 grid grid-cols-2 gap-8 text-xs text-slate-700">
+                <div>
+                  <p className="font-bold">{isAmharic ? 'ያዘጋጀው ባለሙያ ፊርማ:' : 'Prepared By Signature:'}</p>
+                  <div className="mt-6 border-b border-slate-400 w-48"></div>
+                  <p className="text-[10px] text-slate-500 mt-1">{isAmharic ? 'ስም እና ማህተም' : 'Name & Stamp'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold">{isAmharic ? 'ያረጋገጠው ኃላፊ ፊርማ:' : 'Approved By Head Signature:'}</p>
+                  <div className="mt-6 border-b border-slate-400 w-48 ml-auto"></div>
+                  <p className="text-[10px] text-slate-500 mt-1">{isAmharic ? 'ስም እና የቢሮ ማህተም' : 'Name & Official Stamp'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
