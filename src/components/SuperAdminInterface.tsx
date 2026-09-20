@@ -743,7 +743,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {activeTab === 'users' && (
-            <div className="hidden sm:flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start flex-wrap">
+            <div className="hidden sm:flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start flex-nowrap overflow-x-auto scrollbar-none max-w-full">
               {[
                 {
                   id: 'matrix' as const,
@@ -761,7 +761,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setUserViewMode(tab.id)}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 select-none rounded-md ${
                       isActive
                         ? 'bg-primary text-white font-extrabold shadow-2xs'
                         : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
@@ -1738,13 +1738,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 />
               </div>
 
-              <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto">
+              <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto flex-nowrap scrollbar-none max-w-full">
                 {(['all', 'info', 'warning', 'critical'] as const).map((sev) => (
                   <button
                     key={sev}
                     type="button"
                     onClick={() => setAuditSeverityFilter(sev)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all capitalize cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all capitalize cursor-pointer whitespace-nowrap shrink-0 ${
                       auditSeverityFilter === sev
                         ? 'bg-[#1e293b] text-white shadow-xs'
                         : 'bg-surface-container text-on-surface hover:bg-surface-container-high'

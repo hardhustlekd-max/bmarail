@@ -365,7 +365,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
           </div>
 
           {/* Status & Category Filter Badges */}
-          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto flex-wrap">
+          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto flex-nowrap scrollbar-none">
             <SelectField
               value={categoryFilter}
               onChange={(e) => {
@@ -379,7 +379,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
             </SelectField>
 
             {/* Status Filter Tabs in Clean Compact Pill Style */}
-            <div className="flex items-center gap-1 flex-wrap shrink-0">
+            <div className="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-none max-w-full shrink-0">
               {[
                 {
                   id: 'all' as const,
@@ -407,7 +407,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                       setStatusFilter(tab.id);
                       setCurrentPage(1);
                     }}
-                    className={`group relative flex items-center gap-1 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap select-none rounded-md ${
+                    className={`group relative flex items-center gap-1 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 select-none rounded-md ${
                       isActive
                         ? 'bg-primary text-white font-extrabold shadow-2xs'
                         : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'

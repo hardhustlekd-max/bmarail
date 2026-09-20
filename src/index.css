@@ -996,12 +996,45 @@ input[type="tel"].border-none {
   box-shadow: none !important;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide scrollbar for Chrome, Safari, Opera, Firefox and Edge */
+.no-scrollbar,
+.scrollbar-none,
+.scrollbar-hide {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
 .no-scrollbar::-webkit-scrollbar,
-.scrollbar-none::-webkit-scrollbar {
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
+}
+
+/* Universal Pill Tabs Scrollable - Never wrap, horizontal scroll without visible scrollbar */
+.pill-tabs-scrollable {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+  max-width: 100% !important;
+}
+
+.pill-tabs-scrollable::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.pill-tabs-scrollable > * {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
 }
 
 /* Navbar Action Progress Loader */

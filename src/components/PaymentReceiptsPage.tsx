@@ -1121,7 +1121,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
 
             {/* Status Tabs with Counts */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap shrink-0 max-w-full">
               {[
                 { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: paymentReceipts.length },
                 { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: metrics.activeCount },
@@ -1134,7 +1134,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     key={tab.key}
                     type="button"
                     onClick={() => setStatusFilter(tab.key)}
-                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       isActive
                         ? 'bg-[#3C50E0] text-white shadow-xs'
                         : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'

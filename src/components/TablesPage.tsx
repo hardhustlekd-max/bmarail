@@ -755,8 +755,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           </div>
 
           {/* Status Tabs in TailAdmin Button Group Style */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none max-w-full pb-1 sm:pb-0">
+            <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
               {[
                 {
                   id: 'approved' as const,
@@ -792,7 +792,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       setActiveTableTab(tab.id);
                       setRegPage(1);
                     }}
-                    className={`group relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all cursor-pointer whitespace-nowrap select-none rounded-sm ${
+                    className={`group relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all cursor-pointer whitespace-nowrap shrink-0 select-none rounded-sm ${
                       isActive
                         ? 'bg-[#3C50E0] text-white font-semibold shadow-xs'
                         : 'bg-white dark:bg-[#1C2434] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'

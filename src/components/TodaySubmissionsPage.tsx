@@ -670,16 +670,16 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
 
           {/* Status & Date Filter Segmented Slide Pills */}
-          <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex items-center gap-2.5 flex-nowrap overflow-x-auto scrollbar-none max-w-full pb-1 sm:pb-0">
             {/* Date Pill Toggle */}
-            <div className="inline-flex items-center p-1 rounded-sm bg-[#E2E8F0] dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47]">
+            <div className="inline-flex items-center p-1 rounded-sm bg-[#E2E8F0] dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] shrink-0 whitespace-nowrap">
               <button
                 type="button"
                 onClick={() => {
                   setDateFilter('today');
                   setPage(1);
                 }}
-                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                   dateFilter === 'today'
                     ? 'bg-[#3C50E0] text-white shadow-xs'
                     : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
@@ -693,7 +693,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   setDateFilter('all');
                   setPage(1);
                 }}
-                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer ${
+                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                   dateFilter === 'all'
                     ? 'bg-[#3C50E0] text-white shadow-xs'
                     : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
@@ -704,7 +704,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             </div>
 
             {/* Status Filter Tabs in TailAdmin Pill Style */}
-            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+            <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none shrink-0 max-w-full">
               {[
                 {
                   id: 'pending_approval',
@@ -738,7 +738,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setStatusFilter(tab.id);
                       setPage(1);
                     }}
-                    className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap rounded-sm ${
+                    className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 rounded-sm ${
                       isActive
                         ? 'bg-[#3C50E0] text-white shadow-xs'
                         : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'

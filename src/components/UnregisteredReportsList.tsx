@@ -204,7 +204,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
           {/* Status Filter Tabs & Sub-City Dropdown */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto max-w-full shrink-0">
-            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+            <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none max-w-full shrink-0">
               {[
                 {
                   id: 'all' as const,
@@ -241,7 +241,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       setStatusFilter(tab.id);
                       setCurrentPage(1);
                     }}
-                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       isActive
                         ? 'bg-[#3C50E0] text-white shadow-xs'
                         : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'

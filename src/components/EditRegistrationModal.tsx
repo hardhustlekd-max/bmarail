@@ -310,11 +310,11 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         )}
 
         {/* Tabs Navigation */}
-        <div className="px-4 sm:px-6 pt-3 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 overflow-x-auto bg-slate-50/40 dark:bg-slate-900/40">
+        <div className="px-4 sm:px-6 pt-3 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 flex-nowrap overflow-x-auto scrollbar-none bg-slate-50/40 dark:bg-slate-900/40">
           <button
             type="button"
             onClick={() => setActiveTab('owner')}
-            className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'owner'
                 ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -327,7 +327,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('vehicle')}
-            className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'vehicle'
                 ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -340,7 +340,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('documents')}
-            className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'documents'
                 ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -354,7 +354,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab('status')}
-              className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
+              className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === 'status'
                   ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
                   : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'

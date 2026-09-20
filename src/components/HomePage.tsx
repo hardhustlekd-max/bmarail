@@ -2105,11 +2105,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
               </div>
 
               {/* Center Navigation Tabs (Visible on Tablet / Medium screens md:flex) */}
-              <nav className="hidden md:flex items-center gap-1 bg-black/20 p-1 rounded-md border border-white/20 shrink-0">
+              <nav className="hidden md:flex items-center gap-1 bg-black/20 p-1 rounded-md border border-white/20 flex-nowrap overflow-x-auto scrollbar-none max-w-[50vw] shrink-0">
                 <button
                   type="button"
                   onClick={() => setActivePage('dashboard')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                     activePage === 'dashboard'
                       ? 'bg-yellow-500 text-[#1e293b] shadow-xs font-black'
                       : 'text-white/90 hover:bg-white/15'
@@ -2123,7 +2123,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('forms')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activePage === 'forms'
                         ? 'bg-yellow-500 text-[#1e293b] shadow-xs font-black'
                         : 'text-white/90 hover:bg-white/15'
@@ -2138,7 +2138,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('tables')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activePage === 'tables'
                         ? 'bg-yellow-500 text-[#1e293b] shadow-xs font-black'
                         : 'text-white/90 hover:bg-white/15'
@@ -2156,7 +2156,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       setInspectionInitialFilter('all');
                       setActivePage('inspection_report');
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activePage === 'inspection_report'
                         ? 'bg-yellow-500 text-[#1e293b] shadow-xs font-black'
                         : 'text-white/90 hover:bg-white/15'
@@ -2171,7 +2171,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setActivePage('scan')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       activePage === 'scan'
                         ? 'bg-yellow-500 text-[#1e293b] shadow-xs font-black'
                         : 'text-white/90 hover:bg-white/15'

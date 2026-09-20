@@ -115,7 +115,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
       {/* Filter Tabs */}
       <div 
-        className="flex items-center gap-1.5 px-4 py-2 border-b border-[#F1F5F9] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-xs shrink-0"
+        className="flex items-center gap-1.5 px-4 py-2 border-b border-[#F1F5F9] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-xs shrink-0 flex-nowrap overflow-x-auto scrollbar-none max-w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -124,7 +124,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             e.stopPropagation();
             setFilter('all');
           }}
-          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             filter === 'all'
               ? 'bg-[#3C50E0] text-white shadow-xs'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47]'
@@ -142,7 +142,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             e.stopPropagation();
             setFilter('unread');
           }}
-          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             filter === 'unread'
               ? 'bg-[#3C50E0] text-white shadow-xs'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47]'
