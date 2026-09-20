@@ -12,6 +12,7 @@ import {
 } from '../types';
 import {
   saveRegistrationToDb,
+  updateRegistrationStatusInDb,
   addAuditLogToDb,
   getPermissionState,
 } from '../services/dbService';
@@ -77,6 +78,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   const [selectedRegIds, setSelectedRegIds] = useState<Set<string>>(new Set());
   const [isSubmittingBulk, setIsSubmittingBulk] = useState(false);
   const [showBulkConfirmModal, setShowBulkConfirmModal] = useState(false);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
   const canApproveBulk = userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin';
 
   // Mobile collapsed card states
@@ -320,6 +322,56 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       }
     } finally {
       setIsSubmittingBulk(false);
+    }
+  };
+
+  const handleSingleApprove = async (reg: MotorcycleRegistration) => {
+    if (isReadOnly) {
+      if (onShowToast) {
+        onShowToast(
+          isAmharic ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ ማፅደቅ አይፈቀድም።' : 'Read-only mode active: Approval disabled.',
+          'error'
+        );
+      }
+      return;
+    }
+
+    setApprovingId(reg.id);
+    try {
+      const updatedRecord: MotorcycleRegistration = {
+        ...reg,
+        status: 'approved',
+        rejectionReason: undefined,
+      };
+      await saveRegistrationToDb(updatedRecord);
+      await updateRegistrationStatusInDb(reg.id, 'approved');
+
+      await addAuditLogToDb({
+        actorBadgeId: userBadgeId || 'ADMIN-01',
+        actorRole: userRole,
+        action: 'REGISTRATION_APPROVED',
+        details: `Approved submitted correction for ${reg.fullName || reg.plateNumber || reg.id}`,
+        severity: 'info',
+      });
+
+      if (onShowToast) {
+        onShowToast(
+          isAmharic
+            ? `የተስተካከለው ማመልከቻ (${reg.plateNumber || reg.fullName || reg.id}) በተሳካ ሁኔታ ጸድቋል!`
+            : `Application (${reg.plateNumber || reg.fullName || reg.id}) successfully approved!`,
+          'success'
+        );
+      }
+    } catch (err: any) {
+      console.error('Approve failed:', err);
+      if (onShowToast) {
+        onShowToast(
+          isAmharic ? 'ማጽደቅ አልተሳካም!' : 'Failed to approve application!',
+          'error'
+        );
+      }
+    } finally {
+      setApprovingId(null);
     }
   };
 
@@ -1012,17 +1064,34 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                   </div>
 
                                   <div className="flex flex-wrap items-center gap-2">
-                                    {/* Edit Button (if not approved/printed/ordered_print) */}
+                                    {/* Action Button: In "የቀረቡ ማስተካከያዎች" (Admin/SuperAdmin/Manager), replace Edit with Approve */}
                                     {reg.status !== 'approved' && reg.status !== 'printed' && reg.status !== 'ordered_print' && (
-                                      <button
-                                        type="button"
-                                        onClick={() => handleOpenEdit(reg)}
-                                        className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                                        title={isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit application'}
-                                      >
-                                        <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
-                                        <span>{isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit Application'}</span>
-                                      </button>
+                                      isAdminOrSuperAdmin ? (
+                                        <button
+                                          type="button"
+                                          disabled={approvingId === reg.id}
+                                          onClick={() => handleSingleApprove(reg)}
+                                          className="px-3 py-1.5 bg-[#10B981] hover:bg-[#10B981]/90 text-white font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+                                          title={isAmharic ? 'ማመልከቻውን አጽድቅ' : 'Approve application'}
+                                        >
+                                          <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                                          <span>
+                                            {approvingId === reg.id
+                                              ? (isAmharic ? 'በማጽደቅ ላይ...' : 'Approving...')
+                                              : (isAmharic ? 'አጽድቅ' : 'Approve')}
+                                          </span>
+                                        </button>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleOpenEdit(reg)}
+                                          className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0] font-medium text-xs rounded-sm transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                                          title={isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit application'}
+                                        >
+                                          <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
+                                          <span>{isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit Application'}</span>
+                                        </button>
+                                      )
                                     )}
 
                                     {/* Inspect Permit Card */}
@@ -1208,16 +1277,33 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        {/* Hide edit button for approved/printed records */}
+                        {/* Action Button: In "የቀረቡ ማስተካከያዎች" (Admin/SuperAdmin/Manager), replace Edit with Approve */}
                         {reg.status !== 'approved' && reg.status !== 'printed' && reg.status !== 'ordered_print' && (
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEdit(reg)}
-                            className="px-2.5 py-1 bg-blue-50 text-slate-800 dark:bg-blue-950/60 dark:text-blue-200 rounded-lg text-xs font-bold flex items-center gap-1"
-                          >
-                            <Icon className="material-symbols-outlined text-[14px]">edit</Icon>
-                            <span>{isAmharic ? 'አስተካክል' : 'Edit'}</span>
-                          </button>
+                          isAdminOrSuperAdmin ? (
+                            <button
+                              type="button"
+                              disabled={approvingId === reg.id}
+                              onClick={() => handleSingleApprove(reg)}
+                              className="px-2.5 py-1 bg-[#10B981] hover:bg-[#10B981]/90 text-white rounded-sm text-xs font-semibold flex items-center gap-1 shadow-xs disabled:opacity-50 cursor-pointer"
+                              title={isAmharic ? 'ማመልከቻውን አጽድቅ' : 'Approve application'}
+                            >
+                              <Icon className="material-symbols-outlined text-[14px]">check_circle</Icon>
+                              <span>
+                                {approvingId === reg.id
+                                  ? (isAmharic ? 'በማጽደቅ...' : 'Approving...')
+                                  : (isAmharic ? 'አጽድቅ' : 'Approve')}
+                              </span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEdit(reg)}
+                              className="px-2.5 py-1 bg-blue-50 text-slate-800 dark:bg-blue-950/60 dark:text-blue-200 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer"
+                            >
+                              <Icon className="material-symbols-outlined text-[14px]">edit</Icon>
+                              <span>{isAmharic ? 'አስተካክል' : 'Edit'}</span>
+                            </button>
+                          )
                         )}
                         {userRole !== 'clerk' && (
                           <button
