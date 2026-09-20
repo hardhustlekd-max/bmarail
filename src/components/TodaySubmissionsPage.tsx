@@ -919,16 +919,15 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                 {/* Member Information Card (Redesigned Style) */}
                                 <ExpandableMemberCard
                                   fullName={reg.fullName || (isAmharic ? 'ያልታወቀ አባል' : 'Unknown Member')}
-                                  roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                                  roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                                   badgeId={reg.plateNumber || reg.id}
-                                  statusText={reg.status === 'approved' ? (isAmharic ? 'ንቁ አባል (Active Member)' : 'Active Member') : (isAmharic ? 'ንቁ መለያ (Active Registration)' : 'Active Registration')}
-                                  isActive={reg.status !== 'rejected'}
+                                  status={reg.status}
                                   portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
                                   isAmharic={isAmharic}
                                   fields={[
-                                    { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: reg.email || `${reg.phone || 'member'}@permit.gov.et` },
+                                    { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },
+                                    { label: isAmharic ? 'የሞተር አይነት:' : 'Motor Type:', value: reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline') },
                                     { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
-                                    { label: isAmharic ? 'የስራ ድርሻ:' : 'Role / Category:', value: reg.vehicleCategory === 'electric' ? 'ELECTRIC MOTOR' : 'GASOLINE MOTOR' },
                                     { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: reg.phone || '—' },
                                     { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
                                     { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },
@@ -1180,16 +1179,15 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                         {/* Member Information Card (Redesigned Style) */}
                         <ExpandableMemberCard
                           fullName={reg.fullName || (isAmharic ? 'ያልታወቀ አባል' : 'Unknown Member')}
-                          roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                          roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                           badgeId={reg.plateNumber || reg.id}
-                          statusText={reg.status === 'approved' ? (isAmharic ? 'ንቁ አባል (Active Member)' : 'Active Member') : (isAmharic ? 'ንቁ መለያ (Active Registration)' : 'Active Registration')}
-                          isActive={reg.status !== 'rejected'}
+                          status={reg.status}
                           portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
                           isAmharic={isAmharic}
                           fields={[
-                            { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: reg.email || `${reg.phone || 'member'}@permit.gov.et` },
+                            { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },
+                            { label: isAmharic ? 'የሞተር አይነት:' : 'Motor Type:', value: reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline') },
                             { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
-                            { label: isAmharic ? 'የስራ ድርሻ:' : 'Role / Category:', value: reg.vehicleCategory === 'electric' ? 'ELECTRIC MOTOR' : 'GASOLINE MOTOR' },
                             { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: reg.phone || '—' },
                             { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
                             { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },

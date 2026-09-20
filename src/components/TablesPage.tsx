@@ -771,16 +771,15 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     {/* Member Information Card (Redesigned Style) */}
                                     <ExpandableMemberCard
                                       fullName={getDisplayName(reg)}
-                                      roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                                      roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                                       badgeId={reg.plateNumber || reg.id}
-                                      statusText={reg.status === 'approved' ? (isAmharic ? 'ንቁ አባል (Active Member)' : 'Active Member') : (isAmharic ? 'ንቁ መለያ (Active Registration)' : 'Active Registration')}
-                                      isActive={reg.status !== 'rejected'}
+                                      status={reg.status}
                                       portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
                                       isAmharic={isAmharic}
                                       fields={[
-                                        { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: reg.email || `${reg.phone || 'member'}@permit.gov.et` },
+                                        { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },
+                                        { label: isAmharic ? 'የሞተር አይነት:' : 'Motor Type:', value: reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline') },
                                         { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
-                                        { label: isAmharic ? 'የስራ ድርሻ:' : 'Role / Category:', value: reg.vehicleCategory === 'electric' ? 'ELECTRIC MOTOR' : 'GASOLINE MOTOR' },
                                         { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: getDisplayPhone(reg) },
                                         { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
                                         { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },
@@ -1071,26 +1070,38 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     const isExpanded = !!expandedRegs[reg.id];
                     return (
                       <div key={reg.id} className="p-3.5 sm:p-4 hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-                        {/* Collapsed Card Header */}
+                        {/* Unexpanded Record Header - Redesigned Style */}
                         <div
-                          className="flex items-center justify-between gap-3 cursor-pointer select-none"
+                          className="flex items-center justify-between gap-3 cursor-pointer select-none p-1"
                           onClick={() => toggleRegExpand(reg.id)}
                         >
-                          <div className="min-w-0 flex-1 space-y-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-mono text-xs font-bold text-slate-400">#{regStartIndex + index + 1}</span>
-                              <span className="font-black text-sm text-slate-900 dark:text-white truncate block">{getDisplayName(reg)}</span>
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            {/* Rectangular Avatar with Registration Status Border */}
+                            <div className={`w-12 h-14 rounded-md border-2 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center ${
+                              reg.status === 'approved' ? 'border-emerald-500 bg-emerald-50/20' :
+                              reg.status === 'rejected' ? 'border-rose-500 bg-rose-50/20' : 'border-amber-500 bg-amber-50/20'
+                            }`}>
+                              {(reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto) ? (
+                                <img
+                                  src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                                  alt={getDisplayName(reg)}
+                                  className="w-full h-full object-cover rounded-xs"
+                                  onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                                />
+                              ) : (
+                                <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-0.5 rounded-xs" />
+                              )}
                             </div>
 
-                            <div className="flex items-center gap-3 text-xs flex-wrap pt-0.5">
+                            {/* Header Details */}
+                            <div className="min-w-0 flex-1 space-y-1">
+                              <h4 className="text-sm sm:text-base font-extrabold text-[#1C2434] dark:text-white leading-tight truncate">
+                                {getDisplayName(reg)} <span className="text-slate-500 dark:text-slate-400 font-bold text-xs">({reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')})</span>
+                              </h4>
+
                               <div>
-                                <span className="text-slate-500 dark:text-slate-400 mr-1">{isAmharic ? 'ሰሌዳ፡' : 'Plate:'}</span>
-                                <span className="font-mono font-black text-[#1e293b] dark:text-yellow-400">{reg.plateNumber || '—'}</span>
-                              </div>
-                              <div>
-                                <span className="text-slate-500 dark:text-slate-400 mr-1">{isAmharic ? 'አይነት፡' : 'Type:'}</span>
-                                <span className="font-bold text-slate-700 dark:text-slate-300">
-                                  {reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                                <span className="inline-block px-2.5 py-0.5 bg-[#F1F5F9] dark:bg-[#2E3A47] text-[#1C2434] dark:text-white text-[11px] font-black rounded-md tracking-wider">
+                                  {reg.plateNumber || reg.id}
                                 </span>
                               </div>
                             </div>
@@ -1110,19 +1121,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         <div className={`collapsible-grid ${isExpanded ? 'expanded' : ''}`}>
                           <div className="collapsible-grid-inner">
                             <div className="mt-3.5 pt-3.5 border-t border-slate-200 dark:border-slate-800 space-y-3.5">
-                              {/* Member Information Card (Redesigned Style) */}
+                              {/* Member Information List */}
                               <ExpandableMemberCard
-                                fullName={getDisplayName(reg)}
-                                roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
-                                badgeId={reg.plateNumber || reg.id}
-                                statusText={reg.status === 'approved' ? (isAmharic ? 'ንቁ አባል (Active Member)' : 'Active Member') : (isAmharic ? 'ንቁ መለያ (Active Registration)' : 'Active Registration')}
-                                isActive={reg.status !== 'rejected'}
-                                portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                                showHeader={false}
                                 isAmharic={isAmharic}
                                 fields={[
-                                  { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: reg.email || `${reg.phone || 'member'}@permit.gov.et` },
+                                  { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },
+                                  { label: isAmharic ? 'የሞተር አይነት:' : 'Motor Type:', value: reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline') },
                                   { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
-                                  { label: isAmharic ? 'የስራ ድርሻ:' : 'Role / Category:', value: reg.vehicleCategory === 'electric' ? 'ELECTRIC MOTOR' : 'GASOLINE MOTOR' },
                                   { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: getDisplayPhone(reg) },
                                   { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
                                   { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },

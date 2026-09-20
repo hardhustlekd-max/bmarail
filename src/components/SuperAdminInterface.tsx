@@ -1122,11 +1122,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                 fullName={user.fullName || (isAmharic ? 'ያልታወቀ ተጠቃሚ' : 'Unknown User')}
                                 roleOrTitle={user.role ? user.role.toUpperCase() : 'CLERK'}
                                 badgeId={user.badgeId || user.uid}
-                                statusText={user.status === 'disabled' ? (isAmharic ? 'የታገደ' : 'Disabled') : (isAmharic ? 'ንቁ መለያ (Active Session)' : 'Active Session')}
-                                isActive={user.status !== 'disabled'}
+                                status={user.status === 'disabled' ? 'disabled' : 'approved'}
                                 isAmharic={isAmharic}
                                 fields={[
-                                  { label: isAmharic ? 'ኢሜይል:' : 'Email:', value: user.email || 'clerk@permit.gov.et' },
+                                  { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: user.uid },
                                   { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
                                   { label: isAmharic ? 'የስራ ድርሻ:' : 'Role:', value: (user.role || 'CLERK').toUpperCase() },
                                 ]}
