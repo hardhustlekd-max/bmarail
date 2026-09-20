@@ -546,11 +546,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
           {/* Total Revenue */}
           <div className="p-3.5">
-            <div className="flex items-center justify-between">
-              <Icon className="material-symbols-outlined text-slate-900 dark:text-slate-100 text-[20px]">
-                payments
-              </Icon>
-              <span className="text-[11px] font-extrabold uppercase text-slate-700 dark:text-slate-300 tracking-wider">
+            <div className="text-center">
+              <span className="text-[11px] font-extrabold uppercase text-slate-700 dark:text-slate-300 tracking-wider block">
                 {isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
               </span>
             </div>
@@ -567,11 +564,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* Active / Current */}
           <div className="p-3.5">
-            <div className="flex items-center justify-between">
-              <Icon className="material-symbols-outlined text-emerald-700 dark:text-emerald-400 text-[20px]">
-                check_circle
-              </Icon>
-              <span className="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 tracking-wider">
+            <div className="text-center">
+              <span className="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 tracking-wider block">
                 {isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
               </span>
             </div>
@@ -590,11 +584,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* Expiring Soon (DUE) */}
           <div className="p-3.5">
-            <div className="flex items-center justify-between">
-              <Icon className="material-symbols-outlined text-amber-700 dark:text-amber-400 text-[20px]">
-                alarm
-              </Icon>
-              <span className="text-[11px] font-extrabold uppercase text-amber-800 dark:text-amber-300 tracking-wider">
+            <div className="text-center">
+              <span className="text-[11px] font-extrabold uppercase text-amber-800 dark:text-amber-300 tracking-wider block">
                 {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
               </span>
             </div>
@@ -613,11 +604,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* Delinquent / Expired */}
           <div className="p-3.5">
-            <div className="flex items-center justify-between">
-              <Icon className="material-symbols-outlined text-rose-700 dark:text-rose-400 text-[20px]">
-                error
-              </Icon>
-              <span className="text-[11px] font-extrabold uppercase text-rose-800 dark:text-rose-300 tracking-wider">
+            <div className="text-center">
+              <span className="text-[11px] font-extrabold uppercase text-rose-800 dark:text-rose-300 tracking-wider block">
                 {isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}
               </span>
             </div>

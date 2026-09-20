@@ -144,10 +144,15 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
       <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
         {/* CONTAINER SECTION HEADER (TAILADMIN DESIGN) */}
         <div className="p-4 md:px-6 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          <div>
-            <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
-              {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
-            </h3>
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-sm bg-[#FB5454]/10 text-[#FB5454] flex items-center justify-center border border-[#FB5454]/20 shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">policy</Icon>
+            </div>
+            <div>
+              <h3 className="font-semibold text-base text-[#1C2434] dark:text-white">
+                {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
+              </h3>
+            </div>
           </div>
 
           {onNewReportClick && (

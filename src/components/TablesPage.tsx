@@ -663,14 +663,19 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
         {/* CONTAINER HEADER */}
         <div className="px-3.5 py-2.5 sm:px-5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434]">
-          <div>
-            <h3 className="font-semibold text-sm sm:text-base text-[#1C2434] dark:text-white">
-              {userRole === 'clerk'
-                ? (activeTableTab === 'approved'
-                    ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
-                    : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
-                : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')}
-            </h3>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-[18px]">table_chart</Icon>
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base text-[#1C2434] dark:text-white">
+                {userRole === 'clerk'
+                  ? (activeTableTab === 'approved'
+                      ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
+                      : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
+                  : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')}
+              </h3>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -1074,14 +1079,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   <button
                                     type="button"
                                     onClick={() => toggleRegExpand(reg.id)}
-                                    className={`w-6 h-6 rounded-sm flex items-center justify-center transition-colors cursor-pointer ${
+                                    className={`p-0.5 transition-colors cursor-pointer flex items-center justify-center ${
                                       isExpanded
-                                        ? 'bg-[#3C50E0] text-white shadow-xs'
-                                        : 'text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47]'
+                                        ? 'text-[#3C50E0] dark:text-white'
+                                        : 'text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white'
                                     }`}
                                     title={isExpanded ? (isAmharic ? 'አጣጥፍ' : 'Collapse') : (isAmharic ? 'ሰነዶችን እና ዝርዝር አሳይ' : 'Expand Documents & Details')}
                                   >
-                                    <Icon className="material-symbols-outlined text-[16px]">
+                                    <Icon className="material-symbols-outlined text-[18px]">
                                       {isExpanded ? 'expand_less' : 'expand_more'}
                                     </Icon>
                                   </button>
@@ -1503,12 +1508,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         </div>
 
                         {/* Right Side Expand Icon */}
-                        <div className="shrink-0 pl-1">
-                          <div className="w-7 h-7 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] flex items-center justify-center text-[#64748B] dark:text-[#8A99AD] transition-colors shadow-2xs">
-                            <Icon className="material-symbols-outlined text-[18px]">
-                              {isExpanded ? 'expand_less' : 'expand_more'}
-                            </Icon>
-                          </div>
+                        <div className="shrink-0 pl-1 text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
+                          <Icon className="material-symbols-outlined text-[20px] transition-transform">
+                            {isExpanded ? 'expand_less' : 'expand_more'}
+                          </Icon>
                         </div>
                       </div>
 

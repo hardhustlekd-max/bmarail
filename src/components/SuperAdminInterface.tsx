@@ -723,12 +723,18 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
   return (
     <div className="space-y-6 pb-12 font-sans text-on-surface">
-      {/* Container with header with header text */}
-      <div className="bg-surface-container-lowest rounded-lg border border-outline-variant/60 shadow-xs overflow-hidden">
-        {/* Header with Text */}
-        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-surface-container/60 border-b border-outline-variant/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      {/* Container with header with icon and header text */}
+      <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
+        {/* Header with Icon and Text */}
+        <div className="px-4 sm:px-5 py-3.5 sm:py-4 bg-surface-container border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <h2 className="text-xs sm:text-base font-semibold text-on-surface truncate">
+            <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[22px] sm:text-[24px] shrink-0">
+              {activeTab === 'users' && 'manage_accounts'}
+              {activeTab === 'subcities' && 'location_city'}
+              {activeTab === 'permits' && 'workspace_premium'}
+              {activeTab === 'maintenance' && 'storage'}
+            </Icon>
+            <h2 className="text-xs sm:text-base font-black text-on-surface truncate">
               {activeTab === 'users' && (isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions')}
               {activeTab === 'subcities' && (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')}
               {activeTab === 'permits' && (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')}
@@ -1100,12 +1106,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             </div>
 
                             {/* Right Side Expand Icon */}
-                            <div className="shrink-0 pl-1">
-                              <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-outline hover:text-on-surface transition-colors shadow-2xs">
-                                <Icon className="material-symbols-outlined text-[20px]">
-                                  {isExpanded ? 'expand_less' : 'expand_more'}
-                                </Icon>
-                              </div>
+                            <div className="shrink-0 pl-1 text-outline hover:text-on-surface flex items-center justify-center">
+                              <Icon className="material-symbols-outlined text-[22px] transition-transform">
+                                {isExpanded ? 'expand_less' : 'expand_more'}
+                              </Icon>
                             </div>
                           </div>
 
@@ -1561,9 +1565,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
             {/* Live Health Indicators */}
             <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
-                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 shrink-0"></span>
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
+                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
                   <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ግንኙነት' : 'Cloud'}</span>
                 </div>
                 <div className="text-xs sm:text-base font-black text-emerald-600 truncate">
@@ -1571,9 +1574,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </div>
               </div>
 
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
-                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] text-blue-500 shrink-0">two_wheeler</Icon>
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
+                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
                   <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ሞተሮች' : 'Vehicles'}</span>
                 </div>
                 <div className="text-xs sm:text-base font-bold text-slate-700 dark:text-slate-300 truncate">
@@ -1581,9 +1583,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </div>
               </div>
 
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
-                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] text-purple-500 shrink-0">badge</Icon>
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
+                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
                   <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ተጠቃሚዎች' : 'Users'}</span>
                 </div>
                 <div className="text-xs sm:text-base font-bold text-slate-700 dark:text-slate-300 truncate">
@@ -1591,9 +1592,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </div>
               </div>
 
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden">
-                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <Icon className="material-symbols-outlined text-[13px] sm:text-[16px] text-amber-500 shrink-0">history</Icon>
+              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
+                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
                   <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ኦዲት' : 'Logs'}</span>
                 </div>
                 <div className="text-xs sm:text-base font-bold text-slate-700 dark:text-slate-300 truncate">

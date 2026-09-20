@@ -465,44 +465,54 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
             {/* ==================== UNIFIED OVERVIEW CONTAINER ==================== */}
-      <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-lg shadow-xs overflow-hidden mb-6">
-        <div className="flex items-center justify-between border-b border-outline-variant/50 px-4 sm:px-5 py-3 bg-slate-50/50 dark:bg-slate-900/50">
-          <h2 className="font-semibold text-xs sm:text-sm text-on-surface uppercase tracking-wider">
+      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-xs overflow-hidden mb-6">
+        <div className="flex items-center gap-2.5 border-b border-outline-variant/60 px-4 sm:px-5 py-3.5 bg-slate-50/50 dark:bg-slate-900/50">
+          <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">dashboard</Icon>
+          <h2 className="font-black text-sm sm:text-base text-on-surface uppercase tracking-wider">
             {isAmharic ? 'አጠቃላይ እይታ' : 'Overview'}
           </h2>
         </div>
-        <div className="flex flex-col divide-y divide-outline-variant/50 dark:divide-slate-800">
+        <div className="flex flex-col divide-y divide-outline-variant/60 dark:divide-slate-800">
 
       {/* SUPER ADMIN KEY GOVERNANCE STATS CARDS (FOR SUPERADMIN ROLE ON DASHBOARD ONLY) */}
       {userRole === 'superadmin' && (
-        <div className="p-4 sm:p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2.5">
-            <h3 className="text-xs sm:text-sm font-semibold text-on-surface uppercase tracking-wider">
-              {isAmharic ? 'የበላይ አስተዳዳሪ ቁጥጥር ማዕከል' : 'Super Admin Governance Metrics'}
-            </h3>
+        <div className="p-4 sm:p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+            <div className="flex items-center gap-2.5">
+              <Icon className="material-symbols-outlined text-[22px] text-amber-600 shrink-0">admin_panel_settings</Icon>
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-on-surface uppercase tracking-wider">
+                  {isAmharic ? 'የበላይ አስተዳዳሪ ቁጥጥር ማዕከል' : 'Super Admin Governance Metrics'}
+                </h3>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-3">
             {/* Total Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{users.length}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-slate-700">
+                  {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{users.length}</p>
             </div>
 
             {/* Super Admins & Admins */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+              className="p-2 sm:p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-purple-600">
+                  {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                 {users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length}
               </p>
             </div>
@@ -510,12 +520,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Blocked Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+              className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'የታገዱ' : 'Blocked'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-rose-600">
+                  {isAmharic ? 'የታገዱ' : 'Blocked'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                 {users.filter((u) => u.status === 'disabled').length}
               </p>
             </div>
@@ -523,23 +535,27 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Registrations Total */}
             <div
               onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+              className="p-2 sm:p-3 rounded-lg bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'ፈቃዶች' : 'Permits'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{registrations.length}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-teal-600">
+                  {isAmharic ? 'ፈቃዶች' : 'Permits'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{registrations.length}</p>
             </div>
 
             {/* Pending Approvals */}
             <div
               onClick={() => onQuickAction && onQuickAction('pending_approvals')}
-              className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+              className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'የሚጠብቁ' : 'Pending'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-amber-600">
+                  {isAmharic ? 'የሚጠብቁ' : 'Pending'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                 {registrations.filter((r) => r.status === 'pending_approval').length}
               </p>
             </div>
@@ -547,12 +563,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* System Security Score */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+              className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'ደህንነት' : 'Security'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">99.9%</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-emerald-600">
+                  {isAmharic ? 'ደህንነት' : 'Security'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">99.9%</p>
             </div>
           </div>
         </div>
@@ -562,16 +580,19 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {showLookupModal && (
         <div className="p-4 sm:p-5 space-y-3 animate-in slide-in-from-top-4 duration-200">
           <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
-            <h3 className="font-semibold text-xs sm:text-sm text-on-surface">
-              {isAmharic ? 'የቀጥታ QR እና ሰሌዳ መለያ ፍተሻ' : 'Live QR & License Plate Scanner'}
-            </h3>
+            <div className="flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-primary text-[22px]">qr_code_scanner</Icon>
+              <h3 className="font-extrabold text-sm text-on-surface">
+                {isAmharic ? 'የቀጥታ QR እና ሰሌዳ መለያ ፍተሻ' : 'Live QR & License Plate Scanner'}
+              </h3>
+            </div>
             <button
               type="button"
               onClick={() => setShowLookupModal(false)}
-              className="text-secondary hover:text-on-surface p-1 rounded-md hover:bg-surface-container text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+              className="text-secondary hover:text-on-surface p-1 rounded-lg hover:bg-surface-container text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
             >
-              <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-              <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
+              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+              <span>{isAmharic ? 'ዝጋ' : 'Close Scanner'}</span>
             </button>
           </div>
           <SharedScannerModal
@@ -588,52 +609,65 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* CLERK STATS OVERVIEW CARDS (ONLY VISIBLE WHEN TOGGLED ON IN SUPER ADMIN) */}
       {userRole === 'clerk' && settings.showClerkPermitStatus && (
-        <div className="p-4 sm:p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2.5">
-            <h3 className="text-xs sm:text-sm font-semibold text-on-surface uppercase tracking-wider">
-              {isAmharic ? 'የምዝገባ መረጃዎች' : 'Clerk Intake Dashboard Metrics'}
-            </h3>
+        <div className="p-4 sm:p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+            <div className="flex items-center gap-2.5">
+              <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">badge</Icon>
+              <div>
+                <h3 className="text-sm sm:text-base font-black text-on-surface uppercase tracking-wider">
+                  {isAmharic ? 'የምዝገባ መረጃዎች' : 'Clerk Intake Dashboard Metrics'}
+                </h3>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
             <button
               onClick={() => onQuickAction && onQuickAction('view_submissions')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/30 min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'ጠቅላላ የቀረቡ' : 'Submitted'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{registrations.length}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'ጠቅላላ የቀረቡ' : 'Submitted'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{registrations.length}</p>
             </button>
 
             <button
               onClick={() => onQuickAction && onQuickAction('kpi_pending')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30 min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'የሚጠበቁ' : 'Review'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{pendingCount}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'የሚጠበቁ' : 'Review'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{pendingCount}</p>
             </button>
 
             <button
               onClick={() => onQuickAction && onQuickAction('kpi_approved')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'የጸደቁ' : 'Approved'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{approvedCount}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'የጸደቁ' : 'Approved'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
             </button>
 
             <button
               onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-500/30 min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'ውድቅ' : 'Rejected'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{illegalVehiclesCount}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'ውድቅ' : 'Rejected'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
             </button>
           </div>
         </div>
@@ -645,33 +679,42 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           {/* 1. Payment Receipts & Compliance Metrics (Super Admin Only) */}
           {(userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
             <div className="p-4 sm:p-5 space-y-3">
-              <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2.5">
-                <h3 className="font-semibold text-xs sm:text-sm text-on-surface uppercase tracking-wider">
-                  {isAmharic ? 'የገቢዎችና ደረሰኞች ቁጥጥር' : 'Revenue Ledger & Compliance'}
-                </h3>
+              <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+                <div className="flex items-center gap-2.5">
+                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">payments</Icon>
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
+                      {isAmharic ? 'የገቢዎችና ደረሰኞች ቁጥጥር' : 'Revenue Ledger & Compliance'}
+                    </h3>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-2 sm:gap-3">
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
                 {/* Total Receipts */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                    {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
-                  </span>
-                  <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{paymentMetrics.total}</p>
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-slate-700">
+                      {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{paymentMetrics.total}</p>
                 </div>
 
                 {/* Active Valid (1 month) */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                    {isAmharic ? 'ትክክለኛ' : 'Valid'}
-                  </span>
-                  <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-emerald-600">
+                      {isAmharic ? 'ትክክለኛ' : 'Valid'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                     {paymentMetrics.activeCount}
                   </p>
                 </div>
@@ -679,12 +722,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 {/* Expiring Soon */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                    {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring'}
-                  </span>
-                  <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-amber-600">
+                      {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                     {paymentMetrics.expiringSoonCount}
                   </p>
                 </div>
@@ -692,12 +737,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 {/* Expired */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60 select-none"
+                  className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
                 >
-                  <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                    {isAmharic ? 'ያለፈበት' : 'Expired'}
-                  </span>
-                  <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-rose-600">
+                      {isAmharic ? 'ያለፈበት' : 'Expired'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
                     {paymentMetrics.expiredCount}
                   </p>
                 </div>
@@ -728,55 +775,68 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
           {/* 3. Field Officer Patrol & Inspection Hub */}
           <div className="p-4 sm:p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2.5">
-              <h3 className="font-semibold text-xs sm:text-sm text-on-surface uppercase tracking-wider">
-                {isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub'}
-              </h3>
+            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+              <div className="flex items-center gap-2.5">
+                <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
+                    {isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub'}
+                  </h3>
+                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-2 sm:gap-3">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-                className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
               >
-                <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                  {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
-                </span>
-                <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{totalLogsCount}</p>
+                <div className="mb-1 sm:mb-1.5 text-center">
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                    {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
+                  </span>
+                </div>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-                className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
               >
-                <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                  {isAmharic ? 'የፀደቁ' : 'Valid'}
-                </span>
-                <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{approvedCount}</p>
+                <div className="mb-1 sm:mb-1.5 text-center">
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                    {isAmharic ? 'የፀደቁ' : 'Valid'}
+                  </span>
+                </div>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-                className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
               >
-                <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                  {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
-                </span>
-                <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{warningLogsCount}</p>
+                <div className="mb-1 sm:mb-1.5 text-center">
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                    {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
+                  </span>
+                </div>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-                className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+                className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
               >
-                <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                  {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
-                </span>
-                <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{illegalVehiclesCount}</p>
+                <div className="mb-1 sm:mb-1.5 text-center">
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                    {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
+                  </span>
+                </div>
+                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
               </button>
             </div>
           </div>
@@ -786,56 +846,69 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* ==================== FIELD OFFICER PATROL HUB (FOR OFFICER ROLE ONLY) ==================== */}
       {userRole === 'officer' && getPermissionState(userRole, 10) !== 'deny' && (
         <div className="p-4 sm:p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2.5">
-            <h2 className="font-semibold text-xs sm:text-sm text-on-surface uppercase tracking-wider">
-              {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
-            </h2>
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+            <div className="flex items-center gap-2.5">
+              <Icon className="material-symbols-outlined text-[22px] text-slate-700 shrink-0">policy</Icon>
+              <div>
+                <h2 className="font-extrabold text-sm sm:text-base text-on-surface uppercase tracking-wider">
+                  {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
+                </h2>
+              </div>
+            </div>
           </div>
 
           {/* Officer Key Metrics Cards Grid */}
-          <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{totalLogsCount}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
             </button>
 
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'የፀደቁ' : 'Valid'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{approvedCount}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'የፀደቁ' : 'Valid'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
             </button>
 
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{warningLogsCount}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
             </button>
 
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-md bg-surface-container-low/60 dark:bg-slate-900/40 hover:bg-surface-container-low dark:hover:bg-slate-800/60 transition-colors cursor-pointer border border-outline-variant/40 dark:border-slate-800/60"
+              className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
             >
-              <span className="block text-[11px] font-medium text-secondary truncate mb-1">
-                {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
-              </span>
-              <p className="text-base sm:text-lg lg:text-xl font-bold text-on-surface tracking-tight">{illegalVehiclesCount}</p>
+              <div className="mb-1 sm:mb-1.5 text-center">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                  {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
+                </span>
+              </div>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
             </button>
           </div>
         </div>
@@ -846,32 +919,42 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* ==================== QUICK ACTION SHORTCUTS ==================== */}
       {currentRoleConfig.actions.length > 0 && (
-        <div className="p-4 sm:p-5 bg-surface-container-lowest border border-outline-variant/60 rounded-lg shadow-2xs space-y-3">
-          <div className="flex items-center justify-between border-b border-outline-variant/50 pb-2.5">
-            <h3 className="text-xs sm:text-sm font-semibold text-on-surface uppercase tracking-wider">
-              {currentRoleConfig.title}
-            </h3>
+        <div className="p-4 sm:p-6 bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-2xs space-y-4">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+            <div className="flex items-center gap-3">
+              <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">{currentRoleConfig.headerIcon}</Icon>
+              <h3 className="text-sm sm:text-base font-extrabold text-on-surface">
+                {currentRoleConfig.title}
+              </h3>
+            </div>
           </div>
 
-          <div className={`grid grid-cols-1 ${currentRoleConfig.actions.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-2.5 sm:gap-3`}>
+          <div className={`grid grid-cols-1 ${currentRoleConfig.actions.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3 sm:gap-4`}>
             {currentRoleConfig.actions.map((act) => (
               <button
                 key={act.key}
                 type="button"
                 onClick={() => handleActionClick(act.key)}
-                className="p-3 bg-surface-container-low/50 hover:bg-surface-container-low border border-outline-variant/50 rounded-md text-left transition-colors cursor-pointer flex items-center justify-between gap-3 group"
+                className="min-h-[56px] p-4 bg-surface-container-low/70 hover:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 group shadow-2xs hover:shadow-xs active:scale-98"
               >
-                <div className="min-w-0">
-                  <h4 className="text-xs sm:text-sm font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
-                    {act.title}
-                  </h4>
-                  <p className="text-[11px] text-secondary mt-0.5 truncate">
-                    {act.subtitle}
-                  </p>
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className={`w-11 h-11 rounded-xl ${act.iconBg} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}>
+                    <Icon className="material-symbols-outlined text-[22px]">{act.icon}</Icon>
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-extrabold text-on-surface group-hover:text-primary transition-colors truncate">
+                      {act.title}
+                    </h4>
+                    <p className="text-xs text-secondary mt-0.5 truncate font-medium">
+                      {act.subtitle}
+                    </p>
+                  </div>
                 </div>
-                <Icon className="material-symbols-outlined text-[18px] text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
-                  chevron_right
-                </Icon>
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
+                  <Icon className="material-symbols-outlined text-[20px]">
+                    chevron_right
+                  </Icon>
+                </div>
               </button>
             ))}
           </div>
