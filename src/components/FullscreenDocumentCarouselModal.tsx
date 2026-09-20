@@ -379,32 +379,32 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
   return (
     <div
       id="fullscreen-photo-zoom-viewer"
-      className="fixed inset-0 z-[10000] w-screen h-screen bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden animate-in fade-in duration-200"
+      className="fixed inset-0 z-[10000] w-full h-[100dvh] max-h-[100dvh] max-w-[100vw] bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden animate-in fade-in duration-200"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
       {/* 1. TOP FLOATING CONTROL BAR */}
-      <header className="shrink-0 h-16 w-full px-3 sm:px-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent flex items-center justify-between z-30 pointer-events-auto">
+      <header className="shrink-0 h-14 sm:h-16 w-full px-2.5 sm:px-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-center justify-between z-30 pointer-events-auto">
         {/* Document Info / Title */}
-        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-          <div className="w-9 h-9 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
-            <Icon className="material-symbols-outlined text-[20px]">
+        <div className="flex items-center gap-2 min-w-0 pr-1 sm:pr-2">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
+            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
               {currentItem.icon || 'description'}
             </Icon>
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm sm:text-base font-black text-white truncate drop-shadow-md">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h3 className="text-xs sm:text-base font-black text-white truncate drop-shadow-md">
                 {currentItem.title}
               </h3>
               {validItems.length > 1 && (
-                <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/90 text-[10px] font-bold shrink-0 border border-white/10">
-                  {currentIndex + 1} / {validItems.length}
+                <span className="px-1.5 sm:px-2 py-0.2 sm:py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] sm:text-[10px] font-bold shrink-0 border border-white/10">
+                  {currentIndex + 1}/{validItems.length}
                 </span>
               )}
             </div>
             {currentItem.subtitle && (
-              <p className="text-[11px] text-slate-300 truncate drop-shadow-xs">
+              <p className="text-[10px] sm:text-[11px] text-slate-300 truncate drop-shadow-xs">
                 {currentItem.subtitle}
               </p>
             )}
@@ -418,9 +418,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={handleZoomOut}
             title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out (-)'}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
+            className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
           >
-            <Icon className="material-symbols-outlined text-[18px]">zoom_out</Icon>
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_out</Icon>
           </button>
 
           {/* Zoom Level Indicator & Reset */}
@@ -428,10 +428,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={resetTransform}
             title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset View (0 / R)'}
-            className="h-8 sm:h-9 px-2 sm:px-2.5 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white text-[11px] font-mono font-bold flex items-center justify-center gap-1 transition-all cursor-pointer border border-white/10"
+            className="h-7.5 sm:h-9 px-1.5 sm:px-2.5 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white text-[10px] sm:text-[11px] font-mono font-bold flex items-center justify-center gap-1 transition-all cursor-pointer border border-white/10"
           >
             <span>{Math.round(scale * 100)}%</span>
-            {scale !== 1 && <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>}
+            {scale !== 1 && <Icon className="material-symbols-outlined text-[12px] sm:text-[14px]">restart_alt</Icon>}
           </button>
 
           {/* Zoom In */}
@@ -439,9 +439,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={handleZoomIn}
             title={isAmharic ? 'አጉላ (+)' : 'Zoom In (+)'}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
+            className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
           >
-            <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_in</Icon>
           </button>
 
           {/* Rotate */}
@@ -449,9 +449,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={handleRotate}
             title={isAmharic ? 'አሽከርክር' : 'Rotate (90°)'}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
+            className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
           >
-            <Icon className="material-symbols-outlined text-[18px]">rotate_right</Icon>
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">rotate_right</Icon>
           </button>
 
           {/* Toggle Thumbnails */}
@@ -460,13 +460,13 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               type="button"
               onClick={() => setShowThumbnails(!showThumbnails)}
               title={isAmharic ? 'ማውጫ አሳይ/ደብቅ' : 'Toggle Thumbnails'}
-              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-md flex items-center justify-center transition-all cursor-pointer border ${
+              className={`w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md flex items-center justify-center transition-all cursor-pointer border ${
                 showThumbnails
                   ? 'bg-primary text-white border-primary/50'
                   : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[18px]">view_carousel</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">view_carousel</Icon>
             </button>
           )}
 
@@ -475,9 +475,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={onClose}
             title={isAmharic ? 'ዝጋ (Esc)' : 'Close (Esc)'}
-            className="w-8 h-8 sm:w-9 sm:h-9 ml-1 rounded-md bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
+            className="w-7.5 h-7.5 sm:w-9 sm:h-9 ml-0.5 sm:ml-1 rounded-md bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
           >
-            <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">close</Icon>
           </button>
         </div>
       </header>
@@ -490,7 +490,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onDoubleClick={handleDoubleClick}
-        className={`flex-1 w-full h-full relative overflow-hidden flex items-center justify-center p-2 sm:p-6 ${
+        className={`flex-1 w-full h-full relative overflow-hidden flex items-center justify-center p-2 sm:p-4 max-h-[calc(100dvh-110px)] sm:max-h-[calc(100dvh-130px)] ${
           scale > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
         }`}
       >
