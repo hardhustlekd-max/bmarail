@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Icon } from './ui/Icon';
 import { Language, UserRole, UnregisteredVehicleReport, BAHIR_DAR_SUBCITIES } from '../types';
-import { imageUploadManager } from '../services/imageUploadManager';
+import { compressImageToBlob } from '../utils/imageCompressor';
+import { uploadDocumentPhoto } from '../services/storageService';
 
 interface UnregisteredVehicleFormProps {
   lang: Language;
@@ -36,21 +37,16 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
     if (file) {
       setIsPhotoUploading(true);
       try {
-        const { previewUrl, remoteUrlPromise } = await imageUploadManager.upload(
-          'unreg_evidence',
-          file,
-          'unregistered_evidence'
-        );
-        if (previewUrl) {
-          setEvidencePhoto(previewUrl);
-        }
-
-        const uploadedUrl = await remoteUrlPromise;
-        if (uploadedUrl) {
-          setEvidencePhoto(uploadedUrl);
-        }
+        const compressed = await compressImageToBlob(file, {
+          maxWidth: 1400,
+          maxHeight: 1400,
+          quality: 0.60,
+          preferredFormat: 'image/jpeg',
+          maxBytes: 100 * 1024,
+        });
+        setEvidencePhoto(compressed.dataUrl);
       } catch (err) {
-        console.error('Failed to upload evidence photo:', err);
+        console.error('Failed to process evidence photo:', err);
       } finally {
         setIsPhotoUploading(false);
         e.target.value = '';
@@ -64,6 +60,11 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
     setSuccessMessage('');
 
     try {
+      let finalEvidencePhoto = evidencePhoto;
+      if (evidencePhoto && evidencePhoto.startsWith('data:image/')) {
+        finalEvidencePhoto = await uploadDocumentPhoto(evidencePhoto, 'unregistered_evidence');
+      }
+
       const newReport: UnregisteredVehicleReport = {
         id: `UNREG-${Date.now().toString().slice(-6)}`,
         reportedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
@@ -76,7 +77,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         officerBadgeId: userBadgeId,
         officerName: officerName,
         notes: notes.trim() || (isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ላይ የቀረበ ሪፖርት' : 'Unregistered vehicle incident logged'),
-        evidencePhoto: evidencePhoto || 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop',
+        evidencePhoto: finalEvidencePhoto || 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&auto=format&fit=crop',
         status: 'pending',
       };
 

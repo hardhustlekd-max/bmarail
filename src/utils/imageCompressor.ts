@@ -32,9 +32,9 @@ export interface CompressedImageResult {
 const DEFAULT_OPTIONS: Required<CompressionOptions> = {
   maxWidth: 1400,
   maxHeight: 1400,
-  quality: 0.85,
-  maxBytes: 180 * 1024, // 180 KB threshold for crisp permits and IDs
-  preferredFormat: 'image/jpeg', // Universal compatibility across all browsers and S3 buckets
+  quality: 0.60, // Exactly 60% JPEG quality as requested
+  maxBytes: 100 * 1024, // 100 KB target threshold for crisp documents at 60% quality
+  preferredFormat: 'image/jpeg', // Universal JPEG format at 60% quality
   contrastBoost: true,
 };
 
@@ -268,7 +268,7 @@ export async function compressImageBase64(
   base64Str: string,
   maxWidth = 1400,
   maxHeight = 1400,
-  quality = 0.82
+  quality = 0.60
 ): Promise<string> {
   if (!base64Str || typeof base64Str !== 'string') {
     return '';
@@ -283,8 +283,9 @@ export async function compressImageBase64(
     const result = await compressImageToBlob(base64Str, {
       maxWidth,
       maxHeight,
-      quality,
-      maxBytes: 150 * 1024,
+      quality: 0.60,
+      preferredFormat: 'image/jpeg',
+      maxBytes: 100 * 1024,
     });
     return result.dataUrl || base64Str;
   } catch (err) {

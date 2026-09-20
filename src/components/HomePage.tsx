@@ -733,11 +733,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
     };
   }, [activePage]);
 
-  // Dynamic Municipal System Notifications based on real Firestore state and RBAC permissions
+  // Dynamic Municipal System Notifications routed strictly by RBAC recipient responsibility
   const systemNotifications = useMemo<NotificationItem[]>(() => {
     const list: NotificationItem[] = [];
 
-    // RBAC Permission checks based on user's active role and permission matrix
+    // RBAC Role classification
     const roleStr = userRole as string;
     const isSuperAdmin = roleStr === 'superadmin' || roleStr === 'super_admin' || roleStr === 'role-superadmin';
     const isManager = roleStr === 'admin' || roleStr === 'role-manager';
@@ -745,42 +745,35 @@ const HomePageShell: React.FC<HomePageProps> = ({
     const isClerk = roleStr === 'clerk' || roleStr === 'role-secretary';
     const isItSpecialist = roleStr === 'it_specialist' || roleStr === 'role-it';
 
-    // 1. Pending registration applications (Clerk review, Manager review, Superadmin review)
-    // Field officers who only patrol must NOT receive clerical registration review alerts
-    const canViewPendingRegs = isSuperAdmin || isManager || (
-      !isOfficer && (
-        isTaskViewable(userRole, 8) ||
-        isTaskViewable(userRole, 1) ||
-        (isClerk && (settings.showClerkSubmissionsAction ?? true))
-      )
-    );
-
-    if (canViewPendingRegs) {
+    // =========================================================================
+    // 1. RECIPIENT: MANAGER / ADMIN / SUPERADMIN (Approvers)
+    // Receive notifications for items waiting for their review/approval from Clerks/Officers.
+    // =========================================================================
+    if (isManager || isSuperAdmin) {
       const pendingRegs = registrations.filter((r) => r.status === 'pending_approval');
       if (pendingRegs.length > 0) {
         list.push({
           id: `pending_regs_summary_${pendingRegs.length}`,
           title: isAmharic
             ? `${pendingRegs.length} አዳዲስ ማመልከቻዎች ማፅደቅ ይጠብቃሉ`
-            : `${pendingRegs.length} Applications Awaiting Review`,
+            : `${pendingRegs.length} Submissions Awaiting Approval`,
           description: isAmharic
-            ? 'የቀረቡ አዳዲስ የሞተር ምዝገባዎች ማረጋገጫና ውሳኔ ይፈልጋሉ።'
-            : 'Newly submitted motor applications require verification and approval.',
+            ? 'በፀሐፊዎች የተመዘገቡ አዳዲስ ማመልከቻዎች የእርስዎን ማረጋገጫና ውሳኔ ይፈልጋሉ።'
+            : 'New motor registration submissions require manager verification and decision.',
           type: 'pending_approval',
           icon: 'how_to_reg',
-          iconBg: 'bg-blue-500/15 text-slate-700 dark:text-blue-400',
-          badgeLabel: isAmharic ? 'ማፅደቂያ' : 'Approval',
-          badgeBg: 'bg-blue-500/20',
-          badgeText: 'text-slate-800 dark:text-blue-300',
+          iconBg: 'bg-[#3C50E0]/15 text-[#3C50E0] dark:text-blue-400',
+          badgeLabel: isAmharic ? 'ማፅደቂያ' : 'Approval Needed',
+          badgeBg: 'bg-[#3C50E0]/20',
+          badgeText: 'text-[#3C50E0] dark:text-blue-300',
           actionPage: 'tables',
           actionTab: 'pending',
         });
 
-        // Separate standard pending applications and corrected resubmissions
         const correctionPending = pendingRegs.filter((r) => r.isCorrection || r.lastRejectionReason);
         const standardPending = pendingRegs.filter((r) => !r.isCorrection && !r.lastRejectionReason);
 
-        // Show correction resubmissions first with amber "ተስተካክሎ የቀረበ" badges
+        // Resubmitted corrections requiring manager approval
         correctionPending.slice(0, 3).forEach((reg) => {
           list.push({
             id: `reg_correction_done_${reg.id}`,
@@ -788,13 +781,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
               ? `ማስተካከያ ተደርጎ የቀረበ: ${reg.fullName} (${reg.plateNumber || reg.id})`
               : `Correction Resubmitted: ${reg.fullName} (${reg.plateNumber || reg.id})`,
             description: isAmharic
-              ? `የማመልከቻ ቁጥር ${reg.plateNumber || reg.id} ማስተካከያ ተጠናቆ ለስራ አስኪያጅ/ሱፐር አድሚን ማፅደቂያ ቀርቧል።`
-              : `Correction for registration ${reg.plateNumber || reg.id} is done and waiting for review.`,
+              ? `የማመልከቻ ቁጥር ${reg.plateNumber || reg.id} በፀሐፊ ተስተካክሎ ለስራ አስኪያጅ ማፅደቂያ ቀርቧል።`
+              : `Correction for registration ${reg.plateNumber || reg.id} was resubmitted by clerk for manager approval.`,
             time: reg.registrationDate,
             type: 'pending_approval',
             icon: 'edit_note',
             iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
-            badgeLabel: isAmharic ? 'ተስተካክሎ የቀረበ' : 'Correction Done',
+            badgeLabel: isAmharic ? 'ተስተካክሎ የቀረበ' : 'Correction Ready',
             badgeBg: 'bg-amber-500/20',
             badgeText: 'text-amber-700 dark:text-amber-300',
             actionPage: 'today_submissions_adjust',
@@ -802,19 +795,19 @@ const HomePageShell: React.FC<HomePageProps> = ({
           });
         });
 
-        // Show up to 3 standard pending registrations
+        // Standard pending registrations requiring manager approval
         standardPending.slice(0, 3).forEach((reg) => {
           list.push({
             id: `reg_pending_${reg.id}`,
             title: `${reg.fullName} (${reg.plateNumber || reg.id})`,
             description: isAmharic
-              ? `የተሽከርካሪ ምዝገባ ማመልከቻ ቀርቧል - ${reg.subCity || 'ባህር ዳር'}`
-              : `Motorcycle registration submitted - ${reg.subCity || 'Bahir Dar'}`,
+              ? `አዲስ የተሽከርካሪ ምዝገባ ማመልከቻ ለውሳኔ ቀርቧል - ${reg.subCity || 'ባህር ዳር'}`
+              : `New motor registration submitted for manager approval - ${reg.subCity || 'Bahir Dar'}`,
             time: reg.registrationDate,
             type: 'pending_approval',
             icon: 'motorcycle',
             iconBg: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400',
-            badgeLabel: isAmharic ? 'አዲስ' : 'New',
+            badgeLabel: isAmharic ? 'አዲስ ማመልከቻ' : 'New Submission',
             badgeBg: 'bg-indigo-500/20',
             badgeText: 'text-indigo-700 dark:text-indigo-300',
             actionPage: 'tables',
@@ -822,66 +815,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
           });
         });
       }
-    }
 
-    // 1b. Registration Record Actions by Manager / Admin (Approved & Rejected Notifications)
-    const approvedRegs = registrations.filter((r) => r.status === 'approved');
-    if (approvedRegs.length > 0) {
-      approvedRegs.slice(0, 3).forEach((reg) => {
-        const isWasCorrection = reg.isCorrection || reg.lastRejectionReason;
-        list.push({
-          id: `reg_approved_${reg.id}`,
-          title: isWasCorrection
-            ? (isAmharic ? `ማስተካከያው ጸድቋል: ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'})` : `Correction Approved: ${reg.fullName} (${reg.plateNumber || 'Plate'})`)
-            : (isAmharic ? `ፈቃድ ጸድቋል: ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'})` : `Permit Approved: ${reg.fullName} (${reg.plateNumber || 'Plate'})`),
-          description: isWasCorrection
-            ? (isAmharic
-                ? `የ ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'}) ማስተካከያ በስራ አስኪያጅ/ሱፐር አድሚን ጸድቆ በተሳካ ሁኔታ ተመዝግቧል።`
-                : `Specific correction for ${reg.fullName} (${reg.plateNumber || 'Plate'}) was approved and registered successfully.`)
-            : (isAmharic ? `የሰሌዳ ቁጥር እና የባጅ ፈቃድ በሥራ አስኪያጅ/አስተዳዳሪ ጸድቋል።` : `Registration and permit card approved by manager/admin.`),
-          time: reg.registrationDate,
-          type: 'print_order',
-          icon: 'check_circle',
-          iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
-          badgeLabel: isWasCorrection ? (isAmharic ? 'ተቀባይነት አግኝቷል' : 'Correction Approved') : (isAmharic ? 'ጸድቋል' : 'Approved'),
-          badgeBg: 'bg-emerald-500/20',
-          badgeText: 'text-emerald-700 dark:text-emerald-300',
-          actionPage: 'tables',
-          actionTab: 'approved',
-        });
-      });
-    }
-
-    const rejectedRegs = registrations.filter((r) => r.status === 'rejected');
-    if (rejectedRegs.length > 0) {
-      rejectedRegs.slice(0, 3).forEach((reg) => {
-        const reasonText = reg.rejectionReason
-          ? (isAmharic ? `የውድቅ የተደረገበት ምክንያት: ${reg.rejectionReason}` : `Reason for rejection: ${reg.rejectionReason}`)
-          : (isAmharic ? 'የውድቅ የተደረገበት ምክንያት: ሰነዶች አልሟሉም ወይም ማስተካከያ ይፈልጋል' : 'Reason for rejection: Documents incomplete or required correction');
-
-        list.push({
-          id: `reg_rejected_${reg.id}`,
-          title: isAmharic ? `ማመልከቻ ውድቅ ተደርጓል: ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'})` : `Application Rejected: ${reg.fullName} (${reg.plateNumber || 'Plate'})`,
-          description: reasonText,
-          time: reg.registrationDate,
-          type: 'flagged_inspection',
-          icon: 'cancel',
-          iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
-          badgeLabel: isAmharic ? 'ውድቅ ተደርጓል' : 'Rejected',
-          badgeBg: 'bg-rose-500/20',
-          badgeText: 'text-rose-700 dark:text-rose-300',
-          actionPage: 'today_submissions_adjust',
-          actionTab: 'pending',
-        });
-      });
-    }
-
-    // 2. Flagged or Warning inspection patrol logs
-    // Visible for field officers, supervisors/managers, superadmins, IT, or roles with Task 5 or 10 viewable
-    const canViewInspectionLogs = isSuperAdmin || isManager || isOfficer || isItSpecialist ||
-      isTaskViewable(userRole, 5) || isTaskViewable(userRole, 10);
-
-    if (canViewInspectionLogs) {
+      // Flagged patrol inspection violations logged by officers needing manager review
       const flaggedLogs = verificationLogs.filter(
         (l) => l.verificationStatus === 'flagged' || l.verificationStatus === 'warning'
       );
@@ -889,103 +824,42 @@ const HomePageShell: React.FC<HomePageProps> = ({
         list.push({
           id: `flagged_logs_summary_${flaggedLogs.length}`,
           title: isAmharic
-            ? `${flaggedLogs.length} የፍተሻ ጥሰቶች/ማስጠንቀቂያዎች`
-            : `${flaggedLogs.length} Inspection Violations/Warnings`,
+            ? `${flaggedLogs.length} የፍተሻ ጥሰቶች/ማስጠንቀቂያዎች ተመዝግበዋል`
+            : `${flaggedLogs.length} Field Inspection Violations Logged`,
           description: isAmharic
-            ? 'በመንገድ ፍተሻ ወቅት የተመዘገቡ የህግ ጥሰቶች ወይም ያልተሟሉ ሰነዶች አሉ።'
-            : 'Traffic patrol officers flagged non-compliant or expired permits.',
+            ? 'በመንገድ ፍተሻ ወቅት በኦፊሰሮች የተመዘገቡ የህግ ጥሰቶች ግምገማ ይፈልጋሉ።'
+            : 'Patrol officers reported non-compliant or flagged vehicle violations.',
           type: 'flagged_inspection',
           icon: 'warning',
           iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
-          badgeLabel: isAmharic ? 'ማስጠንቀቂያ' : 'Alert',
+          badgeLabel: isAmharic ? 'የጥሰት ሪፖርት' : 'Violation Report',
           badgeBg: 'bg-rose-500/20',
           badgeText: 'text-rose-700 dark:text-rose-300',
           actionPage: 'inspection_report',
         });
-
-        // For officers and traffic supervisors, show up to 2 recent flagged incident alerts
-        if (isOfficer || isManager || isSuperAdmin) {
-          flaggedLogs.slice(0, 2).forEach((log) => {
-            list.push({
-              id: `log_flagged_${log.id}`,
-              title: `${log.plateNumber || log.driverName || log.badgeId} - ${isAmharic ? 'ጥሰት ተመዝግቧል' : 'Flagged Violation'}`,
-              description: log.notes || (isAmharic ? 'የመንገድ ላይ ፍተሻ ህግ ጥሰት ተገኝቷል' : 'Roadside patrol non-compliance violation logged'),
-              time: log.timestamp ? new Date(log.timestamp).toLocaleTimeString() : undefined,
-              type: 'flagged_inspection',
-              icon: 'gavel',
-              iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
-              badgeLabel: isAmharic ? 'ጥሰት' : 'Violation',
-              badgeBg: 'bg-rose-500/20',
-              badgeText: 'text-rose-700 dark:text-rose-300',
-              actionPage: 'inspection_report',
-            });
-          });
-        }
       }
-    }
 
-    // 3. Unregistered vehicle incident reports
-    // Relevant for patrol officers, traffic directors, managers, and superadmins
-    const canViewUnregistered = isSuperAdmin || isManager || isOfficer ||
-      isTaskViewable(userRole, 5) || isTaskViewable(userRole, 10);
-
-    if (canViewUnregistered && unregisteredReports.length > 0) {
-      list.push({
-        id: `unreg_reports_summary_${unregisteredReports.length}`,
-        title: isAmharic
-          ? `${unregisteredReports.length} ያልተመዘገቡ ሞተሮች ሪፖርት`
-          : `${unregisteredReports.length} Unregistered Vehicle Reports`,
-        description: isAmharic
-          ? 'በመንገድ ላይ የተገኙ ያልተመዘገቡ ተሽከርካሪዎች ጥቆማዎች ቀርበዋል።'
-          : 'Patrol officers submitted incident reports on unregistered motorcycles.',
-        type: 'unregistered_alert',
-        icon: 'no_crash',
-        iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
-        badgeLabel: isAmharic ? 'ያልተመዘገበ' : 'Unregistered',
-        badgeBg: 'bg-amber-500/20',
-        badgeText: 'text-amber-800 dark:text-amber-300',
-        actionPage: 'unregistered_list',
-      });
-    }
-
-    // 4. Pending Print Orders
-    // Relevant for printing workstation staff, managers, IT, and superadmin (not field patrol officers)
-    const canViewPrintOrders = !isOfficer && (
-      isSuperAdmin || isManager || isItSpecialist ||
-      (isClerk && (settings.showClerkApprovedVehiclesAction ?? false) && isTaskViewable(userRole, 8))
-    );
-
-    if (canViewPrintOrders) {
-      const pendingPrints = printOrders.filter((p) => p.status === 'pending' || p.status === 'in_printing');
-      if (pendingPrints.length > 0) {
+      // Unregistered vehicle reports logged by patrol officers
+      if (unregisteredReports.length > 0) {
         list.push({
-          id: `print_orders_summary_${pendingPrints.length}`,
+          id: `unreg_reports_summary_${unregisteredReports.length}`,
           title: isAmharic
-            ? `${pendingPrints.length} የህትመት ትዕዛዞች በሂደት ላይ`
-            : `${pendingPrints.length} Print Batches in Progress`,
+            ? `${unregisteredReports.length} ያልተመዘገቡ ሞተሮች ጥቆማ ቀርቧል`
+            : `${unregisteredReports.length} Unregistered Vehicle Patrol Reports`,
           description: isAmharic
-            ? 'የባጅና የሰሌዳ ፈቃድ ህትመት ባቾች በመዘጋጀት ላይ ናቸው።'
-            : 'Batches queued or being printed for official permit cards and stickers.',
-          type: 'print_order',
-          icon: 'print',
-          iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
-          badgeLabel: isAmharic ? 'ህትመት' : 'Printing',
-          badgeBg: 'bg-emerald-500/20',
-          badgeText: 'text-emerald-700 dark:text-emerald-300',
-          actionPage: 'tables',
-          actionTab: 'approved',
+            ? 'በኦፊሰሮች በሜዳ ላይ የተገኙ ያልተመዘገቡ ተሽከርካሪዎች ሪፖርት ቀርቧል።'
+            : 'Field officers reported unregistered motorcycle incidents on duty.',
+          type: 'unregistered_alert',
+          icon: 'no_crash',
+          iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+          badgeLabel: isAmharic ? 'ያልተመዘገበ' : 'Unregistered Alert',
+          badgeBg: 'bg-amber-500/20',
+          badgeText: 'text-amber-800 dark:text-amber-300',
+          actionPage: 'unregistered_list',
         });
       }
-    }
 
-    // 5. Pending payment receipts
-    // Relevant for finance, clerks, managers, and superadmins (Task 15/16) - not field patrol officers
-    const canViewPayments = !isOfficer && (
-      isSuperAdmin || isManager || isClerk ||
-      isTaskViewable(userRole, 15) || isTaskViewable(userRole, 16)
-    );
-
-    if (canViewPayments) {
+      // Pending payment deposit receipts requiring verification
       const pendingPayments = paymentReceipts.filter((p) => p.status === 'pending');
       if (pendingPayments.length > 0) {
         list.push({
@@ -995,11 +869,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
             : `${pendingPayments.length} Pending Payment Receipts`,
           description: isAmharic
             ? 'የባንክ ክፍያ ደረሰኞች ማረጋገጫና ቼክ በመጠባበቅ ላይ ናቸው።'
-            : 'Deposit slips waiting for clerk/finance payment verification.',
+            : 'Deposit slips waiting for payment verification and clearance.',
           type: 'pending_payment',
           icon: 'receipt_long',
           iconBg: 'bg-teal-500/15 text-teal-600 dark:text-teal-400',
-          badgeLabel: isAmharic ? 'ክፍያ' : 'Payment',
+          badgeLabel: isAmharic ? 'ክፍያ ማረጋገጫ' : 'Payment Verification',
           badgeBg: 'bg-teal-500/20',
           badgeText: 'text-teal-700 dark:text-teal-300',
           actionPage: 'payment_receipts',
@@ -1007,7 +881,91 @@ const HomePageShell: React.FC<HomePageProps> = ({
       }
     }
 
-    // 6. Officer Patrol Shift & Active Duty Status (Only for Officers)
+    // =========================================================================
+    // 2. RECIPIENT: CLERK / DATA ENCODER (Submitting Staff)
+    // Receive notifications when Manager approves or rejects their submissions.
+    // =========================================================================
+    if (isClerk || isSuperAdmin) {
+      // Approved submissions notification for Clerks
+      const approvedRegs = registrations.filter((r) => r.status === 'approved');
+      if (approvedRegs.length > 0) {
+        approvedRegs.slice(0, 3).forEach((reg) => {
+          const isWasCorrection = reg.isCorrection || reg.lastRejectionReason;
+          list.push({
+            id: `reg_approved_clerk_${reg.id}`,
+            title: isWasCorrection
+              ? (isAmharic ? `ማስተካከያው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Correction Approved by Manager: ${reg.fullName}`)
+              : (isAmharic ? `ማመልከቻው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Application Approved by Manager: ${reg.fullName}`),
+            description: isAmharic
+              ? `ለ ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'}) የቀረበው ማመልከቻ ጸድቋል፤ የባጅ/ሰሌዳ ፈቃድ ማተም ወይም ማረጋገጫ መስጠት ይችላሉ።`
+              : `Registration for ${reg.fullName} (${reg.plateNumber || 'Plate'}) was approved by manager. Ready for permit issue.`,
+            time: reg.registrationDate,
+            type: 'print_order',
+            icon: 'check_circle',
+            iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+            badgeLabel: isAmharic ? 'በስራ አስኪያጅ ጸድቋል' : 'Approved by Manager',
+            badgeBg: 'bg-emerald-500/20',
+            badgeText: 'text-emerald-700 dark:text-emerald-300',
+            actionPage: 'tables',
+            actionTab: 'approved',
+          });
+        });
+      }
+
+      // Rejected / Correction Needed submissions notification for Clerks
+      const rejectedRegs = registrations.filter((r) => r.status === 'rejected');
+      if (rejectedRegs.length > 0) {
+        rejectedRegs.slice(0, 3).forEach((reg) => {
+          const reasonText = reg.rejectionReason
+            ? (isAmharic ? `የስራ አስኪያጅ አስተያየት: ${reg.rejectionReason}` : `Manager Rejection Reason: ${reg.rejectionReason}`)
+            : (isAmharic ? 'የስራ አስኪያጅ አስተያየት: ሰነዶች አልሟሉም ወይም ማስተካከያ ይፈልጋል' : 'Manager Rejection Reason: Documents incomplete or require correction');
+
+          list.push({
+            id: `reg_rejected_clerk_${reg.id}`,
+            title: isAmharic
+              ? `ማስተካከያ ይፈልጋል (ውድቅ): ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'})`
+              : `Correction Required (Rejected): ${reg.fullName} (${reg.plateNumber || 'Plate'})`,
+            description: reasonText,
+            time: reg.registrationDate,
+            type: 'flagged_inspection',
+            icon: 'published_with_changes',
+            iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+            badgeLabel: isAmharic ? 'ማስተካከያ ይፈልጋል' : 'Needs Correction',
+            badgeBg: 'bg-rose-500/20',
+            badgeText: 'text-rose-700 dark:text-rose-300',
+            actionPage: 'today_submissions_adjust',
+            actionTab: 'pending',
+          });
+        });
+      }
+
+      // Pending print batches ready for card printing
+      const pendingPrints = printOrders.filter((p) => p.status === 'pending' || p.status === 'in_printing');
+      if (pendingPrints.length > 0) {
+        list.push({
+          id: `print_orders_clerk_${pendingPrints.length}`,
+          title: isAmharic
+            ? `${pendingPrints.length} የህትመት ትዕዛዞች ለማተም ዝግጁ ናቸው`
+            : `${pendingPrints.length} Permit Batches Ready for Printing`,
+          description: isAmharic
+            ? 'የተረጋገጡ የባጅና የሰሌዳ ፈቃድ ህትመቶች በህትመት ክፍል ይገኛሉ።'
+            : 'Approved permit cards and plates queued in the printing workstation.',
+          type: 'print_order',
+          icon: 'print',
+          iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+          badgeLabel: isAmharic ? 'የህትመት ክፍል' : 'Print Queue',
+          badgeBg: 'bg-emerald-500/20',
+          badgeText: 'text-emerald-700 dark:text-emerald-300',
+          actionPage: 'tables',
+          actionTab: 'approved',
+        });
+      }
+    }
+
+    // =========================================================================
+    // 3. RECIPIENT: FIELD PATROL OFFICER (Patrol & Verification)
+    // Receive duty updates and new approved plates in their subcity to verify on road.
+    // =========================================================================
     if (isOfficer) {
       const matchingOfficer = officers.find(
         (o) => o.badgeId === userBadgeId || o.id === userBadgeId || o.phone === userBadgeId
@@ -1015,27 +973,51 @@ const HomePageShell: React.FC<HomePageProps> = ({
       const subCityAssigned = matchingOfficer?.subCity || 'ባህር ዳር ዙሪያ / Bahir Dar';
       const zoneAssigned = matchingOfficer?.assignedZone || 'ዋና ዋና የመንገድ ኮሪደሮች';
 
+      // Active Duty Sector
       list.push({
         id: `officer_assignment_${userBadgeId || 'active'}`,
         title: isAmharic
-          ? `የኦፊሰር ስራ ምድብ - ${subCityAssigned}`
+          ? `የኦፊሰር የጥበቃ ምድብ - ${subCityAssigned}`
           : `Patrol Duty Assignment - ${subCityAssigned}`,
         description: isAmharic
-          ? `ምድብ ቀጠና: ${zoneAssigned} | የፍተሻ ሁኔታ: ንቁ አገልግሎት ላይ`
-          : `Assigned Sector: ${zoneAssigned} | Status: Active on Field Duty`,
+          ? `የተመደበ ቀጠና: ${zoneAssigned} | የኦፊሰር ሁኔታ: በሜዳ ፍተሻ ላይ`
+          : `Assigned Patrol Sector: ${zoneAssigned} | Officer Status: Active Patrol`,
         type: 'info',
         icon: 'local_police',
-        iconBg: 'bg-slate-700/15 text-slate-800 dark:text-blue-300',
-        badgeLabel: isAmharic ? 'ምድብ' : 'Duty',
-        badgeBg: 'bg-slate-700/20',
-        badgeText: 'text-blue-800 dark:text-blue-300',
+        iconBg: 'bg-[#3C50E0]/15 text-[#3C50E0] dark:text-blue-300',
+        badgeLabel: isAmharic ? 'የስራ ምድብ' : 'On Patrol Duty',
+        badgeBg: 'bg-[#3C50E0]/20',
+        badgeText: 'text-[#3C50E0] dark:text-blue-300',
         actionPage: 'scan',
       });
+
+      // Show recent approved permits in officer's subcity so officer can verify active plate numbers
+      const newlyApprovedInSubCity = registrations.filter((r) => r.status === 'approved');
+      if (newlyApprovedInSubCity.length > 0) {
+        list.push({
+          id: `officer_approved_plates_${newlyApprovedInSubCity.length}`,
+          title: isAmharic
+            ? `${newlyApprovedInSubCity.length} አዳዲስ ህጋዊ ሰሌዳዎች ተመዝግበዋል`
+            : `${newlyApprovedInSubCity.length} Newly Registered Plates Active`,
+          description: isAmharic
+            ? 'በክፍለ ከተማዎ አዳዲስ የሞተር ፈቃዶችና ሰሌዳዎች በስራ አስኪያጅ ጸድቀው ስራ ላይ ውለዋል።'
+            : 'Newly approved motor permits and plate numbers registered for verification on road.',
+          type: 'info',
+          icon: 'verified',
+          iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+          badgeLabel: isAmharic ? 'ህጋዊ ሰሌዳዎች' : 'Active Plates',
+          badgeBg: 'bg-emerald-500/20',
+          badgeText: 'text-emerald-700 dark:text-emerald-300',
+          actionPage: 'scan',
+        });
+      }
     }
 
-    // 7. IT & Governance System Security / User Alerts (Only for IT Specialist & Superadmin)
-    const canViewSystemMgmt = isSuperAdmin || isItSpecialist || isTaskViewable(userRole, 13) || isTaskViewable(userRole, 12);
-    if (canViewSystemMgmt) {
+    // =========================================================================
+    // 4. RECIPIENT: IT SPECIALIST / SYSTEM ADMINISTRATOR
+    // System performance, unassigned officers, database maintenance.
+    // =========================================================================
+    if (isItSpecialist) {
       const unassignedOfficers = officers.filter((o) => !o.subCity || o.status === 'inactive');
       if (unassignedOfficers.length > 0) {
         list.push({
@@ -1049,7 +1031,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
           type: 'info',
           icon: 'manage_accounts',
           iconBg: 'bg-purple-500/15 text-purple-600 dark:text-purple-400',
-          badgeLabel: isAmharic ? 'አስተዳደር' : 'Admin',
+          badgeLabel: isAmharic ? 'ስርዓት አስተዳደር' : 'System Governance',
           badgeBg: 'bg-purple-500/20',
           badgeText: 'text-purple-700 dark:text-purple-300',
           actionPage: 'superadmin_users',

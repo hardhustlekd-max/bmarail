@@ -124,14 +124,15 @@ class ImageUploadManager {
       previewUrl: typeof source === 'string' && source.startsWith('data:') ? source : '',
     });
 
-    // 3. High-efficiency client-side compression pass
+    // 3. High-efficiency client-side compression pass (60% JPEG quality)
     let compressed: CompressedImageResult;
     try {
       compressed = await compressImageToBlob(source, {
         maxWidth: 1400,
         maxHeight: 1400,
-        quality: 0.82,
-        maxBytes: 150 * 1024,
+        quality: 0.60,
+        preferredFormat: 'image/jpeg',
+        maxBytes: 100 * 1024,
         contrastBoost: true,
       });
     } catch (compErr) {

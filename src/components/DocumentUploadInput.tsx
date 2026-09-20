@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import { imageUploadManager, UploadStatus } from '../services/imageUploadManager';
+import { compressImageToBlob } from '../utils/imageCompressor';
 import { SmartImage } from './SmartImage';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 
@@ -66,39 +67,31 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
     lastSelectedFileRef.current = file;
     setErrorMessage('');
     setStatus('compressing');
-    setUploadProgress(15);
+    setUploadProgress(30);
 
     try {
-      const { previewUrl, remoteUrlPromise } = await imageUploadManager.upload(
-        instanceIdRef.current,
-        file,
-        folder,
-        (evt) => {
-          setStatus(evt.status);
-          setUploadProgress(evt.progress);
-          if (evt.error) {
-            setErrorMessage(evt.error);
-          }
-        }
-      );
+      // 1. High-efficiency client-side compression pass at 60% JPEG quality
+      const compressed = await compressImageToBlob(file, {
+        maxWidth: 1400,
+        maxHeight: 1400,
+        quality: 0.60,
+        preferredFormat: 'image/jpeg',
+        maxBytes: 100 * 1024,
+        contrastBoost: true,
+      });
 
-      // Instantly display preview with zero lag
-      if (previewUrl) {
-        setLocalDisplayUrl(previewUrl);
-      }
+      // 2. Instant zero-lag in-memory preview without pre-uploading orphaned files to server
+      const displayUrl = compressed.dataUrl || compressed.objectUrl;
+      setLocalDisplayUrl(displayUrl);
+      setStatus('completed');
+      setUploadProgress(100);
 
-      // Wait for background network upload
-      const finalRemoteUrl = await remoteUrlPromise;
-      if (finalRemoteUrl) {
-        setLocalDisplayUrl(finalRemoteUrl);
-        setStatus('completed');
-        setUploadProgress(100);
-        onPhotoChange(finalRemoteUrl);
-      }
+      // 3. Pass compressed 60% JPEG data URL to parent form state (uploaded only upon final form submit)
+      onPhotoChange(compressed.dataUrl);
     } catch (err: any) {
-      console.warn('[DocumentUploadInput] Notice during upload process:', err);
+      console.warn('[DocumentUploadInput] Notice during compression process:', err);
       setStatus('error');
-      setErrorMessage(isAmharic ? 'የመስቀል ችግር አጋጥሟል' : 'Upload failed');
+      setErrorMessage(isAmharic ? 'የምስል ማስተካከል ችግር አጋጥሟል' : 'Image processing failed');
     } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
