@@ -72,12 +72,14 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
         </>
       )}
 
-      {/* Key-Value Details Grid - Direct Layout without Outer Card Container */}
+      {/* Key-Value Details Grid - Item Values Alignment Starts from Center */}
       <div className="space-y-2 text-xs sm:text-sm">
         {fields.map((field, index) => (
-          <div key={index} className="flex items-center justify-between gap-3 py-0.5">
-            <span className="text-slate-500 dark:text-slate-400 font-extrabold shrink-0">{field.label}</span>
-            <span className="font-extrabold text-[#1C2434] dark:text-white text-right truncate">
+          <div key={index} className="grid grid-cols-2 gap-3 sm:gap-4 py-0.5 items-center">
+            <span className="text-[#1C2434] dark:text-white font-extrabold truncate min-w-0">
+              {field.label}
+            </span>
+            <span className="text-slate-500 dark:text-slate-400 font-extrabold text-left truncate min-w-0">
               {field.value || '—'}
             </span>
           </div>
