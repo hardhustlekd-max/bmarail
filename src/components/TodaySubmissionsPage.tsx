@@ -654,47 +654,103 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
         )}
 
-        {/* SUB-FILTER SLIDE BAR (SEARCH, DATE TOGGLE & STATUS SLIDE PILLS - TAILADMIN DESIGN) */}
-        <div className="p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          {/* Live Search Input (Hidden on mobile, shown in header dropdown instead) */}
-          <div className="relative flex-1 min-w-[200px] max-w-sm hidden sm:block">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1);
-              }}
-              placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
-              className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-[#3C50E0] active:border-[#3C50E0] dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[15px]">close</Icon>
-              </button>
-            )}
+        {/* SUB-FILTER SLIDE BAR (UNDERLINE TABS STYLE: FLAT TEXT LINKS WITH SOLID UNDERLINE) */}
+        <div className="px-3 sm:px-5 bg-white dark:bg-[#1C2434] flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+          {/* Status Filter Tabs in Underline Tabs Style */}
+          <div className="flex items-center gap-1 sm:gap-2 flex-nowrap overflow-x-auto scrollbar-none max-w-full -mb-[1px]">
+            {[
+              {
+                id: 'pending_approval',
+                label: isAmharic
+                  ? (isAdminOrSuperAdmin ? 'ተስተካክለለው የቀረቡ' : 'ማፅደቂያ በመጠባበቅ ላይ')
+                  : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Waiting for Approval'),
+                count: pendingCount,
+                badgeColor:
+                  pendingCount > 0
+                    ? 'bg-[#F59E0B]/15 text-[#D97706] dark:text-[#FBBF24]'
+                    : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
+              },
+              {
+                id: 'rejected',
+                label: isAmharic
+                  ? (isAdminOrSuperAdmin ? 'እዲስተካከሉ የቀረቡ' : 'ውድቅ የተደረጉ (ማስተካከያ የሚሹ)')
+                  : (isAdminOrSuperAdmin ? 'Referred for Correction' : 'Rejected (Needs Correction)'),
+                count: rejectedCount,
+                badgeColor:
+                  rejectedCount > 0
+                    ? 'bg-[#FB5454]/15 text-[#E11D48] dark:text-[#FB7185]'
+                    : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
+              },
+            ].map((tab) => {
+              const isActive = statusFilter === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setStatusFilter(tab.id);
+                    setPage(1);
+                  }}
+                  className={`group relative flex items-center gap-1.5 py-2.5 sm:py-3 px-2 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                    isActive
+                      ? 'border-[#3C50E0] text-[#3C50E0] dark:text-white dark:border-[#3C50E0] font-bold'
+                      : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                      isActive
+                        ? 'bg-[#3C50E0]/12 text-[#3C50E0] dark:bg-[#3C50E0]/30 dark:text-blue-300'
+                        : tab.badgeColor
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Status & Date Filter Segmented Slide Pills */}
-          <div className="flex items-center gap-2.5 flex-nowrap overflow-x-auto scrollbar-none max-w-full pb-1 sm:pb-0">
+          {/* Right Controls: Search, Date Toggle & Reset Filter */}
+          <div className="flex items-center gap-2 py-1.5 flex-1 sm:flex-initial justify-end">
+            {/* Live Search Input (Hidden on mobile, shown in header dropdown instead) */}
+            <div className="relative flex-1 sm:w-64 max-w-sm hidden sm:block">
+              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
+                <Icon className="material-symbols-outlined text-[15px]">search</Icon>
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
+                placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ፈልግ...' : 'Search by name, plate, phone...'}
+                className="w-full pl-8 pr-7 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-[#3C50E0] focus:bg-white dark:focus:bg-[#1C2434] focus:outline-none transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[14px]">close</Icon>
+                </button>
+              )}
+            </div>
+
             {/* Date Pill Toggle */}
-            <div className="inline-flex items-center p-1 rounded-sm bg-[#E2E8F0] dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] shrink-0 whitespace-nowrap">
+            <div className="inline-flex items-center p-0.5 rounded-sm bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] shrink-0 whitespace-nowrap">
               <button
                 type="button"
                 onClick={() => {
                   setDateFilter('today');
                   setPage(1);
                 }}
-                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+                className={`px-2.5 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                   dateFilter === 'today'
-                    ? 'bg-[#3C50E0] text-white shadow-xs'
+                    ? 'bg-[#3C50E0] text-white font-semibold shadow-xs'
                     : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                 }`}
               >
@@ -706,70 +762,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   setDateFilter('all');
                   setPage(1);
                 }}
-                className={`px-3 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+                className={`px-2.5 py-1 rounded-sm text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                   dateFilter === 'all'
-                    ? 'bg-[#3C50E0] text-white shadow-xs'
+                    ? 'bg-[#3C50E0] text-white font-semibold shadow-xs'
                     : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                 }`}
               >
                 {isAmharic ? 'ሁሉንም ቀናት' : 'All Dates'}
               </button>
-            </div>
-
-            {/* Status Filter Tabs in TailAdmin Pill Style */}
-            <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none shrink-0 max-w-full">
-              {[
-                {
-                  id: 'pending_approval',
-                  label: isAmharic
-                    ? (isAdminOrSuperAdmin ? 'ተስተካክለለው የቀረቡ' : 'ማፅደቂያ በመጠባበቅ ላይ')
-                    : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Waiting for Approval'),
-                  count: pendingCount,
-                  badgeColor:
-                    pendingCount > 0
-                      ? 'bg-[#F59E0B]/20 text-[#F59E0B]'
-                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-                {
-                  id: 'rejected',
-                  label: isAmharic
-                    ? (isAdminOrSuperAdmin ? 'እዲስተካከሉ የቀረቡ' : 'ውድቅ የተደረጉ (ማስተካከያ የሚሹ)')
-                    : (isAdminOrSuperAdmin ? 'Referred for Correction' : 'Rejected (Needs Correction)'),
-                  count: rejectedCount,
-                  badgeColor:
-                    rejectedCount > 0
-                      ? 'bg-[#FB5454]/20 text-[#FB5454]'
-                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-              ].map((tab) => {
-                const isActive = statusFilter === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(tab.id);
-                      setPage(1);
-                    }}
-                    className={`flex items-center gap-1.5 px-3 py-1 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 rounded-sm ${
-                      isActive
-                        ? 'bg-[#3C50E0] text-white shadow-xs'
-                        : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold ${
-                        isActive
-                          ? 'bg-white/20 text-white'
-                          : tab.badgeColor
-                      }`}
-                    >
-                      {tab.count}
-                    </span>
-                  </button>
-                );
-              })}
             </div>
 
             {/* Reset filter button if filtered */}
@@ -782,7 +782,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   setDateFilter('today');
                   setPage(1);
                 }}
-                className="px-2.5 py-1 rounded-sm text-xs font-medium text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer"
+                className="px-2 py-1 rounded-sm text-xs font-medium text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20"
                 title={isAmharic ? 'ማጣሪያዎችን አጽዳ' : 'Reset Filters'}
               >
                 <span>{isAmharic ? 'አጽዳ' : 'Clear'}</span>

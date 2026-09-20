@@ -743,7 +743,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {activeTab === 'users' && (
-            <div className="hidden sm:flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-start flex-nowrap overflow-x-auto scrollbar-none max-w-full">
+            <div className="hidden sm:flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-center sm:justify-start flex-nowrap overflow-x-auto scrollbar-none max-w-full -mb-[1px]">
               {[
                 {
                   id: 'matrix' as const,
@@ -761,18 +761,18 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     key={tab.id}
                     type="button"
                     onClick={() => setUserViewMode(tab.id)}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 select-none rounded-md ${
+                    className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                       isActive
-                        ? 'bg-primary text-white font-extrabold shadow-2xs'
-                        : 'bg-surface-container/60 hover:bg-surface-container text-secondary hover:text-on-surface border border-outline-variant/60 font-medium'
+                        ? 'border-primary text-primary font-bold'
+                        : 'border-transparent text-secondary hover:text-on-surface hover:border-outline-variant/60 font-medium'
                     }`}
                   >
                     <span className="tracking-tight">{tab.label}</span>
                     {typeof tab.count === 'number' && (
                       <span
-                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
                           isActive
-                            ? 'bg-white/20 text-white'
+                            ? 'bg-primary/15 text-primary'
                             : 'bg-surface-container-highest text-secondary'
                         }`}
                       >

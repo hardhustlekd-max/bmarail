@@ -202,9 +202,9 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             )}
           </div>
 
-          {/* Status Filter Tabs & Sub-City Dropdown */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto max-w-full shrink-0">
-            <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none max-w-full shrink-0">
+          {/* Status Filter Tabs in Underline Tabs Style & Sub-City Dropdown */}
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto max-w-full shrink-0">
+            <div className="flex items-center gap-1 sm:gap-2 flex-nowrap overflow-x-auto scrollbar-none max-w-full shrink-0 -mb-[1px]">
               {[
                 {
                   id: 'all' as const,
@@ -241,17 +241,17 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       setStatusFilter(tab.id);
                       setCurrentPage(1);
                     }}
-                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                       isActive
-                        ? 'bg-[#3C50E0] text-white shadow-xs'
-                        : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'
+                        ? 'border-[#3C50E0] text-[#3C50E0] dark:text-white dark:border-[#3C50E0] font-bold'
+                        : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
                     }`}
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
                         isActive
-                          ? 'bg-white/20 text-white'
+                          ? 'bg-[#3C50E0]/12 text-[#3C50E0] dark:bg-[#3C50E0]/30 dark:text-blue-300'
                           : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >

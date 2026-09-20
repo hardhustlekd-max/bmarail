@@ -746,101 +746,102 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           </div>
         )}
 
-        {/* SUB-FILTER SLIDE BAR (TAILADMIN DESIGN: LIVE SEARCH & STATUS BUTTONS) */}
-        <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-[#F7F9FC] dark:bg-[#24303F]/60 flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          {/* Live Search Input (Hidden on mobile, shown in header dropdown) */}
-          <div className="relative flex-1 min-w-[180px] max-w-sm hidden sm:block">
-            <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
-              <Icon className="material-symbols-outlined text-[16px]">search</Icon>
-            </div>
-            <input
-              type="text"
-              value={regSearchQuery}
-              onChange={(e) => {
-                const val = e.target.value;
-                const isSuperUser = isSuperAdmin;
-                if (isSuperUser && val.toLowerCase().includes('super1212')) {
-                  setShowHiddenControls(true);
-                  const cleaned = val.replace(/super1212/gi, '').trim();
-                  setRegSearchQuery(cleaned);
-                } else {
-                  setRegSearchQuery(val);
-                }
-                setRegPage(1);
-              }}
-              placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
-              className="w-full pl-8 pr-7 py-1.5 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-[#3C50E0] focus:outline-none transition-colors"
-            />
-            {regSearchQuery && (
-              <button
-                type="button"
-                onClick={() => setRegSearchQuery('')}
-                className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[14px]">close</Icon>
-              </button>
-            )}
+        {/* SUB-FILTER SLIDE BAR (UNDERLINE TABS STYLE: FLAT TEXT LINKS WITH SOLID UNDERLINE) */}
+        <div className="px-3 sm:px-5 bg-white dark:bg-[#1C2434] flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+          {/* Status Tabs in Underline Tabs Style */}
+          <div className="flex items-center gap-1 sm:gap-2 flex-nowrap overflow-x-auto scrollbar-none max-w-full -mb-[1px]">
+            {[
+              {
+                id: 'approved' as const,
+                label: isAmharic ? 'የፀደቁ' : 'Approved',
+                count: approvedCount,
+                badgeColor: 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
+              },
+              {
+                id: 'pending' as const,
+                label: isAmharic ? 'የሚጠበቁ' : 'Pending',
+                count: pendingCount,
+                badgeColor:
+                  pendingCount > 0
+                    ? 'bg-[#F59E0B]/15 text-[#D97706] dark:text-[#FBBF24]'
+                    : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
+              },
+              {
+                id: 'expired' as const,
+                label: isAmharic ? 'ያለፈበት' : 'Expired',
+                count: expiredCount,
+                badgeColor:
+                  expiredCount > 0
+                    ? 'bg-[#FB5454]/15 text-[#E11D48] dark:text-[#FB7185]'
+                    : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
+              },
+            ].map((tab) => {
+              const isActive = activeTableTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTableTab(tab.id);
+                    setRegPage(1);
+                  }}
+                  className={`group relative flex items-center gap-1.5 py-2.5 sm:py-3 px-2 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                    isActive
+                      ? 'border-[#3C50E0] text-[#3C50E0] dark:text-white dark:border-[#3C50E0] font-bold'
+                      : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {typeof tab.count === 'number' && (
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                        isActive
+                          ? 'bg-[#3C50E0]/12 text-[#3C50E0] dark:bg-[#3C50E0]/30 dark:text-blue-300'
+                          : tab.badgeColor
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Status Tabs in TailAdmin Button Group Style */}
-          <div className="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-none max-w-full">
-            <div className="flex items-center gap-1 flex-nowrap shrink-0">
-              {[
-                {
-                  id: 'approved' as const,
-                  label: isAmharic ? 'የፀደቁ' : 'Approved',
-                  count: approvedCount,
-                  badgeColor: 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-                {
-                  id: 'pending' as const,
-                  label: isAmharic ? 'የሚጠበቁ' : 'Pending',
-                  count: pendingCount,
-                  badgeColor:
-                    pendingCount > 0
-                      ? 'bg-[#F59E0B]/20 text-[#F59E0B]'
-                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-                {
-                  id: 'expired' as const,
-                  label: isAmharic ? 'ያለፈበት' : 'Expired',
-                  count: expiredCount,
-                  badgeColor:
-                    expiredCount > 0
-                      ? 'bg-[#FB5454]/20 text-[#FB5454]'
-                      : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]',
-                },
-              ].map((tab) => {
-                const isActive = activeTableTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => {
-                      setActiveTableTab(tab.id);
-                      setRegPage(1);
-                    }}
-                    className={`group relative flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium transition-all cursor-pointer whitespace-nowrap shrink-0 select-none rounded-sm ${
-                      isActive
-                        ? 'bg-[#3C50E0] text-white font-semibold shadow-xs'
-                        : 'bg-white dark:bg-[#1C2434] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    {typeof tab.count === 'number' && (
-                      <span
-                        className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-medium transition-colors ${
-                          isActive
-                            ? 'bg-white/20 text-white'
-                            : tab.badgeColor
-                        }`}
-                      >
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+          {/* Right Controls: Search + Clear */}
+          <div className="flex items-center gap-2 py-1.5 flex-1 sm:flex-initial justify-end">
+            {/* Live Search Input (Hidden on mobile, shown in header dropdown) */}
+            <div className="relative flex-1 sm:w-64 max-w-sm hidden sm:block">
+              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
+                <Icon className="material-symbols-outlined text-[15px]">search</Icon>
+              </div>
+              <input
+                type="text"
+                value={regSearchQuery}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  const isSuperUser = isSuperAdmin;
+                  if (isSuperUser && val.toLowerCase().includes('super1212')) {
+                    setShowHiddenControls(true);
+                    const cleaned = val.replace(/super1212/gi, '').trim();
+                    setRegSearchQuery(cleaned);
+                  } else {
+                    setRegSearchQuery(val);
+                  }
+                  setRegPage(1);
+                }}
+                placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
+                className="w-full pl-8 pr-7 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-[#3C50E0] focus:bg-white dark:focus:bg-[#1C2434] focus:outline-none transition-colors"
+              />
+              {regSearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setRegSearchQuery('')}
+                  className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[14px]">close</Icon>
+                </button>
+              )}
             </div>
 
             {/* Reset filter button if filtered */}

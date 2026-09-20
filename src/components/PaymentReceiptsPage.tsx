@@ -1120,8 +1120,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               )}
             </div>
 
-            {/* Status Tabs with Counts */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap shrink-0 max-w-full">
+            {/* Status Tabs with Counts in Underline Tabs Style */}
+            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap shrink-0 max-w-full -mb-[1px]">
               {[
                 { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: paymentReceipts.length },
                 { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: metrics.activeCount },
@@ -1134,17 +1134,17 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     key={tab.key}
                     type="button"
                     onClick={() => setStatusFilter(tab.key)}
-                    className={`px-3 py-1.5 rounded-sm text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                       isActive
-                        ? 'bg-[#3C50E0] text-white shadow-xs'
-                        : 'bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-[#E2E8F0] dark:border-[#2E3A47]'
+                        ? 'border-[#3C50E0] text-[#3C50E0] dark:text-white dark:border-[#3C50E0] font-bold'
+                        : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
                     }`}
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
                         isActive
-                          ? 'bg-white/20 text-white'
+                          ? 'bg-[#3C50E0]/12 text-[#3C50E0] dark:bg-[#3C50E0]/30 dark:text-blue-300'
                           : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >
