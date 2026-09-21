@@ -231,184 +231,142 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       )
     : null;
 
-  // Dynamic role-based Quick Action Shortcuts configuration
+  // Dynamic role-based Quick Action Shortcuts configuration (Driven by RBAC Permissions Matrix)
   const getRoleQuickActions = () => {
-    switch (userRole) {
-      case 'clerk': {
-        const clerkActions: Array<{
-          key: string;
-          title: string;
-          subtitle: string;
-          icon: string;
-          badge: string;
-          iconBg: string;
-        }> = [];
+    const roleActions: Array<{
+      key: string;
+      title: string;
+      subtitle: string;
+      icon: string;
+      badge: string;
+      iconBg: string;
+    }> = [];
 
-        // 1. New Registration Quick Action
-        if ((settings.showClerkNewRegistrationAction ?? true) && isTaskAllowed('clerk', 1)) {
-          clerkActions.push({
-            key: 'new_registration',
-            title: isAmharic ? 'አዲስ ምዝገባ' : 'New Registration',
-            subtitle: isAmharic ? 'የባለቤትና ሞተር ቅጽ' : 'Register Motor & Owner',
-            icon: 'app_registration',
-            badge: isAmharic ? 'ቅጽ' : 'Form',
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          });
-        }
-
-        // 2. Submission Correction Quick Action
-        if ((settings.showClerkEditSubmissionAction ?? true) && isTaskAllowed('clerk', 2)) {
-          clerkActions.push({
-            key: 'today_submissions_adjust',
-            title: isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction',
-            subtitle: isAmharic ? 'የዛሬ ማመልከቻዎችን ማረም' : 'Edit today submissions',
-            icon: 'edit_note',
-            badge: `${todaySubmissionsCount} ${isAmharic ? 'የዛሬ' : 'Today'}`,
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          });
-        }
-
-        // 3. Scan QR Code Quick Action
-        if ((settings.showClerkQrScanAction ?? true) && isTaskAllowed('clerk', 5)) {
-          clerkActions.push({
-            key: 'quick_verify',
-            title: isAmharic ? 'ኮውአር ኮድ ፈትሽ' : 'Scan QR Code',
-            subtitle: isAmharic ? 'በካሜራ ፈቃድ አረጋግጥ' : 'Instant camera verify',
-            icon: 'qr_code_scanner',
-            badge: isAmharic ? 'ፍተሻ' : 'Scanner',
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          });
-        }
-
-        // 4. Payment Receipts Entry Quick Action
-        if ((settings.showClerkPaymentReceiptsAction ?? true) && (isTaskAllowed('clerk', 15) || isTaskAllowed('clerk', 16))) {
-          clerkActions.push({
-            key: 'payment_receipts',
-            title: isAmharic ? 'የክፍያ ደረሰኝ መዝግብ' : 'Add Payment Receipts',
-            subtitle: isAmharic ? 'የ1 ወር ክፍያ ደረሰኝ ማስገቢያ ቅጽ' : 'Open receipt entry form',
-            icon: 'receipt_long',
-            badge: isAmharic ? 'አዲስ' : 'New Form',
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          });
-        }
-
-        // 5. View Submissions Quick Action
-        if (settings.showClerkSubmissionsAction && isTaskViewable('clerk', 8)) {
-          clerkActions.push({
-            key: 'view_submissions',
-            title: isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions',
-            subtitle: `${registrations.length} ${isAmharic ? 'ጠቅላላ መዝገቦች' : 'total records'}`,
-            icon: 'folder_open',
-            badge: `${registrations.length} ${isAmharic ? 'መዝገቦች' : 'Total'}`,
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          });
-        }
-
-        // 6. Approved Motor Registry Quick Action
-        if (settings.showClerkApprovedVehiclesAction && isTaskViewable('clerk', 8)) {
-          clerkActions.push({
-            key: 'approved_vehicles',
-            title: isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry',
-            subtitle: `${approvedCount} ${isAmharic ? 'የፀደቁ' : 'approved permits'}`,
-            icon: 'verified',
-            badge: `${approvedCount} ${isAmharic ? 'የጸደቁ' : 'Valid'}`,
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          });
-        }
-
-        return {
-          title: isAmharic ? 'የፀሀፊ ፈጣን አቋራጮች' : 'Clerk Quick Actions',
-          headerIcon: 'badge',
-          actions: clerkActions,
-        };
-      }
-
-      case 'admin':
-        return {
-          title: isAmharic ? 'የአስተዳዳሪ የስራ አቋራጮች' : 'Manager Operations',
-          headerIcon: 'shield_person',
-          actions: [
-            {
-              key: 'pending_approvals',
-              title: isAmharic ? 'የአባልነት ማመልከቻዎች' : 'Pending Approvals Queue',
-              subtitle: `${pendingCount} ${isAmharic ? 'ውሳኔ የሚጠብቁ' : 'awaiting decision'}`,
-              icon: 'pending_actions',
-              badge: `${pendingCount} ${isAmharic ? 'ይጠብቃሉ' : 'Pending'}`,
-              iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-            },
-            {
-              key: 'vehicle_directory',
-              title: isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Member Records Database',
-              subtitle: `${registrations.length} ${isAmharic ? 'ጠቅላላ ማህደሮች' : 'system records'}`,
-              icon: 'two_wheeler',
-              badge: `${registrations.length} ${isAmharic ? 'ተሽከርካሪዎች' : 'Motors'}`,
-              iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-            },
-            {
-              key: 'inspection_report_full',
-              title: isAmharic ? 'የፍተሻ ሪፖርቶችና ታሪክ' : 'Verification Logs & History',
-              subtitle: `${scopedVerificationLogs.length} ${isAmharic ? 'የተደረጉ ፍተሻዎች' : 'recorded scans'}`,
-              icon: 'analytics',
-              badge: `${scopedVerificationLogs.length} ${isAmharic ? 'ሪፖርቶች' : 'Logs'}`,
-              iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-            },
-            {
-              key: 'unregistered_list',
-              title: isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry',
-              subtitle: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'incidents logged'}`,
-              icon: 'policy',
-              badge: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'Reports'}`,
-              iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-            },
-            {
-              key: 'quick_verify',
-              title: isAmharic ? 'የኪውአር ኮድ መፈተሻ' : 'QR Code Scanner',
-              subtitle: isAmharic ? 'የፍቃድ ካሜራ ፍተሻ' : 'Mobile camera lookup',
-              icon: 'qr_code_scanner',
-              badge: isAmharic ? 'ፍተሻ' : 'Scanner',
-              iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-            },
-          ],
-        };
-
-      case 'officer': {
-        const officerActions = [
-          {
-            key: 'report_unregistered',
-            title: isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle',
-            subtitle: isAmharic ? 'ያልተመዘገቡ ተሽከርካሪዎችን ለመመዝገብ' : 'Log unpermitted motor incident',
-            icon: 'report_problem',
-            badge: isAmharic ? 'አዲስ ሪፖርት' : 'New Report',
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          },
-        ];
-
-        // Include Inspection Report Logs ONLY if RBAC Task 10 is not denied
-        if (getPermissionState(userRole, 10) !== 'deny') {
-          officerActions.push({
-            key: 'inspection_report',
-            title: isAmharic ? 'የፍተሻ ሪፖርትና ታሪክ' : 'Inspection Report Logs',
-            subtitle: `${scopedVerificationLogs.length} ${isAmharic ? 'የተደረጉ ፍተሻዎች' : 'scans recorded'}`,
-            icon: 'analytics',
-            badge: `${scopedVerificationLogs.length} ${isAmharic ? 'ፍተሻዎች' : 'Logs'}`,
-            iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-          });
-        }
-
-        return {
-          title: isAmharic ? 'የተቆጣጣሪ የመስክ አቋራጮች' : 'Field Officer Patrol Shortcuts',
-          headerIcon: 'policy',
-          actions: officerActions,
-        };
-      }
-
-      default:
-        return {
-          title: isAmharic ? 'የቅጽበታዊ ስራዎች አቋራጭ' : 'Quick Action Shortcuts',
-          headerIcon: 'bolt',
-          actions: [],
-        };
+    // Task 1: New Registration
+    if (isTaskViewable(userRole, 1)) {
+      roleActions.push({
+        key: 'new_registration',
+        title: isAmharic ? 'አዲስ ምዝገባ' : 'New Registration',
+        subtitle: isAmharic ? 'የባለቤትና ሞተር ቅጽ' : 'Register Motor & Owner',
+        icon: 'app_registration',
+        badge: isAmharic ? 'ቅጽ' : 'Form',
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
     }
+
+    // Task 2: Submission Correction
+    if (isTaskViewable(userRole, 2)) {
+      roleActions.push({
+        key: 'today_submissions_adjust',
+        title: isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction',
+        subtitle: isAmharic ? 'የዛሬ ማመልከቻዎችን ማረም' : 'Edit today submissions',
+        icon: 'edit_note',
+        badge: `${todaySubmissionsCount} ${isAmharic ? 'የዛሬ' : 'Today'}`,
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 3: Member Records Database / Submissions
+    if (isTaskViewable(userRole, 3)) {
+      roleActions.push({
+        key: 'vehicle_directory',
+        title: isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Member Records Database',
+        subtitle: `${registrations.length} ${isAmharic ? 'ጠቅላላ ማህደሮች' : 'system records'}`,
+        icon: 'two_wheeler',
+        badge: `${registrations.length} ${isAmharic ? 'ተሽከርካሪዎች' : 'Motors'}`,
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 5: QR Code Scanner
+    if (isTaskViewable(userRole, 5)) {
+      roleActions.push({
+        key: 'quick_verify',
+        title: isAmharic ? 'የኪውአር ኮድ መፈተሻ' : 'Scan QR Code',
+        subtitle: isAmharic ? 'በካሜራ ፈቃድ አረጋግጥ' : 'Instant camera verify',
+        icon: 'qr_code_scanner',
+        badge: isAmharic ? 'ፍተሻ' : 'Scanner',
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 6: Inspection Report Logs & History
+    if (isTaskViewable(userRole, 6)) {
+      roleActions.push({
+        key: 'inspection_report_full',
+        title: isAmharic ? 'የፍተሻ ሪፖርቶችና ታሪክ' : 'Verification Logs & History',
+        subtitle: `${scopedVerificationLogs.length} ${isAmharic ? 'የተደረጉ ፍተሻዎች' : 'recorded scans'}`,
+        icon: 'analytics',
+        badge: `${scopedVerificationLogs.length} ${isAmharic ? 'ሪፖርቶች' : 'Logs'}`,
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 7: Unregistered Vehicle Reporting / Registry
+    if (isTaskViewable(userRole, 7)) {
+      roleActions.push({
+        key: 'report_unregistered',
+        title: isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle',
+        subtitle: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'incidents logged'}`,
+        icon: 'policy',
+        badge: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'Reports'}`,
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 9: PVC Print Queue
+    if (isTaskViewable(userRole, 9)) {
+      roleActions.push({
+        key: 'pvc_batch_print',
+        title: isAmharic ? 'የPVC ካርድ ማተሚያ' : 'PVC Print Queue',
+        subtitle: isAmharic ? 'የካርድ ህትመት ቅደም ተከተል' : 'Manage batch printing',
+        icon: 'print',
+        badge: isAmharic ? 'ህትመት' : 'Print',
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 10 or 16: Payment Receipts Entry
+    if (isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16)) {
+      roleActions.push({
+        key: 'payment_receipts',
+        title: isAmharic ? 'የክፍያ ደረሰኝ መዝግብ' : 'Add Payment Receipts',
+        subtitle: isAmharic ? 'የክፍያ ደረሰኝ ማስገቢያ ቅጽ' : 'Open receipt entry form',
+        icon: 'receipt_long',
+        badge: isAmharic ? 'ክፍያ' : 'Payment',
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 13: System Users
+    if (isTaskViewable(userRole, 13)) {
+      roleActions.push({
+        key: 'superadmin_users',
+        title: isAmharic ? 'የተጠቃሚዎች መለያ' : 'User Accounts',
+        subtitle: `${users.length} ${isAmharic ? 'ተጠቃሚዎች' : 'active users'}`,
+        icon: 'manage_accounts',
+        badge: `${users.length} ${isAmharic ? 'ተጠቃሚ' : 'Users'}`,
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    // Task 14: Role Permissions
+    if (isTaskViewable(userRole, 14)) {
+      roleActions.push({
+        key: 'superadmin',
+        title: isAmharic ? 'የፈቃድ ማትሪክስ' : 'Roles & Permissions',
+        subtitle: isAmharic ? 'የተጠቃሚ ሚናዎችና ፈቃድ' : 'Configure RBAC matrix',
+        icon: 'admin_panel_settings',
+        badge: isAmharic ? 'ፈቃድ' : 'RBAC',
+        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      });
+    }
+
+    return {
+      title: isAmharic ? 'የቅጽበታዊ ስራዎች አቋራጭ' : 'Quick Action Shortcuts',
+      headerIcon: 'bolt',
+      actions: roleActions,
+    };
   };
 
   const currentRoleConfig = getRoleQuickActions();
@@ -474,8 +432,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
         <div className="flex flex-col divide-y divide-outline-variant/60 dark:divide-slate-800">
 
-      {/* SUPER ADMIN KEY GOVERNANCE STATS CARDS (FOR SUPERADMIN ROLE ON DASHBOARD ONLY) */}
-      {userRole === 'superadmin' && (
+      {/* SYSTEM GOVERNANCE STATS CARDS (VISIBLE WHEN USER MANAGEMENT / RBAC TASK IS VIEWABLE) */}
+      {(isTaskViewable(userRole, 13) || isTaskViewable(userRole, 14)) && (
         <div className="p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
@@ -607,8 +565,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
 
-      {/* CLERK STATS OVERVIEW CARDS (ONLY VISIBLE WHEN TOGGLED ON IN SUPER ADMIN) */}
-      {userRole === 'clerk' && settings.showClerkPermitStatus && (
+      {/* INTAKE & REGISTRATION METRICS CARDS (VISIBLE WHEN REGISTRATION / MEMBER RECORDS IS VIEWABLE) */}
+      {(isTaskViewable(userRole, 1) || isTaskViewable(userRole, 3)) && (
         <div className="p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
@@ -673,12 +631,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
 
-      {/* ==================== STANDALONE METRIC SECTIONS (FOR SUPER ADMIN & MANAGER) ==================== */}
-      {(userRole === 'superadmin' || userRole === 'admin') && (
-        <>
-          {/* 1. Payment Receipts & Compliance Metrics (Super Admin Only) */}
-          {(userRole === 'superadmin' || (userRole as string) === 'super_admin') && (
-            <div className="p-4 sm:p-5 space-y-3">
+      {/* FINANCIAL & REVENUE METRICS (VISIBLE WHEN PAYMENT / REVENUE LEDGER TASK IS VIEWABLE) */}
+      {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16)) && (
+        <div className="p-4 sm:p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
                 <div className="flex items-center gap-2.5">
                   <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">payments</Icon>
@@ -773,75 +728,75 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             }}
           />
 
-          {/* 3. Field Officer Patrol & Inspection Hub */}
-          <div className="p-4 sm:p-5 space-y-3">
-            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
-              <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
-                    {isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub'}
-                  </h3>
+          {/* 3. Patrol & Inspection Hub (Visible when Inspection Logs Task is viewable) */}
+          {isTaskViewable(userRole, 6) && (
+            <div className="p-4 sm:p-5 space-y-3">
+              <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+                <div className="flex items-center gap-2.5">
+                  <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
+                      {isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub'}
+                    </h3>
+                  </div>
                 </div>
               </div>
+
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
+                <button
+                  type="button"
+                  onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
+                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
+                >
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                      {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
+                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
+                >
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                      {isAmharic ? 'የፀደቁ' : 'Valid'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
+                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
+                >
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                      {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onQuickAction && onQuickAction('kpi_expired')}
+                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
+                >
+                  <div className="mb-1 sm:mb-1.5 text-center">
+                    <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
+                      {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
+                    </span>
+                  </div>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
+                </button>
+              </div>
             </div>
-
-            <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
-              <button
-                type="button"
-                onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
-              >
-                <div className="mb-1 sm:mb-1.5 text-center">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
-                    {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
-                  </span>
-                </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
-              >
-                <div className="mb-1 sm:mb-1.5 text-center">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
-                    {isAmharic ? 'የፀደቁ' : 'Valid'}
-                  </span>
-                </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
-              >
-                <div className="mb-1 sm:mb-1.5 text-center">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
-                    {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
-                  </span>
-                </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-                className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
-              >
-                <div className="mb-1 sm:mb-1.5 text-center">
-                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block">
-                    {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
-                  </span>
-                </div>
-                <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+          )}
 
       {/* ==================== FIELD OFFICER PATROL HUB (FOR OFFICER ROLE ONLY) ==================== */}
       {userRole === 'officer' && getPermissionState(userRole, 10) !== 'deny' && (
