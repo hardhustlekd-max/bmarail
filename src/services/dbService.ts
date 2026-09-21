@@ -2117,114 +2117,175 @@ export const subscribeSystemUsers = subscribeUsers;
 export const subscribeVerificationLogs = subscribeVerifications;
 
 export function getUserRolePermissions(userRole: string): Record<string, 'allow' | 'view_only' | 'deny'> {
-  const settings = inMemory.settings;
+  let roleId = 'role-secretary';
+  if (userRole === 'officer') roleId = 'role-officer';
+  else if (userRole === 'admin' || userRole === 'manager') roleId = 'role-manager';
+  else if (userRole === 'it_specialist' || userRole === 'it') roleId = 'role-it';
+  else if (userRole === 'superadmin' || userRole === 'super_admin') roleId = 'role-superadmin';
+  else if (userRole.startsWith('role-')) roleId = userRole;
+
+  let savedMatrix: Record<string, Record<string | number, 'allow' | 'view_only' | 'deny'>> | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = localStorage.getItem('permit_role_permissions');
+      if (raw) savedMatrix = JSON.parse(raw);
+    } catch {}
+  }
+
+  const defaultMatrix: Record<string, Record<number, 'allow' | 'view_only' | 'deny'>> = {
+    'role-secretary': {
+      1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
+      5: 'view_only', 6: 'view_only', 7: 'view_only', 8: 'view_only',
+      9: 'deny', 10: 'allow', 16: 'allow',
+      11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny', 15: 'deny',
+    },
+    'role-officer': {
+      1: 'deny', 2: 'deny', 3: 'view_only', 4: 'view_only',
+      5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
+      9: 'deny', 10: 'deny', 16: 'deny',
+      11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny', 15: 'deny',
+    },
+    'role-manager': {
+      1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
+      5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
+      9: 'allow', 10: 'allow', 16: 'allow',
+      11: 'view_only', 12: 'view_only', 13: 'view_only', 14: 'deny', 15: 'view_only',
+    },
+    'role-it': {
+      1: 'view_only', 2: 'view_only', 3: 'view_only', 4: 'view_only',
+      5: 'allow', 6: 'view_only', 7: 'view_only', 8: 'view_only',
+      9: 'allow', 10: 'allow', 16: 'allow',
+      11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow', 15: 'allow',
+    },
+    'role-superadmin': {
+      1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
+      5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
+      9: 'allow', 10: 'allow', 16: 'allow',
+      11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow', 15: 'allow',
+    },
+  };
+
+  const rolePerms = savedMatrix?.[roleId] || defaultMatrix[roleId] || defaultMatrix['role-secretary'];
+
+  const getS = (taskId: number): 'allow' | 'view_only' | 'deny' => {
+    if (userRole === 'superadmin') return 'allow';
+    return (rolePerms[taskId] || rolePerms[String(taskId)]) as any || 'deny';
+  };
+
+  const p1 = getS(1);
+  const p2 = getS(2);
+  const p3 = getS(3);
+  const p5 = getS(5);
+  const p8 = getS(8);
+  const p9 = getS(9);
+  const p10 = getS(10);
+  const p14 = getS(14);
+  const p16 = getS(16);
 
   if (userRole === 'clerk') {
-    const kpiState = (settings.clerkPaymentKPIPermission || (settings.showClerkPaymentKPIs ? 'allow' : 'deny')) as 'allow' | 'view_only' | 'deny';
-    const tableState = (settings.clerkPaymentTablePermission || (settings.showClerkPaymentRecordsTable ? 'allow' : 'deny')) as 'allow' | 'view_only' | 'deny';
-    const canRegister = (settings.showClerkNewRegistrationAction ?? true) ? 'allow' : 'deny';
-    const canEditSubmissions = (settings.showClerkEditSubmissionAction ?? true) ? 'allow' : 'deny';
-    const canQrScan = (settings.showClerkQrScanAction ?? true) ? 'allow' : 'deny';
-    const canReceipts = (settings.showClerkPaymentReceiptsAction ?? true) ? 'allow' : 'deny';
-    const canSubmissions = settings.showClerkSubmissionsAction ? 'allow' : 'deny';
-    const canApproved = settings.showClerkApprovedVehiclesAction ? 'allow' : 'deny';
-    const canPermitStatus = settings.showClerkPermitStatus ? 'allow' : 'deny';
-
     return {
-      '1': canRegister,
-      '2': canEditSubmissions,
-      '3': canEditSubmissions,
-      '4': canRegister,
-      '5': canQrScan,
-      '6': 'allow',
-      '7': 'allow',
-      '8': (settings.showClerkSubmissionsAction || settings.showClerkApprovedVehiclesAction) ? 'allow' : 'deny',
-      '9': canPermitStatus,
-      '10': canPermitStatus,
-      '11': 'deny',
-      '12': 'deny',
-      '13': 'deny',
-      '14': 'deny',
-      '15': kpiState,
-      '16': tableState,
+      '1': p1,
+      '2': p2,
+      '3': p3,
+      '4': getS(4),
+      '5': p5,
+      '6': getS(6),
+      '7': getS(7),
+      '8': p8,
+      '9': p9,
+      '10': p10,
+      '11': getS(11),
+      '12': getS(12),
+      '13': getS(13),
+      '14': p14,
+      '15': getS(15),
+      '16': p16,
       canViewDashboard: 'allow',
-      canRegister: canRegister,
-      canEditSubmissions: canEditSubmissions,
-      canQrScan: canQrScan,
-      canAddReceipts: canReceipts,
-      canViewSubmissions: canSubmissions,
-      canApproveVehicles: canApproved,
-      canViewPermitStatus: canPermitStatus,
-      canViewPaymentKPIs: kpiState,
-      canViewPaymentRecordsTable: tableState,
+      canRegister: p1 === 'allow' ? 'allow' : 'deny',
+      canEditSubmissions: p2 === 'allow' ? 'allow' : 'deny',
+      canQrScan: p5,
+      canAddReceipts: p10 === 'allow' ? 'allow' : 'deny',
+      canViewSubmissions: p3,
+      canApproveVehicles: p3,
+      canViewPermitStatus: p3,
+      canViewPaymentKPIs: p10,
+      canViewPaymentRecordsTable: p16,
       canManageSettings: 'deny',
       canAssignOfficers: 'deny',
       canPrintBatch: 'deny',
-      canVerifyVehicles: canQrScan,
+      canVerifyVehicles: p5,
       canExportExcel: 'deny',
     };
   }
 
   if (userRole === 'officer') {
     return {
-      '1': 'deny',
-      '2': 'deny',
-      '3': 'deny',
-      '4': 'allow',
-      '5': 'allow',
-      '6': 'allow',
-      '7': 'allow',
-      '8': 'allow',
-      '9': 'allow',
-      '10': 'allow',
-      '11': 'deny',
-      '12': 'deny',
-      '13': 'deny',
-      '14': 'deny',
-      '15': 'deny',
-      '16': 'deny',
+      '1': p1,
+      '2': p2,
+      '3': p3,
+      '4': getS(4),
+      '5': p5,
+      '6': getS(6),
+      '7': getS(7),
+      '8': p8,
+      '9': p9,
+      '10': p10,
+      '11': getS(11),
+      '12': getS(12),
+      '13': getS(13),
+      '14': p14,
+      '15': getS(15),
+      '16': p16,
       canViewDashboard: 'allow',
-      canRegister: 'deny',
-      canViewSubmissions: 'deny',
-      canApproveVehicles: 'deny',
-      canViewPermitStatus: 'allow',
-      canViewPaymentKPIs: 'deny',
-      canViewPaymentRecordsTable: 'deny',
-      canManageSettings: 'deny',
-      canAssignOfficers: 'deny',
-      canPrintBatch: 'deny',
-      canVerifyVehicles: 'allow',
-      canExportExcel: 'deny',
+      canRegister: p1 === 'allow' ? 'allow' : 'deny',
+      canEditSubmissions: p2 === 'allow' ? 'allow' : 'deny',
+      canQrScan: p5,
+      canAddReceipts: p10 === 'allow' ? 'allow' : 'deny',
+      canViewSubmissions: p3,
+      canApproveVehicles: p3,
+      canViewPermitStatus: p3,
+      canViewPaymentKPIs: p10,
+      canViewPaymentRecordsTable: p16,
+      canManageSettings: p14 === 'allow' ? 'allow' : 'deny',
+      canAssignOfficers: p8 === 'allow' ? 'allow' : 'deny',
+      canPrintBatch: p9 === 'allow' ? 'allow' : 'deny',
+      canVerifyVehicles: p5,
+      canExportExcel: p3,
     };
   }
 
   return {
-    '1': 'allow',
-    '2': 'allow',
-    '3': 'allow',
-    '4': 'allow',
-    '5': 'allow',
-    '8': 'allow',
-    '9': 'allow',
-    '10': 'allow',
-    '11': 'allow',
-    '12': 'allow',
-    '13': 'allow',
-    '14': 'allow',
-    '15': 'allow',
-    '16': 'allow',
+    '1': p1,
+    '2': p2,
+    '3': p3,
+    '4': getS(4),
+    '5': p5,
+    '6': getS(6),
+    '7': getS(7),
+    '8': p8,
+    '9': p9,
+    '10': p10,
+    '11': getS(11),
+    '12': getS(12),
+    '13': getS(13),
+    '14': p14,
+    '15': getS(15),
+    '16': p16,
     canViewDashboard: 'allow',
-    canRegister: 'allow',
-    canViewSubmissions: 'allow',
-    canApproveVehicles: 'allow',
-    canViewPermitStatus: 'allow',
-    canViewPaymentKPIs: 'allow',
-    canViewPaymentRecordsTable: 'allow',
-    canManageSettings: 'allow',
-    canAssignOfficers: 'allow',
-    canPrintBatch: 'allow',
-    canVerifyVehicles: 'allow',
-    canExportExcel: 'allow',
+    canRegister: p1 === 'allow' ? 'allow' : 'deny',
+    canEditSubmissions: p2 === 'allow' ? 'allow' : 'deny',
+    canQrScan: p5,
+    canAddReceipts: p10 === 'allow' ? 'allow' : 'deny',
+    canViewSubmissions: p3,
+    canApproveVehicles: p3,
+    canViewPermitStatus: p3,
+    canViewPaymentKPIs: p10,
+    canViewPaymentRecordsTable: p16,
+    canManageSettings: p14 === 'allow' ? 'allow' : 'deny',
+    canAssignOfficers: p8 === 'allow' ? 'allow' : 'deny',
+    canPrintBatch: p9 === 'allow' ? 'allow' : 'deny',
+    canVerifyVehicles: p5,
+    canExportExcel: p3,
   };
 }
 

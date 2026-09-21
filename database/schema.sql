@@ -229,6 +229,10 @@ CREATE TABLE IF NOT EXISTS system_settings (
     show_clerk_permit_status BOOLEAN DEFAULT FALSE,
     show_clerk_submissions_action BOOLEAN DEFAULT FALSE,
     show_clerk_approved_vehicles_action BOOLEAN DEFAULT FALSE,
+    show_clerk_new_registration_action BOOLEAN DEFAULT TRUE,
+    show_clerk_edit_submission_action BOOLEAN DEFAULT TRUE,
+    show_clerk_qr_scan_action BOOLEAN DEFAULT TRUE,
+    show_clerk_payment_receipts_action BOOLEAN DEFAULT TRUE,
     show_clerk_payment_kpis BOOLEAN DEFAULT FALSE,
     show_clerk_payment_records_table BOOLEAN DEFAULT FALSE,
     clerk_payment_kpi_permission VARCHAR(50) DEFAULT 'allow',
@@ -264,6 +268,7 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON system_audit_logs(create
 CREATE TABLE IF NOT EXISTS notification_states (
     user_scope_id VARCHAR(128) PRIMARY KEY,
     read_ids JSONB DEFAULT '[]'::jsonb,
+    cleared_ids JSONB DEFAULT '[]'::jsonb,
     last_read_at VARCHAR(50),
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -286,4 +291,31 @@ CREATE TABLE IF NOT EXISTS file_uploads (
 
 CREATE INDEX IF NOT EXISTS idx_file_uploads_folder ON file_uploads(folder);
 CREATE INDEX IF NOT EXISTS idx_file_uploads_key ON file_uploads(file_key);
+
+-- ============================================================================
+-- SCHEMA UPDATES FOR EXISTING DATABASES (SAFE MIGRATIONS)
+-- ============================================================================
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS scanner_result_theme VARCHAR(100) DEFAULT 'warm_ivory_cream';
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_permit_status BOOLEAN DEFAULT FALSE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_submissions_action BOOLEAN DEFAULT FALSE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_approved_vehicles_action BOOLEAN DEFAULT FALSE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_new_registration_action BOOLEAN DEFAULT TRUE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_edit_submission_action BOOLEAN DEFAULT TRUE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_qr_scan_action BOOLEAN DEFAULT TRUE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_payment_receipts_action BOOLEAN DEFAULT TRUE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_payment_kpis BOOLEAN DEFAULT FALSE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_payment_records_table BOOLEAN DEFAULT FALSE;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS clerk_payment_kpi_permission VARCHAR(50) DEFAULT 'allow';
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS clerk_payment_table_permission VARCHAR(50) DEFAULT 'allow';
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS frozen_sub_cities JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS system_reset_epoch BIGINT;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS last_system_reset_at VARCHAR(50);
+
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS receipt_number VARCHAR(100);
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS payment_amount VARCHAR(50);
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS receipt_screenshot TEXT;
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS hide_from_other_users BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS cleared_ids JSONB DEFAULT '[]'::jsonb;
+
 

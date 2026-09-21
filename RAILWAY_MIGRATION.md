@@ -78,7 +78,11 @@ STORAGE_PUBLIC_DOMAIN=
    ```bash
    npm run start
    ```
-4. The database schema (`database/schema.sql`) and seed data (`database/seed.sql`) will automatically initialize on the first server start!
+4. **Automated Schema Updates**:
+   - `railway.toml` contains `watchPatterns = ["database/**", "src/**", ...]` which automatically triggers a redeploy on Railway whenever `database/schema.sql` or server code is updated in your GitHub repository.
+   - On server startup, the auto-migrator automatically compares `database/schema.sql` with live PostgreSQL tables and issues `ALTER TABLE ... ADD COLUMN IF NOT EXISTS ...` for any new columns pushed to GitHub.
+   - The memory whitelist (`TABLE_COLUMNS`) automatically refreshes from `information_schema.columns` to accept new schema columns without manual configuration.
+   - You can also run manual migrations using `npm run db:migrate`.
 
 ---
 

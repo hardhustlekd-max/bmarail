@@ -16,30 +16,270 @@ export interface RoleDefinition {
 
 export type PermissionState = 'allow' | 'view_only' | 'deny';
 
-export interface TaskPermissionItem {
+export interface ModuleTaskItem {
   id: number;
   icon: string;
   titleAm: string;
   titleEn: string;
+  descriptionAm: string;
+  descriptionEn: string;
 }
 
-const DEFAULT_TASKS: TaskPermissionItem[] = [
-  { id: 1, icon: 'person_add', titleAm: '1. አዲስ አባል / ተሽከርካሪ መመዝገብ', titleEn: '(Register New Member / Vehicle)' },
-  { id: 2, icon: 'edit', titleAm: '2. የአባል መመዝገቢያ (Edit/Edit Member)', titleEn: '(Edit Member)' },
-  { id: 3, icon: 'two_wheeler', titleAm: '3. የተሽከርካሪ መረጃ ማስተካከል', titleEn: '(Edit Vehicle Info)' },
-  { id: 4, icon: 'attach_file', titleAm: '4. ሰነዶች መስቀል', titleEn: '(Upload Documents)' },
-  { id: 5, icon: 'barcode_scanner', titleAm: '5. ባርኮድ ስካን', titleEn: '(Barcode Scan)' },
-  { id: 6, icon: 'visibility', titleAm: '6. የአባል መረጃ ማየት', titleEn: '(View Member Info)' },
-  { id: 7, icon: 'two_wheeler', titleAm: '7. የተሽከርካሪ መረጃ ማየት', titleEn: '(View Vehicle Info)' },
-  { id: 8, icon: 'list_alt', titleAm: '8. የአባላት ዝርዝር ማየት', titleEn: '(View Members List)' },
-  { id: 9, icon: 'bar_chart', titleAm: '9. የተሽከርካሪ ሁኔታን ማየት', titleEn: '(View Count/Statistics)' },
-  { id: 10, icon: 'description', titleAm: '10. የፍተሻ ሪፖርቶችና ታሪክ (Verification Log Visibility)', titleEn: '(Verification Log Visibility & Reports)' },
-  { id: 11, icon: 'delete', titleAm: '11. አባል መሰረዝ', titleEn: '(Delete Member)' },
-  { id: 12, icon: 'database', titleAm: '12. Database ማስተዳደር', titleEn: '(DB Management)' },
-  { id: 13, icon: 'group_add', titleAm: '13. ተጠቃሚ መፍጠር / ማዋቀር', titleEn: '(User Management)' },
-  { id: 14, icon: 'security', titleAm: '14. ፈቃዶች ማስተዳደር', titleEn: '(Permission Management)' },
-  { id: 15, icon: 'analytics', titleAm: '15. የክፍያ ደረሰኞች ስታቲስቲክስ (Payment Receipt KPIs)', titleEn: '(Payment Receipt KPIs)' },
-  { id: 16, icon: 'table_view', titleAm: '16. የክፍያ ደረሰኞች ማህደር ሰንጠረዥ (Payment Receipt Records Table)', titleEn: '(Payment Receipt Records Table)' },
+export interface SystemModule {
+  id: string;
+  titleAm: string;
+  titleEn: string;
+  descriptionAm: string;
+  descriptionEn: string;
+  icon: string;
+  badgeBg: string;
+  governedComponents: {
+    sideMenuAm: string;
+    sideMenuEn: string;
+    metricsAm: string;
+    metricsEn: string;
+    quickMenusAm: string;
+    quickMenusEn: string;
+    tablesAm: string;
+    tablesEn: string;
+  };
+  tasks: ModuleTaskItem[];
+}
+
+export const SYSTEM_MODULES: SystemModule[] = [
+  {
+    id: 'registration_permits',
+    titleAm: '1. አባልና ተሽከርካሪ ምዝገባ ሞጁል',
+    titleEn: 'Member & Vehicle Registration Module',
+    descriptionAm: 'የአባላት አዲስ ምዝገባ፣ የማመልከቻ ማስተካከያ፣ የሰነድ ማያያዣ እና የአባላት መዝገብ ሰንጠረዥ ቁጥጥር',
+    descriptionEn: 'Unified governance for member registrations, corrections, document attachments, and registry tables.',
+    icon: 'how_to_reg',
+    badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300',
+    governedComponents: {
+      sideMenuAm: 'የአባላት ምዝገባ፣ የዛሬ ማመልከቻዎች፣ የአባላት ሰንጠረዥ',
+      sideMenuEn: 'Member Registrations, Today Submissions, Registry Table',
+      metricsAm: 'ጠቅላላ የተመዘገቡ፣ በመጠባበቅ ላይ፣ የጸደቁ ፈቃዶች፣ ውድቅ የተደረጉ',
+      metricsEn: 'Total Registered, Pending Approval, Approved Permits, Rejections',
+      quickMenusAm: 'አዲስ ምዝገባ ቅጽ፣ ማመልከቻ ማስተካከያ',
+      quickMenusEn: 'New Registration Form, Edit Submission',
+      tablesAm: 'የአባላትና ተሽከርካሪዎች መዝገብ ሰንጠረዥ',
+      tablesEn: 'Member & Vehicle Registrations Ledger Table',
+    },
+    tasks: [
+      {
+        id: 1,
+        icon: 'person_add',
+        titleAm: 'አዲስ አባል / ተሽከርካሪ መመዝገብ',
+        titleEn: 'Register New Member / Vehicle',
+        descriptionAm: 'አዲስ አባልና የሞተር መረጃ መመዝገቢያ ቅጽ መክፈት',
+        descriptionEn: 'Access and submit new registration forms.',
+      },
+      {
+        id: 2,
+        icon: 'edit',
+        titleAm: 'የአባል መመዝገቢያ ማስተካከል',
+        titleEn: 'Edit Member & Vehicle Info',
+        descriptionAm: 'የቀረቡ ማመልከቻዎችን እና የአባል መረጃ ማረም',
+        descriptionEn: 'Edit same-day or existing member submissions.',
+      },
+      {
+        id: 3,
+        icon: 'two_wheeler',
+        titleAm: 'የተሽከርካሪና አባል መረጃ ማየት',
+        titleEn: 'View Members & Vehicles List',
+        descriptionAm: 'የተመዘገቡ አባላትን መዝገብና ዝርዝር ማየት',
+        descriptionEn: 'View vehicle registry records and detailed cards.',
+      },
+      {
+        id: 4,
+        icon: 'attach_file',
+        titleAm: 'ሰነዶች መስቀልና ማያያዝ',
+        titleEn: 'Upload Documents & Permits',
+        descriptionAm: 'የመንጃ ፈቃድ፣ ብሄራዊ መታወቂያ እና የክፍያ ደረሰኝ መስቀል',
+        descriptionEn: 'Upload and update verification documents.',
+      },
+    ],
+  },
+  {
+    id: 'enforcement_verification',
+    titleAm: '2. የትራፊክ ፍተሻና የመስክ ቁጥጥር ሞጁል',
+    titleEn: 'Traffic Enforcement & Field Verification Module',
+    descriptionAm: 'የQR ኮድ ስካነር፣ የቀጥታ ፍተሻ ታሪክ፣ ያልተመዘገቡ ተሽከርካሪዎች ሪፖርት እና የኦፊሰሮች ምደባ',
+    descriptionEn: 'Live QR scanner, field inspection logs, unregistered vehicle reports, and officer duty assignments.',
+    icon: 'local_police',
+    badgeBg: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300',
+    governedComponents: {
+      sideMenuAm: 'የQR ኮድ ስካነር፣ የፍተሻ ታሪክ፣ ያልተመዘገቡ ተሽከርካሪዎች',
+      sideMenuEn: 'QR Scanner, Inspection History Log, Unregistered Vehicles',
+      metricsAm: 'በስራ ላይ ያሉ ኦፊሰሮች፣ የዛሬ ፍተሻዎች፣ ማስጠንቀቂያ የተሰጣቸው',
+      metricsEn: 'Active Officers On Duty, Today Verification Scans, Flagged Vehicles',
+      quickMenusAm: 'የQR ኮድ ስካነር፣ ያልተመዘገበ ተሽከርካሪ ሪፖርት',
+      quickMenusEn: 'Real-time QR Code Scanner, Submit Unregistered Report',
+      tablesAm: 'የፍተሻ ታሪክ ሰንጠረዥ፣ ያልተመዘገቡ ተሽከርካሪዎች ሰንጠረዥ',
+      tablesEn: 'Real-time Verification Logs Table, Unregistered Vehicles Table',
+    },
+    tasks: [
+      {
+        id: 5,
+        icon: 'barcode_scanner',
+        titleAm: 'የQR ኮድ ስካነርና የቀጥታ ማረጋገጫ',
+        titleEn: 'Real-time QR Code Scanner',
+        descriptionAm: 'የካሜራ ስካነር በመጠቀም የፍቃድ ህጋዊነት ማረጋገጥ',
+        descriptionEn: 'Scan QR permits via device camera for instant verification.',
+      },
+      {
+        id: 6,
+        icon: 'description',
+        titleAm: 'የፍተሻ ሪፖርቶችና ታሪክ ማየት',
+        titleEn: 'Inspection Reports & Logs Visibility',
+        descriptionAm: 'በኦፊሰሮች የተደረጉ ፍተሻዎችን እና የፍተሻ ታሪክ ማየት',
+        descriptionEn: 'Access field inspection logs and historical verification scans.',
+      },
+      {
+        id: 7,
+        icon: 'report_problem',
+        titleAm: 'ያልተመዘገቡ ተሽከርካሪዎች ሪፖርት',
+        titleEn: 'Unregistered Vehicle Reporting',
+        descriptionAm: 'ያልተመዘገቡ ወይም ህገ-ወጥ ተሽከርካሪዎችን መመዝገብና ማየት',
+        descriptionEn: 'Submit and view unregistered or flagged vehicle reports.',
+      },
+      {
+        id: 8,
+        icon: 'badge',
+        titleAm: 'የኦፊሰሮች ምደባና የስራ ፈረቃ',
+        titleEn: 'Officer Duty & Shift Assignments',
+        descriptionAm: 'የትራፊክ ኦፊሰሮችን በየክፍለ ከተማውና ፍተሻ ጣቢያ መመደብ',
+        descriptionEn: 'Manage officer checkpoint assignments and duty shifts.',
+      },
+    ],
+  },
+  {
+    id: 'print_production',
+    titleAm: '3. የPVC ካርድ ህትመትና ባች ትዕዛዝ ሞጁል',
+    titleEn: 'PVC Card Production & Batch Orders Module',
+    descriptionAm: 'የPVC ካርድ ህትመት ወረፋ፣ የባች ማዘዣዎች፣ ኤክስፖርት እና የህትመት ሁኔታ',
+    descriptionEn: 'PVC card printing queues, batch printing orders, export lists, and print status trackers.',
+    icon: 'print',
+    badgeBg: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300',
+    governedComponents: {
+      sideMenuAm: 'የPVC ህትመት ወረፋ፣ የባች ትዕዛዞች',
+      sideMenuEn: 'PVC Print Queue, Batch Orders',
+      metricsAm: 'በህትመት ላይ ያሉ ባቾች፣ የተጠናቀቁ ካርዶች',
+      metricsEn: 'Pending Print Batches, Cards In-Printing, Completed Prints',
+      quickMenusAm: 'የባች ህትመት ማዘዣ፣ ኤክስፖርት',
+      quickMenusEn: 'Order Batch Print, Export Print List',
+      tablesAm: 'የህትመት ባች ትዕዛዞች ሰንጠረዥ',
+      tablesEn: 'Print Batch Orders Table & Card Queue',
+    },
+    tasks: [
+      {
+        id: 9,
+        icon: 'inventory_2',
+        titleAm: 'የPVC ካርድ ህትመትና የባች ትዕዛዝ ማኔጅመንት',
+        titleEn: 'PVC Card Printing Queue & Batch Orders',
+        descriptionAm: 'የጸደቁ ፈቃዶችን ወደ ህትመት ማስተላለፍና የባች ትዕዛዝ ማዘዝ',
+        descriptionEn: 'Process approved permits into print batch orders and queues.',
+      },
+    ],
+  },
+  {
+    id: 'revenue_payments',
+    titleAm: '4. የገቢና የንግድ ባንክ ክፍያ ደረሰኞች ሞጁል',
+    titleEn: 'Revenue & Payment Receipts Module',
+    descriptionAm: 'የ1 ወር ክፍያ ደረሰኝ መመዝገቢያ፣ የቴሌብር/ባንክ ማረጋገጫ፣ የገቢ ስታቲስቲክስ እና ሰንጠረዥ',
+    descriptionEn: 'Commercial Bank and Telebirr payment receipt entries, revenue KPIs, and ledger records.',
+    icon: 'payments',
+    badgeBg: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-300',
+    governedComponents: {
+      sideMenuAm: 'የክፍያ ደረሰኞች፣ የገቢ መዝገብ ሰንጠረዥ',
+      sideMenuEn: 'Payment Receipts, Revenue Ledger Table',
+      metricsAm: 'ጠቅላላ ገቢ፣ ንቁ ደረሰኞች፣ ጊዜያቸው ያለፈባቸው',
+      metricsEn: 'Total Revenue (ETB), Active Receipts, Expired/Delinquent Terms',
+      quickMenusAm: 'የክፍያ ደረሰኝ መዝግብ፣ ማረጋገጫ ፈትሽ',
+      quickMenusEn: 'Enter Payment Receipt, Verify Reference',
+      tablesAm: 'የንግድ ባንክ / ቴሌብር ክፍያ ደረሰኞች ሰንጠረዥ',
+      tablesEn: 'Payment Receipts Ledger Table',
+    },
+    tasks: [
+      {
+        id: 10,
+        icon: 'analytics',
+        titleAm: 'የክፍያ ደረሰኞች ስታቲስቲክስና መመዝገቢያ ቅጽ',
+        titleEn: 'Payment Receipts Entry & Financial KPIs',
+        descriptionAm: 'የባንክ ክፍያ ደረሰኝ ማስገቢያ ቅጽና የገቢ ስታቲስቲክስ ማየት',
+        descriptionEn: 'Access payment receipt entry form and view financial KPI metrics.',
+      },
+      {
+        id: 16,
+        icon: 'table_view',
+        titleAm: 'የክፍያ ደረሰኞች ማህደር ሰንጠረዥ',
+        titleEn: 'Payment Receipts Ledger Table',
+        descriptionAm: 'የተመዘገቡ ክፍያ ደረሰኞች ሙሉ ሰንጠረዥና ማህደር ማየት',
+        descriptionEn: 'View complete table records of logged bank/telebirr payment receipts.',
+      },
+    ],
+  },
+  {
+    id: 'governance_audit',
+    titleAm: '5. የስርዓት አስተዳደርና ሴኪዩሪቲ ኦዲት ሞጁል',
+    titleEn: 'Authority Governance & System Audit Module',
+    descriptionAm: 'የተጠቃሚዎች አካውንት አስተዳደር፣ የሚናና ፈቃዶች ማትሪክስ፣ የክፍለ ከተማ እገዳ እና ኦዲት ሎግ',
+    descriptionEn: 'User accounts management, role & permissions matrix, sub-city freeze, and security audit logs.',
+    icon: 'admin_panel_settings',
+    badgeBg: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-300',
+    governedComponents: {
+      sideMenuAm: 'የተጠቃሚዎች አስተዳደር፣ የሚና ፈቃዶች፣ ኦዲት ሎግ፣ ቅንብሮች',
+      sideMenuEn: 'User Management, Permissions Matrix, Audit Logs, Settings',
+      metricsAm: 'የሴኪዩሪቲ ኦዲት ሎጎች፣ የታገዱ ክፍለ ከተሞች፣ የስርዓት ተጠቃሚዎች',
+      metricsEn: 'Security Audit Logs Count, Frozen Subcities, System Users Count',
+      quickMenusAm: 'አዲስ ተጠቃሚ መፍጠር፣ የሚና ፈቃዶች ማትሪክስ፣ ዳታቤዝ ማጽጃ',
+      quickMenusEn: 'Create User Account, Role Permissions, System Reset',
+      tablesAm: 'የኦዲት ሎግ ሰንጠረዥ፣ የተጠቃሚዎች ሰንጠረዥ፣ የክፍለ ከተማ እገዳ ሰንጠረዥ',
+      tablesEn: 'Security Audit Logs Table, User Accounts Table, Sub-city Freeze Table',
+    },
+    tasks: [
+      {
+        id: 11,
+        icon: 'delete_forever',
+        titleAm: 'አባል / ተሽከርካሪ መዝገብ መሰረዝ',
+        titleEn: 'Delete Member / Vehicle Record',
+        descriptionAm: 'የተሳሳቱ ወይም ህገ-ወጥ መዝገቦችን ሙሉ በሙሉ መሰረዝ',
+        descriptionEn: 'Permanently remove or purge vehicle registration entries.',
+      },
+      {
+        id: 12,
+        icon: 'database',
+        titleAm: 'የዳታቤዝ አስተዳደርና ባክአፕ',
+        titleEn: 'System Database Management',
+        descriptionAm: 'ዳታቤዝ እንደገና ማስጀመር፣ ባክአፕ መውሰድና ዳታ ማፅዳት',
+        descriptionEn: 'Perform database backups, maintenance, and factory resets.',
+      },
+      {
+        id: 13,
+        icon: 'group_add',
+        titleAm: 'የስርዓቱ ተጠቃሚዎች ማኔጅመንት',
+        titleEn: 'User Accounts Management',
+        descriptionAm: 'አዲስ ሰራተኛ አካውንት መፍጠር፣ ማገድና ፓስወርድ መቀየር',
+        descriptionEn: 'Create, update, disable, and manage staff user accounts.',
+      },
+      {
+        id: 14,
+        icon: 'security',
+        titleAm: 'የሚናና ፈቃዶች አስተዳደር ማትሪክስ',
+        titleEn: 'Role & Permission Matrix Management',
+        descriptionAm: 'ለየሚናው የሚፈቀዱና የሚከለከሉ የስራ ሞጁሎችን ማዋቀር',
+        descriptionEn: 'Configure access control matrix and role permission presets.',
+      },
+      {
+        id: 15,
+        icon: 'policy',
+        titleAm: 'የሴኪዩሪቲ ኦዲት ሎግና የክፍለ ከተማ እገዳ',
+        titleEn: 'Security Audit Logs & Sub-city Controls',
+        descriptionAm: 'የሰራተኞች እንቅስቃሴ ኦዲት ማየትና በክፍለ ከተማ ደረጃ ስራ ማገድ',
+        descriptionEn: 'Audit system activity logs and toggle sub-city operation freezes.',
+      },
+    ],
+  },
 ];
 
 const INITIAL_ROLES: RoleDefinition[] = [
@@ -47,9 +287,9 @@ const INITIAL_ROLES: RoleDefinition[] = [
     id: 'role-secretary',
     roleKey: 'clerk',
     titleAm: 'ጸሃፊ',
-    titleEn: '(Secretary)',
+    titleEn: 'Secretary',
     userCountText: '3 ተጠቃሚ',
-    avatarBg: 'bg-rose-500',
+    avatarBg: 'bg-amber-600',
     avatarType: 'secretary',
     status: 'active',
   },
@@ -57,9 +297,9 @@ const INITIAL_ROLES: RoleDefinition[] = [
     id: 'role-officer',
     roleKey: 'officer',
     titleAm: 'ኦፊሰር',
-    titleEn: '(Officer)',
+    titleEn: 'Officer',
     userCountText: '5 ተጠቃሚ',
-    avatarBg: 'bg-slate-700',
+    avatarBg: 'bg-blue-600',
     avatarType: 'officer',
     status: 'active',
   },
@@ -67,9 +307,9 @@ const INITIAL_ROLES: RoleDefinition[] = [
     id: 'role-manager',
     roleKey: 'admin',
     titleAm: 'ስራ አስኪያጅ',
-    titleEn: '(Manager)',
+    titleEn: 'Manager',
     userCountText: '2 ተጠቃሚ',
-    avatarBg: 'bg-slate-800',
+    avatarBg: 'bg-emerald-600',
     avatarType: 'manager',
     status: 'active',
   },
@@ -77,9 +317,9 @@ const INITIAL_ROLES: RoleDefinition[] = [
     id: 'role-it',
     roleKey: 'it_specialist',
     titleAm: 'አይቲ ባለሙያ',
-    titleEn: '(IT Specialist)',
+    titleEn: 'IT Specialist',
     userCountText: '1 ተጠቃሚ',
-    avatarBg: 'bg-indigo-600',
+    avatarBg: 'bg-purple-600',
     avatarType: 'it',
     status: 'active',
   },
@@ -87,51 +327,50 @@ const INITIAL_ROLES: RoleDefinition[] = [
     id: 'role-superadmin',
     roleKey: 'superadmin',
     titleAm: 'ሱፐር አድሚን',
-    titleEn: '(Super Admin)',
+    titleEn: 'Super Admin',
     userCountText: '1 ተጠቃሚ',
-    avatarBg: 'bg-purple-800',
+    avatarBg: 'bg-rose-600',
     avatarType: 'superadmin',
     status: 'active',
   },
 ];
 
-// Initial Permissions for each role matching image
 const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
   'role-secretary': {
     1: 'allow',
     2: 'allow',
     3: 'allow',
     4: 'allow',
-    5: 'deny',
-    6: 'allow',
-    7: 'allow',
-    8: 'allow',
-    9: 'allow',
+    5: 'view_only',
+    6: 'view_only',
+    7: 'view_only',
+    8: 'view_only',
+    9: 'deny',
     10: 'allow',
+    16: 'allow',
     11: 'deny',
     12: 'deny',
     13: 'deny',
     14: 'deny',
     15: 'deny',
-    16: 'deny',
   },
   'role-officer': {
     1: 'deny',
     2: 'deny',
-    3: 'deny',
-    4: 'deny',
+    3: 'view_only',
+    4: 'view_only',
     5: 'allow',
     6: 'allow',
     7: 'allow',
-    8: 'view_only',
-    9: 'view_only',
+    8: 'allow',
+    9: 'deny',
     10: 'deny',
+    16: 'deny',
     11: 'deny',
     12: 'deny',
     13: 'deny',
     14: 'deny',
     15: 'deny',
-    16: 'deny',
   },
   'role-manager': {
     1: 'allow',
@@ -144,12 +383,12 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     8: 'allow',
     9: 'allow',
     10: 'allow',
+    16: 'allow',
     11: 'view_only',
     12: 'view_only',
-    13: 'deny',
+    13: 'view_only',
     14: 'deny',
-    15: 'allow',
-    16: 'allow',
+    15: 'view_only',
   },
   'role-it': {
     1: 'view_only',
@@ -160,14 +399,14 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     6: 'view_only',
     7: 'view_only',
     8: 'view_only',
-    9: 'view_only',
-    10: 'view_only',
+    9: 'allow',
+    10: 'allow',
+    16: 'allow',
     11: 'allow',
     12: 'allow',
     13: 'allow',
     14: 'allow',
     15: 'allow',
-    16: 'allow',
   },
   'role-superadmin': {
     1: 'allow',
@@ -180,12 +419,12 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     8: 'allow',
     9: 'allow',
     10: 'allow',
+    16: 'allow',
     11: 'allow',
     12: 'allow',
     13: 'allow',
     14: 'allow',
     15: 'allow',
-    16: 'allow',
   },
 };
 
@@ -194,18 +433,7 @@ interface RolePermissionManagementProps {
   currentUserBadgeId: string;
   users?: SystemUser[];
   settings?: SystemSettings;
-  onToggleClerkSetting?: (
-    key:
-      | 'showClerkPermitStatus'
-      | 'showClerkSubmissionsAction'
-      | 'showClerkApprovedVehiclesAction'
-      | 'showClerkNewRegistrationAction'
-      | 'showClerkEditSubmissionAction'
-      | 'showClerkQrScanAction'
-      | 'showClerkPaymentReceiptsAction'
-      | 'showClerkPaymentKPIs'
-      | 'showClerkPaymentRecordsTable'
-  ) => void;
+  onToggleClerkSetting?: (key: any) => void;
   onShowToast?: (msg: string, type?: 'success' | 'warning' | 'info') => void;
   onOpenUsersTable?: () => void;
 }
@@ -215,7 +443,6 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
   currentUserBadgeId,
   users = [],
   settings: propSettings,
-  onToggleClerkSetting: propOnToggleClerkSetting,
   onShowToast,
   onOpenUsersTable,
 }) => {
@@ -232,172 +459,8 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
     }
     return INITIAL_ROLES;
   });
+
   const [selectedRoleId, setSelectedRoleId] = useState<string>('role-secretary');
-  const [roleSearch, setRoleSearch] = useState<string>('');
-  const [localSettings, setLocalSettings] = useState<SystemSettings>(() => {
-    return (
-      propSettings || {
-        ...DEFAULT_SETTINGS,
-        registrationFreeze: false,
-        maintenanceMode: false,
-        emailAlerts: true,
-        security2FA: true,
-        highRiskAlerts: true,
-        showClerkPermitStatus: false,
-        showClerkSubmissionsAction: false,
-        showClerkApprovedVehiclesAction: false,
-        showClerkNewRegistrationAction: true,
-        showClerkEditSubmissionAction: true,
-        showClerkQrScanAction: true,
-        showClerkPaymentReceiptsAction: true,
-        showClerkPaymentKPIs: false,
-        showClerkPaymentRecordsTable: false,
-        frozenSubCities: {},
-      }
-    );
-  });
-
-  useEffect(() => {
-    if (propSettings) {
-      setLocalSettings(propSettings);
-    } else {
-      const unsub = subscribeSettings((data) => {
-        if (data) setLocalSettings(data);
-      });
-      return () => unsub();
-    }
-  }, [propSettings]);
-
-  const currentSettings = propSettings || localSettings;
-
-  const handleToggleClerk = async (
-    key:
-      | 'showClerkPermitStatus'
-      | 'showClerkSubmissionsAction'
-      | 'showClerkApprovedVehiclesAction'
-      | 'showClerkNewRegistrationAction'
-      | 'showClerkEditSubmissionAction'
-      | 'showClerkQrScanAction'
-      | 'showClerkPaymentReceiptsAction'
-      | 'showClerkPaymentKPIs'
-      | 'showClerkPaymentRecordsTable'
-  ) => {
-    if (propOnToggleClerkSetting) {
-      propOnToggleClerkSetting(key);
-      return;
-    }
-
-    const currentVal =
-      key === 'showClerkNewRegistrationAction' ||
-      key === 'showClerkEditSubmissionAction' ||
-      key === 'showClerkQrScanAction' ||
-      key === 'showClerkPaymentReceiptsAction'
-        ? (currentSettings[key] ?? true)
-        : (currentSettings[key] ?? false);
-    const newVal = !currentVal;
-    const updated = { ...currentSettings, [key]: newVal };
-    setLocalSettings(updated);
-    const saveRes = await saveSettingsToDb(updated);
-    await addAuditLogToDb({
-      actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
-      actorRole: 'superadmin',
-      action: 'CLERK_PERMISSIONS_CHANGED',
-      details: `Super Admin toggled ${key} to ${newVal ? 'ENABLED' : 'DISABLED'}`,
-      severity: 'info',
-    });
-    if (onShowToast) {
-      if (saveRes && !saveRes.success && saveRes.error) {
-        onShowToast(
-          isAmharic ? `የዳታቤዝ ማስጠንቀቂያ፡ ${saveRes.error}` : `Database notice: ${saveRes.error}`,
-          'warning'
-        );
-      } else {
-        onShowToast(
-          isAmharic
-            ? `የፀሀፊ ፈጣን አቋራጭ ቅንብር ${newVal ? 'በርቷል (ተፈቅዷል)' : 'ጠፍቷል (ተደብቋል)'}`
-            : `Clerk action control ${newVal ? 'ENABLED' : 'DISABLED'}`,
-          'success'
-        );
-      }
-    }
-  };
-
-  const handleBatchClerkPreset = async (preset: 'all' | 'standard' | 'none') => {
-    let patch: Partial<SystemSettings> = {};
-    if (preset === 'all') {
-      patch = {
-        showClerkNewRegistrationAction: true,
-        showClerkEditSubmissionAction: true,
-        showClerkQrScanAction: true,
-        showClerkPaymentReceiptsAction: true,
-        showClerkSubmissionsAction: true,
-        showClerkApprovedVehiclesAction: true,
-        showClerkPermitStatus: true,
-        showClerkPaymentKPIs: true,
-        showClerkPaymentRecordsTable: true,
-      };
-    } else if (preset === 'standard') {
-      patch = {
-        showClerkNewRegistrationAction: true,
-        showClerkEditSubmissionAction: true,
-        showClerkQrScanAction: true,
-        showClerkPaymentReceiptsAction: true,
-        showClerkSubmissionsAction: false,
-        showClerkApprovedVehiclesAction: false,
-        showClerkPermitStatus: false,
-        showClerkPaymentKPIs: false,
-        showClerkPaymentRecordsTable: false,
-      };
-    } else {
-      patch = {
-        showClerkNewRegistrationAction: false,
-        showClerkEditSubmissionAction: false,
-        showClerkQrScanAction: false,
-        showClerkPaymentReceiptsAction: false,
-        showClerkSubmissionsAction: false,
-        showClerkApprovedVehiclesAction: false,
-        showClerkPermitStatus: false,
-        showClerkPaymentKPIs: false,
-        showClerkPaymentRecordsTable: false,
-      };
-    }
-
-    const updated = { ...currentSettings, ...patch };
-    setLocalSettings(updated);
-    const saveRes = await saveSettingsToDb(updated);
-    await addAuditLogToDb({
-      actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
-      actorRole: 'superadmin',
-      action: 'CLERK_PERMISSIONS_PRESET_APPLIED',
-      details: `Super Admin applied Clerk Quick Actions preset: ${preset}`,
-      severity: 'info',
-    });
-
-    if (onShowToast) {
-      if (saveRes && !saveRes.success && saveRes.error) {
-        onShowToast(
-          isAmharic ? `የዳታቤዝ ማስጠንቀቂያ፡ ${saveRes.error}` : `Database notice: ${saveRes.error}`,
-          'warning'
-        );
-      } else {
-        onShowToast(
-          isAmharic
-            ? preset === 'all'
-              ? 'ሁሉም የፀሀፊ ፈጣን አቋራጮችና ስታቲስቲክስ በርተዋል'
-              : preset === 'standard'
-              ? 'መሰረታዊ የፀሀፊ የስራ አቋራጮች ብቻ ተፈቅደዋል'
-              : 'ሁሉም የፀሀፊ ፈጣን አቋራጮች ተገድበዋል'
-            : preset === 'all'
-            ? 'All Clerk Quick Actions & Metrics ENABLED'
-            : preset === 'standard'
-            ? 'Standard Clerical Quick Actions ENABLED'
-            : 'All Clerk Quick Actions RESTRICTED',
-          'success'
-        );
-      }
-    }
-  };
-
   const [permissionsMatrix, setPermissionsMatrix] = useState<Record<string, Record<number, PermissionState>>>(() => {
     const saved = localStorage.getItem('permit_role_permissions');
     if (saved) {
@@ -436,18 +499,10 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
     });
   }, [roles, users, isAmharic]);
 
-  // Filtered Roles
-  const filteredRoles = useMemo(() => {
-    return dynamicRoles.filter(
-      (r) =>
-        r.titleAm.toLowerCase().includes(roleSearch.toLowerCase()) ||
-        r.titleEn.toLowerCase().includes(roleSearch.toLowerCase())
-    );
-  }, [dynamicRoles, roleSearch]);
-
   // Current permissions for the selected role
-  const currentRolePerms = permissionsMatrix[selectedRoleId] || INITIAL_PERMISSIONS['role-secretary'];
+  const currentRolePerms = permissionsMatrix[selectedRoleId] || INITIAL_PERMISSIONS['role-secretary'] || {};
 
+  // Set permission for an individual task
   const handleSetPermission = (taskId: number, state: PermissionState) => {
     setPermissionsMatrix((prev) => ({
       ...prev,
@@ -456,6 +511,29 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
         [taskId]: state,
       },
     }));
+  };
+
+  // Master Module Control: Sets all sub-tasks in a module to state
+  const handleSetModuleMasterPermission = (moduleObj: SystemModule, state: PermissionState) => {
+    setPermissionsMatrix((prev) => {
+      const currentMap = { ...(prev[selectedRoleId] || INITIAL_PERMISSIONS[selectedRoleId] || {}) };
+      moduleObj.tasks.forEach((t) => {
+        currentMap[t.id] = state;
+      });
+      return {
+        ...prev,
+        [selectedRoleId]: currentMap,
+      };
+    });
+  };
+
+  // Compute Module Master State (allow / view_only / deny / custom)
+  const getModuleMasterState = (moduleObj: SystemModule): PermissionState | 'mixed' => {
+    const taskStates = moduleObj.tasks.map((t) => currentRolePerms[t.id] || 'deny');
+    const firstState = taskStates[0];
+    const isAllSame = taskStates.every((s) => s === firstState);
+    if (isAllSame) return firstState;
+    return 'mixed';
   };
 
   const handleSavePermissions = async () => {
@@ -472,8 +550,8 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
     if (onShowToast) {
       onShowToast(
         isAmharic
-        ? `የ${selectedRole.titleAm} ሚና ፈቃዶች በተሳካ ሁኔታ ተቀምጠዋል`
-        : `Permissions for ${selectedRole.titleEn} successfully saved`,
+          ? `የ${selectedRole.titleAm} ሚና የተቀናጀ የሞጁሎች ፈቃድ በተሳካ ሁኔታ ተቀምጧል`
+          : `Unified module permissions for ${selectedRole.titleEn} successfully saved`,
         'success'
       );
     }
@@ -488,7 +566,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
     if (onShowToast) {
       onShowToast(
-        isAmharic ? 'ፈቃዶች ወደ መጀመሪያው ሁኔታ ተመልሰዋል' : 'Permissions reset to default',
+        isAmharic ? 'የሞጁሎች ፈቃዶች ወደ መጀመሪያው ሁኔታ ተመልሰዋል' : 'Module permissions reset to default',
         'info'
       );
     }
@@ -503,7 +581,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       id: newId,
       roleKey: 'custom',
       titleAm: newRoleTitleAm.trim(),
-      titleEn: newRoleTitleEn.trim() ? `(${newRoleTitleEn.trim()})` : `(${newRoleTitleAm.trim()})`,
+      titleEn: newRoleTitleEn.trim() ? newRoleTitleEn.trim() : newRoleTitleAm.trim(),
       userCountText: `0 ${isAmharic ? 'ተጠቃሚ' : 'Users'}`,
       avatarBg: 'bg-teal-600',
       avatarType: 'custom',
@@ -517,6 +595,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       localStorage.setItem('permit_role_definitions', JSON.stringify(updated));
       return updated;
     });
+
     setPermissionsMatrix((prev) => {
       const updatedMatrix = {
         ...prev,
@@ -525,6 +604,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       localStorage.setItem('permit_role_permissions', JSON.stringify(updatedMatrix));
       return updatedMatrix;
     });
+
     setSelectedRoleId(newId);
     setShowNewRoleModal(false);
     setNewRoleTitleAm('');
@@ -538,698 +618,263 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
     }
   };
 
-  // Avatar renderer matching the visual archetype in image
-  const renderAvatar = (type: RoleDefinition['avatarType'], bg: string) => {
-    switch (type) {
-      case 'secretary':
-        return (
-          <div className="w-11 h-11 rounded-full bg-slate-900 border-2 border-slate-700 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
-            <Icon className="material-symbols-outlined text-[28px] text-amber-200">face_3</Icon>
-          </div>
-        );
-      case 'officer':
-        return (
-          <div className="w-11 h-11 rounded-full bg-[#102A6B] border-2 border-blue-400 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
-            <Icon className="material-symbols-outlined text-[26px] text-white">local_police</Icon>
-          </div>
-        );
-      case 'manager':
-        return (
-          <div className="w-11 h-11 rounded-full bg-[#1E293B] border-2 border-slate-600 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
-            <Icon className="material-symbols-outlined text-[26px] text-amber-400">assignment_ind</Icon>
-          </div>
-        );
-      case 'it':
-        return (
-          <div className="w-11 h-11 rounded-full bg-slate-900 border-2 border-indigo-400 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
-            <Icon className="material-symbols-outlined text-[24px] text-cyan-400">code</Icon>
-          </div>
-        );
-      case 'superadmin':
-        return (
-          <div className="w-11 h-11 rounded-full bg-[#1e293b] border-2 border-amber-400 overflow-hidden flex items-center justify-center shrink-0 shadow-xs relative">
-            <Icon className="material-symbols-outlined text-[26px] text-amber-300">verified_user</Icon>
-          </div>
-        );
-      default:
-        return (
-          <div className={`w-11 h-11 rounded-full ${bg} border-2 border-white/50 overflow-hidden flex items-center justify-center shrink-0 shadow-xs text-white`}>
-            <Icon className="material-symbols-outlined text-[24px]">shield_person</Icon>
-          </div>
-        );
-    }
-  };
-
   return (
-    <div className="space-y-4 font-sans text-on-surface">
-      {/* 1-Column Responsive Full-Width Layout with a Dropdown Selector */}
-      <div className="rounded-lg border border-outline-variant/80 overflow-hidden flex flex-col w-full">
-        
-        {/* Top Bar: Selected Role & Active Status & Create Button */}
-        <div className="p-3.5 sm:p-4 border-b border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container/30">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-            <span className="text-xs sm:text-sm font-bold text-on-surface shrink-0 flex items-center gap-1.5">
-              <Icon className="material-symbols-outlined text-[18px] text-secondary">admin_panel_settings</Icon>
-              <span>{isAmharic ? 'የተመረጠ ሚና:' : 'Selected Role:'}</span>
-            </span>
-
-            {/* Slick Premium Dropdown Selector for All Devices */}
-            <div className="relative w-full sm:w-72">
-              <select
-                value={selectedRoleId}
-                onChange={(e) => setSelectedRoleId(e.target.value)}
-                className="w-full bg-surface-container-lowest border border-outline-variant rounded-md pl-3.5 pr-9 py-2 text-xs font-black text-on-surface cursor-pointer focus:outline-hidden focus:border-[#0f172a] shadow-2xs hover:border-slate-400 dark:hover:border-slate-600 transition-colors"
-              >
-                {roles.map((r) => (
-                  <option key={r.id} value={r.id} className="font-semibold text-xs">
-                    {r.titleAm} — {r.titleEn}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2.5 pointer-events-none text-slate-400">
-                <Icon className="material-symbols-outlined text-[18px]">keyboard_arrow_down</Icon>
-              </div>
-            </div>
-          </div>
-
-          {/* Right side controls: Status Badge and Create Role Button */}
-          <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 flex-wrap">
-            <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800 px-3 py-1.5 rounded-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              <span className="text-[10px] sm:text-xs font-black text-emerald-700 dark:text-emerald-300">
-                {isAmharic ? 'ንቁ (Active)' : 'Active'}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowNewRoleModal(true)}
-              className="px-4 py-1.5 bg-[#0f172a] hover:bg-slate-800 active:scale-[0.97] text-white rounded-md text-xs font-black transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
-            >
-              <Icon className="material-symbols-outlined text-[16px]">add</Icon>
-              <span>{isAmharic ? 'አዲስ ሚና' : 'Create Role'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Info Banner Container */}
-        <div className="p-3.5 mx-4 my-3 bg-blue-50/90 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 rounded-md flex items-center gap-2.5 text-blue-900 dark:text-blue-200 text-xs font-semibold">
-          <Icon className="material-symbols-outlined text-slate-700 dark:text-blue-400 text-[18px] shrink-0">
-            info
-          </Icon>
-          <span>
-            {isAmharic
-              ? 'ከታች በተዘረዘሩት ተግባራት ላይ ለዚህ ሚና የሚፈቀዱትን ወይም የሚከለከሉትን ይምረጡ:'
-              : 'Select allowed, view-only, or denied permissions for this role on the activities below:'}
+    <div className="space-y-5 font-sans text-on-surface">
+      {/* Role Selection Cards Grid */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between px-0.5">
+          <span className="text-xs font-black uppercase tracking-wider text-secondary">
+            {isAmharic ? 'የስርዓት ሚናዎች' : 'System Roles'}
           </span>
+          <button
+            type="button"
+            onClick={() => setShowNewRoleModal(true)}
+            className="px-3 py-1.5 bg-[#0f172a] hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+          >
+            <Icon className="material-symbols-outlined text-[16px]">add</Icon>
+            <span>{isAmharic ? 'አዲስ ሚና' : 'Add Role'}</span>
+          </button>
         </div>
 
-          {/* Permissions Matrix Table - Hidden on mobile, visible on desktop/tablet */}
-          <div className="hidden md:block px-4 pb-4 overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[560px]">
-              <thead>
-                <tr className="border-b border-outline-variant/70 text-xs font-black text-slate-700 dark:text-slate-200">
-                  <th className="py-2.5 px-2 w-12 text-center">{isAmharic ? 'ተ.ቁ' : 'No.'}</th>
-                  <th className="py-2.5 px-3">{isAmharic ? 'ተግባር / ስራ' : 'Activity / Task'}</th>
-                  <th className="py-2.5 px-3 w-28 text-center text-emerald-600 dark:text-emerald-400 font-extrabold">
-                    {isAmharic ? 'ፈቃድ (Allow)' : 'Allow'}
-                  </th>
-                  <th className="py-2.5 px-3 w-32 text-center text-amber-600 dark:text-amber-400 font-extrabold">
-                    {isAmharic ? 'ማየት ብቻ (View Only)' : 'View Only'}
-                  </th>
-                  <th className="py-2.5 px-3 w-28 text-center text-rose-600 dark:text-rose-400 font-extrabold">
-                    {isAmharic ? 'ክልከል (Deny)' : 'Deny'}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-outline-variant/40 text-xs font-semibold">
-                {DEFAULT_TASKS.map((task) => {
-                  const state = currentRolePerms[task.id] || 'deny';
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+          {dynamicRoles.map((r) => {
+            const isSelected = r.id === selectedRoleId;
 
-                  return (
-                    <tr key={task.id} className="hover:bg-surface-container/30 transition-colors">
-                      {/* Icon & Index Column */}
-                      <td className="py-2 px-2 text-center text-slate-500">
-                        <Icon className="material-symbols-outlined text-[16px] text-slate-600 dark:text-slate-400 align-middle">
-                          {task.icon}
-                        </Icon>
-                      </td>
-
-                      {/* Task Name */}
-                      <td className="py-2 px-3 text-on-surface">
-                        <span className="font-extrabold">{task.titleAm}</span>{' '}
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
-                          {task.titleEn}
-                        </span>
-                      </td>
-
-                      {/* 1. Allow Toggle Column */}
-                      <td className="py-2 px-3 text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleSetPermission(task.id, 'allow')}
-                          className={`w-10 h-5 rounded-full transition-all inline-flex items-center p-0.5 cursor-pointer ${
-                            state === 'allow'
-                              ? 'bg-emerald-500 justify-end shadow-xs'
-                              : 'bg-slate-200 dark:bg-slate-700 justify-start opacity-40 hover:opacity-75'
-                          }`}
-                          title="Allow"
-                        >
-                          <span className="w-4 h-4 rounded-full bg-white shadow-xs block transition-transform" />
-                        </button>
-                      </td>
-
-                      {/* 2. View Only Toggle Column */}
-                      <td className="py-2 px-3 text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleSetPermission(task.id, 'view_only')}
-                          className={`w-10 h-5 rounded-full transition-all inline-flex items-center p-0.5 cursor-pointer ${
-                            state === 'view_only'
-                              ? 'bg-amber-500 justify-end shadow-xs'
-                              : 'bg-slate-200 dark:bg-slate-700 justify-start opacity-40 hover:opacity-75'
-                          }`}
-                          title="View Only"
-                        >
-                          <span className="w-4 h-4 rounded-full bg-white shadow-xs block transition-transform" />
-                        </button>
-                      </td>
-
-                      {/* 3. Deny Toggle Column */}
-                      <td className="py-2 px-3 text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleSetPermission(task.id, 'deny')}
-                          className={`w-10 h-5 rounded-full transition-all inline-flex items-center p-0.5 cursor-pointer ${
-                            state === 'deny'
-                              ? 'bg-rose-500 justify-end shadow-xs'
-                              : 'bg-slate-200 dark:bg-slate-700 justify-start opacity-40 hover:opacity-75'
-                          }`}
-                          title="Deny"
-                        >
-                          <span className="w-4 h-4 rounded-full bg-white shadow-xs block transition-transform" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile-Friendly Grid of Cards (Visible on small screens only) */}
-          <div className="md:hidden space-y-3 px-4 pb-4">
-            {DEFAULT_TASKS.map((task) => {
-              const state = currentRolePerms[task.id] || 'deny';
-              return (
-                <div key={task.id} className="p-3.5 bg-surface-container/20 rounded-lg border border-outline-variant/60 space-y-3 animate-in fade-in duration-150">
-                  <div className="flex items-start gap-2.5">
-                    <div className="p-2 bg-surface-container rounded-md text-slate-600 dark:text-slate-400 shrink-0">
-                      <Icon className="material-symbols-outlined text-[18px] block">
-                        {task.icon}
-                      </Icon>
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-xs font-black text-on-surface">
-                        {task.titleAm}
-                      </div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium font-sans">
-                        {task.titleEn}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Responsive segmented controls */}
-                  <div className="grid grid-cols-3 gap-1.5 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => handleSetPermission(task.id, 'allow')}
-                      className={`py-2 px-1 rounded-md text-[10px] font-black uppercase tracking-wider text-center transition-all cursor-pointer active:scale-95 ${
-                        state === 'allow'
-                          ? 'bg-emerald-600 text-white shadow-2xs'
-                          : 'bg-surface-container hover:bg-surface-container-high text-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      {isAmharic ? 'ፈቃድ' : 'Allow'}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleSetPermission(task.id, 'view_only')}
-                      className={`py-2 px-1 rounded-md text-[10px] font-black uppercase tracking-wider text-center transition-all cursor-pointer active:scale-95 ${
-                        state === 'view_only'
-                          ? 'bg-amber-500 text-white shadow-2xs'
-                          : 'bg-surface-container hover:bg-surface-container-high text-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      {isAmharic ? 'ማየት ብቻ' : 'View Only'}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleSetPermission(task.id, 'deny')}
-                      className={`py-2 px-1 rounded-md text-[10px] font-black uppercase tracking-wider text-center transition-all cursor-pointer active:scale-95 ${
-                        state === 'deny'
-                          ? 'bg-rose-500 text-white shadow-2xs'
-                          : 'bg-surface-container hover:bg-surface-container-high text-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      {isAmharic ? 'ልክል' : 'Deny'}
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Bottom Legend matching image */}
-          <div className="px-5 py-3 border-t border-outline-variant/60 bg-surface-container/20 flex flex-wrap items-center justify-between gap-4 text-xs">
-            <div className="space-y-1">
-              <div className="font-extrabold text-xs text-on-surface">
-                {isAmharic ? 'መግለጫ (Legend)' : 'Legend'}
-              </div>
-              <div className="flex flex-wrap items-center gap-4 text-[11px] text-slate-600 dark:text-slate-400">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="font-bold text-emerald-700 dark:text-emerald-300">
-                    {isAmharic ? 'ፈቃድ (Allow)' : 'Allow'}:
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => setSelectedRoleId(r.id)}
+                className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between gap-2 ${
+                  isSelected
+                    ? 'bg-surface-container-lowest border-[#0f172a] dark:border-blue-400 ring-2 ring-[#0f172a]/20 shadow-xs'
+                    : 'bg-surface border-outline-variant/60 hover:border-slate-400 hover:bg-surface-container-lowest'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`w-2.5 h-2.5 rounded-full ${r.avatarBg}`} />
+                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                    isSelected ? 'bg-[#0f172a] text-white' : 'bg-surface-container text-secondary'
+                  }`}>
+                    {r.userCountText}
                   </span>
-                  <span>{isAmharic ? 'ሙሉ ፈቃድ አለው' : 'Full permission granted'}</span>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
-                  <span className="font-bold text-amber-700 dark:text-amber-300">
-                    {isAmharic ? 'ማየት ብቻ (View Only)' : 'View Only'}:
-                  </span>
-                  <span>{isAmharic ? 'ማየት ብቻ ይችላል' : 'Can view records only'}</span>
+                <div>
+                  <div className="text-xs font-black text-on-surface line-clamp-1">
+                    {r.titleAm}
+                  </div>
+                  <div className="text-[10px] font-medium text-secondary line-clamp-1">
+                    {r.titleEn}
+                  </div>
                 </div>
-
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
-                  <span className="font-bold text-rose-700 dark:text-rose-300">
-                    {isAmharic ? 'ክልከል (Deny)' : 'Deny'}:
-                  </span>
-                  <span>{isAmharic ? 'ሙሉ ክልክል አለበት' : 'Action completely prohibited'}</span>
-                </div>
-              </div>
-            </div>
-
-            {onOpenUsersTable && (
-              <button
-                type="button"
-                onClick={onOpenUsersTable}
-                className="hidden sm:flex text-xs font-bold text-[#0f172a] hover:underline items-center gap-1 cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[16px]">manage_accounts</Icon>
-                <span>{isAmharic ? 'የተጠቃሚዎች አካውንት ዝርዝር ክፈት' : 'Open User Accounts List'}</span>
               </button>
-            )}
-          </div>
-
-          {/* Action Buttons Footer matching image */}
-          <div className="p-3.5 sm:p-4 border-t border-outline-variant/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5 bg-surface-container/40">
-            <button
-              type="button"
-              onClick={handleResetPermissions}
-              className="w-full sm:w-auto px-4 py-2.5 bg-slate-500 hover:bg-slate-600 active:scale-95 text-white font-extrabold text-xs rounded-md transition-all shadow-xs cursor-pointer text-center"
-            >
-              {isAmharic ? 'ዳግም አስጀምር (Reset)' : 'Reset'}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSavePermissions}
-              className="w-full sm:w-auto px-6 py-2.5 bg-[#1e293b] hover:bg-[#0D2B5C] active:scale-95 text-white font-black text-xs rounded-md transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <Icon className="material-symbols-outlined text-[18px]">save</Icon>
-              <span>{isAmharic ? 'ፈቃድ አስቀምጥ (Save Permissions)' : 'Save Permissions'}</span>
-            </button>
-          </div>
-
-        </div>
-
-      {/* ================= CLERK RBAC MATRIX & QUICK ACTIONS GOVERNANCE CENTER ================= */}
-      <div className="pt-5 border-t border-outline-variant/60 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-lg bg-slate-700/10 dark:bg-blue-500/20 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[24px]">tune</Icon>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-xs sm:text-sm font-black text-on-surface uppercase tracking-wider">
-                  {isAmharic
-                    ? 'የፀሀፊ ፈጣን አቋራጮችና የዳሽቦርድ መቆጣጠሪያ ማትሪክስ (Clerk RBAC Controls)'
-                    : 'Clerk Quick Actions & Dashboard RBAC Matrix'}
-                </h3>
-                <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-slate-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[10px] font-black">
-                  {isAmharic ? 'የፀሀፊ ሚና (Clerk / Secretary)' : 'Clerk Role'}
-                </span>
-              </div>
-              <p className="text-[10px] text-secondary font-medium">
-                {isAmharic
-                  ? 'በፀሀፊ ዳሽቦርድ ላይ የሚታዩ 6ቱን ፈጣን አቋራጮች እና 3ቱን የስታቲስቲክስ መረጃዎች ራሱን በቻለ ማትሪክስ መቆጣጠር'
-                  : 'Control all 6 Quick Action shortcuts and 3 Metric Panels on the Clerk Dashboard with granular RBAC toggles.'}
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Preset Buttons */}
-          <div className="hidden sm:flex items-center gap-1.5 self-start md:self-auto flex-wrap">
-            <button
-              type="button"
-              onClick={() => handleBatchClerkPreset('all')}
-              className="px-2.5 py-1.5 rounded-md bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-            >
-              <Icon className="material-symbols-outlined text-[14px]">done_all</Icon>
-              <span>{isAmharic ? 'ሁሉንም ፍቀድ' : 'Enable All'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleBatchClerkPreset('standard')}
-              className="px-2.5 py-1.5 rounded-md bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-slate-800 dark:text-blue-300 border border-blue-300/80 dark:border-blue-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-            >
-              <Icon className="material-symbols-outlined text-[14px]">auto_fix_high</Icon>
-              <span>{isAmharic ? 'መሰረታዊ ብቻ' : 'Standard Clerk'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleBatchClerkPreset('none')}
-              className="px-2.5 py-1.5 rounded-md bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 border border-rose-300/80 dark:border-rose-800 text-[10px] font-black transition-all cursor-pointer flex items-center gap-1 active:scale-95"
-            >
-              <Icon className="material-symbols-outlined text-[14px]">block</Icon>
-              <span>{isAmharic ? 'ሁሉንም አግድ' : 'Restrict All'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* ================= 6 QUICK ACTION CARDS ================= */}
-        <div>
-          <div className="text-[11px] font-black text-on-surface uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <Icon className="material-symbols-outlined text-[16px] text-amber-500">flash_on</Icon>
-            <span>{isAmharic ? 'የፈጣን አቋራጭ ቁልፎች ቁጥጥር (6 Quick Action Controls)' : 'Quick Action Shortcut Controls (6 Actions)'}</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {/* Quick Action 1: New Registration Form */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">how_to_reg</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'አዲስ ምዝገባ ቅጽ' : 'New Registration Form'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'አዲስ የሞተርና የባለቤት ምዝገባ መክፈቻ' : 'Allow new vehicle registration flow'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkNewRegistrationAction')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  (currentSettings.showClerkNewRegistrationAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    (currentSettings.showClerkNewRegistrationAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Quick Action 2: Submission Correction */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'የዛሬ ማመልከቻዎችን ማስተካከል' : 'Allow same-day submission adjustments'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkEditSubmissionAction')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  (currentSettings.showClerkEditSubmissionAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    (currentSettings.showClerkEditSubmissionAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Quick Action 3: QR Code Scanner */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">qr_code_scanner</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'የQR ኮድ ፈጣን ፍተሻ' : 'QR Scanner Shortcut'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'የሞተር ፈቃድ ካሜራ ፍተሻ' : 'Allow direct QR scanning tool'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkQrScanAction')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  (currentSettings.showClerkQrScanAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    (currentSettings.showClerkQrScanAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Quick Action 4: Payment Receipts Entry */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">receipt_long</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'የክፍያ ደረሰኝ መዝገብ' : 'Payment Receipts Entry'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'ወርሃዊ የክፍያ ደረሰኝ ማስገባት' : 'Allow registering monthly payment slips'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkPaymentReceiptsAction')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  (currentSettings.showClerkPaymentReceiptsAction ?? true) ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    (currentSettings.showClerkPaymentReceiptsAction ?? true) ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Quick Action 5: Submissions Review */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">list_alt</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions Action'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'የቀረቡ ማመልከቻዎች ዝርዝር ቁልፍ' : 'Show View Submissions button'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkSubmissionsAction')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkSubmissionsAction ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    currentSettings.showClerkSubmissionsAction ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Quick Action 6: Approved Vehicles */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">verified</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Vehicles Action'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'የፀደቁ ተሽከርካሪዎች ማህደር ቁልፍ' : 'Show Approved Vehicles button'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkApprovedVehiclesAction')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkApprovedVehiclesAction ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    currentSettings.showClerkApprovedVehiclesAction ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ================= 3 DASHBOARD METRIC & TABLE WIDGETS ================= */}
-        <div className="pt-2 border-t border-outline-variant/50">
-          <div className="text-[11px] font-black text-on-surface uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <Icon className="material-symbols-outlined text-[16px] text-blue-500">analytics</Icon>
-            <span>{isAmharic ? 'የዳሽቦርድ ስታቲስቲክስና ሰንጠረዥ ታይነት ቁጥጥር' : 'Dashboard Metrics & Table Visibility Controls'}</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* Widget 1: Permit Status & Counts */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-blue-500/10 text-slate-700 dark:text-blue-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">pie_chart</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'የፈቃድ ሁኔታ ካርዶች' : 'Permit Status Metrics'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'የነቃ፣ በመጠባበቅ ላይ ያለ ማጠቃለያ' : 'Display permit metric breakdown'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkPermitStatus')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkPermitStatus ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    currentSettings.showClerkPermitStatus ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Widget 2: Payment Receipts KPIs */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'የክፍያ ስታቲስቲክስ ካርዶች' : 'Payment KPI Metrics'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'የተሰበሰበ ጠቅላላ ገቢና ቆጣሪ' : 'Show collected revenue & counts'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkPaymentKPIs')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkPaymentKPIs ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    currentSettings.showClerkPaymentKPIs ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {/* Widget 3: Payment Records History Table */}
-            <div className="p-3 rounded-md border border-outline-variant/80 bg-surface-container/30 flex items-center justify-between gap-3 hover:border-blue-400/60 transition-colors">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0 font-black">
-                  <Icon className="material-symbols-outlined text-[20px]">table_chart</Icon>
-                </div>
-                <div className="min-w-0 space-y-0.5">
-                  <div className="font-extrabold text-xs text-on-surface truncate">
-                    {isAmharic ? 'የክፍያ መዝገቦች ሰንጠረዥ' : 'Payment Records Table'}
-                  </div>
-                  <div className="text-[10px] text-secondary truncate">
-                    {isAmharic ? 'የደረሰኞች ሙሉ ሰንጠረዥ ማየት' : 'Allow access to full payments table'}
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleToggleClerk('showClerkPaymentRecordsTable')}
-                className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-                  currentSettings.showClerkPaymentRecordsTable ? 'bg-slate-700' : 'bg-slate-300 dark:bg-slate-700'
-                }`}
-              >
-                <span
-                  className={`block w-5 h-5 rounded-full bg-white transition-transform ${
-                    currentSettings.showClerkPaymentRecordsTable ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* ================= MODAL: ADD NEW ROLE ================= */}
+      {/* Header & Role Bar */}
+      <div className="rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[#0f172a] text-white flex items-center justify-center font-bold shrink-0">
+            <Icon className="material-symbols-outlined text-[18px]">admin_panel_settings</Icon>
+          </div>
+          <div>
+            <span className="text-[11px] font-bold text-secondary block">
+              {isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance'}
+            </span>
+            <span className="text-sm font-black text-on-surface">
+              {selectedRole.titleAm} — {selectedRole.titleEn}
+            </span>
+          </div>
+        </div>
+
+        {/* Legend Bar */}
+        <div className="flex items-center gap-4 text-xs font-bold shrink-0">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+            <span className="text-emerald-800 dark:text-emerald-300">{isAmharic ? 'ፈቃድ' : 'Allow'}</span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
+            <span className="text-amber-800 dark:text-amber-300">{isAmharic ? 'ማየት ብቻ' : 'View Only'}</span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
+            <span className="text-rose-800 dark:text-rose-300">{isAmharic ? 'ከልክል' : 'Deny'}</span>
+          </div>
+
+          {onOpenUsersTable && (
+            <button
+              type="button"
+              onClick={onOpenUsersTable}
+              className="text-xs font-black text-[#0f172a] dark:text-blue-400 hover:underline cursor-pointer ml-2"
+            >
+              {isAmharic ? 'ሰራተኞች' : 'Users List'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Clean Flat Modules List */}
+      <div className="space-y-4">
+        {SYSTEM_MODULES.map((moduleObj) => {
+          const masterState = getModuleMasterState(moduleObj);
+
+          return (
+            <div
+              key={moduleObj.id}
+              className="rounded-xl border border-outline-variant/60 bg-surface-container-lowest overflow-hidden transition-all duration-150"
+            >
+              {/* Module Header Bar */}
+              <div className="p-3.5 px-4 border-b border-outline-variant/40 bg-surface-container/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Icon className="material-symbols-outlined text-[22px] text-[#0f172a] dark:text-blue-400 shrink-0">{moduleObj.icon}</Icon>
+                  <div className="min-w-0">
+                    <h3 className="text-xs font-black text-on-surface uppercase tracking-wider">
+                      {isAmharic ? moduleObj.titleAm : moduleObj.titleEn}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Master Selector */}
+                <div className="flex items-center gap-1 p-0.5 bg-surface-container rounded-lg border border-outline-variant/60 shrink-0 self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => handleSetModuleMasterPermission(moduleObj, 'allow')}
+                    className={`px-2.5 py-1 rounded text-[11px] font-black transition-all cursor-pointer ${
+                      masterState === 'allow'
+                        ? 'bg-emerald-600 text-white'
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-surface-container-high'
+                    }`}
+                  >
+                    {isAmharic ? 'ሁሉንም ፍቀድ' : 'Allow All'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSetModuleMasterPermission(moduleObj, 'view_only')}
+                    className={`px-2.5 py-1 rounded text-[11px] font-black transition-all cursor-pointer ${
+                      masterState === 'view_only'
+                        ? 'bg-amber-500 text-white'
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-surface-container-high'
+                    }`}
+                  >
+                    {isAmharic ? 'ማየት ብቻ' : 'View Only'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSetModuleMasterPermission(moduleObj, 'deny')}
+                    className={`px-2.5 py-1 rounded text-[11px] font-black transition-all cursor-pointer ${
+                      masterState === 'deny'
+                        ? 'bg-rose-500 text-white'
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-surface-container-high'
+                    }`}
+                  >
+                    {isAmharic ? 'ሁሉንም ከልክል' : 'Deny All'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Clean Flat Sub-Tasks Rows */}
+              <div className="divide-y divide-outline-variant/30">
+                {moduleObj.tasks.map((task) => {
+                  const taskState = currentRolePerms[task.id] || 'deny';
+
+                  return (
+                    <div
+                      key={task.id}
+                      className="p-3 px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-surface-container/20 transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <div className="text-xs font-black text-on-surface">
+                          {task.titleAm}
+                        </div>
+                      </div>
+
+                      {/* Task Segmented Control */}
+                      <div className="grid grid-cols-3 gap-1 shrink-0 bg-surface-container p-0.5 rounded-md border border-outline-variant/40">
+                        <button
+                          type="button"
+                          onClick={() => handleSetPermission(task.id, 'allow')}
+                          className={`py-1 px-2.5 rounded text-[10px] font-black uppercase transition-all cursor-pointer ${
+                            taskState === 'allow'
+                              ? 'bg-emerald-600 text-white'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
+                          }`}
+                        >
+                          {isAmharic ? 'ፍቀድ' : 'Allow'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSetPermission(task.id, 'view_only')}
+                          className={`py-1 px-2.5 rounded text-[10px] font-black uppercase transition-all cursor-pointer ${
+                            taskState === 'view_only'
+                              ? 'bg-amber-500 text-white'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
+                          }`}
+                        >
+                          {isAmharic ? 'ማየት' : 'View'}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSetPermission(task.id, 'deny')}
+                          className={`py-1 px-2.5 rounded text-[10px] font-black uppercase transition-all cursor-pointer ${
+                            taskState === 'deny'
+                              ? 'bg-rose-500 text-white'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
+                          }`}
+                        >
+                          {isAmharic ? 'ከልክል' : 'Deny'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Action Footer Bar */}
+      <div className="p-3.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest flex items-center justify-end gap-2.5">
+        <button
+          type="button"
+          onClick={handleResetPermissions}
+          className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-lg transition-all cursor-pointer"
+        >
+          {isAmharic ? 'ዳግም አስጀምር' : 'Reset Defaults'}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSavePermissions}
+          className="px-5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white font-black text-xs rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
+        >
+          <Icon className="material-symbols-outlined text-[16px]">save</Icon>
+          <span>{isAmharic ? 'ፈቃዶች አስቀምጥ' : 'Save Permissions'}</span>
+        </button>
+      </div>
+
+      {/* Modal for Creating Custom Role */}
       {showNewRoleModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-outline-variant pb-3">
-              <h3 className="font-black text-base text-on-surface flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[#0f172a] text-[22px]">add_moderator</Icon>
-                <span>{isAmharic ? 'አዲስ የስራ ሚና መፍጠሪያ' : 'Create New System Role'}</span>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-surface border border-outline-variant rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+              <h3 className="text-sm font-black text-on-surface">
+                {isAmharic ? 'አዲስ የስራ ሚና መፍጠር' : 'Create Custom Role'}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowNewRoleModal(false)}
-                className="text-slate-400 hover:text-on-surface p-1 rounded-lg"
+                className="p-1 rounded-md text-slate-400 hover:text-on-surface cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[20px]">close</Icon>
               </button>
@@ -1237,61 +882,60 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
             <form onSubmit={handleCreateNewRole} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">
-                  {isAmharic ? 'የሚና ስም (በአማርኛ)' : 'Role Title (Amharic)'}
+                <label className="block text-xs font-black text-on-surface mb-1">
+                  {isAmharic ? 'የሚናው ስም በአማርኛ' : 'Role Title (Amharic)'} *
                 </label>
                 <input
                   type="text"
                   required
                   value={newRoleTitleAm}
                   onChange={(e) => setNewRoleTitleAm(e.target.value)}
-                  placeholder="ምሳሌ፡ ኦዲተር ወይም ሱፐርቫይዘር"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f172a]"
+                  placeholder="ምሳሌ፡ የክፍያ ተቆጣጣሪ"
+                  className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">
-                  {isAmharic ? 'የሚና ስም (በእንግሊዝኛ)' : 'Role Title (English)'}
+                <label className="block text-xs font-black text-on-surface mb-1">
+                  {isAmharic ? 'የሚናው ስም በእንግሊዘኛ' : 'Role Title (English)'}
                 </label>
                 <input
                   type="text"
                   value={newRoleTitleEn}
                   onChange={(e) => setNewRoleTitleEn(e.target.value)}
-                  placeholder="e.g. Auditor / Supervisor"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#0f172a]"
+                  placeholder="e.g. Revenue Inspector"
+                  className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-blue-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">
-                  {isAmharic ? 'የመጀመሪያ ፈቃዶች አብነት' : 'Initial Permissions Template'}
+                <label className="block text-xs font-black text-on-surface mb-1">
+                  {isAmharic ? 'የመነሻ ፈቃዶች ሞዴል' : 'Template Role Permissions'}
                 </label>
                 <select
                   value={newRoleTemplate}
                   onChange={(e) => setNewRoleTemplate(e.target.value)}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#0f172a]"
+                  className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold cursor-pointer focus:outline-hidden focus:border-blue-600"
                 >
-                  <option value="role-secretary">{isAmharic ? 'እንደ ጸሃፊ (Secretary Template)' : 'Secretary Template'}</option>
-                  <option value="role-officer">{isAmharic ? 'እንደ ኦፊሰር (Officer Template)' : 'Officer Template'}</option>
-                  <option value="role-manager">{isAmharic ? 'እንደ ስራ አስኪያጅ (Manager Template)' : 'Manager Template'}</option>
-                  <option value="role-it">{isAmharic ? 'እንደ አይቲ ባለሙያ (IT Specialist Template)' : 'IT Specialist Template'}</option>
-                  <option value="role-superadmin">{isAmharic ? 'እንደ ሱፐር አድሚን (Full Super Admin)' : 'Super Admin Template'}</option>
+                  {roles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.titleAm} — {r.titleEn}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-2">
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-outline-variant/60">
                 <button
                   type="button"
                   onClick={() => setShowNewRoleModal(false)}
-                  className="px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface"
+                  className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-extrabold text-xs rounded-md cursor-pointer"
                 >
                   {isAmharic ? 'ሰርዝ' : 'Cancel'}
                 </button>
-
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
+                  className="px-5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white font-black text-xs rounded-md shadow-xs cursor-pointer"
                 >
                   {isAmharic ? 'ሚናውን ፍጠር' : 'Create Role'}
                 </button>

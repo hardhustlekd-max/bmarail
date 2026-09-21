@@ -169,16 +169,96 @@ function scheduleBackgroundReconnect() {
 }
 
 /**
+ * Helper to parse CREATE TABLE definitions from schema SQL
+ */
+function parseCreateTableColumns(schemaSql: string): Map<string, Array<{ name: string; definition: string }>> {
+  const tableMap = new Map<string, Array<{ name: string; definition: string }>>();
+  const createTableRegex = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_]+)\s*\(([\s\S]*?)\);/gi;
+  let match;
+
+  while ((match = createTableRegex.exec(schemaSql)) !== null) {
+    const tableName = match[1].toLowerCase().trim();
+    const body = match[2];
+    const columns: Array<{ name: string; definition: string }> = [];
+
+    const lines = body.split('\n');
+    for (const rawLine of lines) {
+      const line = rawLine.trim().replace(/,$/, '');
+      if (!line || line.startsWith('--')) continue;
+
+      const upper = line.toUpperCase();
+      if (
+        upper.startsWith('PRIMARY KEY') ||
+        upper.startsWith('FOREIGN KEY') ||
+        upper.startsWith('CONSTRAINT') ||
+        upper.startsWith('UNIQUE') ||
+        upper.startsWith('CHECK')
+      ) {
+        continue;
+      }
+
+      const parts = line.split(/\s+/);
+      const colName = parts[0]?.replace(/"/g, '').toLowerCase().trim();
+      const colDef = parts.slice(1).join(' ');
+
+      if (colName && !colName.includes('(') && colDef) {
+        columns.push({ name: colName, definition: colDef });
+      }
+    }
+
+    if (columns.length > 0) {
+      tableMap.set(tableName, columns);
+    }
+  }
+
+  return tableMap;
+}
+
+/**
  * Execute schema and migrations on an active client
  */
 async function runSchemaMigrations(client: pg.PoolClient) {
   try {
+    // 1. Fetch currently existing table columns from PostgreSQL information_schema
+    const existingColsRes = await client.query(`
+      SELECT table_name, column_name 
+      FROM information_schema.columns 
+      WHERE table_schema = 'public'
+    `);
+    const existingCols = new Set<string>();
+    for (const r of existingColsRes.rows) {
+      existingCols.add(`${r.table_name.toLowerCase()}.${r.column_name.toLowerCase()}`);
+    }
+
+    // 2. Execute schema.sql definition file
     const schemaPath = path.join(process.cwd(), 'database', 'schema.sql');
     if (fs.existsSync(schemaPath)) {
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
       await client.query(schemaSql);
+
+      // 3. Auto-reconcile any newly added columns from schema.sql onto existing tables
+      const parsedTables = parseCreateTableColumns(schemaSql);
+      let autoAddedCount = 0;
+      for (const [tableName, cols] of parsedTables.entries()) {
+        for (const col of cols) {
+          const key = `${tableName}.${col.name}`;
+          if (!existingCols.has(key)) {
+            try {
+              console.log(`[PostgreSQL Auto-Migrator] Auto-adding missing column "${col.name}" to table "${tableName}"...`);
+              await client.query(`ALTER TABLE ${tableName} ADD COLUMN IF NOT EXISTS ${col.name} ${col.definition}`);
+              autoAddedCount++;
+            } catch (alterErr: any) {
+              console.warn(`[PostgreSQL Auto-Migrator] Note for ${key}:`, alterErr.message);
+            }
+          }
+        }
+      }
+      if (autoAddedCount > 0) {
+        console.log(`[PostgreSQL Auto-Migrator] Auto-reconciled ${autoAddedCount} newly detected column(s) from GitHub schema.`);
+      }
     }
 
+    // 4. Execute seed.sql
     const seedPath = path.join(process.cwd(), 'database', 'seed.sql');
     if (fs.existsSync(seedPath)) {
       const seedSql = fs.readFileSync(seedPath, 'utf8');
@@ -194,7 +274,22 @@ async function runSchemaMigrations(client: pg.PoolClient) {
       `);
     } catch {}
 
-    console.log('[PostgreSQL] Schema and seed data verified successfully.');
+    // 5. Dynamically refresh memory whitelist of table columns from information_schema
+    const updatedColsRes = await client.query(`
+      SELECT table_name, column_name 
+      FROM information_schema.columns 
+      WHERE table_schema = 'public'
+    `);
+    for (const r of updatedColsRes.rows) {
+      const tName = r.table_name;
+      const cName = r.column_name;
+      if (!TABLE_COLUMNS[tName]) {
+        TABLE_COLUMNS[tName] = new Set();
+      }
+      TABLE_COLUMNS[tName].add(cName);
+    }
+
+    console.log('[PostgreSQL] Database schema and seed data verified & synchronized successfully.');
   } catch (err: any) {
     console.warn('[PostgreSQL] Notice during schema verification:', err.message);
   }

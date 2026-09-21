@@ -9,10 +9,12 @@ builder = "NIXPACKS"
 buildCommand = "npm run build"
 watchPatterns = [
   "src/**",
+  "database/**",
   "server.ts",
   "package.json",
   "vite.config.ts",
-  "index.html"
+  "index.html",
+  "railway.toml"
 ]
 
 [deploy]
