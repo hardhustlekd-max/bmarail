@@ -144,7 +144,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         {/* Form Content */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
           <div className="border-b border-outline-variant pb-3 flex items-center justify-between">
-            <h2 className="text-sm font-black text-on-surface uppercase tracking-wider flex items-center gap-2">
+            <h2 className="text-sm font-black text-on-surface  tracking-wider flex items-center gap-2">
               <Icon className="material-symbols-outlined text-amber-600 text-[20px]">policy</Icon>
               {isAmharic ? 'የሪፖርት ዝርዝሮች (አማራጭ)' : 'Incident Report Details (All Optional)'}
             </h2>
@@ -213,7 +213,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
 
         {/* Evidence Photo Upload */}
         <div className="space-y-2">
-          <label className="block text-xs font-bold text-on-surface uppercase tracking-wider">
+          <label className="block text-xs font-bold text-on-surface  tracking-wider">
             {isAmharic ? 'የተሽከርካሪው ፎቶ / ማስረጃ' : 'Evidence Photo'}
           </label>
 
@@ -270,7 +270,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
 
         {/* Field Notes & Incident Details */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-bold text-on-surface uppercase tracking-wider">
+          <label className="block text-xs font-bold text-on-surface  tracking-wider">
             {isAmharic ? 'ማብራሪያና ተጨማሪ አስተያየት' : 'Notes & Remarks'}
           </label>
           <textarea
@@ -315,7 +315,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-black uppercase tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            className="px-6 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-black  tracking-wider transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

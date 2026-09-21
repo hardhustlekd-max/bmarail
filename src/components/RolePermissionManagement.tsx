@@ -649,7 +649,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       {/* Role Selection Cards Grid */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-0.5">
-          <span className="text-xs font-black uppercase tracking-wider text-secondary">
+          <span className="text-xs font-black  tracking-wider text-secondary">
             {isAmharic ? 'የስርዓት ሚናዎች' : 'System Roles'}
           </span>
           <button
@@ -760,7 +760,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 <div className="flex items-center gap-3 min-w-0">
                   <Icon className="material-symbols-outlined text-[22px] text-[#0f172a] dark:text-blue-400 shrink-0">{moduleObj.icon}</Icon>
                   <div className="min-w-0">
-                    <h3 className="text-xs font-black text-on-surface uppercase tracking-wider">
+                    <h3 className="text-xs font-black text-on-surface  tracking-wider">
                       {isAmharic ? moduleObj.titleAm : moduleObj.titleEn}
                     </h3>
                   </div>
@@ -827,7 +827,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                         <button
                           type="button"
                           onClick={() => handleSetPermission(task.id, 'allow')}
-                          className={`py-1 px-2.5 rounded text-[10px] font-black uppercase transition-all cursor-pointer ${
+                          className={`py-1 px-2.5 rounded text-[10px] font-black  transition-all cursor-pointer ${
                             taskState === 'allow'
                               ? 'bg-emerald-600 text-white'
                               : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
@@ -839,7 +839,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                         <button
                           type="button"
                           onClick={() => handleSetPermission(task.id, 'view_only')}
-                          className={`py-1 px-2.5 rounded text-[10px] font-black uppercase transition-all cursor-pointer ${
+                          className={`py-1 px-2.5 rounded text-[10px] font-black  transition-all cursor-pointer ${
                             taskState === 'view_only'
                               ? 'bg-amber-500 text-white'
                               : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
@@ -851,7 +851,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                         <button
                           type="button"
                           onClick={() => handleSetPermission(task.id, 'deny')}
-                          className={`py-1 px-2.5 rounded text-[10px] font-black uppercase transition-all cursor-pointer ${
+                          className={`py-1 px-2.5 rounded text-[10px] font-black  transition-all cursor-pointer ${
                             taskState === 'deny'
                               ? 'bg-rose-500 text-white'
                               : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'

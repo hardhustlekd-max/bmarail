@@ -93,8 +93,8 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
           <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">analytics</Icon>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-black text-sm sm:text-base text-on-surface uppercase tracking-wider">
-                {isAmharic ? 'የአባላት አስተዳደር ሁኔታ' : 'Permit Status Breakdown'}
+              <h3 className="font-black text-sm sm:text-base text-on-surface  tracking-wider">
+                {isAmharic ? 'የአባላት ማህደር ስታቲስቲክስ' : 'Member Directory Statistics'}
               </h3>
             </div>
           </div>
@@ -111,7 +111,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
               className={`p-2 sm:p-3 rounded-lg ${card.bg} hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-tight text-on-surface truncate block group-hover:text-primary transition-colors">
+                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-primary transition-colors">
                   {card.label}
                 </span>
               </div>

@@ -1555,7 +1555,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
             {/* GROUP 1: OVERVIEW */}
             <div>
               {!isCollapsed ? (
-                <p className="text-[10.5px] font-semibold text-[#8A99AD] uppercase tracking-wider px-2.5 mb-1 flex items-center gap-1.5">
+                <p className="text-[10.5px] font-semibold text-[#8A99AD]  tracking-wider px-2.5 mb-1 flex items-center gap-1.5">
                   <Icon className="material-symbols-outlined text-[13px] shrink-0">dashboard</Icon>
                   <span>{isAmharic ? 'ዋና ማውጫ' : 'Menu'}</span>
                 </p>
@@ -1589,7 +1589,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => toggleGroup('registrations')}
-                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
+                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold  tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                   isCollapsed ? 'justify-center p-2' : 'px-2.5 py-1.5'
                 }`}
                 title={isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}
@@ -1735,7 +1735,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => toggleGroup('verification')}
-                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
+                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold  tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                   isCollapsed ? 'justify-center p-2' : 'px-2.5 py-1.5'
                 }`}
                 title={isAmharic ? 'ቁጥጥር እና ፍተሻ' : 'Verification & Patrol'}
@@ -1827,7 +1827,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 <button
                   type="button"
                   onClick={() => toggleGroup('superadmin')}
-                  className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
+                  className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold  tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                     isCollapsed ? 'justify-center p-2' : 'px-2.5 py-1.5'
                   }`}
                   title={isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin'}
@@ -1908,7 +1908,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         }`}
                       >
                         <Icon className="material-symbols-outlined text-[15px] text-emerald-400 shrink-0">receipt_long</Icon>
-                        <span>{isAmharic ? 'የገቢዎች ማህደር' : 'Revenue Ledger'}</span>
+                        <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
                       </button>
                     </div>
                   </div>
@@ -1921,7 +1921,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => toggleGroup('settings')}
-                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold uppercase tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
+                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold  tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
                   isCollapsed ? 'justify-center p-2' : 'px-2.5 py-1.5'
                 }`}
                 title={isAmharic ? 'ቅንብሮችና ስርዓት' : 'System & Settings'}
@@ -2234,7 +2234,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
               {/* Mobile Main Navigation Links */}
               <div className="space-y-2">
-                <p className="text-[10px] font-extrabold text-yellow-400/80 uppercase tracking-wider px-1 mb-1">
+                <p className="text-[10px] font-extrabold text-yellow-400/80  tracking-wider px-1 mb-1">
                   {isAmharic ? 'ዋና ክፍሎች' : 'Navigation Pages'}
                 </p>
 
@@ -2265,7 +2265,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleGroup('registrations')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[40px] rounded-lg bg-white/5 border border-white/10 text-xs font-black uppercase text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
+                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[40px] rounded-lg bg-white/5 border border-white/10 text-xs font-black  text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-2.5">
                       <Icon className="material-symbols-outlined text-[18px] text-yellow-400">assignment</Icon>
@@ -2446,7 +2446,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleGroup('verification')}
-                    className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-white/5 border border-white/10 text-xs font-black uppercase text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
+                    className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-white/5 border border-white/10 text-xs font-black  text-yellow-400 hover:bg-white/15 active:scale-[0.98] transition-all cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-2">
                       <Icon className="material-symbols-outlined text-[18px] text-yellow-400">security</Icon>
@@ -2555,7 +2555,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     <button
                       type="button"
                       onClick={() => toggleGroup('superadmin')}
-                      className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-purple-950/40 border border-purple-500/30 text-xs font-black uppercase text-amber-300 hover:bg-purple-900/40 active:scale-[0.98] transition-all cursor-pointer select-none"
+                      className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-purple-950/40 border border-purple-500/30 text-xs font-black  text-amber-300 hover:bg-purple-900/40 active:scale-[0.98] transition-all cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-2">
                         <Icon className="material-symbols-outlined text-[18px] text-amber-300">admin_panel_settings</Icon>
@@ -2659,7 +2659,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           >
                             <div className="flex items-center gap-2">
                               <Icon className="material-symbols-outlined text-[18px] text-emerald-400">receipt_long</Icon>
-                              <span>{isAmharic ? 'የገቢዎች ማህደር' : 'Revenue Ledger'}</span>
+                              <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
                             </div>
                             <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
                           </button>
@@ -2696,7 +2696,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
               {/* Drawer Bottom Actions */}
               <div className="space-y-2 pt-2 border-t border-white/15">
-                <p className="text-[10px] font-extrabold text-yellow-400/80 uppercase tracking-wider px-1">
+                <p className="text-[10px] font-extrabold text-yellow-400/80  tracking-wider px-1">
                   {isAmharic ? 'የስርዓት ማስተካከያ' : 'System Preferences'}
                 </p>
 
@@ -2881,7 +2881,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {/* Municipal Calendar Header */}
                   <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-slate-700 space-y-1 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                      <span className="text-[10px] font-extrabold text-slate-300  tracking-wider flex items-center gap-1">
                         <Icon className="material-symbols-outlined text-[14px]">event</Icon>
                         {isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian National Calendar'}
                       </span>
@@ -3013,7 +3013,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {/* Role Switcher in Dropdown */}
                   {onSwitchRole && (
                     <div className="px-3 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] space-y-1">
-                      <p className="text-[10px] font-bold uppercase text-[#8A99AD] tracking-wider">
+                      <p className="text-[10px] font-bold  text-[#8A99AD] tracking-wider">
                         {isAmharic ? 'ሚና ቀይር' : 'Switch Role'}
                       </p>
                       <div className="grid grid-cols-2 gap-1">
@@ -3272,7 +3272,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 <div className="flex-1 min-w-0 pr-1 text-left">
                   {toast.title && (
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[11px] font-black tracking-wide uppercase opacity-90">
+                      <span className="text-[11px] font-black tracking-wide  opacity-90">
                         {toast.title}
                       </span>
                       {toast.tag && (
@@ -3337,7 +3337,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               </div>
               <div className="flex justify-between items-center text-on-surface font-bold">
                 <span className="text-outline">{isAmharic ? 'የስራ ሚና:' : 'System Role:'}</span>
-                <span className="uppercase text-[10px] tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 font-black">
+                <span className=" text-[10px] tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 font-black">
                   {userRole}
                 </span>
               </div>

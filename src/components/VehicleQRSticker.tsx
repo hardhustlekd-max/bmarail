@@ -127,7 +127,7 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
                   <div className="text-[12px] font-black tracking-tight mb-1 font-sans">
                     ባህር ዳር ሞተረኞች ማህበር
                   </div>
-                  <div className="text-[10px] font-extrabold tracking-tight text-black uppercase">
+                  <div className="text-[10px] font-extrabold tracking-tight text-black ">
                     BAHIRDAR MOTORIST ASSOCIATION
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
               <div className="bg-white text-center pb-3 pt-1 relative shrink-0">
                 
                 {/* Validity Label */}
-                <div className="text-[13px] font-extrabold tracking-wider text-slate-900 uppercase font-sans">
+                <div className="text-[13px] font-extrabold tracking-wider text-slate-900  font-sans">
                   VALID UNTIL: {expiryDateFormatted}
                 </div>
 

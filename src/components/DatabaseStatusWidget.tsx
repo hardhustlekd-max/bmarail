@@ -51,7 +51,7 @@ export const DatabaseStatusWidget: React.FC<DatabaseStatusWidgetProps> = ({ isAm
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-[11px] font-bold text-primary">
           <Icon name="database" size={16} />
-          <span className="tracking-tight uppercase">
+          <span className="tracking-tight ">
             Railway PostgreSQL
           </span>
         </div>
@@ -69,7 +69,7 @@ export const DatabaseStatusWidget: React.FC<DatabaseStatusWidgetProps> = ({ isAm
           <Icon name="hard_drive" size={15} className="text-emerald-600" />
           <span className="text-[10px] sm:text-[11px]">{isAmharic ? 'የዳታ አቀማመጥ' : 'Storage Engine'}</span>
         </span>
-        <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-tight text-emerald-700 dark:text-emerald-400">
+        <span className="text-[10px] sm:text-[11px] font-black  tracking-tight text-emerald-700 dark:text-emerald-400">
           PostgreSQL + Railway S3
         </span>
       </div>

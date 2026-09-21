@@ -482,7 +482,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
                       {/* Right Collapsible Toggle Button */}
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className={`hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                        <span className={`hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold  ${
                           log.permitStatus === 'printed' || log.permitStatus === 'approved'
                             ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
                             : 'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
@@ -511,7 +511,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         </div>
 
                         <div className="flex items-center justify-between md:justify-end gap-3 shrink-0 pt-1 md:pt-0">
-                          <span className={`sm:hidden px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                          <span className={`sm:hidden px-2 py-0.5 rounded-full text-[10px] font-extrabold  ${
                             log.permitStatus === 'printed' || log.permitStatus === 'approved'
                               ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
                               : 'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
@@ -621,7 +621,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                     Scanned At: <span className="font-mono font-bold">{selectedLogForDetails.scannedAt}</span>
                   </p>
                 </div>
-                <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold  ${
                   selectedLogForDetails.verificationStatus === 'verified'
                     ? 'bg-emerald-600 text-white'
                     : 'bg-amber-600 text-white'
@@ -654,7 +654,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                     <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
                   </div>
-                  <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-white text-[8px] font-black text-center py-0.5 tracking-wider uppercase">
+                  <span className="absolute bottom-0 inset-x-0 bg-primary/90 text-white text-[8px] font-black text-center py-0.5 tracking-wider ">
                     VERIFIED
                   </span>
                 </div>

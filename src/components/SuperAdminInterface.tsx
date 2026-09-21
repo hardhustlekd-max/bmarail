@@ -837,7 +837,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full table-auto text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                         <th className="py-4 px-4 font-medium">{isAmharic ? 'ተጠቃሚ' : 'User'}</th>
                         <th className="py-4 px-4 font-medium">{isAmharic ? 'የኢሜል አድራሻ' : 'Email Address'}</th>
                         <th className="py-4 px-3 font-medium">{isAmharic ? 'የመታወቂያ ቁጥር' : 'Badge ID'}</th>
@@ -889,7 +889,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             {/* Standalone Role */}
                             <td className="py-4 px-3 whitespace-nowrap">
                               <span
-                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium uppercase tracking-wider ${
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium  tracking-wider ${
                                   user.role === 'superadmin'
                                     ? 'bg-purple-500/10 text-purple-600 border border-purple-500/20'
                                     : user.role === 'admin'
@@ -1031,7 +1031,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                     {user.badgeId}
                                   </span>
                                   <span
-                                    className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                    className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-black  tracking-wider ${
                                       user.role === 'superadmin'
                                         ? 'bg-purple-100 text-purple-800'
                                         : user.role === 'admin'
@@ -1221,17 +1221,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     </div>
 
                     {/* Stats metrics */}
-                    <div className="grid grid-cols-3 gap-2 py-2 px-3 rounded-md bg-slate-50 dark:bg-slate-900/30 text-center">
+                    <div className="grid grid-cols-2 gap-2 py-2 px-3 rounded-md bg-slate-50 dark:bg-slate-900/30 text-center">
                       <div>
-                        <div className="text-[10px] text-outline font-bold uppercase tracking-wider">{isAmharic ? 'ጠቅላላ' : 'Total'}</div>
+                        <div className="text-[10px] text-outline font-bold  tracking-wider">{isAmharic ? 'ጠቅላላ' : 'Total'}</div>
                         <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{regCount}</div>
                       </div>
                       <div>
-                        <div className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-wider">{isAmharic ? 'በመጠባበቅ' : 'Pending'}</div>
-                        <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{pendingCount}</div>
-                      </div>
-                      <div>
-                        <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">{isAmharic ? 'የጸደቀ' : 'Approved'}</div>
+                        <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold  tracking-wider">{isAmharic ? 'የጸደቀ' : 'Approved'}</div>
                         <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{approvedCount}</div>
                       </div>
                     </div>
@@ -1368,7 +1364,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full table-auto text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                     <th className="py-4 px-4 font-medium">{isAmharic ? 'ጊዜ' : 'Timestamp'}</th>
                     <th className="py-4 px-3 font-medium">{isAmharic ? 'የፈጻሚ መታወቂያ' : 'Actor Badge ID'}</th>
                     <th className="py-4 px-3 font-medium">{isAmharic ? 'የፈጻሚ ሚና' : 'Actor Role'}</th>
@@ -1415,7 +1411,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         {/* Standalone Severity */}
                         <td className="py-4 px-4 whitespace-nowrap">
                           <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium uppercase ${
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-medium  ${
                               log.severity === 'critical'
                                 ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'
@@ -1454,34 +1450,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               {isAmharic ? 'የሚጠብቁትን ሁሉ በጅምላ አጽድቅ' : 'Bulk Approve Pending Permits'}
             </button>
           </div>
-
-          {/* Quick Master Summary */}
-          <div className="grid grid-cols-4 gap-1.5 sm:gap-3 pt-2">
-            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የሚጠብቁ' : 'Pending'}</div>
-              <div className="text-base sm:text-xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
-                {registrations.filter((r) => r.status === 'pending_approval').length}
-              </div>
-            </div>
-            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የጸደቁ' : 'Approved'}</div>
-              <div className="text-base sm:text-xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
-                {registrations.filter((r) => r.status === 'approved').length}
-              </div>
-            </div>
-            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የተከለከሉ' : 'Rejected'}</div>
-              <div className="text-base sm:text-xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
-                {registrations.filter((r) => r.status === 'rejected').length}
-              </div>
-            </div>
-            <div className="p-1.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-surface-container text-center min-w-0 overflow-hidden">
-              <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-tight text-outline truncate">{isAmharic ? 'የታተሙ' : 'Printed'}</div>
-              <div className="text-base sm:text-xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight">
-                {registrations.filter((r) => r.status === 'printed').length}
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
@@ -1513,45 +1481,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     : isAmharic ? 'አሁን ዳታቤዙን አድስ' : 'Resync Live Database'}
                 </span>
               </button>
-            </div>
-
-            {/* Live Health Indicators */}
-            <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
-                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ግንኙነት' : 'Cloud'}</span>
-                </div>
-                <div className="text-xs sm:text-base font-black text-emerald-600 truncate">
-                  {isAmharic ? 'የተገናኘ' : 'Live'}
-                </div>
-              </div>
-
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
-                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ሞተሮች' : 'Vehicles'}</span>
-                </div>
-                <div className="text-xs sm:text-base font-bold text-slate-700 dark:text-slate-300 truncate">
-                  {registrations.length}
-                </div>
-              </div>
-
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
-                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ተጠቃሚዎች' : 'Users'}</span>
-                </div>
-                <div className="text-xs sm:text-base font-bold text-slate-700 dark:text-slate-300 truncate">
-                  {users.length}
-                </div>
-              </div>
-
-              <div className="p-1.5 sm:p-3 rounded-lg bg-surface-container border border-outline-variant/60 min-w-0 overflow-hidden text-center">
-                <div className="text-[9px] sm:text-[11px] text-outline mb-0.5 sm:mb-1 truncate">
-                  <span className="font-extrabold uppercase tracking-tight truncate">{isAmharic ? 'ኦዲት' : 'Logs'}</span>
-                </div>
-                <div className="text-xs sm:text-base font-bold text-slate-700 dark:text-slate-300 truncate">
-                  {auditLogs.length}
-                </div>
-              </div>
             </div>
           </div>
 
@@ -1711,7 +1640,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             {/* Audit Logs Table (TailAdmin Design) */}
             <div className="rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] overflow-x-auto max-h-96 overflow-y-auto">
               <table className="w-full table-auto text-left text-xs border-collapse">
-                <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white uppercase font-semibold sticky top-0 z-10 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white  font-semibold sticky top-0 z-10 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                   <tr>
                     <th className="py-3.5 px-4 font-medium">{isAmharic ? 'ቀንና ሰዓት' : 'Timestamp'}</th>
                     <th className="py-3.5 px-3 font-medium">{isAmharic ? 'የፈጻሚ መታወቂያ' : 'Actor Badge'}</th>
@@ -1765,7 +1694,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         {/* Standalone Severity */}
                         <td className="py-3.5 px-3 whitespace-nowrap">
                           <span
-                            className={`px-2.5 py-1 rounded-sm text-xs font-medium uppercase inline-block ${
+                            className={`px-2.5 py-1 rounded-sm text-xs font-medium  inline-block ${
                               log.severity === 'critical'
                                 ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'
@@ -1854,7 +1783,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   >
                     {/* Active Ribbon */}
                     {isSelected && (
-                      <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-black uppercase px-3 py-0.5 rounded-bl-lg flex items-center gap-1 shadow-xs">
+                      <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-black  px-3 py-0.5 rounded-bl-lg flex items-center gap-1 shadow-xs">
                         <Icon className="material-symbols-outlined text-[12px]">check_circle</Icon>
                         <span>{isAmharic ? 'ተመርጧል' : 'ACTIVE'}</span>
                       </div>
@@ -1873,7 +1802,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               ባህር ዳር ሞተረኞች ማህበር
                             </span>
                           </div>
-                          <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-white/20 text-white uppercase">
+                          <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-white/20 text-white ">
                             ✓ VERIFIED
                           </span>
                         </div>
@@ -2388,7 +2317,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       ? isAmharic ? 'ሪሴት ወይም RESET' : 'RESET'
                       : isAmharic ? 'አጥፋ ወይም PURGE' : 'PURGE'
                   }
-                  className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-hidden focus:border-red-500 uppercase"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-hidden focus:border-red-500 "
                 />
               </div>
             )}

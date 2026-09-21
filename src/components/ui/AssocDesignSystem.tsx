@@ -587,7 +587,7 @@ export const FocusDetailPane: React.FC<DetailPaneProps> = ({
     <hr className="border-t border-slate-200 dark:border-slate-800" />
 
     <div>
-      <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2.5">
+      <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400  tracking-wider mb-2.5">
         {historyTitle}
       </h4>
       <ul className="flex flex-col gap-2">

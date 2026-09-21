@@ -374,7 +374,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 <div className="flex items-center gap-2">
                   <Icon className="material-symbols-outlined text-[18px] text-primary">badge</Icon>
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400  tracking-wider block">
                       {isAmharic ? 'የአባል ቋሚ መለያ ቁጥር (Member ID)' : 'Permanent Member ID'}
                     </span>
                     <span className="font-mono font-black text-sm text-slate-900 dark:text-white">
@@ -510,7 +510,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     placeholder="e.g. 3-A12345 ወይም 2-54321"
                     value={plateNumber}
                     onChange={(e) => setPlateNumber(e.target.value)}
-                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-yellow-400 font-mono font-black text-xs sm:text-sm uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-yellow-400 font-mono font-black text-xs sm:text-sm  focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   />
                 </div>
               </div>
@@ -575,7 +575,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                         setEngineOrSerialNo(e.target.value.toUpperCase());
                       }
                     }}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold  focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   />
                 </div>
 
@@ -589,7 +589,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     placeholder="e.g. 152FMH-1234567"
                     value={engineOrSerialNo === 'N/A' ? '' : engineOrSerialNo}
                     onChange={(e) => setEngineOrSerialNo(e.target.value.toUpperCase())}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold uppercase focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold  focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
                   />
                 </div>
               </div>

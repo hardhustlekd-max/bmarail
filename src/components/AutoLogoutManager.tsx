@@ -339,7 +339,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                     schedule
                   </Icon>
                   <div className="text-left">
-                    <span className="text-[10px] font-extrabold uppercase text-outline dark:text-slate-400 block tracking-wider">
+                    <span className="text-[10px] font-extrabold  text-outline dark:text-slate-400 block tracking-wider">
                       {isAmharic ? 'የቀረው ጊዜ (Countdown)' : 'Automatic Logout In'}
                     </span>
                     <span className="text-2xl sm:text-3xl font-black text-on-surface dark:text-white tabular-nums tracking-tight">

@@ -985,7 +985,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] min-h-[360px] scrollbar-thin">
               <table className="w-full text-left border-collapse">
                 <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
-                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                     <th className="py-2.5 px-3 text-center min-w-[75px] align-middle font-medium">
                       <div className="flex items-center justify-center gap-1.5">
                         <label
@@ -998,7 +998,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             onChange={toggleSelectAllPage}
                             className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer"
                           />
-                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white uppercase">
+                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white ">
                             {isAmharic ? 'ሁሉም' : 'All'}
                           </span>
                         </label>
@@ -1217,7 +1217,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     {/* Action Buttons Toolbar - Clean, Non-Competing Layout */}
                                     <div className="pt-2 pb-1 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex flex-wrap items-center justify-between gap-3">
                                       <div className="flex items-center gap-2">
-                                        <span className="font-bold text-xs text-[#1C2434] dark:text-white uppercase tracking-wider">
+                                        <span className="font-bold text-xs text-[#1C2434] dark:text-white  tracking-wider">
                                           {isAmharic ? 'የተግባር አዝራሮች:' : 'Actions:'}
                                         </span>
                                         {renderStatusBadge(reg.status)}
@@ -1885,7 +1885,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             {/* Core Data Grids */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2">
-                <h4 className="font-extrabold text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center gap-1.5">
+                <h4 className="font-extrabold text-xs text-slate-500  tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center gap-1.5">
                   <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">person</Icon>
                   <span>{isAmharic ? 'የባለቤት መረጃ' : 'Owner Information'}</span>
                 </h4>
@@ -1898,7 +1898,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               </div>
 
               <div className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2">
-                <h4 className="font-extrabold text-xs text-slate-500 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center gap-1.5">
+                <h4 className="font-extrabold text-xs text-slate-500  tracking-wider border-b border-slate-200 dark:border-slate-700 pb-1.5 flex items-center gap-1.5">
                   <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">electric_moped</Icon>
                   <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Specifications'}</span>
                 </h4>
@@ -1924,7 +1924,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               return (
                 <div className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2.5">
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
-                    <h4 className="font-extrabold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <h4 className="font-extrabold text-xs text-slate-700 dark:text-slate-300  tracking-wider flex items-center gap-1.5">
                       <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">receipt_long</Icon>
                       <span>{isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}</span>
                     </h4>
@@ -1997,7 +1997,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         {/* Desktop & Tablet Table (TailAdmin Design) */}
                         <div className="hidden sm:block overflow-x-auto rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434]">
                           <table className="w-full text-left text-xs">
-                            <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-xs font-semibold text-[#1C2434] dark:text-white uppercase border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                            <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-xs font-semibold text-[#1C2434] dark:text-white  border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                               <tr>
                                 <th className="px-3 py-2.5">#</th>
                                 <th className="px-3 py-2.5 font-medium">{isAmharic ? 'ደረሰኝ ቁጥር' : 'Receipt No'}</th>
@@ -2112,11 +2112,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     <div className="p-3 pt-0 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] space-y-2.5">
                                       <div className="grid grid-cols-2 gap-2 pt-2.5">
                                         <div>
-                                          <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
+                                          <span className="text-[9px] text-slate-400 font-extrabold  block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
                                           <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
                                         </div>
                                         <div>
-                                          <span className="text-[9px] text-slate-400 font-extrabold uppercase block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
+                                          <span className="text-[9px] text-slate-400 font-extrabold  block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
                                           <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
                                         </div>
                                       </div>
@@ -2761,13 +2761,13 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
                 </div>
-                <h4 className="font-extrabold text-xs tracking-wider text-slate-800 uppercase">
+                <h4 className="font-extrabold text-xs tracking-wider text-slate-800 ">
                   {isAmharic ? 'የአማራ ብሔራዊ ክልላዊ መንግሥት የባህር ዳር ከተማ አስተዳደር' : 'Amhara National Regional State Bahir Dar City Administration'}
                 </h4>
-                <h3 className="font-black text-sm tracking-wide text-slate-900 uppercase">
+                <h3 className="font-black text-sm tracking-wide text-slate-900 ">
                   {isAmharic ? 'የትራንስፖርትና ደንብ ማስከበር መምሪያ' : 'Transport & Enforcement Department'}
                 </h3>
-                <h2 className="font-extrabold text-base text-blue-900 uppercase">
+                <h2 className="font-extrabold text-base text-blue-900 ">
                   {isAmharic ? 'የባህር ዳር ሞተር አሽከርካሪዎች ማህበር — የአባላት ማህደር ሪፖርት' : 'Bahir Dar Motorist Association — Members Registry Report'}
                 </h2>
                 <div className="flex items-center justify-between text-[11px] text-slate-600 font-mono pt-2 border-t border-slate-300 mt-2">

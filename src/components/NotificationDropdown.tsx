@@ -203,7 +203,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                   {/* Content Block */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-1.5 flex-wrap">
-                      <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-black uppercase tracking-wider ${item.badgeBg} ${item.badgeText}`}>
+                      <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-black  tracking-wider ${item.badgeBg} ${item.badgeText}`}>
                         {item.badgeLabel}
                       </span>
                       {item.time && (
@@ -251,7 +251,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 {/* Nested Sub-items (Grouped Under Main Notification) */}
                 {hasSubItems && isExpanded && (
                   <div className="pl-11 pr-3.5 pb-2 pt-1 space-y-1.5 border-t border-[#F1F5F9] dark:border-[#2E3A47]/40 bg-slate-50/50 dark:bg-[#1A2232]/50">
-                    <div className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                    <div className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500  tracking-wider mb-1">
                       {isAmharic ? 'የተካተቱ ማመልከቻዎችና ሪፖርቶች:' : 'Nested Submissions & Items:'}
                     </div>
                     {item.subItems!.map((sub) => (

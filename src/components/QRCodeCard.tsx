@@ -152,14 +152,14 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               <h2 className="text-[12px] font-black text-white tracking-tight leading-tight">
                 ባህር ዳር ሞተረኞች ማህበር
               </h2>
-              <h1 className="text-[11.5px] font-black text-white tracking-wider uppercase leading-tight mt-0.5">
+              <h1 className="text-[11.5px] font-black text-white tracking-wider  leading-tight mt-0.5">
                 BAHIRDAR MOTORIST ASSOCIATION
               </h1>
 
               {/* Center Yellow Pill Badge */}
               <div className="mt-1 bg-[#EAB308] text-[#1e293b] px-5 py-0.5 rounded-full shadow-sm border border-yellow-300 flex flex-col items-center">
                 <span className="text-[11px] font-black leading-tight">የአባል መታወቂያ</span>
-                <span className="text-[9.5px] font-extrabold tracking-wider uppercase leading-tight">MEMBER ID CARD</span>
+                <span className="text-[9.5px] font-extrabold tracking-wider  leading-tight">MEMBER ID CARD</span>
               </div>
             </div>
 

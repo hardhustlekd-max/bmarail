@@ -113,7 +113,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
             <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none select-none z-0">
               <div className="w-[500px] h-[500px] rounded-full border-[16px] border-black flex items-center justify-center p-8">
                 <div className="w-full h-full rounded-full border-4 border-dashed border-black flex flex-col items-center justify-center text-center p-4 relative overflow-hidden">
-                  <span className="text-4xl font-black uppercase tracking-widest text-black">BAHIRDAR TRANSPORT</span>
+                  <span className="text-4xl font-black  tracking-widest text-black">BAHIRDAR TRANSPORT</span>
                   <span className="text-2xl font-bold mt-2 text-black">OFFICIAL PERMIT CERTIFICATE</span>
                 </div>
               </div>
@@ -125,10 +125,10 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
               {/* Top Banner with Permit Type Tag and QR Code on Top Right */}
               <div className="flex justify-between items-center border-b border-black pb-2">
                 <div className="flex items-center gap-2">
-                  <span className="border border-black px-2 py-0.5 text-[10px] font-bold uppercase bg-slate-100">
+                  <span className="border border-black px-2 py-0.5 text-[10px] font-bold  bg-slate-100">
                     [ኦፊሴላዊ ፈቃድ]
                   </span>
-                  <span className="font-bold text-xs uppercase tracking-wide">
+                  <span className="font-bold text-xs  tracking-wide">
                     የሞተር ሳይክል መንቀሳቀሻ ፈቃድ (ክፍል-ሀ)
                   </span>
                 </div>
@@ -150,7 +150,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                     <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
                   </div>
                 </div>
-                <h1 className="text-xs font-black text-black uppercase tracking-wider">
+                <h1 className="text-xs font-black text-black  tracking-wider">
                   ባህር ዳር ሞተረኞች ማህበር
                 </h1>
                 <h2 className="text-[11px] font-bold text-black tracking-wide">
@@ -162,11 +162,11 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
               </div>
 
               {/* Permit Title Banner */}
-              <div className="text-center py-1.5 border border-black bg-slate-100 uppercase tracking-widest font-black text-xs">
+              <div className="text-center py-1.5 border border-black bg-slate-100  tracking-widest font-black text-xs">
                 PERMIT IN RESPECT OF MOTORCYCLE MOVEMENT PERMIT
               </div>
 
-              <div className="text-center font-bold text-xs uppercase tracking-widest border-b border-black pb-1.5">
+              <div className="text-center font-bold text-xs  tracking-widest border-b border-black pb-1.5">
                 PART-A (ክፍል - ሀ)
               </div>
 
@@ -180,7 +180,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
                   <div className="col-span-5 font-black text-black text-[12px]">2. የባለቤቱ ሙሉ ስም (Name Of Holder)</div>
-                  <div className="col-span-7 font-black text-black text-[12px] uppercase tracking-wide">{name}</div>
+                  <div className="col-span-7 font-black text-black text-[12px]  tracking-wide">{name}</div>
                 </div>
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">

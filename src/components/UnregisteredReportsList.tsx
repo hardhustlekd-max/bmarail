@@ -318,7 +318,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full table-auto text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                     <th className="py-4 px-3 text-center w-12 font-medium">#</th>
                     <th className="py-4 px-3 text-center font-medium">{isAmharic ? 'ፎቶ' : 'Photo'}</th>
                     <th className="py-4 px-3 font-medium">{isAmharic ? 'የሪፖርት #' : 'Report ID'}</th>
@@ -480,7 +480,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
                       {rep.notes && (
                         <div className="p-2.5 bg-surface-container-low rounded-lg">
-                          <span className="text-[10px] font-bold text-secondary uppercase block mb-0.5">
+                          <span className="text-[10px] font-bold text-secondary  block mb-0.5">
                             {isAmharic ? 'ማስታወሻ:' : 'Notes:'}
                           </span>
                           <p className="text-xs text-on-surface leading-relaxed">{rep.notes}</p>
@@ -567,7 +567,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
               <div className="flex items-center gap-2.5">
                 <Icon className="material-symbols-outlined text-amber-600 text-[24px]">report_problem</Icon>
                 <div>
-                  <h3 className="font-black text-sm text-on-surface uppercase tracking-wider">
+                  <h3 className="font-black text-sm text-on-surface  tracking-wider">
                     {isAmharic ? 'የባልተመዘገበ ተሽከርካሪ ሪፖርት ዝርዝር' : 'Unregistered Vehicle Report Details'}
                   </h3>
                   <p className="text-[11px] text-secondary font-mono">{selectedReport.id}</p>
@@ -585,23 +585,23 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             {/* Modal Content Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</p>
+                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</p>
                 <p className="font-mono font-black text-sm text-on-surface">{selectedReport.plateNumber || 'Unplated'}</p>
               </div>
 
               <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'የቻሲስ ቁጥር' : 'Chasis'}</p>
+                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የቻሲስ ቁጥር' : 'Chasis'}</p>
                 <p className="font-mono font-black text-sm text-on-surface">{selectedReport.chassisNumber || (selectedReport.engineOrSerialNo && selectedReport.engineOrSerialNo !== 'N/A' ? selectedReport.engineOrSerialNo : '') || selectedReport.engineOrSerialNo || '—'}</p>
               </div>
 
               <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'አሽከርካሪ / ስልክ' : 'Driver / Phone'}</p>
+                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'አሽከርካሪ / ስልክ' : 'Driver / Phone'}</p>
                 <p className="font-bold text-on-surface">{selectedReport.driverName || '—'}</p>
                 <p className="text-secondary">{selectedReport.driverPhone || '—'}</p>
               </div>
 
               <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'ክፍለ ከተማ / ቦታ' : 'Sub-City & Location'}</p>
+                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'ክፍለ ከተማ / ቦታ' : 'Sub-City & Location'}</p>
                 <p className="font-bold text-on-surface">{selectedReport.subCity}</p>
                 <p className="text-secondary">{selectedReport.locationName}</p>
               </div>
@@ -609,7 +609,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
             {/* Notes & Evidence Photo */}
             <div className="space-y-2">
-              <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'የኦፊሰር ማብራሪያ' : 'Officer Field Notes'}</p>
+              <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የኦፊሰር ማብራሪያ' : 'Officer Field Notes'}</p>
               <p className="p-3 rounded-lg bg-surface-container-low text-on-surface text-xs leading-relaxed font-medium border border-outline-variant/50">
                 {selectedReport.notes}
               </p>
@@ -617,7 +617,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
             {selectedReport.evidencePhoto && (
               <div className="space-y-1">
-                <p className="text-[10px] font-bold text-secondary uppercase">{isAmharic ? 'የማስረጃ ፎቶ' : 'Evidence Photo'}</p>
+                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የማስረጃ ፎቶ' : 'Evidence Photo'}</p>
                 <div
                   onClick={() => setZoomedImage({ url: selectedReport.evidencePhoto!, title: selectedReport.id })}
                   className="h-44 rounded-lg overflow-hidden border border-outline-variant bg-surface-container cursor-pointer group relative shadow-2xs"

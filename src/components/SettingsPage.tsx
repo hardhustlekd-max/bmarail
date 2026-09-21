@@ -203,7 +203,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
         <div className="flex items-center gap-2 shrink-0">
           <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold  tracking-wider ${
               userRole === 'superadmin'
                 ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800'
                 : userRole === 'admin'
@@ -269,7 +269,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 </div>
                 <div className="flex justify-between items-center py-1">
                   <span className="text-outline">{isAmharic ? 'የስራ ድርሻ' : 'Role Access'}:</span>
-                  <span className="font-bold uppercase tracking-wider text-on-surface">{userRole}</span>
+                  <span className="font-bold  tracking-wider text-on-surface">{userRole}</span>
                 </div>
               </div>
             </div>

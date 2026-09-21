@@ -1508,7 +1508,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           <span className="text-xs font-black text-purple-950 dark:text-purple-200">
                             {isAmharic ? 'ምስጢራዊ / ድብቅ ምዝገባ (Save as Hidden Registration)' : 'Save as Hidden Registration'}
                           </span>
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-bold  tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                             {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                           </span>
                         </div>
@@ -1693,7 +1693,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         placeholder={isAmharic ? 'የቻሲስ ቁጥር ያስገቡ...' : 'CHS-123456789'}
                         value={chassisNumber}
                         onChange={(e) => setChassisNumber(e.target.value.toUpperCase())}
-                        className="w-full bg-surface-container/70 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-on-surface dark:text-white uppercase focus:outline-hidden focus:border-blue-500"
+                        className="w-full bg-surface-container/70 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-lg p-2.5 text-xs font-mono font-bold text-on-surface dark:text-white  focus:outline-hidden focus:border-blue-500"
                       />
                     </div>
                   </div>
@@ -1737,7 +1737,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                               updateCombinedPlate(plateRegion, plateCode, plateDigits, 'electric', val);
                               if (plateNumberError) setPlateNumberError('');
                             }}
-                            className="w-full bg-transparent px-3 py-2.5 text-xs font-mono font-bold text-on-surface dark:text-white border-0 border-none outline-none ring-0 focus:ring-0 focus:outline-none uppercase"
+                            className="w-full bg-transparent px-3 py-2.5 text-xs font-mono font-bold text-on-surface dark:text-white border-0 border-none outline-none ring-0 focus:ring-0 focus:outline-none "
                           />
                         </div>
 
@@ -1831,7 +1831,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                                 updateCombinedPlate(plateRegion, plateCode, val);
                                 if (plateNumberError) setPlateNumberError('');
                               }}
-                              className={`w-full bg-surface-container/70 dark:bg-slate-800 border rounded-md p-2 sm:p-2.5 text-xs font-mono font-bold text-on-surface dark:text-white uppercase focus:outline-hidden focus:border-blue-500 ${
+                              className={`w-full bg-surface-container/70 dark:bg-slate-800 border rounded-md p-2 sm:p-2.5 text-xs font-mono font-bold text-on-surface dark:text-white  focus:outline-hidden focus:border-blue-500 ${
                                 plateNumberError ? 'border-red-500 ring-1 ring-red-500' : 'border-outline-variant dark:border-slate-700'
                               }`}
                             />
@@ -2006,7 +2006,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           <span>{isAmharic ? 'የደረሰኝ / ባንክ ማጣቀሻ ቁጥር' : 'Receipt / Bank Ref Number'}</span>
                           <span className="text-red-500">*</span>
                           {isReceiptVerified && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black  bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                               <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
                               <span>{isAmharic ? 'በባንክ የተረጋገጠ' : 'Bank Verified'}</span>
                             </span>
@@ -2106,7 +2106,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-950 dark:text-emerald-100'
                             : 'bg-amber-500/10 border-amber-500/40 text-amber-950 dark:text-amber-100'
                         }`}>
-                          <div className="flex items-center justify-between font-black uppercase text-[11px]">
+                          <div className="flex items-center justify-between font-black  text-[11px]">
                             <div className="flex items-center gap-1.5">
                               <Icon className="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">
                                 {chekiResult.verified ? 'check_circle' : 'warning'}
@@ -2123,17 +2123,17 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           {chekiResult.verified && (
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
                               <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20">
-                                <span className="text-[9px] text-slate-500 block uppercase font-bold">{isAmharic ? 'መጠን' : 'Amount'}</span>
+                                <span className="text-[9px] text-slate-500 block  font-bold">{isAmharic ? 'መጠን' : 'Amount'}</span>
                                 <span className="font-bold text-emerald-700 dark:text-emerald-300 font-mono">
                                   {chekiResult.amount ? `${chekiResult.amount}` : `${paymentAmount} ETB`}
                                 </span>
                               </div>
                               <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20">
-                                <span className="text-[9px] text-slate-500 block uppercase font-bold">{isAmharic ? 'ባንክ' : 'Bank'}</span>
+                                <span className="text-[9px] text-slate-500 block  font-bold">{isAmharic ? 'ባንክ' : 'Bank'}</span>
                                 <span className="font-bold truncate block">{chekiResult.bank || 'CBE / Telebirr'}</span>
                               </div>
                               <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20 col-span-2 sm:col-span-1">
-                                <span className="text-[9px] text-slate-500 block uppercase font-bold">{isAmharic ? 'ቀን' : 'Date'}</span>
+                                <span className="text-[9px] text-slate-500 block  font-bold">{isAmharic ? 'ቀን' : 'Date'}</span>
                                 <span className="font-mono text-[10px] truncate block">{chekiResult.date || chekiResult.transactionDate || 'Confirmed'}</span>
                               </div>
                             </div>
@@ -2368,7 +2368,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             <span className="text-xs font-black text-purple-950 dark:text-purple-200">
                               {isAmharic ? 'ይህ ምዝገባ በድብቅ (Hidden Registration) ይቀመጥ' : 'Save as Hidden Registration'}
                             </span>
-                            <span className="text-[10px] font-bold uppercase tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-bold  tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                               {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                             </span>
                           </div>

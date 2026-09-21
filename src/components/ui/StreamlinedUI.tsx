@@ -113,7 +113,7 @@ export const DataField = ({
   className?: string;
 }) => (
   <div className={`bg-surface-container/50 border border-outline-variant/50 p-3 rounded-lg flex flex-col justify-center min-h-[56px] ${className}`}>
-    <span className="text-secondary block text-[11px] font-bold uppercase tracking-wider">{label}</span>
+    <span className="text-secondary block text-[11px] font-bold  tracking-wider">{label}</span>
     <span
       className={`block mt-0.5 text-xs sm:text-sm truncate ${
         isMono ? 'font-mono font-extrabold tracking-wide' : 'font-bold'
@@ -137,7 +137,7 @@ export const FieldLabel = ({
 }) => (
   <label
     htmlFor={htmlFor}
-    className={`block text-xs font-bold text-on-surface mb-1.5 uppercase tracking-wide ${className}`}
+    className={`block text-xs font-bold text-on-surface mb-1.5  tracking-wide ${className}`}
   >
     <span>{children}</span>
     {required && <span className="text-rose-600 dark:text-rose-400 ml-1 font-black">*</span>}

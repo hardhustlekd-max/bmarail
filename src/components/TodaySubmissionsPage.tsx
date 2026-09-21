@@ -841,7 +841,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] min-h-[360px] scrollbar-thin">
             <table className="w-full table-auto text-left border-collapse">
               <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
-                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                   {canApproveBulk && (
                     <th className="py-2.5 px-3 text-center min-w-[100px] font-medium align-middle">
                       <div className="flex flex-col items-center justify-center gap-1">
@@ -855,7 +855,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             onChange={toggleSelectAll}
                             className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-[#3C50E0] focus:ring-[#3C50E0] cursor-pointer"
                           />
-                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white uppercase tracking-wider">
+                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white  tracking-wider">
                             {isAmharic ? 'ሁሉንም' : 'All'}
                           </span>
                         </label>
@@ -1073,7 +1073,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                 {/* Action Buttons Toolbar (Flattened, Unified Height) */}
                                 <div className="pt-2 pb-1 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex flex-wrap items-center justify-between gap-3">
                                   <div className="flex items-center gap-2">
-                                    <span className="font-bold text-xs text-[#1C2434] dark:text-white uppercase tracking-wider">
+                                    <span className="font-bold text-xs text-[#1C2434] dark:text-white  tracking-wider">
                                       {isAmharic ? 'የተግባር አዝራሮች:' : 'Actions:'}
                                     </span>
                                     {renderStatusBadge(reg.status, reg)}
@@ -1456,7 +1456,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
               {/* Section 1: Owner Info */}
               <div className="space-y-3">
-                <h4 className="text-xs font-black text-on-surface dark:text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
+                <h4 className="text-xs font-black text-on-surface dark:text-white  tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
                   <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">person</Icon>
                   <span>{isAmharic ? '1. የባለቤት መረጃ' : '1. Owner Information'}</span>
                 </h4>
@@ -1529,7 +1529,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
               {/* Section 2: Vehicle Info */}
               <div className="space-y-3 pt-2">
-                <h4 className="text-xs font-black text-on-surface dark:text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
+                <h4 className="text-xs font-black text-on-surface dark:text-white  tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
                   <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">two_wheeler</Icon>
                   <span>{isAmharic ? '2. የተሽከርካሪ መረጃ' : '2. Vehicle Information'}</span>
                 </h4>
@@ -1544,7 +1544,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       required
                       value={editPlateNumber}
                       onChange={(e) => setEditPlateNumber(e.target.value)}
-                      className="w-full bg-surface-container/70 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-md px-3.5 py-2 text-xs font-mono font-bold text-on-surface dark:text-white uppercase focus:outline-hidden focus:border-blue-500"
+                      className="w-full bg-surface-container/70 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-md px-3.5 py-2 text-xs font-mono font-bold text-on-surface dark:text-white  focus:outline-hidden focus:border-blue-500"
                     />
                   </div>
 
@@ -1557,7 +1557,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       required
                       value={editEngineNo}
                       onChange={(e) => setEditEngineNo(e.target.value)}
-                      className="w-full bg-surface-container/70 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-md px-3.5 py-2 text-xs font-mono font-bold text-on-surface dark:text-white uppercase focus:outline-hidden focus:border-blue-500"
+                      className="w-full bg-surface-container/70 dark:bg-slate-800 border border-outline-variant dark:border-slate-700 rounded-md px-3.5 py-2 text-xs font-mono font-bold text-on-surface dark:text-white  focus:outline-hidden focus:border-blue-500"
                     />
                   </div>
 
@@ -1601,7 +1601,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
               {/* Section 3: Document Attachments Preview & Upload */}
               <div className="space-y-3 pt-2">
-                <h4 className="text-xs font-black text-on-surface dark:text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
+                <h4 className="text-xs font-black text-on-surface dark:text-white  tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
                   <Icon className="material-symbols-outlined text-[16px] text-slate-700">attachment</Icon>
                   <span>{isAmharic ? '3. ሰነዶችና ፎቶዎች' : '3. Documents & Photos'}</span>
                 </h4>
@@ -1762,7 +1762,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
             {/* Selected Items List Preview */}
             <div className="bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm p-3 max-h-48 overflow-y-auto space-y-1.5">
-              <p className="text-[11px] font-bold text-[#1C2434] dark:text-white uppercase tracking-wider mb-2">
+              <p className="text-[11px] font-bold text-[#1C2434] dark:text-white  tracking-wider mb-2">
                 {isAmharic ? 'የተመረጡት ማመልከቻዎች ዝርዝር:' : 'Selected Submissions List:'}
               </p>
               {Array.from(selectedRegIds).map((id, idx) => {

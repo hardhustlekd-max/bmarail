@@ -36,7 +36,7 @@ const DataField: React.FC<{
 }> = ({ label, value, isMono = false, isPrimary = false, className = "" }) => {
   return (
     <div className={`p-2.5 rounded-md bg-surface-container border border-outline-variant/30 flex flex-col justify-center min-h-[54px] shadow-2xs ${className}`}>
-      <span className="text-[10px] uppercase tracking-wider text-secondary font-bold block mb-0.5">
+      <span className="text-[10px]  tracking-wider text-secondary font-bold block mb-0.5">
         {label}
       </span>
       <div className={`text-xs font-black truncate text-on-surface leading-tight ${isMono ? 'font-mono' : ''} ${isPrimary ? 'text-primary' : ''}`}>
@@ -1236,7 +1236,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {isAmharic ? 'ያልተፈቀደለት የሞተር ፈቃድ' : 'Motor Permit Status'}
                 </span>
               </div>
-              <div className="bg-red-200/60 dark:bg-red-900/60 text-red-900 dark:text-red-200 border border-red-300 dark:border-red-700 text-xs px-2.5 py-0.5 rounded-lg uppercase tracking-wider font-extrabold shadow-2xs">
+              <div className="bg-red-200/60 dark:bg-red-900/60 text-red-900 dark:text-red-200 border border-red-300 dark:border-red-700 text-xs px-2.5 py-0.5 rounded-lg  tracking-wider font-extrabold shadow-2xs">
                 {isAmharic ? 'ያልተመዘገበ' : 'UNREGISTERED'}
               </div>
             </div>

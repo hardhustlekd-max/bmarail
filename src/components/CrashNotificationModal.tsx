@@ -114,7 +114,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
           {/* Summary Box */}
           <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-xl p-3.5 sm:p-4">
             <div className="flex items-start justify-between gap-2 mb-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-200 dark:bg-rose-900 text-rose-900 dark:text-rose-200">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black  tracking-wider bg-rose-200 dark:bg-rose-900 text-rose-900 dark:text-rose-200">
                 <Icon className="material-symbols-outlined text-[13px]">bug_report</Icon>
                 {activeReport.type}
               </span>

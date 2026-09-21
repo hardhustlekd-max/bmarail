@@ -232,6 +232,32 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     initialFilter
   );
 
+  const currentDate = new Date();
+  const [selectedYear, setSelectedYear] = useState<string>(String(currentDate.getFullYear()));
+  const [selectedMonth, setSelectedMonth] = useState<string>(String(currentDate.getMonth() + 1));
+  const [dateRangeMode, setDateRangeMode] = useState<'current_month' | 'all' | 'custom'>('current_month');
+
+  const matchesDateFilter = (rc: PaymentReceipt) => {
+    if (dateRangeMode === 'all') return true;
+    const dateStr = rc.paymentDate || rc.createdAt || '';
+    if (!dateStr) return true;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return true;
+
+    const y = String(d.getFullYear());
+    const m = String(d.getMonth() + 1);
+
+    if (selectedYear !== 'all' && y !== selectedYear) return false;
+    if (dateRangeMode === 'current_month') {
+      const curY = String(currentDate.getFullYear());
+      const curM = String(currentDate.getMonth() + 1);
+      if (y !== curY || m !== curM) return false;
+    } else if (dateRangeMode === 'custom') {
+      if (selectedMonth !== 'all' && m !== selectedMonth) return false;
+    }
+    return true;
+  };
+
   // Handle typing or selecting Registration Number
   const handleRegNumberChange = (value: string) => {
     setRegNumber(value);
@@ -485,13 +511,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         (rc.ownerRegistrationId && rc.ownerRegistrationId.toLowerCase().includes(searchQuery.toLowerCase()));
 
       if (!matchesSearch) return false;
+      if (!matchesDateFilter(rc)) return false;
 
       if (statusFilter === 'all') return true;
 
       const { status } = getPaymentReceiptStatus(rc.expirationDate);
       return status === statusFilter;
     });
-  }, [paymentReceipts, searchQuery, statusFilter]);
+  }, [paymentReceipts, searchQuery, statusFilter, selectedYear, selectedMonth, dateRangeMode]);
 
   // KPI Metrics Summary
   const metrics = useMemo(() => {
@@ -499,8 +526,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     let expiringCount = 0;
     let expiredCount = 0;
     let totalRevenue = 0;
+    let count = 0;
 
     paymentReceipts.forEach((rc) => {
+      if (!matchesDateFilter(rc)) return;
+      count++;
       const { status } = getPaymentReceiptStatus(rc.expirationDate);
       if (status === 'active') activeCount++;
       else if (status === 'expiring_soon') expiringCount++;
@@ -511,13 +541,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     });
 
     return {
-      totalReceipts: paymentReceipts.length,
+      totalReceipts: count,
       activeCount,
       expiringCount,
       expiredCount,
       totalRevenue,
     };
-  }, [paymentReceipts]);
+  }, [paymentReceipts, selectedYear, selectedMonth, dateRangeMode]);
 
   if (isLoading) {
     return null;
@@ -532,7 +562,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <Icon className="material-symbols-outlined text-[18px] sm:text-[20px] text-slate-700 dark:text-slate-300 shrink-0">
               account_balance_wallet
             </Icon>
-            <span>{isAmharic ? 'የክፍያ ደረሰኝ & የሂሳብ መዝገብ' : 'Payment Receipts & Revenue Ledger'}</span>
+            <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
           </h2>
         </div>
 
@@ -558,6 +588,89 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <span>{isAmharic ? 'የደረሰኝ መመዝገቢያ ተገድቧል' : 'Receipt Entry Restricted'}</span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* DATE RANGE, MONTH SWITCHER & YEAR FILTER BAR */}
+      <div className="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+          <button
+            type="button"
+            onClick={() => setDateRangeMode('current_month')}
+            className={`px-2.5 py-1.5 rounded-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-center truncate ${
+              dateRangeMode === 'current_month'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+            }`}
+          >
+            {isAmharic ? 'አሁን ያለው' : 'Current'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setDateRangeMode('custom')}
+            className={`px-2.5 py-1.5 rounded-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-center truncate ${
+              dateRangeMode === 'custom'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+            }`}
+          >
+            {isAmharic ? 'ብጁ' : 'Custom'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setDateRangeMode('all')}
+            className={`px-2.5 py-1.5 rounded-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-center truncate ${
+              dateRangeMode === 'all'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+            }`}
+          >
+            {isAmharic ? 'ሁሉም' : 'All Time'}
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 justify-between sm:justify-end flex-wrap">
+          {(dateRangeMode === 'custom' || dateRangeMode === 'current_month') && (
+            <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
+              <span className="text-xs font-semibold text-slate-500 shrink-0">{isAmharic ? 'ወር:' : 'Month:'}</span>
+              <select
+                value={selectedMonth}
+                onChange={(e) => {
+                  setSelectedMonth(e.target.value);
+                  setDateRangeMode('custom');
+                }}
+                className="w-full sm:w-auto px-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              >
+                <option value="1">{isAmharic ? 'ጥር (Jan)' : 'January'}</option>
+                <option value="2">{isAmharic ? 'የካቲት (Feb)' : 'February'}</option>
+                <option value="3">{isAmharic ? 'መጋቢት (Mar)' : 'March'}</option>
+                <option value="4">{isAmharic ? 'ሚያዝያ (Apr)' : 'April'}</option>
+                <option value="5">{isAmharic ? 'ግንቦት (May)' : 'May'}</option>
+                <option value="6">{isAmharic ? 'ሰኔ (Jun)' : 'June'}</option>
+                <option value="7">{isAmharic ? 'ሐምሌ (Jul)' : 'July'}</option>
+                <option value="8">{isAmharic ? 'ነሐሴ (Aug)' : 'August'}</option>
+                <option value="9">{isAmharic ? 'መስከረም (Sep)' : 'September'}</option>
+                <option value="10">{isAmharic ? 'ጥቅምት (Oct)' : 'October'}</option>
+                <option value="11">{isAmharic ? 'ህዳር (Nov)' : 'November'}</option>
+                <option value="12">{isAmharic ? 'ታህሳስ (Dec)' : 'December'}</option>
+              </select>
+            </div>
+          )}
+
+          <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
+            <span className="text-xs font-semibold text-slate-500 shrink-0">{isAmharic ? 'ዓመት:' : 'Year:'}</span>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="w-full sm:w-auto px-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="all">{isAmharic ? 'ሁሉም' : 'All Years'}</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -614,7 +727,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">
                 add_card
               </Icon>
-              <h3 className="text-sm font-black text-slate-950 dark:text-white uppercase tracking-wider">
+              <h3 className="text-sm font-black text-slate-950 dark:text-white  tracking-wider">
                 {isAmharic ? 'አዲስ የወርሃዊ ክፍያ ደረሰኝ መመዝገቢያ ቅጽ' : 'New Monthly Payment Receipt Entry'}
               </h3>
             </div>
@@ -652,7 +765,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="space-y-3.5">
             {/* 1. Standalone Receipt / Bank Reference Number */}
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
+              <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
                 {isAmharic ? 'የደረሰኝ ቁጥር / የባንክ ማጣቀሻ ቁጥር' : 'Receipt # / Bank Reference'}
                 <span className="text-rose-600 ml-1">*</span>
               </label>
@@ -675,7 +788,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {/* Bank Selector and Verification Button */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
+                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
                   {isAmharic ? 'የባንክ ማረጋገጫ' : 'Bank System Check'}
                 </label>
                 <div className="flex gap-2">
@@ -733,7 +846,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
               {/* Payment Date Input */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide flex items-center justify-between">
+                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide flex items-center justify-between">
                   <span>{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
                   <span className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200">
                     {formatEthiopianDate(paymentDate, isAmharic ? 'am' : 'en')}
@@ -752,7 +865,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* ZERO-JUMP DYNAMIC FIELDS: Integrated read-only manifest strip directly below registration input */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide flex items-center justify-between">
+            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide flex items-center justify-between">
               <span>{isAmharic ? 'የምዝገባ ቁጥር፣ ሰሌዳ፣ ወይም ሞተር ቁጥር' : 'Registration ID, Plate #, or Engine #'}</span>
               {regNumber && (
                 <button
@@ -821,7 +934,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       person
                     </Icon>
                     <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300 uppercase leading-none">
+                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
                         {isAmharic ? 'የባለቤት ስም' : 'Owner Name'}
                       </span>
                       <span className="font-black text-slate-950 dark:text-white text-xs">
@@ -836,7 +949,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       numbers
                     </Icon>
                     <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300 uppercase leading-none">
+                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
                         {isAmharic ? 'ሰሌዳ ቁጥር' : 'Plate #'}
                       </span>
                       <span className="font-mono font-black text-slate-950 dark:text-white text-xs">
@@ -851,12 +964,12 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       verified_user
                     </Icon>
                     <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300 uppercase leading-none">
+                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
                         {isAmharic ? 'የሂሳብ ሁኔታ' : 'Ledger Status'}
                       </span>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
+                          className={`px-2 py-0.5 rounded text-[10px] font-black  tracking-wider ${
                             selectedRegInfo.termStatus === 'CURRENT'
                               ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-400'
                               : selectedRegInfo.termStatus === 'DUE'
@@ -885,7 +998,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       account_balance_wallet
                     </Icon>
                     <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300 uppercase leading-none">
+                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
                         {isAmharic ? 'ያልተከፈለ ዕዳ / ቀሪ' : 'Prior Balance / Debt'}
                       </span>
                       <span
@@ -912,7 +1025,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         : 'Auto-fetched manifest strip will display Name, Plate, Status, and Prior Balance.'}
                     </span>
                   </div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 shrink-0">
+                  <span className="text-[10px] font-extrabold  tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 shrink-0">
                     {isAmharic ? 'ዝግጁ' : 'Ready'}
                   </span>
                 </div>
@@ -924,7 +1037,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Amount */}
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
+              <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
                 {isAmharic ? 'የተከፈለው መጠን (ብር)' : 'Amount Paid (ETB)'}
               </label>
               <input
@@ -938,7 +1051,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
             {/* Calculated Expiration Date (1 Month Term) with Prominent Ethiopian Calendar */}
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wide flex items-center justify-between">
+              <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400  tracking-wide flex items-center justify-between">
                 <span className="flex items-center gap-1">
                   <Icon className="material-symbols-outlined text-[16px]">event_available</Icon>
                   <span>{isAmharic ? 'የ1 ወር ማብቂያ ቀን' : 'Calculated 1-Month Expiry (Eth)'}</span>
@@ -953,7 +1066,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 <span className="font-mono text-xs sm:text-sm">
                   {formatEthiopianDate(calculatedExpirationDate, isAmharic ? 'am' : 'en')}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-black bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100">
+                <span className="px-2 py-0.5 rounded text-[10px]  font-black bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100">
                   +1 {isAmharic ? 'ወር' : 'Month'}
                 </span>
               </div>
@@ -962,7 +1075,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* Screenshot Upload Dropzone */}
           <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
-            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
+            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
               {isAmharic ? 'የደረሰኝ ፎቶ ስቀል' : 'Receipt Screenshot Upload'}
             </label>
 
@@ -1017,7 +1130,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* Optional Notes */}
           <div className="space-y-1">
-            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
+            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
               {isAmharic ? 'ተጨማሪ ማብራሪያ' : 'Notes & Remarks'}
             </label>
             <textarea
@@ -1138,7 +1251,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full table-auto text-left border-collapse">
               <thead>
-                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs uppercase font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                   <th className="py-4 px-3 text-center w-12 font-medium">#</th>
                   <th className="py-4 px-4 font-medium">{isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt #'}</th>
                   <th className="py-4 px-4 font-medium">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
@@ -1427,7 +1540,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     {/* Details Grid: Ethiopian Calendar Primary */}
                     <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg text-xs border border-slate-200 dark:border-slate-700">
                       <div>
-                        <span className="block text-[10px] uppercase font-extrabold text-slate-700 dark:text-slate-300">
+                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
                           {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}
                         </span>
                         <span className="font-black text-slate-950 dark:text-white text-xs block">
@@ -1438,7 +1551,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </span>
                       </div>
                       <div>
-                        <span className="block text-[10px] uppercase font-extrabold text-slate-700 dark:text-slate-300">
+                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
                           {isAmharic ? 'የ1 ወር ማብቂያ' : 'Expiration Date'}
                         </span>
                         <span className="font-black text-emerald-800 dark:text-emerald-300 text-xs block">
@@ -1449,7 +1562,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </span>
                       </div>
                       <div>
-                        <span className="block text-[10px] uppercase font-extrabold text-slate-700 dark:text-slate-300">
+                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
                           {isAmharic ? 'መጠን' : 'Amount'}
                         </span>
                         <span className="font-black text-slate-950 dark:text-white font-mono">
@@ -1457,7 +1570,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </span>
                       </div>
                       <div>
-                        <span className="block text-[10px] uppercase font-extrabold text-slate-700 dark:text-slate-300">
+                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
                           {isAmharic ? 'መዝጋቢ' : 'Clerk'}
                         </span>
                         <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
@@ -1512,7 +1625,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <Icon className="material-symbols-outlined text-slate-300 text-[16px] sm:text-[18px] shrink-0">
                     compare_arrows
                   </Icon>
-                  <h3 className="text-sm sm:text-base font-black uppercase tracking-wide">
+                  <h3 className="text-sm sm:text-base font-black  tracking-wide">
                     {isAmharic ? 'የባንክ ማስታረቂያ & ደረሰኝ ማጣሪያ' : 'Bank Reconciliation & Audit Drawer'}
                   </h3>
                 </div>
@@ -1539,12 +1652,12 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400 shrink-0">
                       account_balance
                     </Icon>
-                    <span className="font-black text-slate-950 dark:text-white uppercase">
+                    <span className="font-black text-slate-950 dark:text-white ">
                       {isAmharic ? 'የባንክ ማጣቀሻ ማረጋገጫ' : 'Bank Reference Verification'}
                     </span>
                   </div>
                   {reconcileReceipt.verifiedByCheki && (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-400 flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black  bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-400 flex items-center gap-1">
                       <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
                       <span>Cheki Verified ({reconcileReceipt.chekiBank || 'Bank'})</span>
                     </span>
@@ -1555,7 +1668,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   {/* Bank Reference ID with Quick Copy */}
                   <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
                     <div>
-                      <span className="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300">
+                      <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
                         {isAmharic ? 'የማጣቀሻ ቁጥር' : 'Reference # (FT / Ref)'}
                       </span>
                       <span className="font-mono font-black text-slate-950 dark:text-white text-xs sm:text-sm">
@@ -1577,7 +1690,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   {/* Amount with Quick Copy */}
                   <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
                     <div>
-                      <span className="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300">
+                      <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
                         {isAmharic ? 'የተረጋገጠ መጠን' : 'Amount'}
                       </span>
                       <span className="font-mono font-black text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm">
@@ -1648,14 +1761,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400 shrink-0">
                     calendar_month
                   </Icon>
-                  <span className="font-black text-slate-950 dark:text-white uppercase">
+                  <span className="font-black text-slate-950 dark:text-white ">
                     {isAmharic ? 'የቀን አቆጣጠር ማጠቃለያ' : 'Dual-Calendar Timeline & Term Status'}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <span className="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300">
+                    <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
                       {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date (Ethiopian)'}
                     </span>
                     <span className="font-black text-slate-950 dark:text-white text-xs sm:text-sm block mt-0.5">
@@ -1669,7 +1782,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   </div>
 
                   <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <span className="block text-[10px] uppercase font-bold text-slate-700 dark:text-slate-300">
+                    <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
                       {isAmharic ? 'የ1 ወር ማብቂያ ቀን' : 'Expiration Date (Ethiopian)'}
                     </span>
                     <span className="font-black text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm block mt-0.5">
@@ -1693,7 +1806,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
               {/* HIGH-RES PROOF SCREENSHOT VIEWER */}
               <div className="space-y-2">
-                <span className="block text-xs font-black text-slate-950 dark:text-white uppercase">
+                <span className="block text-xs font-black text-slate-950 dark:text-white ">
                   {isAmharic ? 'የተያያዘ የክፍያ ማረጋገጫ ፎቶ' : 'Attached Receipt Proof Image'}
                 </span>
 
@@ -1743,7 +1856,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
             <div className="flex items-center gap-3 text-rose-600">
               <Icon className="material-symbols-outlined text-[28px]">warning</Icon>
-              <h3 className="text-base font-black uppercase tracking-wide">
+              <h3 className="text-base font-black  tracking-wide">
                 {isAmharic ? 'የክፍያ ደረሰኝ ሰርዝ?' : 'Delete Payment Receipt?'}
               </h3>
             </div>
