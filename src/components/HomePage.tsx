@@ -765,10 +765,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
             : `${pendingRegs.length} new motor registration applications submitted by clerks require manager verification and approval.`,
           type: 'pending_approval',
           icon: 'how_to_reg',
-          iconBg: 'bg-[#3C50E0]/15 text-[#3C50E0] dark:text-blue-400',
+          iconBg: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
           badgeLabel: isAmharic ? 'ማፅደቂያ' : 'Approval Needed',
-          badgeBg: 'bg-[#3C50E0]/20',
-          badgeText: 'text-[#3C50E0] dark:text-blue-300',
+          badgeBg: 'bg-slate-200 dark:bg-slate-700',
+          badgeText: 'text-slate-800 dark:text-slate-200',
           actionPage: 'tables',
           actionTab: 'pending',
           subItems: pendingRegs.map((reg) => ({
@@ -799,10 +799,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
           time: reg.registrationDate,
           type: 'pending_approval',
           icon: 'how_to_reg',
-          iconBg: 'bg-[#3C50E0]/15 text-[#3C50E0] dark:text-blue-400',
+          iconBg: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
           badgeLabel: isAmharic ? 'ማፅደቂያ' : 'Approval Needed',
-          badgeBg: 'bg-[#3C50E0]/20',
-          badgeText: 'text-[#3C50E0] dark:text-blue-300',
+          badgeBg: 'bg-slate-200 dark:bg-slate-700',
+          badgeText: 'text-slate-800 dark:text-slate-200',
           actionPage: (reg.isCorrection || reg.lastRejectionReason) ? 'today_submissions_adjust' : 'tables',
           actionTab: 'pending',
         });
@@ -1112,10 +1112,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
           : `Assigned Patrol Sector: ${zoneAssigned} | Officer Status: Active Patrol`,
         type: 'info',
         icon: 'local_police',
-        iconBg: 'bg-[#3C50E0]/15 text-[#3C50E0] dark:text-blue-300',
+        iconBg: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
         badgeLabel: isAmharic ? 'የስራ ምድብ' : 'On Patrol Duty',
-        badgeBg: 'bg-[#3C50E0]/20',
-        badgeText: 'text-[#3C50E0] dark:text-blue-300',
+        badgeBg: 'bg-slate-200 dark:bg-slate-700',
+        badgeText: 'text-slate-800 dark:text-slate-200',
         actionPage: 'scan',
       });
 
@@ -1642,12 +1642,12 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   isCollapsed ? 'justify-center p-2' : 'gap-2 px-2.5 py-2'
                 } ${
                   activePage === 'dashboard'
-                    ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                    ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                     : 'text-[#DEE4EE] hover:text-white hover:bg-[#333A48]'
                 }`}
                 title={isAmharic ? 'ዋና ገፅ' : 'Dashboard'}
               >
-                <Icon className={`material-symbols-outlined text-[17px] shrink-0 ${activePage === 'dashboard' ? 'text-[#3C50E0]' : ''}`}>space_dashboard</Icon>
+                <Icon className={`material-symbols-outlined text-[17px] shrink-0 ${activePage === 'dashboard' ? 'text-slate-300' : ''}`}>space_dashboard</Icon>
                 {!isCollapsed && <span className="truncate">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>}
               </button>
             </div>
@@ -1667,7 +1667,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {!isCollapsed && <span className="truncate">{isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}</span>}
                 </div>
                 {!isCollapsed && (
-                  <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.registrations ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
+                  <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.registrations ? 'rotate-180 text-slate-300' : 'text-[#8A99AD]'}`}>
                     expand_more
                   </Icon>
                 )}
@@ -1684,7 +1684,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             onClick={() => setActivePage('forms')}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'forms'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                                 : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
@@ -1699,7 +1699,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             onClick={() => setActivePage('today_submissions_adjust')}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'today_submissions_adjust'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                                 : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
@@ -1714,7 +1714,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             onClick={() => setActivePage('tables')}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'tables'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                                 : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
@@ -1732,7 +1732,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             }}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'tables'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                                 : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
@@ -1749,7 +1749,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             onClick={() => setActivePage('forms')}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'forms'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                                 : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
@@ -1764,7 +1764,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             onClick={() => setActivePage('today_submissions_adjust')}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'today_submissions_adjust'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                                 : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
@@ -1783,7 +1783,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             onClick={() => setActivePage('tables')}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                               activePage === 'tables'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                                 : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                             }`}
                           >
@@ -1813,7 +1813,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {!isCollapsed && <span className="truncate">{isAmharic ? 'ቁጥጥር እና ፍተሻ' : 'Verification & Patrol'}</span>}
                 </div>
                 {!isCollapsed && (
-                  <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.verification ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
+                  <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.verification ? 'rotate-180 text-slate-300' : 'text-[#8A99AD]'}`}>
                     expand_more
                   </Icon>
                 )}
@@ -1828,7 +1828,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('scan')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'scan'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1846,7 +1846,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         }}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'inspection_report'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1861,7 +1861,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('report_unregistered')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'report_unregistered'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1876,7 +1876,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('unregistered_list')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'unregistered_list'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1905,7 +1905,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     {!isCollapsed && <span className="truncate">{isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin'}</span>}
                   </div>
                   {!isCollapsed && (
-                    <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.superadmin ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
+                    <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.superadmin ? 'rotate-180 text-slate-300' : 'text-[#8A99AD]'}`}>
                       expand_more
                     </Icon>
                   )}
@@ -1919,7 +1919,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('superadmin_users')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_users' || activePage === 'superadmin'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1932,7 +1932,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('superadmin_subcities')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_subcities'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1945,7 +1945,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('superadmin_permits')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_permits'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1958,7 +1958,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('superadmin_maintenance')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'superadmin_maintenance'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1971,7 +1971,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         onClick={() => setActivePage('payment_receipts')}
                         className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                           activePage === 'payment_receipts'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
@@ -1999,7 +1999,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {!isCollapsed && <span className="truncate">{isAmharic ? 'ቅንብሮችና ስርዓት' : 'System & Settings'}</span>}
                 </div>
                 {!isCollapsed && (
-                  <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.settings ? 'rotate-180 text-[#3C50E0]' : 'text-[#8A99AD]'}`}>
+                  <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.settings ? 'rotate-180 text-slate-300' : 'text-[#8A99AD]'}`}>
                     expand_more
                   </Icon>
                 )}
@@ -2016,7 +2016,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       }}
                       className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
                         activePage === 'settings'
-                          ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-[#3C50E0]'
+                          ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
                           : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                       }`}
                     >
@@ -2034,7 +2034,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
             <div className={`bg-[#24303F] border border-[#2E3A47] rounded-sm text-white shadow-xs transition-all flex items-center ${
               isCollapsed ? 'p-1 justify-center' : 'p-2 gap-2'
             }`}>
-              <div className="w-8 h-8 rounded-full bg-slate-700 border-2 border-[#3C50E0] shrink-0 overflow-hidden shadow-xs flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-600 shrink-0 overflow-hidden shadow-xs flex items-center justify-center">
                 <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
               </div>
               {!isCollapsed && (
@@ -2817,7 +2817,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
           {/* Animated Navbar Action Loading Progress Bar (Under top navbar) */}
           {actionLoadingState.isLoading && (
             <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-blue-100 dark:bg-slate-800 overflow-hidden z-50 pointer-events-none">
-              <div className="h-full bg-gradient-to-r from-[#3C50E0] via-amber-400 to-[#3C50E0] animate-navbar-progress rounded-full" />
+              <div className="h-full bg-gradient-to-r from-slate-700 via-amber-400 to-slate-700 animate-navbar-progress rounded-full" />
             </div>
           )}
 
@@ -2826,7 +2826,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
             <button
               type="button"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="w-8.5 h-8.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+              className="w-8.5 h-8.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
               title={isCollapsed ? (isAmharic ? 'ሳይድባር ዘርጋ' : 'Expand Sidebar') : (isAmharic ? 'ሳይድባር አሳንስ' : 'Collapse Sidebar')}
               aria-label="Toggle Sidebar"
             >
@@ -2854,11 +2854,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={onToggleLang}
-                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 select-none"
+                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 select-none"
                 title={isAmharic ? 'ወደ እንግሊዝኛ ቀይር' : 'Switch to Amharic'}
                 aria-label="Toggle Language"
               >
-                <Icon className="material-symbols-outlined text-[16px] text-[#3C50E0]">translate</Icon>
+                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300">translate</Icon>
                 <span className="font-bold">{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
               </button>
             )}
@@ -2868,7 +2868,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={onToggleTheme}
-                className="w-8.5 h-8.5 rounded-full border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 select-none"
+                className="w-8.5 h-8.5 rounded-full border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 select-none"
                 title={currentTheme === 'dark' ? (isAmharic ? 'ወደ ብርሃን ገጽታ ቀይር' : 'Switch to Light Mode') : (isAmharic ? 'ወደ ጨለማ ገጽታ ቀይር' : 'Switch to Dark Mode')}
                 aria-label="Toggle Dark Mode"
               >
@@ -2885,8 +2885,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                 className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center transition-all cursor-pointer relative shadow-xs ${
                   isNotificationOpen
-                    ? 'border-[#3C50E0] bg-[#3C50E0] text-white'
-                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#3C50E0] dark:hover:text-white'
+                    ? 'border-slate-800 bg-slate-800 text-white'
+                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white'
                 }`}
                 title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                 aria-label="Notifications"
@@ -2927,7 +2927,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all shadow-xs select-none hover:border-[#3C50E0]"
+                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all shadow-xs select-none hover:border-slate-700"
                 title={isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian Calendar'}
               >
                 <Icon className="material-symbols-outlined text-amber-500 text-[17px]">calendar_month</Icon>
@@ -2947,13 +2947,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Municipal Calendar Header */}
-                  <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-[#3C50E0] space-y-1 shadow-xs">
+                  <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-slate-700 space-y-1 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold text-[#3C50E0] dark:text-[#6574F5] uppercase tracking-wider flex items-center gap-1">
+                      <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-1">
                         <Icon className="material-symbols-outlined text-[14px]">event</Icon>
                         {isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian National Calendar'}
                       </span>
-                      <span className="text-[11px] font-black bg-[#3C50E0]/20 text-[#6574F5] px-2 py-0.5 rounded">
+                      <span className="text-[11px] font-black bg-slate-700 text-slate-200 px-2 py-0.5 rounded">
                         {ethDate.weekdayAm} ({ethDate.weekdayEn})
                       </span>
                     </div>
@@ -2971,7 +2971,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
                         {isAmharic ? 'መደበኛ ሰዓት' : 'Standard Time'}
                       </span>
-                      <span className="font-mono font-black text-xs text-[#3C50E0] flex items-center gap-1 mt-0.5">
+                      <span className="font-mono font-black text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
                         <Icon className="material-symbols-outlined text-[14px] text-amber-500">schedule</Icon>
                         {isAmharic ? ethDate.timeAm : ethDate.timeEn}
                       </span>
@@ -2998,7 +2998,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         {isAmharic ? ethDate.formattedAm : ethDate.formattedEn}
                       </span>
                     </div>
-                    <span className="text-xs font-mono font-extrabold text-[#3C50E0] bg-[#3C50E0]/10 border border-[#3C50E0]/30 px-2 py-1 rounded-sm">
+                    <span className="text-xs font-mono font-extrabold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-1 rounded-sm">
                       GMT+3
                     </span>
                   </div>
@@ -3009,7 +3009,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <span className="text-xs font-extrabold text-[#1C2434] dark:text-white">
                         {isAmharic ? `የወሩ ቀናት (${ethDate.monthNameAm})` : `Days of ${ethDate.monthNameEn}`}
                       </span>
-                      <span className="text-xs font-extrabold text-[#3C50E0] bg-[#3C50E0]/10 border border-[#3C50E0]/30 px-2 py-0.5 rounded-sm">
+                      <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded-sm">
                         {isAmharic ? 'ዛሬ: ' + ethDate.day : 'Today: ' + ethDate.day}
                       </span>
                     </div>
@@ -3024,7 +3024,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           key={d}
                           className={`py-1 rounded-sm font-mono font-bold text-xs ${
                             d === ethDate.day
-                              ? 'bg-[#3C50E0] text-white font-black shadow-xs'
+                              ? 'bg-slate-800 dark:bg-slate-700 text-white font-black shadow-xs'
                               : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
                           }`}
                         >
@@ -3053,9 +3053,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
               <button
                 type="button"
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                className="h-8.5 px-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:border-[#3C50E0] flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                className="h-8.5 px-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:border-slate-700 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
               >
-                <div className="w-6 h-6 rounded-full bg-[#1C2434] border border-[#3C50E0] text-white flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="w-6 h-6 rounded-full bg-[#1C2434] border border-slate-600 text-white flex items-center justify-center shrink-0 overflow-hidden">
                   <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="text-left hidden sm:block">
@@ -3095,7 +3095,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             }}
                             className={`px-2 py-1 rounded-sm text-[11px] font-medium capitalize text-left transition-all ${
                               userRole === r
-                                ? 'bg-[#3C50E0] text-white font-semibold'
+                                ? 'bg-slate-800 dark:bg-slate-700 text-white font-semibold'
                                 : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
                             }`}
                           >

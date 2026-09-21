@@ -63,8 +63,8 @@ html {
 }
 
 :root, html.light {
-  --color-primary: #3C50E0;
-  --color-primary-hover: #2C3EC2;
+  --color-primary: #1E293B;
+  --color-primary-hover: #0F172A;
   --color-primary-container: #F1F5F9;
   --color-primary-light: #F1F5F9;
   --color-secondary-container: #F1F5F9;
@@ -82,7 +82,7 @@ html {
   --color-secondary: #64748B;
   --color-outline: #94A3B8;
   --color-outline-variant: #E2E8F0;
-  --color-brand-indigo: #3C50E0;
+  --color-brand-indigo: #1E293B;
   --color-topnav: #ffffff;
   --color-topnav-hover: #F8F9FA;
   --color-topnav-dark: #24303F;
@@ -94,8 +94,8 @@ html {
 }
 
 html.dark {
-  --color-primary: #3C50E0;
-  --color-primary-hover: #5A6BE8;
+  --color-primary: #334155;
+  --color-primary-hover: #475569;
   --color-primary-container: #24303F;
   --color-primary-light: #1A222C;
   --color-secondary-container: #24303F;
@@ -113,7 +113,7 @@ html.dark {
   --color-secondary: #8A99AD;
   --color-outline: #64748B;
   --color-outline-variant: #2E3A47;
-  --color-brand-indigo: #3C50E0;
+  --color-brand-indigo: #334155;
   --color-topnav: #24303F;
   --color-topnav-hover: #1A222C;
   --color-topnav-dark: #1A222C;
@@ -166,7 +166,7 @@ html.dark {
   --color-tailadmin-hover: #333A48;
   --color-tailadmin-text: #DEE4EE;
   --color-tailadmin-muted: #8A99AD;
-  --color-tailadmin-primary: #3C50E0;
+  --color-tailadmin-primary: #1E293B;
 
   /* Page & Section Palette Overrides */
   --color-slate-50: #F8F9FA;
