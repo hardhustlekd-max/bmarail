@@ -1791,6 +1791,21 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables'}</span>
                           </button>
                         )}
+
+                        {userRole !== 'officer' && (
+                          <button
+                            type="button"
+                            onClick={() => setActivePage('payment_receipts')}
+                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
+                              activePage === 'payment_receipts'
+                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
+                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
+                            }`}
+                          >
+                            <Icon className="material-symbols-outlined text-[16px] text-emerald-400 shrink-0">receipt_long</Icon>
+                            <span>{isAmharic ? 'የገቢዎች ማህደር' : 'Revenue Ledger'}</span>
+                          </button>
+                        )}
                       </>
                     )}
                   </div>

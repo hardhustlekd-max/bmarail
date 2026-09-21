@@ -77,13 +77,15 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
   const [engineOrSerialNo, setEngineOrSerialNo] = useState('');
   const [chassisNumber, setChassisNumber] = useState('');
 
-  // Documents
+  // Documents & Payment Receipt
   const [userPortraitPhoto, setUserPortraitPhoto] = useState('');
   const [nationalIdPhoto, setNationalIdPhoto] = useState('');
   const [nationalIdBackPhoto, setNationalIdBackPhoto] = useState('');
   const [drivingLicensePhoto, setDrivingLicensePhoto] = useState('');
   const [drivingPermitPhoto, setDrivingPermitPhoto] = useState('');
   const [receiptScreenshot, setReceiptScreenshot] = useState('');
+  const [receiptNumber, setReceiptNumber] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState('');
 
   // Admin / Status
   const [status, setStatus] = useState<'pending_approval' | 'approved' | 'rejected' | 'ordered_print' | 'printed'>('approved');
@@ -127,6 +129,8 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
       setDrivingLicensePhoto(registration.drivingLicensePhoto || '');
       setDrivingPermitPhoto(registration.drivingPermitPhoto || '');
       setReceiptScreenshot(registration.receiptScreenshot || '');
+      setReceiptNumber(registration.receiptNumber || '');
+      setPaymentAmount(registration.paymentAmount ? String(registration.paymentAmount) : '');
 
       setStatus(registration.status || 'approved');
       setRejectionReason(registration.rejectionReason || '');
@@ -194,6 +198,8 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         drivingLicensePhoto: drivingLicensePhoto || undefined,
         drivingPermitPhoto: drivingPermitPhoto || undefined,
         receiptScreenshot: receiptScreenshot || undefined,
+        receiptNumber: receiptNumber.trim() || undefined,
+        paymentAmount: paymentAmount.trim() || undefined,
         status,
         rejectionReason: status === 'rejected' ? rejectionReason.trim() : undefined,
         hideFromOtherUsers: isSuperAdmin ? hideFromOtherUsers : registration.hideFromOtherUsers,
@@ -648,11 +654,41 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
                 <DocumentUploadInput
                   id="edit-receipt-input"
-                  label={isAmharic ? 'የባንክ ደረሰኝ' : 'Bank Receipt Slip'}
+                  label={isAmharic ? 'የባንክ ደረሰኝ (Receipt Photo)' : 'Bank Receipt Slip'}
                   photoUrl={receiptScreenshot}
                   onPhotoChange={setReceiptScreenshot}
                   isAmharic={isAmharic}
                 />
+              </div>
+
+              {/* Bank Receipt Fields */}
+              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
+                    {isAmharic ? 'የደረሰኝ ቁጥር (Receipt No.)' : 'Receipt Number'}
+                  </label>
+                  <input
+                    type="text"
+                    disabled={!canEdit}
+                    placeholder="e.g. CBE-82910392"
+                    value={receiptNumber}
+                    onChange={(e) => setReceiptNumber(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
+                    {isAmharic ? 'የተከፈለ ገንዘብ መጠን (Amount - ETB)' : 'Payment Amount (ETB)'}
+                  </label>
+                  <input
+                    type="text"
+                    disabled={!canEdit}
+                    placeholder="e.g. 500"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                  />
+                </div>
               </div>
             </div>
           )}
