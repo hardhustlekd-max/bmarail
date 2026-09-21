@@ -326,8 +326,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       });
     }
 
-    // Task 10 or 16: Payment Receipts Entry
-    if (isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16)) {
+    // Task 10, 16, or 17: Payment Receipts Entry, Ledger, or Financial KPIs
+    if (isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) {
       roleActions.push({
         key: 'payment_receipts',
         title: isAmharic ? 'የክፍያ ደረሰኝ መዝግብ' : 'Add Payment Receipts',
@@ -631,8 +631,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
 
-      {/* FINANCIAL & REVENUE METRICS (VISIBLE WHEN PAYMENT / REVENUE LEDGER TASK IS VIEWABLE) */}
-      {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16)) && (
+      {/* FINANCIAL & REVENUE METRICS (VISIBLE WHEN PAYMENT / REVENUE LEDGER / KPIS TASK IS VIEWABLE) */}
+      {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
         <div className="p-4 sm:p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
                 <div className="flex items-center gap-2.5">

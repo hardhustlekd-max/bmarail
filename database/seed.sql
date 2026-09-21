@@ -85,7 +85,8 @@ INSERT INTO system_settings (
     show_clerk_payment_records_table,
     clerk_payment_kpi_permission,
     clerk_payment_table_permission,
-    frozen_sub_cities
+    frozen_sub_cities,
+    role_permissions
 )
 VALUES (
     'global_config',
@@ -110,7 +111,8 @@ VALUES (
     FALSE,
     'allow',
     'allow',
-    '{}'::jsonb
+    '{}'::jsonb,
+    '{"role-secretary":{"1":"allow","2":"allow","3":"allow","4":"allow","5":"view_only","6":"view_only","7":"view_only","8":"view_only","9":"deny","10":"allow","17":"allow","16":"allow","11":"deny","12":"deny","13":"deny","14":"deny","15":"deny"},"role-officer":{"1":"deny","2":"deny","3":"view_only","4":"view_only","5":"allow","6":"allow","7":"allow","8":"allow","9":"deny","10":"deny","17":"deny","16":"deny","11":"deny","12":"deny","13":"deny","14":"deny","15":"deny"},"role-manager":{"1":"allow","2":"allow","3":"allow","4":"allow","5":"allow","6":"allow","7":"allow","8":"allow","9":"allow","10":"allow","17":"allow","16":"allow","11":"view_only","12":"view_only","13":"view_only","14":"deny","15":"view_only"},"role-it":{"1":"view_only","2":"view_only","3":"view_only","4":"view_only","5":"allow","6":"view_only","7":"view_only","8":"view_only","9":"allow","10":"allow","17":"allow","16":"allow","11":"allow","12":"allow","13":"allow","14":"allow","15":"allow"},"role-superadmin":{"1":"allow","2":"allow","3":"allow","4":"allow","5":"allow","6":"allow","7":"allow","8":"allow","9":"allow","10":"allow","17":"allow","16":"allow","11":"allow","12":"allow","13":"allow","14":"allow","15":"allow"}}'::jsonb
 )
 ON CONFLICT (id) DO UPDATE SET
   scanner_result_theme = COALESCE(NULLIF(system_settings.scanner_result_theme, ''), 'warm_ivory_cream');

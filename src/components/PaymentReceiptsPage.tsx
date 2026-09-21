@@ -42,12 +42,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     return null;
   }
 
-  // RBAC Permission checks for KPIs and Table
-  const canViewKPIs = getPermissionState(userRole, 15) !== 'deny';
+  // Granular RBAC Permission checks for Entry Form (Task 10), Financial KPIs (Task 17), and Table (Task 16)
+  const entryFormPermission = getPermissionState(userRole, 10);
+  const canAddReceipt = entryFormPermission !== 'deny';
+  const isFormReadOnly = entryFormPermission === 'view_only';
+  const canViewKPIs = getPermissionState(userRole, 17) !== 'deny';
   const canViewTable = getPermissionState(userRole, 16) !== 'deny';
 
-  // Toggle state for new receipt entry form (Default to OPEN for clerk role)
-  const [isFormOpen, setIsFormOpen] = useState(() => userRole === 'clerk');
+  // Toggle state for new receipt entry form (Default to OPEN for clerk role when permitted)
+  const [isFormOpen, setIsFormOpen] = useState(() => userRole === 'clerk' && canAddReceipt);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState('');
   const [submitError, setSubmitError] = useState('');
@@ -296,6 +299,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     setSubmitError('');
     setSubmitSuccess('');
 
+    if (isFormReadOnly || !canAddReceipt) {
+      setSubmitError(
+        isAmharic
+          ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ የክፍያ ደረሰኝ መመዝገብ በእርስዎ ሚና አይፈቀድም።'
+          : 'Read-only mode: Submitting new payment receipts is restricted for your role.'
+      );
+      return;
+    }
+
     if (!receiptNumber.trim()) {
       setSubmitError(isAmharic ? 'የደረሰኝ ቁጥር መሞላት አለበት!' : 'Receipt number is required!');
       return;
@@ -524,20 +536,27 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         </div>
 
         <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            onClick={() => setIsFormOpen((prev) => !prev)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-black hover:bg-slate-800 dark:hover:bg-white transition-all shadow-xs cursor-pointer active:scale-95"
-          >
-            <Icon className="material-symbols-outlined text-[18px]">
-              {isFormOpen ? 'remove_circle' : 'add_circle'}
-            </Icon>
-            <span>
-              {isFormOpen
-                ? isAmharic ? 'ቅጹን ዝጋ' : 'Close Form'
-                : isAmharic ? '+ አዲስ የክፍያ ደረሰኝ መዝግብ' : '+ New Payment Receipt'}
-            </span>
-          </button>
+          {canAddReceipt ? (
+            <button
+              type="button"
+              onClick={() => setIsFormOpen((prev) => !prev)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-black hover:bg-slate-800 dark:hover:bg-white transition-all shadow-xs cursor-pointer active:scale-95"
+            >
+              <Icon className="material-symbols-outlined text-[18px]">
+                {isFormOpen ? 'remove_circle' : 'add_circle'}
+              </Icon>
+              <span>
+                {isFormOpen
+                  ? isAmharic ? 'ቅጹን ዝጋ' : 'Close Form'
+                  : isAmharic ? '+ አዲስ የክፍያ ደረሰኝ መዝግብ' : '+ New Payment Receipt'}
+              </span>
+            </button>
+          ) : (
+            <div className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-bold flex items-center gap-1.5">
+              <Icon className="material-symbols-outlined text-[16px]">lock</Icon>
+              <span>{isAmharic ? 'የደረሰኝ መመዝገቢያ ተገድቧል' : 'Receipt Entry Restricted'}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -643,6 +662,17 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               CLERK: {userBadgeId}
             </span>
           </div>
+
+          {isFormReadOnly && (
+            <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 rounded-lg text-xs font-bold flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-amber-600 text-[20px] shrink-0">lock</Icon>
+              <span>
+                {isAmharic
+                  ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ የክፍያ ደረሰኝ መመዝገብ አልተፈቀደም (የማየት ፈቃድ ብቻ)።'
+                  : 'Read-only mode active: Creating new payment receipts is disabled for your role.'}
+              </span>
+            </div>
+          )}
 
           {submitError && (
             <div className="p-3 bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200 rounded-lg text-xs font-bold flex items-center gap-2">
@@ -1050,7 +1080,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || selectedRegInfo?.expirationStatusType === 'active'}
+              disabled={isSubmitting || isFormReadOnly || !canAddReceipt || selectedRegInfo?.expirationStatusType === 'active'}
               className="px-5 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-black transition-all shadow-xs flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
             >
               {isSubmitting ? (

@@ -2138,31 +2138,31 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
     'role-secretary': {
       1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
       5: 'view_only', 6: 'view_only', 7: 'view_only', 8: 'view_only',
-      9: 'deny', 10: 'allow', 16: 'allow',
+      9: 'deny', 10: 'allow', 17: 'allow', 16: 'allow',
       11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny', 15: 'deny',
     },
     'role-officer': {
       1: 'deny', 2: 'deny', 3: 'view_only', 4: 'view_only',
       5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
-      9: 'deny', 10: 'deny', 16: 'deny',
+      9: 'deny', 10: 'deny', 17: 'deny', 16: 'deny',
       11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny', 15: 'deny',
     },
     'role-manager': {
       1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
       5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
-      9: 'allow', 10: 'allow', 16: 'allow',
+      9: 'allow', 10: 'allow', 17: 'allow', 16: 'allow',
       11: 'view_only', 12: 'view_only', 13: 'view_only', 14: 'deny', 15: 'view_only',
     },
     'role-it': {
       1: 'view_only', 2: 'view_only', 3: 'view_only', 4: 'view_only',
       5: 'allow', 6: 'view_only', 7: 'view_only', 8: 'view_only',
-      9: 'allow', 10: 'allow', 16: 'allow',
+      9: 'allow', 10: 'allow', 17: 'allow', 16: 'allow',
       11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow', 15: 'allow',
     },
     'role-superadmin': {
       1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
       5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
-      9: 'allow', 10: 'allow', 16: 'allow',
+      9: 'allow', 10: 'allow', 17: 'allow', 16: 'allow',
       11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow', 15: 'allow',
     },
   };
@@ -2171,6 +2171,10 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
 
   const getS = (taskId: number): 'allow' | 'view_only' | 'deny' => {
     if (userRole === 'superadmin') return 'allow';
+    // Fallback: If task 17 was not previously saved in local storage or DB, inherit from task 10 or default
+    if (taskId === 17 && rolePerms[17] === undefined && rolePerms['17'] === undefined) {
+      return (rolePerms[10] || rolePerms['10']) as any || (userRole === 'officer' ? 'deny' : 'allow');
+    }
     return (rolePerms[taskId] || rolePerms[String(taskId)]) as any || 'deny';
   };
 
@@ -2183,6 +2187,7 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
   const p10 = getS(10);
   const p14 = getS(14);
   const p16 = getS(16);
+  const p17 = getS(17);
 
   if (userRole === 'clerk') {
     return {
@@ -2202,6 +2207,7 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       '14': p14,
       '15': getS(15),
       '16': p16,
+      '17': p17,
       canViewDashboard: 'allow',
       canRegister: p1 === 'allow' ? 'allow' : 'deny',
       canEditSubmissions: p2 === 'allow' ? 'allow' : 'deny',
@@ -2210,7 +2216,7 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       canViewSubmissions: p3,
       canApproveVehicles: p3,
       canViewPermitStatus: p3,
-      canViewPaymentKPIs: p10,
+      canViewPaymentKPIs: p17,
       canViewPaymentRecordsTable: p16,
       canManageSettings: 'deny',
       canAssignOfficers: 'deny',
@@ -2238,6 +2244,7 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       '14': p14,
       '15': getS(15),
       '16': p16,
+      '17': p17,
       canViewDashboard: 'allow',
       canRegister: p1 === 'allow' ? 'allow' : 'deny',
       canEditSubmissions: p2 === 'allow' ? 'allow' : 'deny',
@@ -2246,7 +2253,7 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       canViewSubmissions: p3,
       canApproveVehicles: p3,
       canViewPermitStatus: p3,
-      canViewPaymentKPIs: p10,
+      canViewPaymentKPIs: p17,
       canViewPaymentRecordsTable: p16,
       canManageSettings: p14 === 'allow' ? 'allow' : 'deny',
       canAssignOfficers: p8 === 'allow' ? 'allow' : 'deny',
@@ -2273,6 +2280,7 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
     '14': p14,
     '15': getS(15),
     '16': p16,
+    '17': p17,
     canViewDashboard: 'allow',
     canRegister: p1 === 'allow' ? 'allow' : 'deny',
     canEditSubmissions: p2 === 'allow' ? 'allow' : 'deny',
@@ -2281,7 +2289,7 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
     canViewSubmissions: p3,
     canApproveVehicles: p3,
     canViewPermitStatus: p3,
-    canViewPaymentKPIs: p10,
+    canViewPaymentKPIs: p17,
     canViewPaymentRecordsTable: p16,
     canManageSettings: p14 === 'allow' ? 'allow' : 'deny',
     canAssignOfficers: p8 === 'allow' ? 'allow' : 'deny',
