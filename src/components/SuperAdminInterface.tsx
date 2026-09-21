@@ -147,52 +147,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     };
   }, []);
 
-  // TAB TASK MAP and Block Check
-  const TAB_TASK_MAP: Record<string, number> = {
-    users: 14,
-    subcities: 13,
-    permits: 11,
-    maintenance: 12,
-    security: 12,
-  };
-
-  const currentTaskId = TAB_TASK_MAP[activeTab] || 14;
-  const permissionState = getPermissionState('superadmin', currentTaskId);
-  const isBlocked = permissionState === 'deny';
-
-  useEffect(() => {
-    if (isBlocked && onShowToast) {
-      onShowToast(
-        isAmharic
-          ? 'ይህ ክፍል በፈቃድ መቆጣጠሪያ (RBAC) ታግዷል!'
-          : 'This section is currently blocked by your RBAC configuration!',
-        'warning'
-      );
-    }
-  }, [activeTab, isBlocked, isAmharic]);
-
-  const renderBlockedUI = () => (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm space-y-6 animate-in fade-in zoom-in duration-200">
-      <div className="w-16 h-16 rounded-full bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 shadow-sm animate-pulse">
-        <Icon className="material-symbols-outlined text-[36px]">gpp_bad</Icon>
-      </div>
-      <div className="space-y-2 max-w-md">
-        <h3 className="text-lg font-black text-on-surface">
-          {isAmharic ? 'ይህ ክፍል በፈቃድ መቆጣጠሪያ (RBAC) ታግዷል' : 'Access Blocked by RBAC Matrix'}
-        </h3>
-        <p className="text-xs text-outline leading-relaxed font-medium">
-          {isAmharic
-            ? 'ይህ የሱፐር አድሚን ክፍል በሪል-ታይም የሚና እና ፈቃድ መቆጣጠሪያ (RBAC) ቅንብር ምክንያት እንዳይከፈት ታግዷል። እባክዎን የሲስተም ባለቤትን ወይም ዋና አይቲ ባለሙያን ያነጋግሩ።'
-            : 'Access to this specific Super Admin interface has been dynamically blocked by the active Role-Based Access Control (RBAC) matrix. Please contact the system owner or network administrator.'}
-        </p>
-      </div>
-      <div className="flex items-center gap-2 text-[11px] font-black uppercase text-rose-600 dark:text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-full border border-rose-500/20">
-        <Icon className="material-symbols-outlined text-[14px]">shield</Icon>
-        <span>{isAmharic ? 'የደህንነት ማስጠንቀቂያ' : 'Security Alert'}</span>
-      </div>
-    </div>
-  );
-
   // Filtered Users
   const filteredUsers = users.filter((u) => {
     const matchesSearch =
@@ -807,8 +761,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
         {/* Body Container holding page content */}
         <div className="p-4 sm:p-5">
-          {isBlocked ? renderBlockedUI() : (
-            <>
 
       {/* ================= TAB 1: USERS & RBAC GOVERNANCE ================= */}
       {activeTab === 'users' && (
@@ -2104,8 +2056,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         </div>
       )}
 
-            </>
-          )}
         </div> {/* End of Body Container holding page content */}
       </div> {/* End of Container with header with icon and header text */}
 

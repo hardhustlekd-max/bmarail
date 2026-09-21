@@ -33,7 +33,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
 }) => {
   const isAmharic = lang === 'am';
   const permission = getPermissionState(userRole, 1);
-  const isReadOnly = permission === 'view_only';
+  const isDenied = permission === 'deny';
+  const isReadOnly = permission === 'view_only' || isDenied;
 
   const handleAddWithPermission = async (
     newReg: MotorcycleRegistration,
@@ -42,17 +43,26 @@ export const FormsPage: React.FC<FormsPageProps> = ({
     if (isReadOnly) {
       alert(
         isAmharic
-          ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ አዲስ ምዝገባ ማስገባት አይችሉም።'
-          : 'Read-only mode active: You are not allowed to submit new registrations.'
+          ? 'ይህ አገልግሎት በእርስዎ ሚና ፈቃድ ገደብ ተጥሎበታል።'
+          : 'Submission restricted: Your current role does not have registration submission permissions.'
       );
-      return { success: false, error: 'Read-only mode active' };
+      return { success: false, error: 'Registration submission restricted' };
     }
     return onAddRegistration(newReg, options);
   };
 
   return (
     <div className="space-y-2 md:space-y-2.5">
-      {isReadOnly && (
+      {isDenied ? (
+        <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-2.5 shadow-2xs">
+          <Icon className="material-symbols-outlined text-[18px]">gpp_maybe</Icon>
+          <span>
+            {isAmharic
+              ? 'አዲስ አባልና ተሽከርካሪ መመዝገብ በእርስዎ ሚና ፈቃዶች (RBAC) መሰረት ገደብ ተጥሎበታል።'
+              : 'Registration Submission Restricted: New member registration is disabled by active role permissions.'}
+          </span>
+        </div>
+      ) : isReadOnly ? (
         <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center gap-2.5 shadow-2xs">
           <Icon className="material-symbols-outlined text-[18px]">warning</Icon>
           <span>
@@ -61,7 +71,7 @@ export const FormsPage: React.FC<FormsPageProps> = ({
               : 'Read-Only Mode Active: Form editing and submissions are disabled based on your role permissions.'}
           </span>
         </div>
-      )}
+      ) : null}
 
       {/* Main Registration Form Body */}
       <div className={isReadOnly ? 'pointer-events-none opacity-80 select-none' : ''}>

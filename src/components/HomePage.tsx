@@ -381,74 +381,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
   // Inspection report filter state passed to OfficerVerificationHistory
   const [inspectionInitialFilter, setInspectionInitialFilter] = useState<'all' | 'verified' | 'warning' | 'flagged'>('all');
 
-  // Universal RBAC Task Mapping for all pages
-  const PAGE_TASK_MAP: Record<string, number> = {
-    dashboard: 9, // View Count / Statistics / Dashboard
-    forms: 1, // Register New Member / Vehicle
-    today_submissions_adjust: 2, // Edit Member / Submission Correction
-    tables: 8, // View Members List / Tables & Records
-    inspection_report: 10, // View Reports / Inspection Report
-    report_unregistered: 5, // Field Patrol & Scanner
-    unregistered_list: 5, // Field Patrol & Scanner
-    payment_receipts: 1, // Payment Receipt Entry & Validity Tracking
-    scan: 5, // Barcode / QR Scanner
-    settings: 9, // Universal Settings Page
-    superadmin_users: 14,
-    superadmin_subcities: 13,
-    superadmin_security: 14,
-    superadmin_permits: 11,
-    superadmin_maintenance: 12,
-    superadmin: 14,
-    superadmin_owners: 11,
-  };
-
-  const currentTaskId = PAGE_TASK_MAP[activePage] || 9;
-  const currentPagePermission = getPermissionState(userRole, currentTaskId);
-  const isCurrentPageBlocked = currentPagePermission === 'deny';
-
-  useEffect(() => {
-    if (isCurrentPageBlocked) {
-      addToast(
-        isAmharic
-          ? 'ይህ ክፍል በፈቃድ መቆጣጠሪያ (RBAC) ታግዷል!'
-          : 'This section is currently blocked by your RBAC configuration!',
-        'error'
-      );
-    }
-  }, [activePage, isCurrentPageBlocked, isAmharic]);
-
-  const renderBlockedPageUI = () => (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-xl shadow-sm space-y-6 animate-in fade-in zoom-in duration-200 my-auto">
-      <div className="w-16 h-16 rounded-full bg-rose-50 dark:bg-rose-950/30 flex items-center justify-center text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/50 shadow-sm animate-pulse">
-        <Icon className="material-symbols-outlined text-[36px]">gpp_bad</Icon>
-      </div>
-      <div className="space-y-2 max-w-md">
-        <h3 className="text-lg font-black text-on-surface dark:text-white">
-          {isAmharic ? 'ይህ ክፍል በፈቃድ መቆጣጠሪያ (RBAC) ታግዷል' : 'Access Blocked by RBAC Matrix'}
-        </h3>
-        <p className="text-xs text-outline dark:text-slate-400 leading-relaxed font-medium">
-          {isAmharic
-            ? 'ይህ ክፍል በሪል-ታይም የሚና እና ፈቃድ መቆጣጠሪያ (RBAC) ቅንብር ምክንያት እንዳይከፈት ታግዷል። እባክዎን የሲስተም ባለቤትን ወይም ዋና አይቲ ባለሙያን ያነጋግሩ።'
-            : 'Access to this specific section has been dynamically blocked by the active Role-Based Access Control (RBAC) matrix. Please contact the system owner or network administrator.'}
-        </p>
-      </div>
-      <div className="flex items-center gap-2 text-[11px] font-black uppercase text-rose-600 dark:text-rose-400 bg-rose-500/10 px-3 py-1.5 rounded-full border border-rose-500/20">
-        <Icon className="material-symbols-outlined text-[14px]">shield</Icon>
-        <span>{isAmharic ? 'የደህንነት ማስጠንቀቂያ' : 'Security Alert'}</span>
-      </div>
-      {activePage !== 'dashboard' && getPermissionState(userRole, 9) !== 'deny' && (
-        <button
-          type="button"
-          onClick={() => setActivePage('dashboard')}
-          className="px-4 py-2 bg-[#0f172a] hover:bg-slate-800 text-white rounded-md text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-        >
-          <Icon className="material-symbols-outlined text-[16px]">arrow_back</Icon>
-          <span>{isAmharic ? 'ወደ ዋና ገፅ ተመለስ' : 'Return to Dashboard'}</span>
-        </button>
-      )}
-    </div>
-  );
-
   // Dynamic Amharic navbar title memo for the active page
   const currentNavbarTitleAmharic = useMemo(() => {
     switch (activePage) {
@@ -3175,78 +3107,74 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </nav>
           )}
 
-          {isCurrentPageBlocked ? (
-            renderBlockedPageUI()
-          ) : (
-            <div
-              key={activePage}
-              className={
-                activePage === 'scan'
-                  ? "flex-1 w-full h-full min-h-[500px] flex flex-col overflow-hidden"
-                  : "animate-page-enter flex-none flex flex-col"
-              }
-            >
-              {/* Domain 1: Universal Dashboard Overview */}
-              {activePage === 'dashboard' && (
-                <DashboardOverviewRouter
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                  onQuickAction={handleQuickAction}
-                  isLoading={isInitialLoading || pageLoading}
-                />
-              )}
+          <div
+            key={activePage}
+            className={
+              activePage === 'scan'
+                ? "flex-1 w-full h-full min-h-[500px] flex flex-col overflow-hidden"
+                : "animate-page-enter flex-none flex flex-col"
+            }
+          >
+            {/* Domain 1: Universal Dashboard Overview */}
+            {activePage === 'dashboard' && (
+              <DashboardOverviewRouter
+                lang={currentLang}
+                userRole={userRole}
+                userBadgeId={userBadgeId}
+                onQuickAction={handleQuickAction}
+                isLoading={isInitialLoading || pageLoading}
+              />
+            )}
 
-              {/* Domain 2: Registry Domain (Forms, Today's Submissions, Tables) */}
-              {['forms', 'today_submissions_adjust', 'tables'].includes(activePage) && (
-                <RegistryRouter
-                  activePage={activePage}
-                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                  tableInitialTab={tableInitialTab}
-                />
-              )}
+            {/* Domain 2: Registry Domain (Forms, Today's Submissions, Tables) */}
+            {['forms', 'today_submissions_adjust', 'tables'].includes(activePage) && (
+              <RegistryRouter
+                activePage={activePage}
+                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                lang={currentLang}
+                userRole={userRole}
+                userBadgeId={userBadgeId}
+                tableInitialTab={tableInitialTab}
+              />
+            )}
 
-              {/* Domain 3: Enforcement (Field) Domain (Scanner, Inspection Reports, Unregistered Reports) */}
-              {['scan', 'inspection_report', 'report_unregistered', 'unregistered_list'].includes(activePage) && (
-                <EnforcementRouter
-                  activePage={activePage}
-                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                />
-              )}
+            {/* Domain 3: Enforcement (Field) Domain (Scanner, Inspection Reports, Unregistered Reports) */}
+            {['scan', 'inspection_report', 'report_unregistered', 'unregistered_list'].includes(activePage) && (
+              <EnforcementRouter
+                activePage={activePage}
+                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                lang={currentLang}
+                userRole={userRole}
+                userBadgeId={userBadgeId}
+              />
+            )}
 
-              {/* Domain 4: Revenue (Treasury) Domain (Payment Receipts & Ledger Metrics) */}
-              {activePage === 'payment_receipts' && (
-                <RevenueRouter
-                  activePage={activePage}
-                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                />
-              )}
+            {/* Domain 4: Revenue (Treasury) Domain (Payment Receipts & Ledger Metrics) */}
+            {activePage === 'payment_receipts' && (
+              <RevenueRouter
+                activePage={activePage}
+                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                lang={currentLang}
+                userRole={userRole}
+                userBadgeId={userBadgeId}
+              />
+            )}
 
-              {/* Domain 5: Governance Domain (SuperAdmin Governance & Settings) */}
-              {(activePage.startsWith('superadmin') || activePage === 'settings') && (
-                <GovernanceRouter
-                  activePage={activePage}
-                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                  lang={currentLang}
-                  userRole={userRole}
-                  userBadgeId={userBadgeId}
-                  currentTheme={currentTheme}
-                  onToggleLang={onToggleLang}
-                  onToggleTheme={onToggleTheme}
-                  onLogoutClick={() => setIsLogoutModalOpen(true)}
-                />
-              )}
-            </div>
-          )}
+            {/* Domain 5: Governance Domain (SuperAdmin Governance & Settings) */}
+            {(activePage.startsWith('superadmin') || activePage === 'settings') && (
+              <GovernanceRouter
+                activePage={activePage}
+                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                lang={currentLang}
+                userRole={userRole}
+                userBadgeId={userBadgeId}
+                currentTheme={currentTheme}
+                onToggleLang={onToggleLang}
+                onToggleTheme={onToggleTheme}
+                onLogoutClick={() => setIsLogoutModalOpen(true)}
+              />
+            )}
+          </div>
 
           {/* Modern, elegant system footer containing language and theme selectors */}
           {activePage !== 'scan' && (

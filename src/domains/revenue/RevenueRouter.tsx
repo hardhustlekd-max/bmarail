@@ -29,17 +29,6 @@ export const RevenueRouter: React.FC<RevenueRouterProps> = ({
   const { addToast } = useToast();
 
   if (activePage === 'payment_receipts') {
-    const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
-    if (!isSuperAdmin) {
-      return (
-        <div className="p-8 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs max-w-lg mx-auto mt-12 space-y-3">
-          <p className="text-base font-bold text-on-surface">
-            {lang === 'am' ? 'ይህንን ገፅ ለማየት ፈቃድ የለዎትም። ለዋና አስተዳዳሪ ብቻ የተፈቀደ ነው።' : 'Access Restricted. The Revenue Ledger is exclusively visible to Super Admin.'}
-          </p>
-        </div>
-      );
-    }
-
     return (
       <PaymentReceiptsPage
         lang={lang}
