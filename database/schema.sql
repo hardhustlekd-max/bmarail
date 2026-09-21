@@ -240,6 +240,8 @@ CREATE TABLE IF NOT EXISTS system_settings (
     frozen_sub_cities JSONB DEFAULT '{}'::jsonb,
     system_reset_epoch BIGINT,
     last_system_reset_at VARCHAR(50),
+    role_permissions JSONB DEFAULT '{}'::jsonb,
+    role_definitions JSONB DEFAULT '[]'::jsonb,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -310,6 +312,8 @@ ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS clerk_payment_table_permiss
 ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS frozen_sub_cities JSONB DEFAULT '{}'::jsonb;
 ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS system_reset_epoch BIGINT;
 ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS last_system_reset_at VARCHAR(50);
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS role_permissions JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS role_definitions JSONB DEFAULT '[]'::jsonb;
 
 ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS receipt_number VARCHAR(100);
 ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS payment_amount VARCHAR(50);

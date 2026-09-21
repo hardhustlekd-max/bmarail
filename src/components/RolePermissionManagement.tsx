@@ -449,6 +449,9 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
   const isAmharic = currentLang === 'am';
 
   const [roles, setRoles] = useState<RoleDefinition[]>(() => {
+    if (propSettings?.roleDefinitions && Array.isArray(propSettings.roleDefinitions) && propSettings.roleDefinitions.length > 0) {
+      return propSettings.roleDefinitions;
+    }
     const saved = localStorage.getItem('permit_role_definitions');
     if (saved) {
       try {
@@ -462,6 +465,9 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
   const [selectedRoleId, setSelectedRoleId] = useState<string>('role-secretary');
   const [permissionsMatrix, setPermissionsMatrix] = useState<Record<string, Record<number, PermissionState>>>(() => {
+    if (propSettings?.rolePermissions && Object.keys(propSettings.rolePermissions).length > 0) {
+      return propSettings.rolePermissions as any;
+    }
     const saved = localStorage.getItem('permit_role_permissions');
     if (saved) {
       try {
@@ -538,6 +544,12 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
   const handleSavePermissions = async () => {
     localStorage.setItem('permit_role_permissions', JSON.stringify(permissionsMatrix));
+    localStorage.setItem('permit_role_definitions', JSON.stringify(roles));
+
+    await saveSettingsToDb({
+      rolePermissions: permissionsMatrix,
+      roleDefinitions: roles,
+    });
 
     await addAuditLogToDb({
       actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
@@ -572,7 +584,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
     }
   };
 
-  const handleCreateNewRole = (e: React.FormEvent) => {
+  const handleCreateNewRole = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRoleTitleAm.trim()) return;
 
@@ -589,20 +601,21 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
     };
 
     const templatePerms = permissionsMatrix[newRoleTemplate] || INITIAL_PERMISSIONS['role-secretary'];
+    const updatedRoles = [...roles, newRole];
+    const updatedMatrix = {
+      ...permissionsMatrix,
+      [newId]: { ...templatePerms },
+    };
 
-    setRoles((prev) => {
-      const updated = [...prev, newRole];
-      localStorage.setItem('permit_role_definitions', JSON.stringify(updated));
-      return updated;
-    });
+    setRoles(updatedRoles);
+    setPermissionsMatrix(updatedMatrix);
 
-    setPermissionsMatrix((prev) => {
-      const updatedMatrix = {
-        ...prev,
-        [newId]: { ...templatePerms },
-      };
-      localStorage.setItem('permit_role_permissions', JSON.stringify(updatedMatrix));
-      return updatedMatrix;
+    localStorage.setItem('permit_role_definitions', JSON.stringify(updatedRoles));
+    localStorage.setItem('permit_role_permissions', JSON.stringify(updatedMatrix));
+
+    await saveSettingsToDb({
+      roleDefinitions: updatedRoles,
+      rolePermissions: updatedMatrix,
     });
 
     setSelectedRoleId(newId);

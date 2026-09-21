@@ -60,6 +60,8 @@ function seedInitialMemoryStore() {
       frozenSubCities: {},
       systemResetEpoch: 0,
       lastSystemResetAt: new Date().toISOString(),
+      rolePermissions: {},
+      roleDefinitions: [],
       updatedAt: new Date().toISOString(),
     });
   }
@@ -640,6 +642,8 @@ const TABLE_COLUMNS: Record<string, Set<string>> = {
     'frozen_sub_cities',
     'system_reset_epoch',
     'last_system_reset_at',
+    'role_permissions',
+    'role_definitions',
     'updated_at',
   ]),
   system_users: new Set([

@@ -2125,7 +2125,9 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
   else if (userRole.startsWith('role-')) roleId = userRole;
 
   let savedMatrix: Record<string, Record<string | number, 'allow' | 'view_only' | 'deny'>> | null = null;
-  if (typeof window !== 'undefined') {
+  if (inMemory.settings?.rolePermissions && Object.keys(inMemory.settings.rolePermissions).length > 0) {
+    savedMatrix = inMemory.settings.rolePermissions;
+  } else if (typeof window !== 'undefined') {
     try {
       const raw = localStorage.getItem('permit_role_permissions');
       if (raw) savedMatrix = JSON.parse(raw);

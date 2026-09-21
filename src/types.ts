@@ -196,6 +196,8 @@ export interface SystemSettings {
   frozenSubCities?: Record<string, boolean>;
   systemResetEpoch?: number;
   lastSystemResetAt?: string;
+  rolePermissions?: Record<string, Record<string | number, 'allow' | 'view_only' | 'deny'>>;
+  roleDefinitions?: any[];
 }
 
 export interface PaymentReceipt {

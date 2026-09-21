@@ -325,6 +325,8 @@ export function mapSettingsToDb(settings: SystemSettings) {
     frozenSubCities: settings.frozenSubCities || {},
     systemResetEpoch: settings.systemResetEpoch ?? null,
     lastSystemResetAt: settings.lastSystemResetAt ?? null,
+    rolePermissions: settings.rolePermissions || {},
+    roleDefinitions: settings.roleDefinitions || [],
     updatedAt: settings.updatedAt || new Date().toISOString(),
   };
 }
@@ -366,6 +368,20 @@ export function mapSettingsFromDb(row: any, defaultSettings: SystemSettings): Sy
       : defaultSettings.frozenSubCities || {},
     systemResetEpoch: row.systemResetEpoch ?? row.system_reset_epoch ?? defaultSettings.systemResetEpoch,
     lastSystemResetAt: row.lastSystemResetAt ?? row.last_system_reset_at ?? defaultSettings.lastSystemResetAt,
+    rolePermissions: (typeof row.rolePermissions === 'object' && row.rolePermissions !== null)
+      ? row.rolePermissions
+      : (typeof row.role_permissions === 'object' && row.role_permissions !== null)
+      ? row.role_permissions
+      : typeof row.role_permissions === 'string'
+      ? (() => { try { return JSON.parse(row.role_permissions); } catch { return {}; } })()
+      : defaultSettings.rolePermissions || {},
+    roleDefinitions: Array.isArray(row.roleDefinitions)
+      ? row.roleDefinitions
+      : Array.isArray(row.role_definitions)
+      ? row.role_definitions
+      : typeof row.role_definitions === 'string'
+      ? (() => { try { return JSON.parse(row.role_definitions); } catch { return []; } })()
+      : defaultSettings.roleDefinitions || [],
     updatedAt: row.updatedAt ?? row.updated_at,
   };
 }
