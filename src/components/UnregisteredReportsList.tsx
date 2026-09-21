@@ -35,10 +35,6 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 }) => {
   const isAmharic = lang === 'am';
 
-  if (isLoading) {
-    return null;
-  }
-
   const [searchTerm, setSearchTerm] = useState('');
   const [subCityFilter, setSubCityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'under_investigation' | 'resolved' | 'registered'>('all');
@@ -137,6 +133,10 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
         );
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-4">

@@ -63,70 +63,128 @@ html {
 }
 
 :root, html.light {
-  --color-primary: #1E293B;
-  --color-primary-hover: #0F172A;
-  --color-primary-container: #F1F5F9;
-  --color-primary-light: #F1F5F9;
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-container: #EFF6FF;
+  --color-primary-light: #DBEAFE;
   --color-secondary-container: #F1F5F9;
-  --color-surface: #F1F5F9;
-  --color-on-surface: #1C2434;
+  --color-surface: #F8FAFC;
+  --color-on-surface: #0F172A;
   --color-on-surface-variant: #64748B;
   --color-surface-container: #FFFFFF;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #F8F9FA;
-  --color-surface-container-high: #E2E8F0;
-  --color-surface-container-highest: #CBD5E1;
+  --color-surface-container-low: #F8FAFC;
+  --color-surface-container-high: #F1F5F9;
+  --color-surface-container-highest: #E2E8F0;
   --color-surface-bright: #ffffff;
-  --color-surface-dim: #F1F5F9;
+  --color-surface-dim: #F8FAFC;
   --color-surface-variant: #F1F5F9;
   --color-secondary: #64748B;
   --color-outline: #94A3B8;
   --color-outline-variant: #E2E8F0;
-  --color-brand-indigo: #1E293B;
+  --color-brand-indigo: #2563EB;
   --color-topnav: #ffffff;
-  --color-topnav-hover: #F8F9FA;
-  --color-topnav-dark: #24303F;
-  --color-sidebar-bg: #1C2434;
-  --color-sidebar-hover: #333A48;
-  --color-sidebar-text: #DEE4EE;
+  --color-topnav-hover: #F8FAFC;
+  --color-topnav-dark: #1E293B;
+  --color-sidebar-bg: #0F172A;
+  --color-sidebar-hover: #1E293B;
+  --color-sidebar-text: #E2E8F0;
   --color-sidebar-active-text: #ffffff;
+  
+  /* Association Design System Tokens (Light Mode) */
+  --assoc-bg-primary: #F8FAFC;
+  --assoc-sidebar-bg: #0F172A;
+  --assoc-text-main: #0F172A;
+  --assoc-text-muted: #64748B;
+  --assoc-text-subtle: #94A3B8;
+  --assoc-card-bg: #FFFFFF;
+  --assoc-border: #E2E8F0;
+  --assoc-accent: #2563EB;
+  --assoc-accent-hover: #1D4ED8;
+  --assoc-success: #16A34A;
+  --assoc-success-bg: #DCFCE7;
+  --assoc-success-text: #15803D;
+  --assoc-danger: #DC2626;
+  --assoc-danger-bg: #FEE2E2;
+  --assoc-danger-text: #B91C1C;
+  --assoc-warning: #D97706;
+  --assoc-warning-bg: #FEF3C7;
+  --assoc-warning-text: #B45309;
+  --assoc-info: #0284C7;
+  --assoc-info-bg: #E0F2FE;
+  --assoc-info-text: #0369A1;
+  --assoc-backdrop: rgba(15, 23, 42, 0.6);
   color-scheme: light;
 }
 
 html.dark {
-  --color-primary: #334155;
-  --color-primary-hover: #475569;
-  --color-primary-container: #24303F;
-  --color-primary-light: #1A222C;
-  --color-secondary-container: #24303F;
-  --color-surface: #1A222C;
-  --color-on-surface: #FFFFFF;
-  --color-on-surface-variant: #8A99AD;
-  --color-surface-container: #24303F;
-  --color-surface-container-lowest: #24303F;
-  --color-surface-container-low: #1A222C;
-  --color-surface-container-high: #2E3A47;
-  --color-surface-container-highest: #333A48;
-  --color-surface-bright: #24303F;
-  --color-surface-dim: #1A222C;
-  --color-surface-variant: #24303F;
-  --color-secondary: #8A99AD;
+  --color-primary: #3B82F6;
+  --color-primary-hover: #60A5FA;
+  --color-primary-container: #1E293B;
+  --color-primary-light: #0F172A;
+  --color-secondary-container: #1E293B;
+  --color-surface: #0F172A;
+  --color-on-surface: #F8FAFC;
+  --color-on-surface-variant: #94A3B8;
+  --color-surface-container: #1E293B;
+  --color-surface-container-lowest: #0F172A;
+  --color-surface-container-low: #0B132B;
+  --color-surface-container-high: #334155;
+  --color-surface-container-highest: #475569;
+  --color-surface-bright: #1E293B;
+  --color-surface-dim: #0F172A;
+  --color-surface-variant: #1E293B;
+  --color-secondary: #94A3B8;
   --color-outline: #64748B;
-  --color-outline-variant: #2E3A47;
-  --color-brand-indigo: #334155;
-  --color-topnav: #24303F;
-  --color-topnav-hover: #1A222C;
-  --color-topnav-dark: #1A222C;
-  --color-sidebar-bg: #1C2434;
-  --color-sidebar-hover: #333A48;
-  --color-sidebar-text: #DEE4EE;
+  --color-outline-variant: #334155;
+  --color-brand-indigo: #3B82F6;
+  --color-topnav: #1E293B;
+  --color-topnav-hover: #0F172A;
+  --color-topnav-dark: #0F172A;
+  --color-sidebar-bg: #0B132B;
+  --color-sidebar-hover: #1E293B;
+  --color-sidebar-text: #E2E8F0;
   --color-sidebar-active-text: #ffffff;
+  
+  /* Association Design System Tokens (Dark Mode) */
+  --assoc-bg-primary: #0F172A;
+  --assoc-sidebar-bg: #0B132B;
+  --assoc-text-main: #F8FAFC;
+  --assoc-text-muted: #94A3B8;
+  --assoc-text-subtle: #64748B;
+  --assoc-card-bg: #1E293B;
+  --assoc-border: #334155;
+  --assoc-accent: #3B82F6;
+  --assoc-accent-hover: #60A5FA;
+  --assoc-success: #22C55E;
+  --assoc-success-bg: rgba(34, 197, 94, 0.15);
+  --assoc-success-text: #4ADE80;
+  --assoc-danger: #EF4444;
+  --assoc-danger-bg: rgba(239, 68, 68, 0.15);
+  --assoc-danger-text: #F87171;
+  --assoc-warning: #F59E0B;
+  --assoc-warning-bg: rgba(245, 158, 11, 0.15);
+  --assoc-warning-text: #FBBF24;
+  --assoc-info: #38BDF8;
+  --assoc-info-bg: rgba(56, 189, 248, 0.15);
+  --assoc-info-text: #7DD3FC;
+  --assoc-backdrop: rgba(0, 0, 0, 0.75);
   color-scheme: dark;
 }
 
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-ethiopic: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --color-assoc-bg: var(--assoc-bg-primary);
+  --color-assoc-sidebar: var(--assoc-sidebar-bg);
+  --color-assoc-card: var(--assoc-card-bg);
+  --color-assoc-border: var(--assoc-border);
+  --color-assoc-accent: var(--assoc-accent);
+  --color-assoc-accent-hover: var(--assoc-accent-hover);
+  --color-assoc-text: var(--assoc-text-main);
+  --color-assoc-muted: var(--assoc-text-muted);
+  --color-assoc-subtle: var(--assoc-text-subtle);
 
   --color-primary: var(--color-primary);
   --color-primary-hover: var(--color-primary-hover);
@@ -168,51 +226,6 @@ html.dark {
   --color-tailadmin-muted: #8A99AD;
   --color-tailadmin-primary: #1E293B;
 
-  /* Page & Section Palette Overrides */
-  --color-slate-50: #F8F9FA;
-  --color-slate-100: #F1F5F9;
-  --color-slate-200: #E2E8F0;
-  --color-slate-900: #0F172A;
-
-  --color-gray-50: #F8F9FA;
-  --color-gray-100: #F1F5F9;
-  --color-gray-900: #0F172A;
-
-  /* Forest Green #15803D - Success / Alert */
-  --color-emerald-400: #15803D;
-  --color-emerald-500: #15803D;
-  --color-emerald-600: #15803D;
-  --color-emerald-700: #116631;
-  --color-green-400: #15803D;
-  --color-green-500: #15803D;
-  --color-green-600: #15803D;
-  --color-green-700: #116631;
-  
-  /* Deep Red #B91C1C - Error / Alert */
-  --color-rose-400: #B91C1C;
-  --color-rose-500: #B91C1C;
-  --color-rose-600: #B91C1C;
-  --color-rose-700: #991B1B;
-  --color-red-400: #B91C1C;
-  --color-red-500: #B91C1C;
-  --color-red-600: #B91C1C;
-  --color-red-700: #991B1B;
-  
-  /* Warning - Yellow Accent */
-  --color-amber-400: #f59e0b;
-  --color-amber-500: #f59e0b;
-  --color-amber-600: #d97706;
-  --color-amber-700: #b45309;
-  --color-yellow-400: #EAB308;
-  --color-yellow-500: #EAB308;
-  --color-yellow-600: #CA8A04;
-  --color-yellow-700: #A16207;
-  
-  /* Primary Accent - Navy #0B1E48 */
-  --color-blue-400: #475569;
-  --color-blue-500: #334155;
-  --color-blue-600: #1e293b;
-  --color-blue-700: #0f172a;
 }
 
 /* Base default body and system typography: clean English sans-serif */
@@ -221,10 +234,21 @@ html {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #F8F9FA !important;
-  color: #0F172A !important;
   line-height: 1.5;
   margin: 0;
+  background-color: var(--assoc-bg-primary);
+  color: var(--assoc-text-main);
+}
+
+html.light body,
+html:not(.dark) body {
+  background-color: #F8FAFC;
+  color: #0F172A;
+}
+
+html.dark body {
+  background-color: #0F172A;
+  color: #F8FAFC;
 }
 
 button,
@@ -403,31 +427,6 @@ html.dark button:focus-visible,
   outline-offset: 1px;
 }
 
-html.light body,
-html:not(.dark) body {
-  background-color: #F8F9FA !important;
-  color: #0F172A !important;
-}
-
-/* Explicit Section Background Utility Rules for Light Theme */
-html.light .bg-surface,
-html:not(.dark) .bg-surface {
-  background-color: #F8F9FA !important;
-}
-
-html.light .bg-surface-container,
-html:not(.dark) .bg-surface-container,
-html.light .bg-slate-100,
-html:not(.dark) .bg-slate-100,
-html.light .bg-gray-100,
-html:not(.dark) .bg-gray-100 {
-  background-color: #F1F5F9 !important;
-}
-
-html.light .text-on-surface,
-html:not(.dark) .text-on-surface {
-  color: #0F172A !important;
-}
 
 .font-ethiopic,
 .system-lang-am,
@@ -439,289 +438,10 @@ html:not(.dark) .text-on-surface {
   font-family: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
-/* Global Dark Mode Comprehensive Overrides */
+/* Global Dark Mode Settings */
 html.dark,
 .dark {
-  background-color: #131314 !important;
-  color: #e3e3e3 !important;
   color-scheme: dark;
-}
-
-html.dark body,
-.dark body {
-  background-color: #131314 !important;
-  color: #e3e3e3 !important;
-}
-
-/* Background overrides in dark mode (catching opacity modifiers like /95, /90, /80) */
-html.dark [class*="bg-surface-container-lowest"],
-.dark [class*="bg-surface-container-lowest"],
-html.dark [class*="bg-white"],
-.dark [class*="bg-white"] {
-  background-color: #0f0f11 !important;
-}
-
-html.dark [class*="bg-surface-container"],
-.dark [class*="bg-surface-container"],
-html.dark [class*="bg-slate-50"],
-.dark [class*="bg-slate-50"],
-html.dark [class*="bg-slate-100"],
-.dark [class*="bg-slate-100"],
-html.dark [class*="bg-gray-50"],
-.dark [class*="bg-gray-50"],
-html.dark [class*="bg-gray-100"],
-.dark [class*="bg-gray-100"] {
-  background-color: #1e1f20 !important;
-}
-
-html.dark [class*="bg-surface-container-high"],
-.dark [class*="bg-surface-container-high"],
-html.dark [class*="bg-surface-container-highest"],
-.dark [class*="bg-surface-container-highest"],
-html.dark [class*="bg-slate-200"],
-.dark [class*="bg-slate-200"] {
-  background-color: #2d2f31 !important;
-}
-
-html.dark [class*="bg-surface"],
-.dark [class*="bg-surface"] {
-  background-color: #131314 !important;
-}
-
-/* Navigation & Header Overrides for Dark Mode */
-html.dark header,
-.dark header,
-html.dark nav,
-.dark nav,
-html.dark aside,
-.dark aside {
-  background-color: #1e1f20 !important;
-  border-color: #3c4043 !important;
-}
-
-/* Card and Container borders in dark mode */
-html.dark [class*="border-outline-variant"],
-.dark [class*="border-outline-variant"],
-html.dark [class*="border-slate-100"],
-.dark [class*="border-slate-100"],
-html.dark [class*="border-slate-200"],
-.dark [class*="border-slate-200"],
-html.dark [class*="border-slate-300"],
-.dark [class*="border-slate-300"],
-html.dark [class*="border-gray-200"],
-.dark [class*="border-gray-200"],
-html.dark [class*="border-gray-300"],
-.dark [class*="border-gray-300"] {
-  border-color: #2d2f31 !important;
-}
-
-/* Text color overrides in dark mode */
-html.dark [class*="text-on-surface"],
-.dark [class*="text-on-surface"],
-html.dark [class*="text-slate-900"],
-.dark [class*="text-slate-900"],
-html.dark [class*="text-slate-800"],
-.dark [class*="text-slate-800"],
-html.dark [class*="text-slate-700"],
-.dark [class*="text-slate-700"],
-html.dark [class*="text-slate-950"],
-.dark [class*="text-slate-950"],
-html.dark [class*="text-gray-900"],
-.dark [class*="text-gray-900"],
-html.dark [class*="text-gray-800"],
-.dark [class*="text-gray-800"],
-html.dark [class*="text-gray-700"],
-.dark [class*="text-gray-700"],
-html.dark [class*="text-zinc-950"],
-.dark [class*="text-zinc-950"],
-html.dark [class*="text-zinc-900"],
-.dark [class*="text-zinc-900"],
-html.dark [class*="text-zinc-800"],
-.dark [class*="text-zinc-800"],
-html.dark [class*="text-zinc-700"],
-.dark [class*="text-zinc-700"],
-html.dark [class*="text-neutral-950"],
-.dark [class*="text-neutral-950"],
-html.dark [class*="text-neutral-900"],
-.dark [class*="text-neutral-900"],
-html.dark [class*="text-neutral-800"],
-.dark [class*="text-neutral-800"],
-html.dark [class*="text-neutral-700"],
-.dark [class*="text-neutral-700"],
-html.dark [class*="text-stone-950"],
-.dark [class*="text-stone-950"],
-html.dark [class*="text-stone-900"],
-.dark [class*="text-stone-900"],
-html.dark [class*="text-stone-800"],
-.dark [class*="text-stone-800"] {
-  color: #e3e3e3 !important;
-}
-
-/* Fix standard un-namespaced text-black issues in layout */
-html.dark .text-black:not(.printable-a4-document *):not(.printable-sticker *):not(.printable-id-card *),
-.dark .text-black:not(.printable-a4-document *):not(.printable-sticker *):not(.printable-id-card *) {
-  color: #ffffff !important;
-}
-
-html.dark [class*="text-secondary"],
-.dark [class*="text-secondary"],
-html.dark [class*="text-slate-600"],
-.dark [class*="text-slate-600"],
-html.dark [class*="text-slate-500"],
-.dark [class*="text-slate-500"],
-html.dark [class*="text-gray-600"],
-.dark [class*="text-gray-600"],
-html.dark [class*="text-gray-500"],
-.dark [class*="text-gray-500"],
-html.dark [class*="text-zinc-600"],
-.dark [class*="text-zinc-600"],
-html.dark [class*="text-zinc-500"],
-.dark [class*="text-zinc-500"],
-html.dark [class*="text-neutral-600"],
-.dark [class*="text-neutral-600"],
-html.dark [class*="text-neutral-500"],
-.dark [class*="text-neutral-500"] {
-  color: #c4c7c5 !important;
-}
-
-/* Input, Select, Textarea in dark mode */
-html.dark input[type="text"],
-.dark input[type="text"],
-html.dark input[type="number"],
-.dark input[type="number"],
-html.dark input[type="date"],
-.dark input[type="date"],
-html.dark input[type="search"],
-.dark input[type="search"],
-html.dark input[type="password"],
-.dark input[type="password"],
-html.dark select,
-.dark select,
-html.dark textarea,
-.dark textarea {
-  background-color: #0f0f11 !important;
-  color: #e3e3e3 !important;
-  border-color: #3c4043 !important;
-}
-
-html.dark input::placeholder,
-.dark input::placeholder,
-html.dark textarea::placeholder,
-.dark textarea::placeholder {
-  color: #94a3b8 !important;
-}
-
-/* Light tint boxes override in dark mode */
-html.dark [class*="bg-sky-50"],
-.dark [class*="bg-sky-50"],
-html.dark [class*="bg-blue-50"],
-.dark [class*="bg-blue-50"],
-html.dark [class*="bg-sky-100"],
-.dark [class*="bg-sky-100"],
-html.dark [class*="bg-sky-200"],
-.dark [class*="bg-sky-200"],
-html.dark [class*="bg-blue-100"],
-.dark [class*="bg-blue-100"] {
-  background-color: rgba(191, 90, 242, 0.15) !important;
-  border-color: rgba(191, 90, 242, 0.3) !important;
-}
-
-html.dark [class*="text-sky-950"],
-.dark [class*="text-sky-950"],
-html.dark [class*="text-sky-900"],
-.dark [class*="text-sky-900"],
-html.dark [class*="text-sky-800"],
-.dark [class*="text-sky-800"],
-html.dark [class*="text-sky-700"],
-.dark [class*="text-sky-700"],
-html.dark [class*="text-sky-600"],
-.dark [class*="text-sky-600"],
-html.dark [class*="text-blue-950"],
-.dark [class*="text-blue-950"],
-html.dark [class*="text-blue-900"],
-.dark [class*="text-blue-900"],
-html.dark [class*="text-blue-800"],
-.dark [class*="text-blue-800"],
-html.dark [class*="text-blue-700"],
-.dark [class*="text-blue-700"],
-html.dark [class*="text-blue-600"],
-.dark [class*="text-blue-600"] {
-  color: #da8eff !important;
-}
-
-html.dark [class*="text-sky-400"],
-.dark [class*="text-sky-400"],
-html.dark [class*="text-sky-300"],
-.dark [class*="text-sky-300"],
-html.dark [class*="text-blue-400"],
-.dark [class*="text-blue-400"],
-html.dark [class*="text-blue-300"],
-.dark [class*="text-blue-300"] {
-  color: #e8d5ff !important;
-}
-
-html.dark [class*="bg-emerald-50"],
-.dark [class*="bg-emerald-50"],
-html.dark [class*="bg-green-50"],
-.dark [class*="bg-green-50"] {
-  background-color: rgba(16, 185, 129, 0.15) !important;
-  border-color: rgba(16, 185, 129, 0.3) !important;
-}
-
-html.dark [class*="text-emerald-900"],
-.dark [class*="text-emerald-900"],
-html.dark [class*="text-emerald-950"],
-.dark [class*="text-emerald-950"],
-html.dark [class*="text-green-900"],
-.dark [class*="text-green-900"] {
-  color: #10b981 !important;
-}
-
-html.dark [class*="bg-amber-50"],
-.dark [class*="bg-amber-50"],
-html.dark [class*="bg-yellow-50"],
-.dark [class*="bg-yellow-50"] {
-  background-color: rgba(245, 158, 11, 0.15) !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
-}
-
-html.dark [class*="text-amber-900"],
-.dark [class*="text-amber-900"],
-html.dark [class*="text-amber-950"],
-.dark [class*="text-amber-950"] {
-  color: #f59e0b !important;
-}
-
-html.dark [class*="bg-rose-50"],
-.dark [class*="bg-rose-50"],
-html.dark [class*="bg-red-50"],
-.dark [class*="bg-red-50"] {
-  background-color: rgba(239, 68, 68, 0.15) !important;
-  border-color: rgba(239, 68, 68, 0.3) !important;
-}
-
-html.dark [class*="text-rose-900"],
-.dark [class*="text-rose-900"],
-html.dark [class*="text-rose-950"],
-.dark [class*="text-rose-950"],
-html.dark [class*="text-red-900"],
-.dark [class*="text-red-900"] {
-  color: #ef4444 !important;
-}
-
-html.dark [class*="bg-purple-50"],
-.dark [class*="bg-purple-50"],
-html.dark [class*="bg-indigo-50"],
-.dark [class*="bg-indigo-50"] {
-  background-color: rgba(139, 92, 246, 0.15) !important;
-  border-color: rgba(139, 92, 246, 0.3) !important;
-}
-
-html.dark [class*="text-purple-900"],
-.dark [class*="text-purple-900"],
-html.dark [class*="text-indigo-900"],
-.dark [class*="text-indigo-900"] {
-  color: #8b5cf6 !important;
 }
 
 /* Modals & Dialog overlays */
@@ -1293,47 +1013,7 @@ input[type="radio"]:active {
 
 
 
-@theme {
-  --color-blue-50: #f8fafc;
-  --color-blue-100: #f1f5f9;
-  --color-blue-200: #e2e8f0;
-  --color-blue-300: #cbd5e1;
-  --color-blue-400: #94a3b8;
-  --color-blue-500: #64748b;
-  --color-blue-600: #475569;
-  --color-blue-700: #334155;
-  --color-blue-800: #1e293b;
-  --color-blue-900: #0f172a;
-  --color-blue-950: #020617;
-}
 
-@theme {
-  --color-sky-50: #f8fafc;
-  --color-sky-100: #f1f5f9;
-  --color-sky-200: #e2e8f0;
-  --color-sky-300: #cbd5e1;
-  --color-sky-400: #94a3b8;
-  --color-sky-500: #64748b;
-  --color-sky-600: #475569;
-  --color-sky-700: #334155;
-  --color-sky-800: #1e293b;
-  --color-sky-900: #0f172a;
-  --color-sky-950: #020617;
-}
-
-@theme {
-  --color-indigo-50: #f8fafc;
-  --color-indigo-100: #f1f5f9;
-  --color-indigo-200: #e2e8f0;
-  --color-indigo-300: #cbd5e1;
-  --color-indigo-400: #94a3b8;
-  --color-indigo-500: #64748b;
-  --color-indigo-600: #475569;
-  --color-indigo-700: #334155;
-  --color-indigo-800: #1e293b;
-  --color-indigo-900: #0f172a;
-  --color-indigo-950: #020617;
-}
 
 /* ==========================================================================
    ANIMATED TOAST NOTIFICATION SYSTEM (RIGHT-ALIGNED, FILLED BACKGROUND)

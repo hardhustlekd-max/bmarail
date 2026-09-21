@@ -15,7 +15,6 @@ interface A4PermitPaperProps {
 }
 
 export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang, onClose, autoPrint = false }) => {
-  if (!registration) return null;
   const isAmharic = lang === 'am';
   const containerRef = useRef<HTMLDivElement>(null);
   const [standaloneFitScale, setStandaloneFitScale] = useState<number>(1);
@@ -52,6 +51,8 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
       return () => clearTimeout(timer);
     }
   }, [autoPrint]);
+
+  if (!registration) return null;
 
   const regId = registration.id || '';
   const name = registration.fullName || '—';

@@ -19,7 +19,6 @@ export const autoCapitalize = (str?: string): string => {
 };
 
 export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) => {
-  if (!registration) return null;
   const isAmharic = lang === 'am';
   const [printError, setPrintError] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,6 +47,8 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
     window.addEventListener('resize', updateScale);
     return () => window.removeEventListener('resize', updateScale);
   }, []);
+
+  if (!registration) return null;
 
   const formatNameDisplay = (rawName?: string) => {
     if (!rawName || rawName.trim() === '') return { am: '—', en: '' };

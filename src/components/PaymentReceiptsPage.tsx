@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Icon } from './ui/Icon';
+import { KpiCard } from './ui/AssocDesignSystem';
 import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
@@ -37,10 +38,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   isLoading = false,
 }) => {
   const isAmharic = lang === 'am';
-
-  if (isLoading) {
-    return null;
-  }
 
   // Granular RBAC Permission checks for Entry Form (Task 10), Financial KPIs (Task 17), and Table (Task 16)
   const entryFormPermission = getPermissionState(userRole, 10);
@@ -522,6 +519,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     };
   }, [paymentReceipts]);
 
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <div className="space-y-4 pb-12">
       {/* HEADER SECTION: Clean, high-contrast, non-nested */}
@@ -563,83 +564,42 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {/* KPI METRIC CARDS: High-Contrast Sunlight Legible */}
       {canViewKPIs && (
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
-          {/* Total Revenue */}
-          <div className="p-3.5">
-            <div className="text-center">
-              <span className="text-[11px] font-extrabold uppercase text-slate-700 dark:text-slate-300 tracking-wider block">
-                {isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
-              </span>
-            </div>
-            <div className="mt-1.5 text-center">
-              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
-                {metrics.totalRevenue.toLocaleString()}
-              </span>
-              <span className="text-[11px] font-extrabold text-slate-700 dark:text-slate-300 ml-1">ETB</span>
-            </div>
-            <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300 mt-0.5 block text-center">
-              {metrics.totalReceipts} {isAmharic ? 'የተመዘገቡ ደረሰኞች' : 'receipts recorded'}
-            </span>
-          </div>
-
-          {/* Active / Current */}
-          <div className="p-3.5">
-            <div className="text-center">
-              <span className="text-[11px] font-extrabold uppercase text-emerald-800 dark:text-emerald-300 tracking-wider block">
-                {isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
-              </span>
-            </div>
-            <div className="mt-1.5 text-center">
-              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
-                {metrics.activeCount}
-              </span>
-              <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-400 ml-1">
-                {isAmharic ? 'ባለቤቶች' : 'owners'}
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 mt-0.5 block text-center">
-              {isAmharic ? 'የ1 ወር ክፍያቸው ያልተጠናቀቀ' : 'Payment term up to date'}
-            </span>
-          </div>
-
-          {/* Expiring Soon (DUE) */}
-          <div className="p-3.5">
-            <div className="text-center">
-              <span className="text-[11px] font-extrabold uppercase text-amber-800 dark:text-amber-300 tracking-wider block">
-                {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
-              </span>
-            </div>
-            <div className="mt-1.5 text-center">
-              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
-                {metrics.expiringCount}
-              </span>
-              <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-400 ml-1">
-                {isAmharic ? 'ባለቤቶች' : 'owners'}
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400 mt-0.5 block text-center">
-              {isAmharic ? 'በ 7 ቀናት ውስጥ የሚያልቅ' : 'Expires within 7 days'}
-            </span>
-          </div>
-
-          {/* Delinquent / Expired */}
-          <div className="p-3.5">
-            <div className="text-center">
-              <span className="text-[11px] font-extrabold uppercase text-rose-800 dark:text-rose-300 tracking-wider block">
-                {isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}
-              </span>
-            </div>
-            <div className="mt-1.5 text-center">
-              <span className="text-base sm:text-lg font-bold text-slate-700 dark:text-slate-300 font-mono">
-                {metrics.expiredCount}
-              </span>
-              <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-400 ml-1">
-                {isAmharic ? 'ባለቤቶች' : 'owners'}
-              </span>
-            </div>
-            <span className="text-[10px] font-bold text-rose-800 dark:text-rose-400 mt-0.5 block text-center">
-              {isAmharic ? 'ክፍያ ያልፈፀሙ / ዕዳ ያለባቸው' : 'Overdue terms requiring renewal'}
-            </span>
-          </div>
+          <KpiCard
+            label={isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
+            value={`${metrics.totalRevenue.toLocaleString()} ETB`}
+            subtext={`${metrics.totalReceipts} ${isAmharic ? 'የተመዘገቡ ደረሰኞች' : 'receipts recorded'}`}
+            colorVariant="default"
+            icon="account_balance_wallet"
+            onClick={() => setStatusFilter('all')}
+            className={`cursor-pointer transition-all ${statusFilter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
+          />
+          <KpiCard
+            label={isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
+            value={`${metrics.activeCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
+            subtext={isAmharic ? 'የ1 ወር ክፍያቸው ያልተጠናቀቀ' : 'Payment term up to date'}
+            colorVariant="success"
+            icon="verified"
+            onClick={() => setStatusFilter('active')}
+            className={`cursor-pointer transition-all ${statusFilter === 'active' ? 'ring-2 ring-emerald-500' : ''}`}
+          />
+          <KpiCard
+            label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
+            value={`${metrics.expiringCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
+            subtext={isAmharic ? 'በ 7 ቀናት ውስጥ የሚያልቅ' : 'Expires within 7 days'}
+            colorVariant="warning"
+            icon="warning"
+            onClick={() => setStatusFilter('expiring_soon')}
+            className={`cursor-pointer transition-all ${statusFilter === 'expiring_soon' ? 'ring-2 ring-amber-500' : ''}`}
+          />
+          <KpiCard
+            label={isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}
+            value={`${metrics.expiredCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
+            subtext={isAmharic ? 'ክፍያ ያልፈፀሙ / ዕዳ ያለባቸው' : 'Overdue terms requiring renewal'}
+            colorVariant="danger"
+            icon="error"
+            onClick={() => setStatusFilter('expired')}
+            className={`cursor-pointer transition-all ${statusFilter === 'expired' ? 'ring-2 ring-rose-500' : ''}`}
+          />
         </div>
       )}
 

@@ -32,6 +32,7 @@ import {
   buildRegistrationDocumentList,
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
+import { MonthlyMatrixLedger, StatusDot } from './ui/AssocDesignSystem';
 
 interface MunicipalDashboardOverviewProps {
   userBadgeId: string;
@@ -230,6 +231,44 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           (r.engineOrSerialNo || '').toLowerCase().includes(searchPlate.trim().toLowerCase())
       )
     : null;
+
+  // Monthly Matrix Ledger columns and member dues rows (Dynamic 3-period window)
+  const matrixColumns = React.useMemo(
+    () => [
+      { key: 'm1', label: isAmharic ? 'ሚያዝያ (Apr)' : 'Apr' },
+      { key: 'm2', label: isAmharic ? 'ግንቦት (May)' : 'May' },
+      { key: 'm3', label: isAmharic ? 'ሰኔ (Jun)' : 'Jun' },
+    ],
+    [isAmharic]
+  );
+
+  const matrixRows = React.useMemo(() => {
+    return scopedRegs.slice(0, 8).map((reg) => {
+      const memberReceipts = scopedPaymentReceipts.filter(
+        (rc) => rc.ownerRegistrationId === reg.id || (rc.plateNumber && rc.plateNumber === reg.plateNumber)
+      );
+
+      const hasActive = memberReceipts.some((rc) => {
+        const { status } = getPaymentReceiptStatus(rc.expirationDate);
+        return status === 'active';
+      });
+      const hasExpiring = memberReceipts.some((rc) => {
+        const { status } = getPaymentReceiptStatus(rc.expirationDate);
+        return status === 'expiring_soon';
+      });
+
+      return {
+        id: reg.id,
+        title: reg.fullName || reg.plateNumber,
+        subtitle: `${reg.plateNumber || '—'} • ${reg.serviceCategory || (isAmharic ? 'ሞተርሳይክል' : 'Motorcycle')}`,
+        periods: {
+          m1: memberReceipts.length > 0 ? ('paid' as const) : ('unpaid' as const),
+          m2: memberReceipts.length > 1 || hasActive ? ('paid' as const) : ('unpaid' as const),
+          m3: hasActive ? ('paid' as const) : hasExpiring ? ('pending' as const) : ('unpaid' as const),
+        },
+      };
+    });
+  }, [scopedRegs, scopedPaymentReceipts, isAmharic]);
 
   // Dynamic role-based Quick Action Shortcuts configuration (Driven by RBAC Permissions Matrix)
   const getRoleQuickActions = () => {
@@ -457,7 +496,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{users.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{users.length}</p>
             </div>
 
             {/* Super Admins & Admins */}
@@ -470,7 +509,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-purple-700 dark:text-purple-400 tracking-tight leading-tight text-center">
                 {users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length}
               </p>
             </div>
@@ -485,7 +524,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የታገዱ' : 'Blocked'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
                 {users.filter((u) => u.status === 'disabled').length}
               </p>
             </div>
@@ -500,7 +539,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ፈቃዶች' : 'Permits'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{registrations.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-teal-700 dark:text-teal-400 tracking-tight leading-tight text-center">{registrations.length}</p>
             </div>
 
             {/* Pending Approvals */}
@@ -513,7 +552,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የሚጠብቁ' : 'Pending'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight text-center">
                 {registrations.filter((r) => r.status === 'pending_approval').length}
               </p>
             </div>
@@ -528,7 +567,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ደህንነት' : 'Security'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">99.9%</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight text-center">99.9%</p>
             </div>
           </div>
         </div>
@@ -589,7 +628,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ጠቅላላ የቀረቡ' : 'Submitted'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{registrations.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{registrations.length}</p>
             </button>
 
             <button
@@ -601,7 +640,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የሚጠበቁ' : 'Review'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{pendingCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight text-center">{pendingCount}</p>
             </button>
 
             <button
@@ -613,7 +652,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የጸደቁ' : 'Approved'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight text-center">{approvedCount}</p>
             </button>
 
             <button
@@ -625,7 +664,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ውድቅ' : 'Rejected'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
             </button>
           </div>
         </div>
@@ -656,7 +695,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{paymentMetrics.total}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{paymentMetrics.total}</p>
                 </div>
 
                 {/* Active Valid (1 month) */}
@@ -669,7 +708,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ትክክለኛ' : 'Valid'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                  <p className="text-base sm:text-xl lg:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight text-center">
                     {paymentMetrics.activeCount}
                   </p>
                 </div>
@@ -684,7 +723,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                  <p className="text-base sm:text-xl lg:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight text-center">
                     {paymentMetrics.expiringSoonCount}
                   </p>
                 </div>
@@ -699,7 +738,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ያለፈበት' : 'Expired'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                  <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
                     {paymentMetrics.expiredCount}
                   </p>
                 </div>
@@ -727,6 +766,62 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               }
             }}
           />
+
+          {/* 2.5. Monthly Matrix Ledger Lookup (Association Dues Tracker from Prototype) */}
+          {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17) || userRole === 'admin' || userRole === 'superadmin') && (
+            <div className="p-4 sm:p-5 space-y-3 bg-slate-50/50 dark:bg-slate-900/30">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-outline-variant/60">
+                <div className="flex items-center gap-2.5">
+                  <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">calendar_month</Icon>
+                  <div>
+                    <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white uppercase tracking-wider">
+                      {isAmharic ? 'የወርሃዊ መዋጮ ማትሪክስ መዝገብ' : 'Monthly Matrix Ledger Lookup'}
+                    </h3>
+                    <p className="text-xs text-secondary">
+                      {isAmharic ? 'የአባላት የቅርብ ጊዜ ወርሃዊ ክፍያዎች እና መዋጮ ሁኔታ' : 'Quick visual compliance grid across recent monthly terms'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3 text-[11px] font-medium text-secondary">
+                    <span className="inline-flex items-center gap-1">
+                      <StatusDot status="paid" size={10} />
+                      <span>{isAmharic ? 'የተከፈለ' : 'Paid'}</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <StatusDot status="pending" size={10} />
+                      <span>{isAmharic ? 'ሊያልቅ የደረሰ' : 'Due'}</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <StatusDot status="unpaid" size={10} />
+                      <span>{isAmharic ? 'ያልተከፈለ' : 'Unpaid'}</span>
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+                    className="text-xs font-bold text-primary hover:underline ml-2 flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                  >
+                    <span>{isAmharic ? 'ሙሉ መዝገብ' : 'Open Ledger'}</span>
+                    <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-slate-900 rounded-lg border border-outline-variant/60 overflow-hidden shadow-2xs">
+                <MonthlyMatrixLedger
+                  columns={matrixColumns}
+                  rows={matrixRows}
+                  onRowClick={(row) => {
+                    const matching = scopedRegs.find((r) => String(r.id) === String(row.id));
+                    if (matching) {
+                      setSelectedRegForModal(matching);
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           {/* 3. Patrol & Inspection Hub (Visible when Inspection Logs Task is viewable) */}
           {isTaskViewable(userRole, 6) && (

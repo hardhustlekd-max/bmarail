@@ -80,10 +80,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 }) => {
   const isAmharic = lang === 'am';
 
-  if (isLoading) {
-    return null;
-  }
-
   const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const hasTaskEditPermission = isTaskAllowed(userRole, 2);
   const isReadOnly = !isSuperAdmin && getPermissionState(userRole, 2) === 'view_only';
@@ -655,6 +651,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       setIsSubmittingRenewal(false);
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-4">

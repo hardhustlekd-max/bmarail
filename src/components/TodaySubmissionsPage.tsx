@@ -50,10 +50,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 }) => {
   const isAmharic = lang === 'am';
 
-  if (isLoading) {
-    return null;
-  }
-
   const isReadOnly = getPermissionState(userRole, 2) === 'view_only';
   const isAdminOrSuperAdmin = userRole === 'admin' || userRole === 'superadmin' || (userRole as string) === 'super_admin' || (userRole as string) === 'manager';
 
@@ -565,6 +561,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       setSelectedRegIds(next);
     }
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="space-y-4">
