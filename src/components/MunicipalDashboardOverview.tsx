@@ -625,25 +625,27 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           )}
 
           {/* 2. Member Directory Statistics */}
-          <PermitStatusSummary
-            registrations={registrations}
-            lang={lang}
-            isLoading={isLoading}
-            borderless={true}
-            onSelectStatusFilter={(statusKey) => {
-              if (onQuickAction) {
-                if (statusKey === 'pending_approval') {
-                  onQuickAction('kpi_pending');
-                } else if (statusKey === 'approved') {
-                  onQuickAction('kpi_approved');
-                } else if (statusKey === 'rejected') {
-                  onQuickAction('kpi_expired');
-                } else {
-                  onQuickAction('system_records');
+          {isTaskViewable(userRole, 3) && (
+            <PermitStatusSummary
+              registrations={registrations}
+              lang={lang}
+              isLoading={isLoading}
+              borderless={true}
+              onSelectStatusFilter={(statusKey) => {
+                if (onQuickAction) {
+                  if (statusKey === 'pending_approval') {
+                    onQuickAction('kpi_pending');
+                  } else if (statusKey === 'approved') {
+                    onQuickAction('kpi_approved');
+                  } else if (statusKey === 'rejected') {
+                    onQuickAction('kpi_expired');
+                  } else {
+                    onQuickAction('system_records');
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+          )}
 
           {/* 2.5. Monthly Matrix Ledger Lookup (Association Dues Tracker from Prototype) */}
           {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17) || userRole === 'admin' || userRole === 'superadmin') && (

@@ -154,6 +154,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     registrations: false,
     verification: false,
+    revenue: false,
     superadmin: false,
     settings: false,
   });
@@ -1640,7 +1641,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           </button>
                         )}
 
-                        {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 8) && (
+                        {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 3) && (
                           <button
                             type="button"
                             onClick={() => setActivePage('tables')}
@@ -1655,7 +1656,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           </button>
                         )}
 
-                        {settings.showClerkApprovedVehiclesAction && isTaskViewable(userRole, 8) && (
+                        {settings.showClerkApprovedVehiclesAction && isTaskViewable(userRole, 3) && (
                           <button
                             type="button"
                             onClick={() => {
@@ -1709,7 +1710,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           </button>
                         )}
 
-                        {userRole !== 'officer' && isTaskViewable(userRole, 8) && (
+                        {userRole !== 'officer' && isTaskViewable(userRole, 3) && (
                           <button
                             type="button"
                             onClick={() => setActivePage('tables')}
@@ -1769,7 +1770,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       </button>
                     )}
 
-                    {isTaskViewable(userRole, 10) && (
+                    {isTaskViewable(userRole, 6) && (
                       <button
                         type="button"
                         onClick={() => {
@@ -1820,6 +1821,49 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* GROUP 3.5: REVENUE & PAYMENTS (Expandable Accordion Submenu) */}
+            {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
+              <div className="pt-1 border-t border-[#2E3A47]">
+                <button
+                  type="button"
+                  onClick={() => toggleGroup('revenue')}
+                  className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold  tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
+                    isCollapsed ? 'justify-center p-2' : 'px-2.5 py-1.5'
+                  }`}
+                  title={isAmharic ? 'ገቢና ክፍያ' : 'Revenue & Payments'}
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <Icon className="material-symbols-outlined text-[15px] shrink-0">payments</Icon>
+                    {!isCollapsed && <span className="truncate">{isAmharic ? 'ገቢና ክፍያ' : 'Revenue & Payments'}</span>}
+                  </div>
+                  {!isCollapsed && (
+                    <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.revenue ? 'rotate-180 text-slate-300' : 'text-[#8A99AD]'}`}>
+                      expand_more
+                    </Icon>
+                  )}
+                </button>
+
+                <div className={`collapsible-grid ${expandedGroups.revenue && !isCollapsed ? 'expanded' : ''}`}>
+                  <div className="collapsible-grid-inner">
+                    <div className="mt-0.5 space-y-0.5 pl-2 border-l-2 border-[#2E3A47] ml-2.5 py-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setActivePage('payment_receipts')}
+                        className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
+                          activePage === 'payment_receipts'
+                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
+                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
+                        }`}
+                      >
+                        <Icon className="material-symbols-outlined text-[15px] text-emerald-400 shrink-0">receipt_long</Icon>
+                        <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* GROUP 4: SUPER ADMIN GOVERNANCE (Expandable Accordion Submenu) */}
             {userRole === 'superadmin' && (
@@ -1896,19 +1940,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       >
                         <Icon className="material-symbols-outlined text-[15px] shrink-0">storage</Icon>
                         <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setActivePage('payment_receipts')}
-                        className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
-                          activePage === 'payment_receipts'
-                            ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
-                            : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
-                        }`}
-                      >
-                        <Icon className="material-symbols-outlined text-[15px] text-emerald-400 shrink-0">receipt_long</Icon>
-                        <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
                       </button>
                     </div>
                   </div>
@@ -2081,7 +2112,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   </button>
                 )}
 
-                {isTaskViewable(userRole, 10) && (
+                {isTaskViewable(userRole, 6) && (
                   <button
                     type="button"
                     onClick={() => {
@@ -2323,7 +2354,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               </button>
                             )}
 
-                            {settings.showClerkSubmissionsAction && (
+                             {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 3) && (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -2344,7 +2375,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               </button>
                             )}
 
-                            {settings.showClerkApprovedVehiclesAction && (
+                            {settings.showClerkApprovedVehiclesAction && isTaskViewable(userRole, 3) && (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -2414,7 +2445,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               </button>
                             )}
 
-                            {userRole !== 'officer' && (
+                             {userRole !== 'officer' && isTaskViewable(userRole, 3) && (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -2481,7 +2512,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           </button>
                         )}
 
-                        {isTaskViewable(userRole, 10) && (
+                        {isTaskViewable(userRole, 6) && (
                           <button
                             type="button"
                             onClick={() => {
@@ -2548,6 +2579,50 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Expandable Group: Revenue & Payments (Visible if user has Task 10, 16, or 17) */}
+                {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={() => toggleGroup('revenue')}
+                      className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-xs font-black  text-emerald-300 hover:bg-emerald-900/40 active:scale-[0.98] transition-all cursor-pointer select-none"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className="material-symbols-outlined text-[18px] text-emerald-300">payments</Icon>
+                        <span>{isAmharic ? 'ገቢና ክፍያ' : 'Revenue & Payments'}</span>
+                      </div>
+                      <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-200 ${expandedGroups.revenue ? 'rotate-180 text-emerald-300' : 'text-emerald-300'}`}>
+                        expand_more
+                      </Icon>
+                    </button>
+
+                    <div className={`collapsible-grid ${expandedGroups.revenue ? 'expanded' : ''}`}>
+                      <div className="collapsible-grid-inner">
+                        <div className="mt-0.5 space-y-0.5 pl-2 border-l-2 border-emerald-400/40 ml-2 py-0.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActivePage('payment_receipts');
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                              activePage === 'payment_receipts'
+                                ? 'bg-amber-400 text-[#1e293b] font-black shadow-2xs'
+                                : 'text-[#8A99AD] hover:bg-white/10 hover:text-white'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Icon className="material-symbols-outlined text-[18px] text-emerald-400">receipt_long</Icon>
+                              <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
+                            </div>
+                            <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Expandable Group: Super Admin (Visible if superadmin) */}
                 {userRole === 'superadmin' && (
@@ -2641,25 +2716,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             <div className="flex items-center gap-2">
                               <Icon className="material-symbols-outlined text-[18px] text-amber-300">storage</Icon>
                               <span>{isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance'}</span>
-                            </div>
-                            <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setActivePage('payment_receipts');
-                              setIsMobileMenuOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                              activePage === 'payment_receipts'
-                                ? 'bg-amber-400 text-[#1e293b] font-black shadow-2xs'
-                                : 'text-purple-100 hover:bg-purple-900/30'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <Icon className="material-symbols-outlined text-[18px] text-emerald-400">receipt_long</Icon>
-                              <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
                             </div>
                             <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
                           </button>

@@ -5,6 +5,7 @@ import { SharedScannerModal } from '../../components/SharedScannerModal';
 import { OfficerVerificationHistory } from '../../components/OfficerVerificationHistory';
 import { UnregisteredVehicleForm } from '../../components/UnregisteredVehicleForm';
 import { UnregisteredReportsList } from '../../components/UnregisteredReportsList';
+import { isTaskViewable } from '../../services/dbService';
 
 interface EnforcementRouterProps {
   activePage: string;
@@ -33,6 +34,17 @@ export const EnforcementRouter: React.FC<EnforcementRouterProps> = ({
   } = useData();
 
   if (activePage === 'scan') {
+    if (!isTaskViewable(userRole, 5)) {
+      return (
+        <div className="p-6 text-center">
+          <p className="text-rose-500 font-bold">
+            {lang === 'am' 
+              ? 'ይህንን ገጽ ለመመልከት ፈቃድ የለዎትም።' 
+              : 'You do not have permission to view this page.'}
+          </p>
+        </div>
+      );
+    }
     return (
       <SharedScannerModal
         isOpen={true}
@@ -48,6 +60,17 @@ export const EnforcementRouter: React.FC<EnforcementRouterProps> = ({
   }
 
   if (activePage === 'inspection_report') {
+    if (!isTaskViewable(userRole, 6)) {
+      return (
+        <div className="p-6 text-center">
+          <p className="text-rose-500 font-bold">
+            {lang === 'am' 
+              ? 'ይህንን ገጽ ለመመልከት ፈቃድ የለዎትም።' 
+              : 'You do not have permission to view this page.'}
+          </p>
+        </div>
+      );
+    }
     return (
       <OfficerVerificationHistory
         lang={lang}
@@ -61,6 +84,17 @@ export const EnforcementRouter: React.FC<EnforcementRouterProps> = ({
   }
 
   if (activePage === 'report_unregistered') {
+    if (!isTaskViewable(userRole, 7)) {
+      return (
+        <div className="p-6 text-center">
+          <p className="text-rose-500 font-bold">
+            {lang === 'am' 
+              ? 'ይህንን ገጽ ለመመልከት ፈቃድ የለዎትም።' 
+              : 'You do not have permission to view this page.'}
+          </p>
+        </div>
+      );
+    }
     return (
       <UnregisteredVehicleForm
         lang={lang}
@@ -74,6 +108,17 @@ export const EnforcementRouter: React.FC<EnforcementRouterProps> = ({
   }
 
   if (activePage === 'unregistered_list') {
+    if (!isTaskViewable(userRole, 7)) {
+      return (
+        <div className="p-6 text-center">
+          <p className="text-rose-500 font-bold">
+            {lang === 'am' 
+              ? 'ይህንን ገጽ ለመመልከት ፈቃድ የለዎትም።' 
+              : 'You do not have permission to view this page.'}
+          </p>
+        </div>
+      );
+    }
     return (
       <UnregisteredReportsList
         lang={lang}
