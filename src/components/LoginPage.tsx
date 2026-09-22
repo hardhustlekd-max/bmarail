@@ -84,7 +84,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
           <div className="min-w-0">
             <h1 className={`text-white leading-tight truncate whitespace-nowrap ${lang === 'am' ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
-              {lang === 'am' ? 'ባህር ዳር ሞተረኞች ማህበር' : 'BAHIRDAR MOTORIST ASSOCIATION'}
+              {lang === 'am' ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahir Dar Motorist Association'}
             </h1>
           </div>
         </div>

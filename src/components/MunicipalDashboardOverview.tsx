@@ -183,16 +183,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       else if (status === 'expired') expiredCount++;
     });
 
-    if (total === 0) {
-      const approvedRegs = registrations.filter(r => r.status === 'approved' || r.status === 'printed').length;
-      total = registrations.length > 0 ? registrations.length : 12;
-      activeCount = approvedRegs > 0 ? approvedRegs : 10;
-      expiringSoonCount = 2;
-      expiredCount = registrations.filter(r => r.status === 'rejected').length > 0 ? registrations.filter(r => r.status === 'rejected').length : 1;
-    }
-
     return { total, activeCount, expiringSoonCount, expiredCount };
-  }, [scopedPaymentReceipts, registrations]);
+  }, [scopedPaymentReceipts]);
 
   // Verification logs for dashboard metrics:
   // - Only logs associated with hidden vehicles are excluded for non-superadmins
@@ -487,13 +479,13 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">admin_panel_settings</Icon>
               <div>
                 <h3 className="text-sm sm:text-base font-black text-on-surface  tracking-wider">
-                  {isAmharic ? 'የበላይ አስተዳዳሪ ቁጥጥር ማዕከል' : 'Super Admin Governance Metrics'}
+                  {isAmharic ? 'የሲስተሙ ተጠቃሚዎች ስታቲስቲክስ' : 'System Users Statistics'}
                 </h3>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-3">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
             {/* Total Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
@@ -535,47 +527,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
                 {users.filter((u) => u.status === 'disabled').length}
               </p>
-            </div>
-
-            {/* Registrations Total */}
-            <div
-              onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="p-2 sm:p-3 rounded-lg bg-teal-50 dark:bg-teal-900/20 hover:bg-teal-100 dark:hover:bg-teal-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-            >
-              <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-teal-600">
-                  {isAmharic ? 'ፈቃዶች' : 'Permits'}
-                </span>
-              </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-teal-700 dark:text-teal-400 tracking-tight leading-tight text-center">{registrations.length}</p>
-            </div>
-
-            {/* Pending Approvals */}
-            <div
-              onClick={() => onQuickAction && onQuickAction('pending_approvals')}
-              className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-            >
-              <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-amber-600">
-                  {isAmharic ? 'የሚጠብቁ' : 'Pending'}
-                </span>
-              </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight text-center">
-                {registrations.filter((r) => r.status === 'pending_approval').length}
-              </p>
-            </div>
-
-            {/* System Security Score */}
-            <div
-              onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-            >
-              <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-emerald-600">
-                  {isAmharic ? 'ደህንነት' : 'Security'}
-                </span>
-              </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight text-center">99.9%</p>
             </div>
           </div>
         </div>
@@ -626,7 +577,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
                 {/* Total Receipts */}
                 <div
                   onClick={() => onQuickAction && onQuickAction('payment_receipts')}
@@ -634,25 +585,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
                     <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-slate-700">
-                      {isAmharic ? 'ጠቅላላ ደረሰኞች' : 'Total Receipts'}
+                      {isAmharic ? 'ጠቅላላ የተከፈሉ' : 'Total Paid'}
                     </span>
                   </div>
                   <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{paymentMetrics.total}</p>
-                </div>
-
-                {/* Active Valid (1 month) */}
-                <div
-                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-                >
-                  <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-emerald-600">
-                      {isAmharic ? 'ትክክለኛ' : 'Valid'}
-                    </span>
-                  </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight text-center">
-                    {paymentMetrics.activeCount}
-                  </p>
                 </div>
 
                 {/* Expiring Soon */}
@@ -662,7 +598,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
                     <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-amber-600">
-                      {isAmharic ? 'ሊያልቅ የደረሰ' : 'Expiring'}
+                      {isAmharic ? 'የክፍያ ቀናቸው የደረሰ' : 'Payment Due'}
                     </span>
                   </div>
                   <p className="text-base sm:text-xl lg:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight text-center">
@@ -677,7 +613,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
                     <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-rose-600">
-                      {isAmharic ? 'ያለፈበት' : 'Expired'}
+                      {isAmharic ? 'የክፍያ ቀን ያለፈበት' : 'Payment Overdue'}
                     </span>
                   </div>
                   <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
@@ -688,7 +624,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             </div>
           )}
 
-          {/* 2. Permit Status Breakdown */}
+          {/* 2. Member Directory Statistics */}
           <PermitStatusSummary
             registrations={registrations}
             lang={lang}
@@ -773,13 +709,13 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
                   <div>
                     <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white  tracking-wider">
-                      {isAmharic ? 'የመስክ ቁጥጥርና ፍተሻ ማዕከል' : 'Patrol & Inspection Hub'}
+                      {isAmharic ? 'የመሰክ ፍተሻ ስታትስቲክስ' : 'Patrol Inspection Stats'}
                     </h3>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-1.5 sm:gap-3">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
@@ -791,19 +727,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                     </span>
                   </div>
                   <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
-                >
-                  <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
-                      {isAmharic ? 'የፀደቁ' : 'Valid'}
-                    </span>
-                  </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
                 </button>
 
                 <button

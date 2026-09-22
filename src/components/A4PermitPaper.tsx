@@ -113,8 +113,8 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
             <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none select-none z-0">
               <div className="w-[500px] h-[500px] rounded-full border-[16px] border-black flex items-center justify-center p-8">
                 <div className="w-full h-full rounded-full border-4 border-dashed border-black flex flex-col items-center justify-center text-center p-4 relative overflow-hidden">
-                  <span className="text-4xl font-black  tracking-widest text-black">BAHIRDAR TRANSPORT</span>
-                  <span className="text-2xl font-bold mt-2 text-black">OFFICIAL PERMIT CERTIFICATE</span>
+                  <span className="text-4xl font-black tracking-widest text-black">Bahir Dar Transport</span>
+                  <span className="text-2xl font-bold mt-2 text-black">Official Permit Certificate</span>
                 </div>
               </div>
             </div>
@@ -125,10 +125,10 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
               {/* Top Banner with Permit Type Tag and QR Code on Top Right */}
               <div className="flex justify-between items-center border-b border-black pb-2">
                 <div className="flex items-center gap-2">
-                  <span className="border border-black px-2 py-0.5 text-[10px] font-bold  bg-slate-100">
+                  <span className="border border-black px-2 py-0.5 text-[10px] font-bold bg-slate-100">
                     [ኦፊሴላዊ ፈቃድ]
                   </span>
-                  <span className="font-bold text-xs  tracking-wide">
+                  <span className="font-bold text-xs tracking-wide">
                     የሞተር ሳይክል መንቀሳቀሻ ፈቃድ (ክፍል-ሀ)
                   </span>
                 </div>
@@ -150,24 +150,24 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                     <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
                   </div>
                 </div>
-                <h1 className="text-xs font-black text-black  tracking-wider">
+                <h1 className="text-xs font-black text-black tracking-wider">
                   ባህር ዳር ሞተረኞች ማህበር
                 </h1>
                 <h2 className="text-[11px] font-bold text-black tracking-wide">
-                  BAHIRDAR MOTORIST ASSOCIATION
+                  Bahir Dar Motorist Association
                 </h2>
                 <div className="text-[11px] font-bold text-black pt-0.5">
-                  የተሽከርካሪ ምዝገባ እና ፈቃድ ክፍል (BAHIRDAR MOTORIST ASSOCIATION)
+                  የተሽከርካሪ ምዝገባ እና ፈቃድ ክፍል (Bahir Dar Motorist Association)
                 </div>
               </div>
 
               {/* Permit Title Banner */}
-              <div className="text-center py-1.5 border border-black bg-slate-100  tracking-widest font-black text-xs">
-                PERMIT IN RESPECT OF MOTORCYCLE MOVEMENT PERMIT
+              <div className="text-center py-1.5 border border-black bg-slate-100 tracking-widest font-black text-xs">
+                Permit in Respect of Motorcycle Movement Permit
               </div>
 
-              <div className="text-center font-bold text-xs  tracking-widest border-b border-black pb-1.5">
-                PART-A (ክፍል - ሀ)
+              <div className="text-center font-bold text-xs tracking-widest border-b border-black pb-1.5">
+                Part-A (ክፍል - ሀ)
               </div>
 
               {/* Section 1: Two-Column Form Details */}

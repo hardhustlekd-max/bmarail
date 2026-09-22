@@ -94,7 +94,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-black text-sm sm:text-base text-on-surface  tracking-wider">
-                {isAmharic ? 'የአባላት ማህደር ስታቲስቲክስ' : 'Member Directory Statistics'}
+                {isAmharic ? 'የአባላት ምዝገባ ስታቲስቲክስ' : 'Member Registration Statistics'}
               </h3>
             </div>
           </div>

@@ -1,7 +1,7 @@
 export const APP_LOGO = '/logo.png';
 export const APP_FLAG = '/flag.jpg';
 export const APP_TITLE_AM = 'ባህር ዳር ሞተረኞች ማህበር';
-export const APP_TITLE_EN = 'BAHIRDAR MOTORIST ASSOCIATION';
+export const APP_TITLE_EN = 'Bahir Dar Motorist Association';
 
 export const BAHIR_DAR_SUBCITIES = [
   { en: 'Fasilo', am: 'ፋሲሎ' },

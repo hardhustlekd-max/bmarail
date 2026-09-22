@@ -235,7 +235,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const currentDate = new Date();
   const [selectedYear, setSelectedYear] = useState<string>(String(currentDate.getFullYear()));
   const [selectedMonth, setSelectedMonth] = useState<string>(String(currentDate.getMonth() + 1));
-  const [dateRangeMode, setDateRangeMode] = useState<'current_month' | 'all' | 'custom'>('current_month');
+  const [dateRangeMode, setDateRangeMode] = useState<'current_month' | 'all' | 'custom'>('all');
 
   const matchesDateFilter = (rc: PaymentReceipt) => {
     if (dateRangeMode === 'all') return true;
@@ -687,7 +687,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             className={`cursor-pointer transition-all ${statusFilter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
           />
           <KpiCard
-            label={isAmharic ? 'ህጋዊ' : 'Active (CURRENT)'}
+            label={isAmharic ? 'ህጋዊ' : 'Active'}
             value={`${metrics.activeCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
             subtext={isAmharic ? 'የ1 ወር ክፍያቸው ያልተጠናቀቀ' : 'Payment term up to date'}
             colorVariant="success"
@@ -696,7 +696,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             className={`cursor-pointer transition-all ${statusFilter === 'active' ? 'ring-2 ring-emerald-500' : ''}`}
           />
           <KpiCard
-            label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon (DUE)'}
+            label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due soon'}
             value={`${metrics.expiringCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
             subtext={isAmharic ? 'በ 7 ቀናት ውስጥ የሚያልቅ' : 'Expires within 7 days'}
             colorVariant="warning"
@@ -705,7 +705,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             className={`cursor-pointer transition-all ${statusFilter === 'expiring_soon' ? 'ring-2 ring-amber-500' : ''}`}
           />
           <KpiCard
-            label={isAmharic ? 'ያለፈበት' : 'Expired (DELINQUENT)'}
+            label={isAmharic ? 'ያለፈበት' : 'Expired'}
             value={`${metrics.expiredCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
             subtext={isAmharic ? 'ክፍያ ያልፈፀሙ / ዕዳ ያለባቸው' : 'Overdue terms requiring renewal'}
             colorVariant="danger"
@@ -732,7 +732,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </h3>
             </div>
             <span className="text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
-              CLERK: {userBadgeId}
+              Clerk: {userBadgeId}
             </span>
           </div>
 
@@ -1737,7 +1737,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       <span>
                         {isAmharic
                           ? 'ትክክለኛ ማረጋገጫ ተገኝቷል! የማጣቀሻ ቁጥሩ ከባንክ መዝገብ ጋር ይዛመዳል።'
-                          : 'REFERENCE MATCH VERIFIED! Transaction successfully reconciled with bank ledger.'}
+                          : 'Reference match verified! Transaction successfully reconciled with bank ledger.'}
                       </span>
                     </div>
                   )}

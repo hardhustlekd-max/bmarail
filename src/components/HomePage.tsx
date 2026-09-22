@@ -2773,7 +2773,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 {isAmharic ? 'ባህር ዳር ሞተረኞች' : 'Bahir Dar Motorist'}
               </span>
               <span className="text-xs text-[#CBD5E1] dark:text-[#2E3A47]">/</span>
-              <span className="text-xs font-bold text-[#1C2434] dark:text-white capitalize">
+              <span className="text-xs font-bold text-[#1C2434] dark:text-white">
                 {breadcrumbItems[breadcrumbItems.length - 1]?.label}
               </span>
             </div>
@@ -3005,7 +3005,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     <p className="text-xs font-bold text-[#1C2434] dark:text-white">
                       {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                     </p>
-                    <p className="text-xs text-[#8A99AD] font-medium capitalize">
+                    <p className="text-xs text-[#8A99AD] font-medium">
                       {userRole === 'superadmin' ? 'Super Admin' : userRole === 'admin' ? 'Manager' : userRole === 'clerk' ? 'Secretary' : 'Officer'}
                     </p>
                   </div>
@@ -3025,7 +3025,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               onSwitchRole(r);
                               setIsUserDropdownOpen(false);
                             }}
-                            className={`px-2 py-1 rounded-sm text-[11px] font-medium capitalize text-left transition-all ${
+                            className={`px-2 py-1 rounded-sm text-[11px] font-medium text-left transition-all ${
                               userRole === r
                                 ? 'bg-slate-800 dark:bg-slate-700 text-white font-semibold'
                                 : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'

@@ -192,7 +192,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     badgeBg: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-300',
     governedComponents: {
       sideMenuAm: 'የክፍያ ደረሰኞች፣ የገቢ መዝገብ ሰንጠረዥ',
-      sideMenuEn: 'Payment Receipts, Revenue Ledger Table',
+      sideMenuEn: 'Payment Receipts, Monthly Fee Statistics Table',
       metricsAm: 'ጠቅላላ ገቢ፣ ንቁ ደረሰኞች፣ ጊዜያቸው ያለፈባቸው',
       metricsEn: 'Total Revenue (ETB), Active Receipts, Expired/Delinquent Terms',
       quickMenusAm: 'የክፍያ ደረሰኝ መዝግብ፣ ማረጋገጫ ፈትሽ',

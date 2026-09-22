@@ -1070,14 +1070,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             <div className="mt-3.5">
                               <ExpandableMemberCard
                                 fullName={user.fullName || (isAmharic ? 'ያልታወቀ ተጠቃሚ' : 'Unknown User')}
-                                roleOrTitle={user.role ? user.role.toUpperCase() : 'CLERK'}
+                                roleOrTitle={user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase()) : 'Clerk'}
                                 badgeId={user.badgeId || user.uid}
                                 status={user.status === 'disabled' ? 'disabled' : 'approved'}
                                 isAmharic={isAmharic}
                                 fields={[
                                   { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: user.uid },
                                   { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
-                                  { label: isAmharic ? 'የስራ ድርሻ:' : 'Role:', value: (user.role || 'CLERK').toUpperCase() },
+                                  { label: isAmharic ? 'የስራ ድርሻ:' : 'Role:', value: user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase()) : 'Clerk' },
                                 ]}
                               />
 
@@ -1216,7 +1216,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                         }`}
                       >
-                        {isFrozen ? (isAmharic ? 'ምዝገባ ታግዷል' : 'FROZEN') : (isAmharic ? 'ምዝገባ ክፍት' : 'ACTIVE')}
+                        {isFrozen ? (isAmharic ? 'ምዝገባ ታግዷል' : 'Frozen') : (isAmharic ? 'ምዝገባ ክፍት' : 'Active')}
                       </span>
                     </div>
 
@@ -1394,7 +1394,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         </td>
 
                         {/* Standalone Actor Role */}
-                        <td className="py-4 px-3 text-[#64748B] dark:text-[#8A99AD] capitalize whitespace-nowrap">
+                        <td className="py-4 px-3 text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
                           {log.actorRole || 'system'}
                         </td>
 
@@ -1619,7 +1619,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     key={sev}
                     type="button"
                     onClick={() => setAuditSeverityFilter(sev)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all capitalize cursor-pointer whitespace-nowrap shrink-0 ${
+                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                       auditSeverityFilter === sev
                         ? 'bg-[#1e293b] text-white shadow-xs'
                         : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
@@ -1678,7 +1678,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         </td>
 
                         {/* Standalone Actor Role */}
-                        <td className="py-3.5 px-3 text-[#64748B] dark:text-[#8A99AD] capitalize whitespace-nowrap">
+                        <td className="py-3.5 px-3 text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
                           <span className="px-2 py-0.5 rounded-sm bg-[#E2E8F0] dark:bg-[#2E3A47] text-[11px] font-medium">
                             {log.actorRole}
                           </span>
@@ -1785,7 +1785,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     {isSelected && (
                       <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-black  px-3 py-0.5 rounded-bl-lg flex items-center gap-1 shadow-xs">
                         <Icon className="material-symbols-outlined text-[12px]">check_circle</Icon>
-                        <span>{isAmharic ? 'ተመርጧል' : 'ACTIVE'}</span>
+                        <span>{isAmharic ? 'ተመርጧል' : 'Active'}</span>
                       </div>
                     )}
 
