@@ -460,7 +460,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
             ? (tableInitialTab === 'approved'
                 ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
                 : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
-            : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables'),
+            : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory'),
           page: 'tables',
           icon: userRole === 'clerk' ? (tableInitialTab === 'approved' ? 'verified' : 'folder_open') : 'table_chart',
         },
@@ -1609,7 +1609,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             }`}
                           >
                             <Icon className="material-symbols-outlined text-[16px] shrink-0">table_chart</Icon>
-                            <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables'}</span>
+                            <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory'}</span>
                           </button>
                         )}
                       </>
@@ -1996,7 +1996,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     }`}
                   >
                     <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
-                    <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records'}</span>
+                    <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory'}</span>
                   </button>
                 )}
 
@@ -2302,7 +2302,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               >
                                 <div className="flex items-center gap-2">
                                   <Icon className="material-symbols-outlined text-[18px] text-blue-400">table_chart</Icon>
-                                  <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Database'}</span>
+                                  <span>{isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory'}</span>
                                 </div>
                                 <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
                               </button>

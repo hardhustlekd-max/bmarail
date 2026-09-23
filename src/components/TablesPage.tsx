@@ -461,7 +461,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         actorBadgeId: userBadgeId || (isSuperAdmin ? 'SUPERADMIN' : 'ADMIN-01'),
         actorRole: userRole,
         action: 'BULK_REGISTRATIONS_APPROVED',
-        details: `${userRole} bulk approved ${approvedCount} member registrations from Records & Tables`,
+        details: `${userRole} bulk approved ${approvedCount} member registrations from Members Information Directory`,
         severity: 'info',
       });
 
@@ -660,7 +660,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   ? (activeTableTab === 'approved'
                       ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
                       : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
-                  : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Records & Tables')}
+                  : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory')}
               </h3>
             </div>
           </div>
@@ -755,7 +755,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               },
               {
                 id: 'expired' as const,
-                label: isAmharic ? 'ያለፈበት' : 'Expired',
+                label: isAmharic ? 'ውድቅ' : 'Rejected',
                 count: expiredCount,
                 badgeColor:
                   expiredCount > 0

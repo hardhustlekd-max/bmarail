@@ -451,7 +451,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     if (isTaskViewable(userRole, 3)) {
       roleActions.push({
         key: 'vehicle_directory',
-        title: isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Member Records Database',
+        title: isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory',
         subtitle: `${registrations.length} ${isAmharic ? 'ጠቅላላ ማህደሮች' : 'system records'}`,
         icon: 'two_wheeler',
         badge: `${registrations.length} ${isAmharic ? 'ተሽከርካሪዎች' : 'Motors'}`,
