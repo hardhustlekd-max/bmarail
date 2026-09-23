@@ -15,6 +15,7 @@ import {
   getPermissionState,
 } from '../services/dbService';
 import { DocumentUploadInput } from './DocumentUploadInput';
+import { formatEthiopianDate } from '../utils/ethiopianCalendar';
 
 interface EditRegistrationModalProps {
   isOpen: boolean;
@@ -462,7 +463,9 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-200 dark:border-slate-700 grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px]">
                 <div>
                   <span className="text-slate-400 block font-medium">{isAmharic ? 'የተመዘገበበት ቀን:' : 'Registration Date:'}</span>
-                  <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{registration.registrationDate || '—'}</span>
+                  <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
+                    {registration.registrationDate ? formatEthiopianDate(registration.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                  </span>
                 </div>
                 <div>
                   <span className="text-slate-400 block font-medium">{isAmharic ? 'የመዘገበው ተጠቃሚ:' : 'Registered By:'}</span>

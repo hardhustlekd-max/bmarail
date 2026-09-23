@@ -5,7 +5,7 @@ import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus 
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
-import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate } from '../utils/ethiopianCalendar';
+import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian } from '../utils/ethiopianCalendar';
 import { LoadingSpinner } from './ui/Skeleton';
 
 interface PaymentReceiptsPageProps {
@@ -249,13 +249,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const getPresetRange = (preset: DateRangePreset) => {
     const now = new Date();
     if (preset === 'all') return { start: '', end: '' };
+    const ethNow = toEthiopianDate(now);
     if (preset === 'this_month') {
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const lastDay = new Date(y, now.getMonth() + 1, 0).getDate();
+      const ethStart = ethiopianToGregorian(ethNow.year, ethNow.month, 1);
+      const lastEthDay = ethNow.isPagume ? 6 : 30;
+      const ethEnd = ethiopianToGregorian(ethNow.year, ethNow.month, lastEthDay);
       return {
-        start: `${y}-${m}-01`,
-        end: `${y}-${m}-${String(lastDay).padStart(2, '0')}`,
+        start: ethStart.dateStr,
+        end: ethEnd.dateStr,
       };
     }
     if (preset === 'last_30_days') {
@@ -268,10 +269,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       };
     }
     if (preset === 'this_year') {
-      const y = now.getFullYear();
+      const ethStart = ethiopianToGregorian(ethNow.year, 1, 1);
+      const ethEnd = ethiopianToGregorian(ethNow.year, 13, 6);
       return {
-        start: `${y}-01-01`,
-        end: `${y}-12-31`,
+        start: ethStart.dateStr,
+        end: ethEnd.dateStr,
       };
     }
     return { start: '', end: '' };
@@ -291,13 +293,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   };
 
   const matchesDateFilter = (rc: PaymentReceipt) => {
-    const dateStr = rc.paymentDate || rc.createdAt || '';
-    if (!dateStr) return true;
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return true;
-
-    // Convert date object to YYYY-MM-DD string for comparison
-    const dStr = d.toISOString().split('T')[0];
+    const rawDate = rc.paymentDate || rc.createdAt || '';
+    if (!rawDate) return true;
+    const dStr = rawDate.split('T')[0].split(' ')[0].trim();
+    if (!dStr) return true;
 
     if (startDate && dStr < startDate) return false;
     if (endDate && dStr > endDate) return false;
@@ -2160,7 +2159,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 {(reconcileReceipt.enteredAt || reconcileReceipt.createdAt) && (
                   <div className="text-[11px] font-mono text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
                     <strong>{isAmharic ? 'የተመዘገበበት ሰዓት:' : 'Audit Timestamp:'}</strong>{' '}
-                    {formatEthiopianDateTime(reconcileReceipt.enteredAt || reconcileReceipt.createdAt, isAmharic ? 'am' : 'en')} {!isAmharic && `(GC: ${new Date(reconcileReceipt.enteredAt || reconcileReceipt.createdAt).toLocaleString()})`}
+                    {formatEthiopianDateTime(reconcileReceipt.enteredAt || reconcileReceipt.createdAt, isAmharic ? 'am' : 'en')}
                   </div>
                 )}
               </div>

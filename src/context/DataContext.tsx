@@ -75,6 +75,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   // Real-time subscriptions
   useEffect(() => {
     syncCriticalStartup().catch(() => {});
+    syncAllCollectionsWithDb(true).catch(() => {});
 
     const unsubRegs = subscribeRegistrations(setRegistrations);
     const unsubOffs = subscribeOfficers(setOfficers);

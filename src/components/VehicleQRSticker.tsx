@@ -3,6 +3,7 @@ import { Icon } from './ui/Icon';
 import { QRCodeSVG } from 'qrcode.react';
 import { MotorcycleRegistration, Language, APP_LOGO } from '../types';
 import { triggerDocumentPrint } from '../utils/printUtils';
+import { formatEthiopianDate } from '../utils/ethiopianCalendar';
 
 interface VehicleQRStickerProps {
   registration: Partial<MotorcycleRegistration>;
@@ -51,18 +52,17 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
     : (registration.id || registration.plateNumber || '—');
   const qrVal = registration.qrCodeData || `https://enforcement.gov.et/verify/${regId || registration.plateNumber || ''}`;
 
-  // Format valid until date derived from registration
+  // Format valid until date derived from registration in Ethiopian Calendar
   const computeExpiryDateFormatted = () => {
     try {
       const issue = registration.registrationDate || new Date().toISOString().split('T')[0];
       const regD = new Date(issue);
       if (!isNaN(regD.getTime())) {
         regD.setFullYear(regD.getFullYear() + 1);
-        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        return `${regD.getDate()} ${months[regD.getMonth()]} ${regD.getFullYear()}`;
+        return formatEthiopianDate(regD, isAmharic ? 'am' : 'en');
       }
     } catch {}
-    return '17 AUG 2027';
+    return formatEthiopianDate(new Date(), isAmharic ? 'am' : 'en');
   };
   const expiryDateFormatted = computeExpiryDateFormatted();
 

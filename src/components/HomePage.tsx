@@ -2142,11 +2142,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-slate-300 pt-1 border-t border-white/10 font-mono">
                   <div className="flex items-center gap-1.5 text-amber-300 font-bold">
-                    <Icon className="material-symbols-outlined text-[14px]">schedule</Icon>
-                    <span>{isAmharic ? ethDate.timeAm : ethDate.timeEn}</span>
+                    <Icon className="material-symbols-outlined text-[14px]">sunny</Icon>
+                    <span>{isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}</span>
                   </div>
                   <span className="text-[10px] text-slate-400 font-extrabold">
-                    GMT+3
+                    E.C. Time
                   </span>
                 </div>
               </div>
@@ -2763,7 +2763,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 <Icon className="material-symbols-outlined text-amber-500 text-[17px]">calendar_month</Icon>
                 <span className="font-bold">{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
                 <span className="hidden lg:inline text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-300 font-mono px-1.5 py-0.5 rounded font-bold">
-                  {isAmharic ? ethDate.timeAm : ethDate.timeEn}
+                  {isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}
                 </span>
                 <Icon className="material-symbols-outlined text-[#8A99AD] text-[15px]">
                   {isDateDropdownOpen ? 'expand_less' : 'expand_more'}
@@ -2779,7 +2779,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   {/* Municipal Calendar Header */}
                   <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-slate-700 space-y-1 shadow-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold text-slate-300  tracking-wider flex items-center gap-1">
+                      <span className="text-[10px] font-extrabold text-slate-300 tracking-wider flex items-center gap-1">
                         <Icon className="material-symbols-outlined text-[14px]">event</Icon>
                         {isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian National Calendar'}
                       </span>
@@ -2791,7 +2791,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       {ethDate.monthNameAm} {ethDate.day} ቀን {ethDate.year} ዓ.ም
                     </div>
                     <div className="text-xs text-[#8A99AD] font-medium">
-                      {ethDate.monthNameEn} {ethDate.day}, {ethDate.year} EC
+                      {ethDate.monthNameEn} {ethDate.day}, {ethDate.year} E.C.
                     </div>
                   </div>
 
@@ -2799,21 +2799,21 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
                     <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
                       <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
-                        {isAmharic ? 'መደበኛ ሰዓት' : 'Standard Time'}
+                        {isAmharic ? 'የሀገር ባህል ሰዓት' : 'Ethiopian Traditional Time'}
                       </span>
-                      <span className="font-mono font-black text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
-                        <Icon className="material-symbols-outlined text-[14px] text-amber-500">schedule</Icon>
-                        {isAmharic ? ethDate.timeAm : ethDate.timeEn}
+                      <span className="font-mono font-black text-xs text-amber-600 dark:text-amber-300 flex items-center gap-1 mt-0.5">
+                        <Icon className="material-symbols-outlined text-[14px]">sunny</Icon>
+                        {isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}
                       </span>
                     </div>
 
                     <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
                       <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
-                        {isAmharic ? 'የሀገር ባህል ሰዓት' : 'Ethiopian Local Time'}
+                        {isAmharic ? 'ዓመተ ምሕረት (E.C.)' : 'Era (E.C.)'}
                       </span>
-                      <span className="font-mono font-black text-xs text-amber-600 dark:text-amber-300 flex items-center gap-1 mt-0.5">
-                        <Icon className="material-symbols-outlined text-[14px]">sunny</Icon>
-                        {ethDate.traditionalTimeAm}
+                      <span className="font-mono font-black text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
+                        <Icon className="material-symbols-outlined text-[14px] text-amber-500">calendar_month</Icon>
+                        {ethDate.year} ዓ.ም
                       </span>
                     </div>
                   </div>
@@ -2822,14 +2822,14 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <div className="mt-3 bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between text-xs">
                     <div>
                       <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
-                        {isAmharic ? 'የኢትዮጵያ ካሌንደር (GMT+3)' : 'Ethiopian Calendar (GMT+3)'}
+                        {isAmharic ? 'የኢትዮጵያ ካሌንደር' : 'Ethiopian Calendar'}
                       </span>
                       <span className="font-bold text-[#1C2434] dark:text-white">
                         {isAmharic ? ethDate.formattedAm : ethDate.formattedEn}
                       </span>
                     </div>
                     <span className="text-xs font-mono font-extrabold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-1 rounded-sm">
-                      GMT+3
+                      E.C.
                     </span>
                   </div>
 
