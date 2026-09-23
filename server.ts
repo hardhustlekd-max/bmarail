@@ -152,7 +152,8 @@ export function broadcastSseChange(event: {
   docId?: string;
   data?: any;
 }) {
-  const payload = `data: ${JSON.stringify({ ...event, timestamp: Date.now() })}\n\n`;
+  const json = JSON.stringify({ ...event, timestamp: Date.now() });
+  const payload = `event: database_change\ndata: ${json}\n\n`;
   for (const client of sseClients) {
     try {
       client.write(payload);

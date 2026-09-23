@@ -829,42 +829,95 @@ export function initLiveDbListeners(): () => void {
   } catch (e) {}
 
   // 4. Connect to Server-Sent Events (SSE) for instant cross-device updates
-  try {
-    if (typeof EventSource !== 'undefined') {
-      realtimeEventSource = new EventSource('/api/realtime/events');
-      
-      realtimeEventSource.addEventListener('database_change', (event: MessageEvent) => {
-        try {
-          const payload = JSON.parse(event.data);
-          if (!payload || !payload.collection) return;
+  const connectSSE = () => {
+    try {
+      if (typeof EventSource !== 'undefined' && !realtimeEventSource) {
+        realtimeEventSource = new EventSource('/api/realtime/events');
+        
+        const handlePayload = (raw: string) => {
+          try {
+            const payload = JSON.parse(raw);
+            if (!payload || !payload.collection) return;
 
-          if (payload.collection === 'motorcycle_registrations') {
-            syncRegistrations(true).catch(() => {});
-          } else if (payload.collection === 'officer_assignments') {
-            syncOfficers(true).catch(() => {});
-          } else if (payload.collection === 'print_batch_orders') {
-            syncPrintOrders(true).catch(() => {});
-          } else if (payload.collection === 'unregistered_vehicle_reports') {
-            syncUnregisteredReports(true).catch(() => {});
-          } else if (payload.collection === 'verification_logs') {
-            syncVerifications(true).catch(() => {});
-          } else if (payload.collection === 'payment_receipts') {
-            syncPaymentReceipts(true).catch(() => {});
-          } else if (payload.collection === 'system_settings') {
-            syncSettings(true).catch(() => {});
-          } else if (payload.collection === 'system_reset') {
-            if (payload.data?.systemResetEpoch) {
-              checkAndApplySystemResetIfNewer(payload.data);
+            const { collection, action, docId, data } = payload;
+
+            if (collection === 'motorcycle_registrations') {
+              if (action === 'upsert' && data && (data.id || docId)) {
+                const targetId = data.id || docId;
+                const idx = inMemory.registrations.findIndex((r) => r.id === targetId);
+                if (idx >= 0) {
+                  inMemory.registrations[idx] = { ...inMemory.registrations[idx], ...data };
+                } else {
+                  inMemory.registrations.unshift(data);
+                }
+                notifyRegistrations();
+              } else if (action === 'delete' && docId) {
+                inMemory.registrations = inMemory.registrations.filter((r) => r.id !== docId);
+                notifyRegistrations();
+              }
+              syncRegistrations(true).catch(() => {});
+            } else if (collection === 'payment_receipts') {
+              if (action === 'upsert' && data && (data.id || docId)) {
+                const targetId = data.id || docId;
+                const idx = inMemory.paymentReceipts.findIndex((rc) => rc.id === targetId);
+                if (idx >= 0) {
+                  inMemory.paymentReceipts[idx] = { ...inMemory.paymentReceipts[idx], ...data };
+                } else {
+                  inMemory.paymentReceipts.unshift(data);
+                }
+                notifyPaymentReceipts();
+              } else if (action === 'delete' && docId) {
+                inMemory.paymentReceipts = inMemory.paymentReceipts.filter((rc) => rc.id !== docId);
+                notifyPaymentReceipts();
+              }
+              syncPaymentReceipts(true).catch(() => {});
+            } else if (collection === 'officer_assignments') {
+              syncOfficers(true).catch(() => {});
+            } else if (collection === 'print_batch_orders') {
+              syncPrintOrders(true).catch(() => {});
+            } else if (collection === 'unregistered_vehicle_reports') {
+              syncUnregisteredReports(true).catch(() => {});
+            } else if (collection === 'verification_logs') {
+              syncVerifications(true).catch(() => {});
+            } else if (collection === 'system_settings') {
+              if (data) {
+                inMemory.settings = mapSettingsFromDb(data, inMemory.settings);
+                notifySettings();
+              }
+              syncSettings(true).catch(() => {});
+            } else if (collection === 'system_reset') {
+              if (payload.data?.systemResetEpoch) {
+                checkAndApplySystemResetIfNewer(payload.data);
+              }
             }
-          }
-        } catch (err) {}
-      });
+          } catch (err) {}
+        };
 
-      realtimeEventSource.onerror = () => {
-        // SSE disconnected, fallback to periodic polling
-      };
-    }
-  } catch (e) {}
+        realtimeEventSource.addEventListener('database_change', (event: MessageEvent) => {
+          handlePayload(event.data);
+        });
+
+        realtimeEventSource.onmessage = (event: MessageEvent) => {
+          handlePayload(event.data);
+        };
+
+        realtimeEventSource.onerror = () => {
+          if (realtimeEventSource) {
+            realtimeEventSource.close();
+            realtimeEventSource = null;
+          }
+          // Reconnect SSE after brief delay
+          setTimeout(() => {
+            if (areLiveListenersActive) {
+              connectSSE();
+            }
+          }, 3000);
+        };
+      }
+    } catch (e) {}
+  };
+
+  connectSSE();
 
   // 5. Periodic background synchronization interval
   const syncInterval = setInterval(() => {
@@ -1821,6 +1874,8 @@ export async function syncPaymentReceipts(force = false): Promise<boolean> {
 export async function syncActivePageCollection(activePage: string, force = false): Promise<void> {
   switch (activePage) {
     case 'dashboard':
+      await Promise.allSettled([syncRegistrations(force), syncPaymentReceipts(force), syncOfficers(force)]);
+      break;
     case 'tables':
     case 'new_registration':
     case 'submissions':
@@ -1900,8 +1955,8 @@ export async function syncAllCollectionsWithDb(force = false): Promise<void> {
   try {
     // Check bulk sync endpoint first
     const bulkSync = await safeJsonFetch<any>('/api/sync').catch(() => null);
-    if (bulkSync && bulkSync.success && bulkSync.data) {
-      const d = bulkSync.data;
+    const d = bulkSync?.data || bulkSync;
+    if (d && (Array.isArray(d.registrations) || Array.isArray(d.paymentReceipts) || d.settings)) {
       if (d.settings) {
         const wasReset = checkAndApplySystemResetIfNewer(d.settings);
         if (!wasReset) {

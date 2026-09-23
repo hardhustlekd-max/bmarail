@@ -84,6 +84,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const isAdmin = userRole === 'admin' || isSuperAdmin;
   // Edit permission is strictly for Admin / SuperAdmin (for both pending and approved registrations)
   const canEditRegistration = isAdmin;
+  const canApprove = isAdmin;
 
   const [editingRegistration, setEditingRegistration] = useState<MotorcycleRegistration | null>(null);
   const [expandedReceipts, setExpandedReceipts] = useState<Record<string, boolean>>({});
@@ -1162,16 +1163,26 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               {/* Actions Column: Clean Expand / Action Trigger */}
                               <td className="px-3 py-2.5 align-middle text-right whitespace-nowrap">
                                 <div className="inline-flex items-center justify-end gap-1.5">
-                                  {canEditRegistration && (
+                                  {canApprove && (
                                     <button
                                       type="button"
-                                      id={`table-row-edit-btn-${reg.id}`}
-                                      onClick={() => setEditingRegistration(reg)}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-[#3C50E0] shadow-2xs transition-all cursor-pointer"
-                                      title={isAmharic ? 'የአባል መረጃ አሻሽል (Edit)' : 'Edit Registration'}
+                                      id={`table-row-approve-btn-${reg.id}`}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (reg.status !== 'approved') {
+                                          onApproveRegistration(reg.id);
+                                        }
+                                      }}
+                                      disabled={reg.status === 'approved'}
+                                      className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs ${
+                                        reg.status === 'approved'
+                                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default opacity-90'
+                                          : 'bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95'
+                                      }`}
+                                      title={reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Already Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}
                                     >
-                                      <Icon className="material-symbols-outlined text-[15px] text-[#3C50E0] dark:text-blue-400">edit</Icon>
-                                      <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
+                                      <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
+                                      <span>{reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}</span>
                                     </button>
                                   )}
                                   <button
@@ -1508,20 +1519,28 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           </div>
                         </div>
 
-                        {/* Right Side Expand Icon & Quick Edit */}
+                        {/* Right Side Expand Icon & Quick Approve */}
                         <div className="shrink-0 pl-1 flex items-center gap-1.5">
-                          {canEditRegistration && (
+                          {canApprove && (
                             <button
                               type="button"
+                              id={`mobile-row-approve-btn-${reg.id}`}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setEditingRegistration(reg);
+                                if (reg.status !== 'approved') {
+                                  onApproveRegistration(reg.id);
+                                }
                               }}
-                              className="px-2 py-1 rounded-sm text-xs font-semibold border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-[#3C50E0] inline-flex items-center gap-1 cursor-pointer"
-                              title={isAmharic ? 'አሻሽል' : 'Edit'}
+                              disabled={reg.status === 'approved'}
+                              className={`px-2 py-1 rounded-sm text-xs font-semibold inline-flex items-center gap-1 transition-all ${
+                                reg.status === 'approved'
+                                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default opacity-90'
+                                  : 'bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95 shadow-2xs'
+                              }`}
+                              title={reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Already Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}
                             >
-                              <Icon className="material-symbols-outlined text-[14px] text-[#3C50E0]">edit</Icon>
-                              <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
+                              <Icon className="material-symbols-outlined text-[14px]">check_circle</Icon>
+                              <span>{reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}</span>
                             </button>
                           )}
                           <div className="text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
