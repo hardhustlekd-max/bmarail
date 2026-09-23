@@ -429,7 +429,7 @@ export interface MatrixRowItem {
 }
 
 export interface MonthlyMatrixLedgerProps {
-  columns: Array<{ key: string; label: string }>;
+  columns: Array<{ key: string; label: string; title?: string }>;
   rows: MatrixRowItem[];
   onRowClick?: (row: MatrixRowItem) => void;
   className?: string;
@@ -454,6 +454,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
         {columns.map((col) => (
           <th
             key={col.key}
+            title={col.title}
             className="py-3 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 text-center whitespace-nowrap"
           >
             {col.label}

@@ -16,19 +16,19 @@ export interface EthiopianDate {
 }
 
 export const ETHIOPIAN_MONTHS = [
-  { id: 1, am: 'መስከረም', en: 'Meskerem' },
-  { id: 2, am: 'ጥቅምት', en: 'Tikimt' },
-  { id: 3, am: 'ኅዳር', en: 'Hidar' },
-  { id: 4, am: 'ታኅሣሥ', en: 'Tahsas' },
-  { id: 5, am: 'ጥር', en: 'Tir' },
-  { id: 6, am: 'የካቲት', en: 'Yekatit' },
-  { id: 7, am: 'መጋቢት', en: 'Megabit' },
-  { id: 8, am: 'ሚያዝያ', en: 'Miyazya' },
-  { id: 9, am: 'ግንቦት', en: 'Ginbot' },
-  { id: 10, am: 'ሰኔ', en: 'Sene' },
-  { id: 11, am: 'ሐምሌ', en: 'Hamle' },
-  { id: 12, am: 'ነሐሴ', en: 'Nehase' },
-  { id: 13, am: 'ጳጉሜ', en: 'Pagume' },
+  { id: 1, am: 'መስከረም', en: 'Meskerem', shortAm: 'መስ', shortEn: 'Mes' },
+  { id: 2, am: 'ጥቅምት', en: 'Tikimt', shortAm: 'ጥቅ', shortEn: 'Tik' },
+  { id: 3, am: 'ኅዳር', en: 'Hidar', shortAm: 'ኅዳ', shortEn: 'Hid' },
+  { id: 4, am: 'ታኅሣሥ', en: 'Tahsas', shortAm: 'ታኅ', shortEn: 'Tah' },
+  { id: 5, am: 'ጥር', en: 'Tir', shortAm: 'ጥር', shortEn: 'Tir' },
+  { id: 6, am: 'የካቲት', en: 'Yekatit', shortAm: 'የካ', shortEn: 'Yek' },
+  { id: 7, am: 'መጋቢት', en: 'Megabit', shortAm: 'መጋ', shortEn: 'Meg' },
+  { id: 8, am: 'ሚያዝያ', en: 'Miyazya', shortAm: 'ሚያ', shortEn: 'Miy' },
+  { id: 9, am: 'ግንቦት', en: 'Ginbot', shortAm: 'ግን', shortEn: 'Gin' },
+  { id: 10, am: 'ሰኔ', en: 'Sene', shortAm: 'ሰኔ', shortEn: 'Sen' },
+  { id: 11, am: 'ሐምሌ', en: 'Hamle', shortAm: 'ሐም', shortEn: 'Ham' },
+  { id: 12, am: 'ነሐሴ', en: 'Nehase', shortAm: 'ነሐ', shortEn: 'Neh' },
+  { id: 13, am: 'ጳጉሜ', en: 'Pagume', shortAm: 'ጳጉ', shortEn: 'Pag' },
 ] as const;
 
 export const ETHIOPIAN_WEEKDAYS = [

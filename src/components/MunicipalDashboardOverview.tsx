@@ -33,7 +33,8 @@ import {
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
 import { MonthlyMatrixLedger, StatusDot } from './ui/AssocDesignSystem';
-import { toEthiopianDate, ETHIOPIAN_MONTHS } from '../utils/ethiopianCalendar';
+import { toEthiopianDate, ETHIOPIAN_MONTHS, EthiopianDate } from '../utils/ethiopianCalendar';
+import { calculateOneMonthExpiration } from '../utils/paymentUtils';
 
 interface MunicipalDashboardOverviewProps {
   userBadgeId: string;
@@ -246,13 +247,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     const maxMonth = Math.min(Math.max(currentEthMonth, 1), 13);
     for (let m = 1; m <= maxMonth; m++) {
       const monthObj = ETHIOPIAN_MONTHS[m - 1];
-      const label = isAmharic
-        ? monthObj.am
-        : `${monthObj.en} (${m})`;
+      // Use standard month abbreviations (e.g., መስ, ጥቅ, ኅዳ, or Mes, Tik, Hid)
+      const label = isAmharic ? monthObj.shortAm : monthObj.shortEn;
+      const fullTitle = isAmharic ? `${monthObj.am} (${monthObj.en})` : `${monthObj.en} - ${monthObj.am}`;
       cols.push({
         key: `eth_m_${m}`,
         monthNum: m,
         label,
+        title: fullTitle,
         year: currentEthYear,
       });
     }
@@ -260,40 +262,84 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   }, [currentEthMonth, currentEthYear, isAmharic]);
 
   const matrixRows = React.useMemo(() => {
+    // Helper to clean plate numbers (removes spaces, hyphens, and underscores)
+    const cleanPlate = (s?: string) => (s || '').replace(/[\s\-_]/g, '').toLowerCase();
+    const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
+    const cleanPhone = (s?: string) => (s || '').replace(/[^0-9]/g, '');
+
     // Show up to 10 scoped members in the matrix ledger
     return scopedRegs.slice(0, 10).map((reg) => {
-      // Find all payments linked to this member (by ownerRegistrationId, plateNumber, or ownerName)
-      const regIdLower = (reg.id || '').trim().toLowerCase();
-      const regPlateLower = (reg.plateNumber || '').trim().toLowerCase();
-      const regNameLower = (reg.fullName || '').trim().toLowerCase();
+      const regIdClean = cleanStr(reg.id);
+      const regPlateClean = cleanPlate(reg.plateNumber);
+      const regPhoneClean = cleanPhone(reg.phone);
+      const regNameClean = cleanStr(reg.fullName);
 
-      const memberReceipts = scopedPaymentReceipts.filter((rc) => {
-        const rcRegId = (rc.ownerRegistrationId || '').trim().toLowerCase();
-        if (rcRegId && rcRegId === regIdLower) return true;
-        const rcPlate = (rc.plateNumber || '').trim().toLowerCase();
-        if (rcPlate && regPlateLower && rcPlate === regPlateLower) return true;
-        const rcName = (rc.ownerName || '').trim().toLowerCase();
-        if (rcName && regNameLower && rcName === regNameLower) return true;
+      // 1. Match from full paymentReceipts collection across multiple keys
+      const matchedReceipts = paymentReceipts.filter((rc) => {
+        if (!rc) return false;
+        if (rc.ownerRegistrationId && cleanStr(rc.ownerRegistrationId) === regIdClean) return true;
+        if (regPlateClean && rc.plateNumber && cleanPlate(rc.plateNumber) === regPlateClean) return true;
+        if (regPhoneClean && rc.phone && cleanPhone(rc.phone) === regPhoneClean) return true;
+        if (regNameClean && rc.ownerName && cleanStr(rc.ownerName) === regNameClean) return true;
         return false;
       });
 
-      // Parse Ethiopian year and month for each receipt
-      const receiptsWithEthDates = memberReceipts.map((rc) => {
-        const payDateStr = rc.paymentDate || rc.createdAt || '';
-        let eth: { year: number; month: number } | null = null;
-        try {
-          if (payDateStr) {
-            eth = toEthiopianDate(payDateStr);
-          }
-        } catch {
-          eth = null;
+      // 2. Also incorporate payment receipt data directly attached to the registration intake record
+      const allReceipts = [...matchedReceipts];
+      const hasRegReceipt = Boolean(
+        reg.receiptNumber ||
+        reg.lastReceiptNumber ||
+        reg.paymentAmount ||
+        reg.lastPaymentAmount ||
+        reg.lastPaymentDate ||
+        reg.activeTermExpirationDate
+      );
+
+      if (hasRegReceipt) {
+        const regReceiptNo = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
+        const alreadyInList = allReceipts.some((r) => r.receiptNumber && cleanStr(r.receiptNumber) === regReceiptNo);
+        if (!alreadyInList) {
+          const payDate = reg.lastPaymentDate || reg.registrationDate || new Date().toISOString().split('T')[0];
+          const expDate = reg.activeTermExpirationDate || calculateOneMonthExpiration(payDate);
+          allReceipts.push({
+            id: `reg-init-${reg.id}`,
+            receiptNumber: reg.lastReceiptNumber || reg.receiptNumber || 'INITIAL',
+            ownerRegistrationId: reg.id,
+            ownerName: reg.fullName || '',
+            plateNumber: reg.plateNumber,
+            phone: reg.phone,
+            paymentDate: payDate,
+            expirationDate: expDate,
+            amount: reg.lastPaymentAmount || reg.paymentAmount,
+            enteredBy: reg.registeredBy || 'SYSTEM',
+            createdAt: payDate,
+          });
         }
-        const { status } = getPaymentReceiptStatus(rc.expirationDate);
+      }
+
+      // Check if this member has ANY payment history in the database at all
+      const hasAnyPaymentRecord = allReceipts.length > 0 || Boolean(reg.termStatus && reg.termStatus !== 'DELINQUENT');
+
+      // Parse Ethiopian calendar dates and active status for each receipt
+      const parsedReceipts = allReceipts.map((rc) => {
+        const payDateStr = rc.paymentDate || rc.createdAt || '';
+        const expDateStr = rc.expirationDate || (payDateStr ? calculateOneMonthExpiration(payDateStr) : '');
+        let payEth: EthiopianDate | null = null;
+        let expEth: EthiopianDate | null = null;
+        try {
+          if (payDateStr) payEth = toEthiopianDate(payDateStr);
+        } catch {}
+        try {
+          if (expDateStr) expEth = toEthiopianDate(expDateStr);
+        } catch {}
+
+        const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
         return {
           receipt: rc,
-          ethYear: eth ? eth.year : null,
-          ethMonth: eth ? eth.month : null,
+          payEth,
+          expEth,
           status, // 'active' | 'expiring_soon' | 'expired'
+          daysRemaining,
         };
       });
 
@@ -303,39 +349,80 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       matrixColumns.forEach((col) => {
         const targetMonth = col.monthNum;
         const targetYear = col.year;
+        const isCurrentMonth = targetMonth === currentEthMonth && targetYear === currentEthYear;
 
-        // Check if there is an explicit payment receipt recorded for this Ethiopian month and year
-        const matchesForMonth = receiptsWithEthDates.filter(
-          (item) => item.ethYear === targetYear && item.ethMonth === targetMonth
+        // If member has no payment records whatsoever in the DB, show muted dot
+        if (!hasAnyPaymentRecord) {
+          periods[col.key] = 'muted';
+          return;
+        }
+
+        // A. Check if any receipt was paid specifically in this Ethiopian month/year
+        const directMonthMatches = parsedReceipts.filter(
+          (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
         );
 
-        if (matchesForMonth.length > 0) {
-          // If record found, check if it's currently active or due/expired
-          const hasActive = matchesForMonth.some((m) => m.status === 'active');
-          const hasExpiring = matchesForMonth.some((m) => m.status === 'expiring_soon');
+        // B. Check if any receipt term covers this Ethiopian month (validity duration spans across this month)
+        const targetPeriodIndex = targetYear * 13 + targetMonth;
+        const coveringMatches = parsedReceipts.filter((item) => {
+          if (!item.payEth) return false;
+          const payIndex = item.payEth.year * 13 + item.payEth.month;
+          const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
+          return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
+        });
 
-          if (hasActive) {
+        const activeReceipt = parsedReceipts.find((r) => r.status === 'active');
+        const expiringReceipt = parsedReceipts.find((r) => r.status === 'expiring_soon');
+
+        if (isCurrentMonth) {
+          // For current month: evaluate live active status
+          if (reg.termStatus === 'CURRENT' || activeReceipt) {
             periods[col.key] = 'paid';
-          } else if (hasExpiring) {
+          } else if (reg.termStatus === 'DUE' || expiringReceipt) {
             periods[col.key] = 'pending';
-          } else {
-            // Receipt expired for this term
+          } else if (coveringMatches.length > 0 || directMonthMatches.length > 0) {
+            const hasActiveCover = coveringMatches.some((m) => m.status === 'active');
+            const hasExpiringCover = coveringMatches.some((m) => m.status === 'expiring_soon');
+            if (hasActiveCover) periods[col.key] = 'paid';
+            else if (hasExpiringCover) periods[col.key] = 'pending';
+            else periods[col.key] = 'unpaid';
+          } else if (hasAnyPaymentRecord) {
+            // Member has payment history but has not paid for the current month
             periods[col.key] = 'unpaid';
+          } else {
+            periods[col.key] = 'muted';
           }
         } else {
-          // If no record found for this month, display muted dot as requested
-          periods[col.key] = 'muted';
+          // For other/past months:
+          if (directMonthMatches.length > 0 || coveringMatches.length > 0) {
+            periods[col.key] = 'paid';
+          } else {
+            // Check registration date to see if member was already enrolled during that month
+            let regEth: EthiopianDate | null = null;
+            try {
+              if (reg.registrationDate) regEth = toEthiopianDate(reg.registrationDate);
+            } catch {}
+
+            const regPeriodIndex = regEth ? regEth.year * 13 + regEth.month : 0;
+            if (regPeriodIndex && targetPeriodIndex < regPeriodIndex) {
+              // Member was not yet registered in this past month
+              periods[col.key] = 'muted';
+            } else {
+              // Member was registered but has no payment for that month
+              periods[col.key] = 'unpaid';
+            }
+          }
         }
       });
 
       return {
         id: reg.id,
-        title: reg.fullName || reg.plateNumber,
-        subtitle: `${reg.plateNumber || '—'} • ${reg.serviceCategory || (isAmharic ? 'ሞተርሳይክል' : 'Motorcycle')}`,
+        title: reg.fullName || (isAmharic ? 'ያልተገለጸ አባል' : 'Unnamed Member'),
+        subtitle: undefined, // Plate number and motorcycle type removed from matrix ledger per user request
         periods,
       };
     });
-  }, [scopedRegs, scopedPaymentReceipts, matrixColumns, isAmharic]);
+  }, [scopedRegs, paymentReceipts, matrixColumns, currentEthMonth, currentEthYear, isAmharic]);
 
   // Dynamic role-based Quick Action Shortcuts configuration (Driven by RBAC Permissions Matrix)
   const getRoleQuickActions = () => {
@@ -736,7 +823,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <MonthlyMatrixLedger
                   columns={matrixColumns}
                   rows={matrixRows}
-                  memberHeaderLabel={isAmharic ? 'አባል / ሰሌዳ' : 'Member / Entity'}
+                  memberHeaderLabel={isAmharic ? 'አባል' : 'Member'}
                   emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
                   onRowClick={(row) => {
                     const matching = scopedRegs.find((r) => String(r.id) === String(row.id));
