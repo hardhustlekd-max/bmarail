@@ -33,6 +33,7 @@ import {
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
 import { MonthlyMatrixLedger, StatusDot } from './ui/AssocDesignSystem';
+import { toEthiopianDate, ETHIOPIAN_MONTHS } from '../utils/ethiopianCalendar';
 
 interface MunicipalDashboardOverviewProps {
   userBadgeId: string;
@@ -232,43 +233,109 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       )
     : null;
 
-  // Monthly Matrix Ledger columns and member dues rows (Dynamic 3-period window)
-  const matrixColumns = React.useMemo(
-    () => [
-      { key: 'm1', label: isAmharic ? 'ሚያዝያ (Apr)' : 'Apr' },
-      { key: 'm2', label: isAmharic ? 'ግንቦት (May)' : 'May' },
-      { key: 'm3', label: isAmharic ? 'ሰኔ (Jun)' : 'Jun' },
-    ],
-    [isAmharic]
-  );
+  // Monthly Matrix Ledger columns and member dues rows:
+  // Dynamically generated for THIS Ethiopian year from Meskerem (month 1) up to the CURRENT Ethiopian month.
+  // Real-time lookup from DB payment receipts with muted dot if no record is found.
+  const currentEthDate = React.useMemo(() => toEthiopianDate(new Date()), []);
+  const currentEthYear = currentEthDate.year;
+  const currentEthMonth = currentEthDate.month; // 1 (መስከረም) to 13 (ጳጉሜ)
+
+  const matrixColumns = React.useMemo(() => {
+    // Generate months from September (Meskerem / month 1) up to current month of this Ethiopian year
+    const cols = [];
+    const maxMonth = Math.min(Math.max(currentEthMonth, 1), 13);
+    for (let m = 1; m <= maxMonth; m++) {
+      const monthObj = ETHIOPIAN_MONTHS[m - 1];
+      const label = isAmharic
+        ? monthObj.am
+        : `${monthObj.en} (${m})`;
+      cols.push({
+        key: `eth_m_${m}`,
+        monthNum: m,
+        label,
+        year: currentEthYear,
+      });
+    }
+    return cols;
+  }, [currentEthMonth, currentEthYear, isAmharic]);
 
   const matrixRows = React.useMemo(() => {
-    return scopedRegs.slice(0, 8).map((reg) => {
-      const memberReceipts = scopedPaymentReceipts.filter(
-        (rc) => rc.ownerRegistrationId === reg.id || (rc.plateNumber && rc.plateNumber === reg.plateNumber)
-      );
+    // Show up to 10 scoped members in the matrix ledger
+    return scopedRegs.slice(0, 10).map((reg) => {
+      // Find all payments linked to this member (by ownerRegistrationId, plateNumber, or ownerName)
+      const regIdLower = (reg.id || '').trim().toLowerCase();
+      const regPlateLower = (reg.plateNumber || '').trim().toLowerCase();
+      const regNameLower = (reg.fullName || '').trim().toLowerCase();
 
-      const hasActive = memberReceipts.some((rc) => {
-        const { status } = getPaymentReceiptStatus(rc.expirationDate);
-        return status === 'active';
+      const memberReceipts = scopedPaymentReceipts.filter((rc) => {
+        const rcRegId = (rc.ownerRegistrationId || '').trim().toLowerCase();
+        if (rcRegId && rcRegId === regIdLower) return true;
+        const rcPlate = (rc.plateNumber || '').trim().toLowerCase();
+        if (rcPlate && regPlateLower && rcPlate === regPlateLower) return true;
+        const rcName = (rc.ownerName || '').trim().toLowerCase();
+        if (rcName && regNameLower && rcName === regNameLower) return true;
+        return false;
       });
-      const hasExpiring = memberReceipts.some((rc) => {
+
+      // Parse Ethiopian year and month for each receipt
+      const receiptsWithEthDates = memberReceipts.map((rc) => {
+        const payDateStr = rc.paymentDate || rc.createdAt || '';
+        let eth: { year: number; month: number } | null = null;
+        try {
+          if (payDateStr) {
+            eth = toEthiopianDate(payDateStr);
+          }
+        } catch {
+          eth = null;
+        }
         const { status } = getPaymentReceiptStatus(rc.expirationDate);
-        return status === 'expiring_soon';
+        return {
+          receipt: rc,
+          ethYear: eth ? eth.year : null,
+          ethMonth: eth ? eth.month : null,
+          status, // 'active' | 'expiring_soon' | 'expired'
+        };
+      });
+
+      // Map each column month to its status
+      const periods: Record<string, 'paid' | 'unpaid' | 'pending' | 'muted'> = {};
+
+      matrixColumns.forEach((col) => {
+        const targetMonth = col.monthNum;
+        const targetYear = col.year;
+
+        // Check if there is an explicit payment receipt recorded for this Ethiopian month and year
+        const matchesForMonth = receiptsWithEthDates.filter(
+          (item) => item.ethYear === targetYear && item.ethMonth === targetMonth
+        );
+
+        if (matchesForMonth.length > 0) {
+          // If record found, check if it's currently active or due/expired
+          const hasActive = matchesForMonth.some((m) => m.status === 'active');
+          const hasExpiring = matchesForMonth.some((m) => m.status === 'expiring_soon');
+
+          if (hasActive) {
+            periods[col.key] = 'paid';
+          } else if (hasExpiring) {
+            periods[col.key] = 'pending';
+          } else {
+            // Receipt expired for this term
+            periods[col.key] = 'unpaid';
+          }
+        } else {
+          // If no record found for this month, display muted dot as requested
+          periods[col.key] = 'muted';
+        }
       });
 
       return {
         id: reg.id,
         title: reg.fullName || reg.plateNumber,
         subtitle: `${reg.plateNumber || '—'} • ${reg.serviceCategory || (isAmharic ? 'ሞተርሳይክል' : 'Motorcycle')}`,
-        periods: {
-          m1: memberReceipts.length > 0 ? ('paid' as const) : ('unpaid' as const),
-          m2: memberReceipts.length > 1 || hasActive ? ('paid' as const) : ('unpaid' as const),
-          m3: hasActive ? ('paid' as const) : hasExpiring ? ('pending' as const) : ('unpaid' as const),
-        },
+        periods,
       };
     });
-  }, [scopedRegs, scopedPaymentReceipts, isAmharic]);
+  }, [scopedRegs, scopedPaymentReceipts, matrixColumns, isAmharic]);
 
   // Dynamic role-based Quick Action Shortcuts configuration (Driven by RBAC Permissions Matrix)
   const getRoleQuickActions = () => {
@@ -289,18 +356,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: isAmharic ? 'የባለቤትና ሞተር ቅጽ' : 'Register Motor & Owner',
         icon: 'app_registration',
         badge: isAmharic ? 'ቅጽ' : 'Form',
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-      });
-    }
-
-    // Task 2: Submission Correction
-    if (isTaskViewable(userRole, 2)) {
-      roleActions.push({
-        key: 'today_submissions_adjust',
-        title: isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction',
-        subtitle: isAmharic ? 'የዛሬ ማመልከቻዎችን ማረም' : 'Edit today submissions',
-        icon: 'edit_note',
-        badge: `${todaySubmissionsCount} ${isAmharic ? 'የዛሬ' : 'Today'}`,
         iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
       });
     }
@@ -653,38 +708,27 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-outline-variant/60">
                 <div className="flex items-center gap-2.5">
                   <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">calendar_month</Icon>
-                  <div>
-                    <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white  tracking-wider">
-                      {isAmharic ? 'የወርሃዊ መዋጮ ማትሪክስ መዝገብ' : 'Monthly Matrix Ledger Lookup'}
-                    </h3>
-                    <p className="text-xs text-secondary">
-                      {isAmharic ? 'የአባላት የቅርብ ጊዜ ወርሃዊ ክፍያዎች እና መዋጮ ሁኔታ' : 'Quick visual compliance grid across recent monthly terms'}
-                    </p>
-                  </div>
+                  <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white tracking-wider">
+                    {isAmharic ? 'የወርሃዊ መዋጮ ማትሪክስ መዝገብ' : 'Monthly Matrix Ledger Lookup'}
+                  </h3>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-3 text-[11px] font-medium text-secondary">
-                    <span className="inline-flex items-center gap-1">
-                      <StatusDot status="paid" size={10} />
-                      <span>{isAmharic ? 'የተከፈለ' : 'Paid'}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <StatusDot status="pending" size={10} />
-                      <span>{isAmharic ? 'ሊያልቅ የደረሰ' : 'Due'}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <StatusDot status="unpaid" size={10} />
-                      <span>{isAmharic ? 'ያልተከፈለ' : 'Unpaid'}</span>
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                    className="text-xs font-bold text-primary hover:underline ml-2 flex items-center gap-1 cursor-pointer whitespace-nowrap"
-                  >
-                    <span>{isAmharic ? 'ሙሉ መዝገብ' : 'Open Ledger'}</span>
-                    <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
-                  </button>
+                <div className="flex items-center gap-3 text-[11px] font-medium text-secondary">
+                  <span className="inline-flex items-center gap-1">
+                    <StatusDot status="paid" size={10} />
+                    <span>{isAmharic ? 'የተከፈለ' : 'Paid'}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <StatusDot status="pending" size={10} />
+                    <span>{isAmharic ? 'ሊያልቅ የደረሰ' : 'Due'}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <StatusDot status="unpaid" size={10} />
+                    <span>{isAmharic ? 'ያልተከፈለ' : 'Unpaid'}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <StatusDot status="muted" size={10} />
+                    <span>{isAmharic ? 'መረጃ የለም' : 'No Record'}</span>
+                  </span>
                 </div>
               </div>
 
@@ -692,6 +736,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <MonthlyMatrixLedger
                   columns={matrixColumns}
                   rows={matrixRows}
+                  memberHeaderLabel={isAmharic ? 'አባል / ሰሌዳ' : 'Member / Entity'}
+                  emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
                   onRowClick={(row) => {
                     const matching = scopedRegs.find((r) => String(r.id) === String(row.id));
                     if (matching) {

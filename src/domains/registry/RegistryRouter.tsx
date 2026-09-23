@@ -3,7 +3,6 @@ import { UserRole } from '../../types';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
 import { FormsPage } from '../../components/FormsPage';
-import { TodaySubmissionsPage } from '../../components/TodaySubmissionsPage';
 import { TablesPage } from '../../components/TablesPage';
 import { isTaskViewable } from '../../services/dbService';
 
@@ -62,35 +61,16 @@ export const RegistryRouter: React.FC<RegistryRouterProps> = ({
         registrations={registrations}
         officers={officers}
         onAddRegistration={saveRegistration}
-        onViewRegistered={() => setActivePage('today_submissions_adjust')}
+        onViewRegistered={() => setActivePage('tables')}
         onAddOfficerAssignment={saveOfficerAssignment}
       />
     );
   }
 
   if (activePage === 'today_submissions_adjust') {
-    if (!isTaskViewable(userRole, 2)) {
-      return (
-        <div className="p-6 text-center">
-          <p className="text-rose-500 font-bold">
-            {lang === 'am' 
-              ? 'ይህንን ገጽ ለመመልከት ፈቃድ የለዎትም።' 
-              : 'You do not have permission to view this page.'}
-          </p>
-        </div>
-      );
-    }
-    return (
-      <TodaySubmissionsPage
-        lang={lang}
-        userRole={userRole}
-        userBadgeId={userBadgeId}
-        registrations={registrations}
-        onNavigateToNewRegistration={() => setActivePage('forms')}
-        onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
-        isLoading={isLoading}
-      />
-    );
+    // Submission correction feature is removed totally; route directly to tables
+    setActivePage('tables');
+    return null;
   }
 
   if (activePage === 'tables') {

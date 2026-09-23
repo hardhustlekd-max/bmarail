@@ -150,7 +150,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
  * Circular 12px Status Dot Atom for matrix grids and compact status indicators
  */
 export interface StatusDotProps {
-  status: 'paid' | 'unpaid' | 'pending' | 'active' | 'inactive';
+  status: 'paid' | 'unpaid' | 'pending' | 'active' | 'inactive' | 'muted';
   size?: number;
   pulse?: boolean;
   title?: string;
@@ -170,9 +170,10 @@ export const StatusDot: React.FC<StatusDotProps> = ({
     unpaid: 'bg-[#ef4444]',
     inactive: 'bg-[#ef4444]',
     pending: 'bg-[#f59e0b]',
+    muted: 'bg-slate-300 dark:bg-slate-600/70',
   };
 
-  const bg = colorMap[status] || 'bg-slate-400';
+  const bg = colorMap[status] || 'bg-slate-300 dark:bg-slate-600/70';
 
   return (
     <span
@@ -366,19 +367,19 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs transition-all ${
+      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-5 shadow-xs transition-all ${
         onClick ? 'cursor-pointer hover:border-slate-300 dark:hover:border-slate-700' : ''
       } ${className}`}
     >
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-[13px] text-slate-500 dark:text-slate-400 font-medium">{label}</p>
-        {icon && <Icon name={icon} size={20} className="text-slate-400 shrink-0" />}
+      <div className="flex items-center justify-between gap-1.5">
+        <p className="text-[11px] sm:text-[13px] text-slate-500 dark:text-slate-400 font-bold truncate">{label}</p>
+        {icon && <Icon name={icon} size={18} className="text-slate-400 shrink-0" />}
       </div>
-      <h3 className={`text-2xl font-bold tracking-tight mt-1.5 ${valueColors[colorVariant]}`}>
+      <h3 className={`text-base sm:text-2xl font-black tracking-tight mt-1 sm:mt-1.5 ${valueColors[colorVariant]}`}>
         {value}
       </h3>
       {subtext && (
-        <p className="text-xs text-slate-400 dark:text-slate-500 font-normal mt-1">{subtext}</p>
+        <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5 sm:mt-1 truncate">{subtext}</p>
       )}
     </div>
   );
@@ -424,7 +425,7 @@ export interface MatrixRowItem {
   id: string | number;
   title: string;
   subtitle?: string;
-  periods: Record<string, 'paid' | 'unpaid' | 'pending'>;
+  periods: Record<string, 'paid' | 'unpaid' | 'pending' | 'muted'>;
 }
 
 export interface MonthlyMatrixLedgerProps {
@@ -432,6 +433,8 @@ export interface MonthlyMatrixLedgerProps {
   rows: MatrixRowItem[];
   onRowClick?: (row: MatrixRowItem) => void;
   className?: string;
+  memberHeaderLabel?: string;
+  emptyMessage?: string;
 }
 
 export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
@@ -439,17 +442,19 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
   rows,
   onRowClick,
   className = '',
+  memberHeaderLabel = 'Member / Entity',
+  emptyMessage = 'No ledger records available.',
 }) => (
   <table className={`w-full border-collapse text-left ${className}`}>
     <thead>
       <tr className="border-b border-slate-200 dark:border-slate-800">
         <th className="py-3 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 text-left">
-          Member / Entity
+          {memberHeaderLabel}
         </th>
         {columns.map((col) => (
           <th
             key={col.key}
-            className="py-3 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 text-center"
+            className="py-3 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 text-center whitespace-nowrap"
           >
             {col.label}
           </th>
@@ -466,13 +471,13 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
           }`}
         >
           <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100">
-            <div>{row.title}</div>
+            <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
             {row.subtitle && (
               <div className="text-xs text-slate-400 dark:text-slate-500">{row.subtitle}</div>
             )}
           </td>
           {columns.map((col) => {
-            const status = row.periods[col.key] || 'unpaid';
+            const status = row.periods[col.key] || 'muted';
             return (
               <td key={col.key} className="py-3.5 px-4 text-center">
                 <StatusDot
@@ -491,7 +496,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
             colSpan={columns.length + 1}
             className="py-8 text-center text-sm text-slate-400 dark:text-slate-500"
           >
-            No ledger records available.
+            {emptyMessage}
           </td>
         </tr>
       )}

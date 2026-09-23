@@ -38,6 +38,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   isLoading = false,
 }) => {
   const isAmharic = lang === 'am';
+  const monthNamesAm = ['ጥር (Jan)', 'የካቲት (Feb)', 'መጋቢት (Mar)', 'ሚያዝያ (Apr)', 'ግንቦት (May)', 'ሰኔ (Jun)', 'ሐምሌ (Jul)', 'ነሐሴ (Aug)', 'መስከረም (Sep)', 'ጥቅምት (Oct)', 'ህዳር (Nov)', 'ታህሳስ (Dec)'];
+  const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   // Granular RBAC Permission checks for Entry Form (Task 10), Financial KPIs (Task 17), and Table (Task 16)
   const entryFormPermission = getPermissionState(userRole, 10);
@@ -232,29 +234,31 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     initialFilter
   );
 
-  const currentDate = new Date();
-  const [selectedYear, setSelectedYear] = useState<string>(String(currentDate.getFullYear()));
-  const [selectedMonth, setSelectedMonth] = useState<string>(String(currentDate.getMonth() + 1));
-  const [dateRangeMode, setDateRangeMode] = useState<'current_month' | 'all' | 'custom'>('all');
+  // Top-level View Tab: 'table' vs 'metrics' (Separating metrics and table into dedicated tabs)
+  const [activeMainTab, setActiveMainTab] = useState<'table' | 'metrics'>('table');
+
+  const currentTab = useMemo(() => {
+    if (canViewTable && !canViewKPIs) return 'table';
+    if (!canViewTable && canViewKPIs) return 'metrics';
+    return activeMainTab;
+  }, [canViewTable, canViewKPIs, activeMainTab]);
+
+  // Date Range state: standard HTML5 date range picker styled with Tailwind CSS
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   const matchesDateFilter = (rc: PaymentReceipt) => {
-    if (dateRangeMode === 'all') return true;
     const dateStr = rc.paymentDate || rc.createdAt || '';
     if (!dateStr) return true;
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return true;
 
-    const y = String(d.getFullYear());
-    const m = String(d.getMonth() + 1);
+    // Convert date object to YYYY-MM-DD string for comparison
+    const dStr = d.toISOString().split('T')[0];
 
-    if (selectedYear !== 'all' && y !== selectedYear) return false;
-    if (dateRangeMode === 'current_month') {
-      const curY = String(currentDate.getFullYear());
-      const curM = String(currentDate.getMonth() + 1);
-      if (y !== curY || m !== curM) return false;
-    } else if (dateRangeMode === 'custom') {
-      if (selectedMonth !== 'all' && m !== selectedMonth) return false;
-    }
+    if (startDate && dStr < startDate) return false;
+    if (endDate && dStr > endDate) return false;
+
     return true;
   };
 
@@ -518,7 +522,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       const { status } = getPaymentReceiptStatus(rc.expirationDate);
       return status === statusFilter;
     });
-  }, [paymentReceipts, searchQuery, statusFilter, selectedYear, selectedMonth, dateRangeMode]);
+  }, [paymentReceipts, searchQuery, statusFilter, startDate, endDate]);
 
   // KPI Metrics Summary
   const metrics = useMemo(() => {
@@ -547,7 +551,69 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       expiredCount,
       totalRevenue,
     };
-  }, [paymentReceipts, selectedYear, selectedMonth, dateRangeMode]);
+  }, [paymentReceipts, startDate, endDate]);
+
+  // Reusable Tailwind-styled Date Range Picker for both Table and Metrics tabs
+  const renderDateRangePicker = () => (
+    <div className="p-4 md:px-6 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center gap-2">
+        <Icon className="material-symbols-outlined text-[18px] text-[#3C50E0] dark:text-blue-400">calendar_today</Icon>
+        <span className="text-xs font-bold text-[#1C2434] dark:text-white uppercase tracking-wider">
+          {isAmharic ? 'የቀን ማጣሪያ' : 'Date Range Filter'}
+        </span>
+        {(startDate || endDate) && (
+          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#3C50E0]/10 text-[#3C50E0] dark:text-blue-300">
+            {startDate || '...'} {isAmharic ? 'እስከ' : 'to'} {endDate || '...'}
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Start Date */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD] tracking-wider">
+            {isAmharic ? 'ከ:' : 'From:'}
+          </span>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="px-2.5 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-xs font-bold text-[#1C2434] dark:text-white outline-none focus:border-[#3C50E0] transition-all cursor-pointer"
+          />
+        </div>
+
+        {/* Arrow divider */}
+        <span className="hidden sm:inline text-xs text-[#64748B] dark:text-[#8A99AD] font-bold">→</span>
+
+        {/* End Date */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD] tracking-wider">
+            {isAmharic ? 'እስከ:' : 'To:'}
+          </span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="px-2.5 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-xs font-bold text-[#1C2434] dark:text-white outline-none focus:border-[#3C50E0] transition-all cursor-pointer"
+          />
+        </div>
+
+        {/* Clear Filter / Reset Button */}
+        {(startDate || endDate) && (
+          <button
+            type="button"
+            onClick={() => {
+              setStartDate('');
+              setEndDate('');
+            }}
+            className="px-3 py-1.5 bg-[#F1F5F9] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#2E3A47] text-xs font-bold rounded-sm text-[#1C2434] dark:text-white cursor-pointer transition-all shrink-0"
+          >
+            {isAmharic ? 'አጽዳ' : 'Clear'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
 
   if (isLoading) {
     return null;
@@ -591,150 +657,322 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         </div>
       </div>
 
-      {/* DATE RANGE, MONTH SWITCHER & YEAR FILTER BAR */}
-      <div className="bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-          <button
-            type="button"
-            onClick={() => setDateRangeMode('current_month')}
-            className={`px-2.5 py-1.5 rounded-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-center truncate ${
-              dateRangeMode === 'current_month'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            {isAmharic ? 'አሁን ያለው' : 'Current'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setDateRangeMode('custom')}
-            className={`px-2.5 py-1.5 rounded-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-center truncate ${
-              dateRangeMode === 'custom'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            {isAmharic ? 'ብጁ' : 'Custom'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setDateRangeMode('all')}
-            className={`px-2.5 py-1.5 rounded-md text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-center truncate ${
-              dateRangeMode === 'all'
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            {isAmharic ? 'ሁሉም' : 'All Time'}
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2 justify-between sm:justify-end flex-wrap">
-          {(dateRangeMode === 'custom' || dateRangeMode === 'current_month') && (
-            <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
-              <span className="text-xs font-semibold text-slate-500 shrink-0">{isAmharic ? 'ወር:' : 'Month:'}</span>
-              <select
-                value={selectedMonth}
-                onChange={(e) => {
-                  setSelectedMonth(e.target.value);
-                  setDateRangeMode('custom');
-                }}
-                className="w-full sm:w-auto px-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-              >
-                <option value="1">{isAmharic ? 'ጥር (Jan)' : 'January'}</option>
-                <option value="2">{isAmharic ? 'የካቲት (Feb)' : 'February'}</option>
-                <option value="3">{isAmharic ? 'መጋቢት (Mar)' : 'March'}</option>
-                <option value="4">{isAmharic ? 'ሚያዝያ (Apr)' : 'April'}</option>
-                <option value="5">{isAmharic ? 'ግንቦት (May)' : 'May'}</option>
-                <option value="6">{isAmharic ? 'ሰኔ (Jun)' : 'June'}</option>
-                <option value="7">{isAmharic ? 'ሐምሌ (Jul)' : 'July'}</option>
-                <option value="8">{isAmharic ? 'ነሐሴ (Aug)' : 'August'}</option>
-                <option value="9">{isAmharic ? 'መስከረም (Sep)' : 'September'}</option>
-                <option value="10">{isAmharic ? 'ጥቅምት (Oct)' : 'October'}</option>
-                <option value="11">{isAmharic ? 'ህዳር (Nov)' : 'November'}</option>
-                <option value="12">{isAmharic ? 'ታህሳስ (Dec)' : 'December'}</option>
-              </select>
-            </div>
-          )}
-
-          <div className="flex items-center gap-1.5 flex-1 sm:flex-initial">
-            <span className="text-xs font-semibold text-slate-500 shrink-0">{isAmharic ? 'ዓመት:' : 'Year:'}</span>
-            <select
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="w-full sm:w-auto px-2 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+      {/* TOP-LEVEL VIEW TABS: SEPARATE TABS FOR TABLE AND METRICS */}
+      {canViewTable && canViewKPIs && (
+        <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] rounded-sm px-4 pt-1 shadow-2xs">
+          <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-none -mb-[1px]">
+            <button
+              type="button"
+              onClick={() => setActiveMainTab('table')}
+              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+                currentTab === 'table'
+                  ? 'border-[#3C50E0] text-[#3C50E0] dark:text-blue-400 dark:border-blue-400'
+                  : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
+              }`}
             >
-              <option value="all">{isAmharic ? 'ሁሉም' : 'All Years'}</option>
-              <option value="2026">2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-            </select>
+              <Icon className="material-symbols-outlined text-[18px]">table_chart</Icon>
+              <span>{isAmharic ? 'የደረሰኞች ዝርዝር ሰንጠረዥ' : 'Receipts Table'}</span>
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                  currentTab === 'table'
+                    ? 'bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-blue-400/10 dark:text-blue-300'
+                    : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                }`}
+              >
+                {filteredReceipts.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveMainTab('metrics')}
+              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+                currentTab === 'metrics'
+                  ? 'border-[#3C50E0] text-[#3C50E0] dark:text-blue-400 dark:border-blue-400'
+                  : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
+              }`}
+            >
+              <Icon className="material-symbols-outlined text-[18px]">analytics</Icon>
+              <span>{isAmharic ? 'የክፍያ ማጠቃለያ & ሜትሪክስ' : 'Financial Metrics & Analytics'}</span>
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                  currentTab === 'metrics'
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
+                    : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                }`}
+              >
+                {metrics.totalRevenue.toLocaleString()} ETB
+              </span>
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* KPI METRIC CARDS: High-Contrast Sunlight Legible */}
-      {canViewKPIs && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
-          <KpiCard
-            label={isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
-            value={`${metrics.totalRevenue.toLocaleString()} ETB`}
-            subtext={`${metrics.totalReceipts} ${isAmharic ? 'የተመዘገቡ ደረሰኞች' : 'receipts recorded'}`}
-            colorVariant="default"
-            icon="account_balance_wallet"
-            onClick={() => setStatusFilter('all')}
-            className={`cursor-pointer transition-all ${statusFilter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
-          />
-          <KpiCard
-            label={isAmharic ? 'ህጋዊ' : 'Active'}
-            value={`${metrics.activeCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
-            subtext={isAmharic ? 'የ1 ወር ክፍያቸው ያልተጠናቀቀ' : 'Payment term up to date'}
-            colorVariant="success"
-            icon="verified"
-            onClick={() => setStatusFilter('active')}
-            className={`cursor-pointer transition-all ${statusFilter === 'active' ? 'ring-2 ring-emerald-500' : ''}`}
-          />
-          <KpiCard
-            label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due soon'}
-            value={`${metrics.expiringCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
-            subtext={isAmharic ? 'በ 7 ቀናት ውስጥ የሚያልቅ' : 'Expires within 7 days'}
-            colorVariant="warning"
-            icon="warning"
-            onClick={() => setStatusFilter('expiring_soon')}
-            className={`cursor-pointer transition-all ${statusFilter === 'expiring_soon' ? 'ring-2 ring-amber-500' : ''}`}
-          />
-          <KpiCard
-            label={isAmharic ? 'ያለፈበት' : 'Expired'}
-            value={`${metrics.expiredCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
-            subtext={isAmharic ? 'ክፍያ ያልፈፀሙ / ዕዳ ያለባቸው' : 'Overdue terms requiring renewal'}
-            colorVariant="danger"
-            icon="error"
-            onClick={() => setStatusFilter('expired')}
-            className={`cursor-pointer transition-all ${statusFilter === 'expired' ? 'ring-2 ring-rose-500' : ''}`}
-          />
+      {/* TAB 1: METRICS & ANALYTICS VIEW (STANDALONE DEDICATED TAB) */}
+      {currentTab === 'metrics' && canViewKPIs && (
+        <div className="space-y-4 animate-in fade-in duration-150">
+          {/* Date Filter Card for Metrics */}
+          <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
+            {renderDateRangePicker()}
+          </div>
+
+          {/* Primary 4 KPI Metric Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <KpiCard
+              label={isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
+              value={`${metrics.totalRevenue.toLocaleString()} ETB`}
+              subtext={`${metrics.totalReceipts} ${isAmharic ? 'የተመዘገቡ ደረሰኞች' : 'receipts recorded'}`}
+              colorVariant="default"
+              icon="account_balance_wallet"
+              onClick={() => {
+                setStatusFilter('all');
+                setActiveMainTab('table');
+              }}
+              className="cursor-pointer transition-all hover:shadow-md"
+            />
+            <KpiCard
+              label={isAmharic ? 'ህጋዊ' : 'Active'}
+              value={`${metrics.activeCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
+              subtext={isAmharic ? 'ክፍያቸው ያልተጠናቀቀ (ጠቅ አድርግ)' : 'Click to view in table'}
+              colorVariant="success"
+              icon="verified"
+              onClick={() => {
+                setStatusFilter('active');
+                setActiveMainTab('table');
+              }}
+              className="cursor-pointer transition-all hover:shadow-md"
+            />
+            <KpiCard
+              label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due soon'}
+              value={`${metrics.expiringCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
+              subtext={isAmharic ? 'በ 7 ቀናት ውስጥ የሚያልቅ' : 'Expires within 7 days'}
+              colorVariant="warning"
+              icon="warning"
+              onClick={() => {
+                setStatusFilter('expiring_soon');
+                setActiveMainTab('table');
+              }}
+              className="cursor-pointer transition-all hover:shadow-md"
+            />
+            <KpiCard
+              label={isAmharic ? 'ያለፈበት' : 'Expired'}
+              value={`${metrics.expiredCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
+              subtext={isAmharic ? 'ዕዳ ያለባቸው (ጠቅ አድርግ)' : 'Click to view in table'}
+              colorVariant="danger"
+              icon="error"
+              onClick={() => {
+                setStatusFilter('expired');
+                setActiveMainTab('table');
+              }}
+              className="cursor-pointer transition-all hover:shadow-md"
+            />
+          </div>
+
+          {/* Analytical Breakdown: Status Distribution & Revenue Highlights */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Status Distribution Progress Bars */}
+            <div className="rounded-sm border border-[#E2E8F0] bg-white p-5 shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] space-y-4">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+                <div className="flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-[#3C50E0] dark:text-blue-400 text-[20px]">donut_large</Icon>
+                  <h4 className="text-xs font-black uppercase text-[#1C2434] dark:text-white tracking-wider">
+                    {isAmharic ? 'የአባልነት ክፍያ ሁኔታዎች ክፍፍል' : 'Membership Status Distribution'}
+                  </h4>
+                </div>
+                <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD]">
+                  {isAmharic ? `ጠቅላላ ${metrics.totalReceipts} ደረሰኞች` : `Total ${metrics.totalReceipts} Receipts`}
+                </span>
+              </div>
+
+              <div className="space-y-3.5">
+                {/* Active */}
+                <div>
+                  <div className="flex justify-between text-xs font-bold mb-1">
+                    <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      {isAmharic ? 'ህጋዊ (Active)' : 'Active Term'}
+                    </span>
+                    <span className="text-[#1C2434] dark:text-white font-mono">
+                      {metrics.activeCount} ({metrics.totalReceipts > 0 ? Math.round((metrics.activeCount / metrics.totalReceipts) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <div className="w-full bg-[#E2E8F0] dark:bg-[#2E3A47] h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${metrics.totalReceipts > 0 ? (metrics.activeCount / metrics.totalReceipts) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Due Soon */}
+                <div>
+                  <div className="flex justify-between text-xs font-bold mb-1">
+                    <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+                      <span className="w-2 h-2 rounded-full bg-amber-500" />
+                      {isAmharic ? 'ሊያልቅ የደረሰ (Due Soon)' : 'Due Soon'}
+                    </span>
+                    <span className="text-[#1C2434] dark:text-white font-mono">
+                      {metrics.expiringCount} ({metrics.totalReceipts > 0 ? Math.round((metrics.expiringCount / metrics.totalReceipts) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <div className="w-full bg-[#E2E8F0] dark:bg-[#2E3A47] h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-amber-500 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${metrics.totalReceipts > 0 ? (metrics.expiringCount / metrics.totalReceipts) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Expired */}
+                <div>
+                  <div className="flex justify-between text-xs font-bold mb-1">
+                    <span className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
+                      <span className="w-2 h-2 rounded-full bg-rose-500" />
+                      {isAmharic ? 'ያለፈበት / ዕዳ (Expired)' : 'Expired / Overdue'}
+                    </span>
+                    <span className="text-[#1C2434] dark:text-white font-mono">
+                      {metrics.expiredCount} ({metrics.totalReceipts > 0 ? Math.round((metrics.expiredCount / metrics.totalReceipts) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <div className="w-full bg-[#E2E8F0] dark:bg-[#2E3A47] h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-rose-500 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${metrics.totalReceipts > 0 ? (metrics.expiredCount / metrics.totalReceipts) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* View in Table CTA */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStatusFilter('all');
+                    setActiveMainTab('table');
+                  }}
+                  className="w-full py-2 px-3 rounded-sm bg-[#F1F5F9] dark:bg-[#24303F] text-xs font-bold text-[#3C50E0] dark:text-blue-400 hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>{isAmharic ? 'ሁሉንም በሰንጠረዥ ተመልከት' : 'View Full Table Records'}</span>
+                  <Icon className="material-symbols-outlined text-[16px]">arrow_forward</Icon>
+                </button>
+              </div>
+            </div>
+
+            {/* Revenue Highlights */}
+            <div className="rounded-sm border border-[#E2E8F0] bg-white p-5 shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] space-y-4">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+                <div className="flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[20px]">payments</Icon>
+                  <h4 className="text-xs font-black uppercase text-[#1C2434] dark:text-white tracking-wider">
+                    {isAmharic ? 'የክፍያ አሰባሰብ ማጠቃለያ' : 'Financial Revenue Metrics'}
+                  </h4>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+                  ETB
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
+                    {isAmharic ? 'አማካይ ክፍያ' : 'Avg. Payment'}
+                  </span>
+                  <span className="text-base sm:text-lg font-black text-[#1C2434] dark:text-white font-mono">
+                    {Math.round(metrics.totalRevenue / (metrics.totalReceipts || 1)).toLocaleString()} ETB
+                  </span>
+                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
+                    {isAmharic ? 'በአንድ ደረሰኝ አማካይ' : 'Per transaction average'}
+                  </span>
+                </div>
+
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
+                    {isAmharic ? 'የክፍያ ተገዢነት' : 'Compliance Rate'}
+                  </span>
+                  <span className="text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono">
+                    {metrics.totalReceipts > 0 ? Math.round((metrics.activeCount / metrics.totalReceipts) * 100) : 0}%
+                  </span>
+                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
+                    {isAmharic ? 'ህጋዊ አባላት ጥምርታ' : 'Active valid status ratio'}
+                  </span>
+                </div>
+
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
+                    {isAmharic ? 'የሚጠበቅ ገቢ' : 'Upcoming Due'}
+                  </span>
+                  <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-400 font-mono">
+                    {(metrics.expiringCount * 500).toLocaleString()} ETB
+                  </span>
+                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
+                    {isAmharic ? 'ሊያልቅ ከደረሰ የሚሰበሰብ' : 'From expiring soon terms'}
+                  </span>
+                </div>
+
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
+                    {isAmharic ? 'ያልተሰበሰበ ዕዳ' : 'Overdue Arrears'}
+                  </span>
+                  <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 font-mono">
+                    {(metrics.expiredCount * 500).toLocaleString()} ETB
+                  </span>
+                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
+                    {isAmharic ? 'ካለፈባቸው የሚሰበሰብ ዕዳ' : 'From overdue members'}
+                  </span>
+                </div>
+              </div>
+
+              {canAddReceipt && (
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsFormOpen(true)}
+                    className="w-full py-2 px-3 rounded-sm bg-[#3C50E0] hover:bg-[#2e3ea8] text-white text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
+                    <span>{isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record New Payment Receipt'}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
       {/* RECEIPT ENTRY FORM WITH ZERO-JUMP INTEGRATED MANIFEST STRIP */}
       {isFormOpen && (
-        <form
-          onSubmit={handleSubmitForm}
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-sm space-y-4"
-        >
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">
-                add_card
-              </Icon>
-              <h3 className="text-sm font-black text-slate-950 dark:text-white  tracking-wider">
-                {isAmharic ? 'አዲስ የወርሃዊ ክፍያ ደረሰኝ መመዝገቢያ ቅጽ' : 'New Monthly Payment Receipt Entry'}
-              </h3>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in overflow-hidden">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]">
+              <div className="flex items-center gap-2">
+                <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">
+                  add_card
+                </Icon>
+                <h3 className="text-sm font-black text-slate-950 dark:text-white tracking-wider">
+                  {isAmharic ? 'አዲስ የወርሃዊ ክፍያ ደረሰኝ መመዝገቢያ ቅጽ' : 'New Monthly Payment Receipt Entry'}
+                </h3>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="text-[10px] font-mono font-bold bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
+                  Clerk: {userBadgeId}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsFormOpen(false)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#64748B] hover:text-[#1C2434] hover:bg-[#E2E8F0]/50 dark:hover:bg-[#2E3A47] dark:text-[#8A99AD] dark:hover:text-white transition-all cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+                </button>
+              </div>
             </div>
-            <span className="text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
-              Clerk: {userBadgeId}
-            </span>
-          </div>
+
+            {/* Modal Body (Scrollable form) */}
+            <form
+              onSubmit={handleSubmitForm}
+              className="flex-1 overflow-y-auto p-5 space-y-4 scrollbar-thin bg-white dark:bg-[#1C2434]"
+            >
 
           {isFormReadOnly && (
             <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 rounded-lg text-xs font-bold flex items-center gap-2">
@@ -1177,11 +1415,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </button>
           </div>
         </form>
+          </div>
+        </div>
       )}
 
-      {/* TABLE SECTION: TailAdmin DataTable Design */}
-      {canViewTable && (
-        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
+      {/* TAB 2: TABLE SECTION (STANDALONE DEDICATED TAB) */}
+      {currentTab === 'table' && canViewTable && (
+        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden animate-in fade-in duration-150">
+          {/* NATIVE DATE RANGE PICKER (TAILWIND STYLED) */}
+          {renderDateRangePicker()}
+
           {/* SEARCH & STATUS FILTER TOOLBAR (TAILADMIN DESIGN) */}
           <div className="p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             {/* Search Bar */}
@@ -1246,6 +1489,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               })}
             </div>
           </div>
+
+
 
           {/* DESKTOP TABLE VIEW (>= md) WITH STANDALONE COLUMNS & TAILADMIN DESIGN */}
           <div className="hidden md:block overflow-x-auto">

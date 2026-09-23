@@ -58,9 +58,9 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
   const isAmharic = lang === 'am';
 
   const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
-  const hasTaskEditPermission = isTaskAllowed(userRole, 2);
-  const isReadOnly = !isSuperAdmin && getPermissionState(userRole, 2) === 'view_only';
-  const canEdit = isSuperAdmin || (hasTaskEditPermission && !isReadOnly);
+  const isAdmin = userRole === 'admin' || isSuperAdmin;
+  // Edit permission is strictly for Admin / SuperAdmin
+  const canEdit = isAdmin;
 
   // Form State
   const [activeTab, setActiveTab] = useState<'owner' | 'vehicle' | 'documents' | 'status'>('owner');

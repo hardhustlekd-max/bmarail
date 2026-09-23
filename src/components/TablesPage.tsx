@@ -81,9 +81,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const isAmharic = lang === 'am';
 
   const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
-  const hasTaskEditPermission = isTaskAllowed(userRole, 2);
-  const isReadOnly = !isSuperAdmin && getPermissionState(userRole, 2) === 'view_only';
-  const canEditRegistration = isSuperAdmin || (hasTaskEditPermission && !isReadOnly);
+  const isAdmin = userRole === 'admin' || isSuperAdmin;
+  // Edit permission is strictly for Admin / SuperAdmin (for both pending and approved registrations)
+  const canEditRegistration = isAdmin;
 
   const [editingRegistration, setEditingRegistration] = useState<MotorcycleRegistration | null>(null);
   const [expandedReceipts, setExpandedReceipts] = useState<Record<string, boolean>>({});
@@ -152,14 +152,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'pending_approval':
       case 'pending':
       default:
-        if (reg?.isCorrection || reg?.lastRejectionReason) {
-          return (
-            <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400" title={isAmharic ? 'ተስተካክሎ የቀረበ' : 'Corrected & Resubmitted'}>
-              <Icon className="material-symbols-outlined text-[14px] shrink-0">edit_note</Icon>
-              <span className={textClass}>{isAmharic ? 'ተስተካክሎ የቀረበ' : 'Corrected & Resubmitted'}</span>
-            </span>
-          );
-        }
         return (
           <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">schedule</Icon>
@@ -170,7 +162,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   };
 
   // Status border class helper for rectangular avatar
-  const getStatusBorderClass = (status?: string, reg?: MotorcycleRegistration) => {
+  const getStatusBorderClass = (status?: string) => {
     if (status === 'approved' || status === 'printed') {
       return 'border-[#10B981] dark:border-[#10B981] ring-1 ring-[#10B981]/30';
     }
@@ -179,9 +171,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     }
     if (status === 'rejected' || status === 'expired') {
       return 'border-[#FB5454] dark:border-[#FB5454] ring-1 ring-[#FB5454]/30';
-    }
-    if (reg?.isCorrection || reg?.lastRejectionReason) {
-      return 'border-amber-500 dark:border-amber-500 ring-1 ring-amber-500/30';
     }
     return 'border-[#F59E0B] dark:border-[#F59E0B] ring-1 ring-[#F59E0B]/30';
   };
@@ -1172,21 +1161,35 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                               {/* Actions Column: Clean Expand / Action Trigger */}
                               <td className="px-3 py-2.5 align-middle text-right whitespace-nowrap">
-                                <button
-                                  type="button"
-                                  onClick={() => toggleRegExpand(reg.id)}
-                                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer ${
-                                    isExpanded
-                                      ? 'bg-[#3C50E0] text-white shadow-xs'
-                                      : 'border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0]'
-                                  }`}
-                                  title={isExpanded ? (isAmharic ? 'ተግባራትን እና ሰነዶችን ዝጋ' : 'Close Actions & Documents') : (isAmharic ? 'ተግባራትን እና ሰነዶችን ዘርጋ' : 'Expand Actions & Documents')}
-                                >
-                                  <span>{isExpanded ? (isAmharic ? 'ዝጋ' : 'Close') : (isAmharic ? 'ተግባራት' : 'Actions')}</span>
-                                  <Icon className="material-symbols-outlined text-[16px]">
-                                    {isExpanded ? 'expand_less' : 'expand_more'}
-                                  </Icon>
-                                </button>
+                                <div className="inline-flex items-center justify-end gap-1.5">
+                                  {canEditRegistration && (
+                                    <button
+                                      type="button"
+                                      id={`table-row-edit-btn-${reg.id}`}
+                                      onClick={() => setEditingRegistration(reg)}
+                                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-[#3C50E0] shadow-2xs transition-all cursor-pointer"
+                                      title={isAmharic ? 'የአባል መረጃ አሻሽል (Edit)' : 'Edit Registration'}
+                                    >
+                                      <Icon className="material-symbols-outlined text-[15px] text-[#3C50E0] dark:text-blue-400">edit</Icon>
+                                      <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleRegExpand(reg.id)}
+                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer ${
+                                      isExpanded
+                                        ? 'bg-[#3C50E0] text-white shadow-xs'
+                                        : 'border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-[#3C50E0]'
+                                    }`}
+                                    title={isExpanded ? (isAmharic ? 'ተግባራትን እና ሰነዶችን ዝጋ' : 'Close Actions & Documents') : (isAmharic ? 'ተግባራትን እና ሰነዶችን ዘርጋ' : 'Expand Actions & Documents')}
+                                  >
+                                    <span>{isExpanded ? (isAmharic ? 'ዝጋ' : 'Close') : (isAmharic ? 'ተግባራት' : 'Actions')}</span>
+                                    <Icon className="material-symbols-outlined text-[16px]">
+                                      {isExpanded ? 'expand_less' : 'expand_more'}
+                                    </Icon>
+                                  </button>
+                                </div>
                               </td>
                             </tr>
 
@@ -1505,11 +1508,27 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           </div>
                         </div>
 
-                        {/* Right Side Expand Icon */}
-                        <div className="shrink-0 pl-1 text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
-                          <Icon className="material-symbols-outlined text-[20px] transition-transform">
-                            {isExpanded ? 'expand_less' : 'expand_more'}
-                          </Icon>
+                        {/* Right Side Expand Icon & Quick Edit */}
+                        <div className="shrink-0 pl-1 flex items-center gap-1.5">
+                          {canEditRegistration && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingRegistration(reg);
+                              }}
+                              className="px-2 py-1 rounded-sm text-xs font-semibold border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-[#3C50E0] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-[#3C50E0] inline-flex items-center gap-1 cursor-pointer"
+                              title={isAmharic ? 'አሻሽል' : 'Edit'}
+                            >
+                              <Icon className="material-symbols-outlined text-[14px] text-[#3C50E0]">edit</Icon>
+                              <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
+                            </button>
+                          )}
+                          <div className="text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
+                            <Icon className="material-symbols-outlined text-[20px] transition-transform">
+                              {isExpanded ? 'expand_less' : 'expand_more'}
+                            </Icon>
+                          </div>
                         </div>
                       </div>
 

@@ -46,7 +46,6 @@ import {
 import { MunicipalDashboardOverview } from './MunicipalDashboardOverview';
 import { FormsPage } from './FormsPage';
 import { TablesPage } from './TablesPage';
-import { TodaySubmissionsPage } from './TodaySubmissionsPage';
 import { SharedScannerModal } from './SharedScannerModal';
 import { SuperAdminInterface } from './SuperAdminInterface';
 import { OfficerVerificationHistory } from './OfficerVerificationHistory';
@@ -389,8 +388,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
         return 'ዋና ገፅ';
       case 'forms':
         return 'አዲስ ምዝገባ';
-      case 'today_submissions_adjust':
-        return ['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ';
       case 'tables':
         return userRole === 'clerk'
           ? (tableInitialTab === 'approved' ? 'የፀደቁ ተሽከርካሪዎች' : 'የቀረቡ ማመልከቻዎች')
@@ -451,20 +448,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
           label: isAmharic ? 'አዲስ ምዝገባ' : 'New Registration',
           page: 'forms',
           icon: 'how_to_reg',
-        },
-      ];
-    }
-
-    if (activePage === 'today_submissions_adjust') {
-      const isPrivileged = ['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole);
-      return [
-        homeItem,
-        {
-          label: isAmharic
-            ? (isPrivileged ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
-            : (isPrivileged ? 'Submitted Corrections' : 'Submission Correction'),
-          page: 'today_submissions_adjust',
-          icon: 'edit_note',
         },
       ];
     }
@@ -707,15 +690,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
           subItems: pendingRegs.map((reg) => ({
             id: `sub_pending_${reg.id}`,
             title: `${reg.fullName} (${reg.plateNumber || reg.id})`,
-            description: reg.isCorrection || reg.lastRejectionReason
-              ? (isAmharic
-                  ? `ተስተካክሎ የቀረበ ማመልከቻ - ክፍለ ከተማ: ${reg.subCity || 'ባህር ዳር'}`
-                  : `Resubmitted Correction - Subcity: ${reg.subCity || 'Bahir Dar'}`)
-              : (isAmharic
-                  ? `አዲስ የተሽከርካሪ ምዝገባ - ክፍለ ከተማ: ${reg.subCity || 'ባህር ዳር'}`
-                  : `New Motor Registration - Subcity: ${reg.subCity || 'Bahir Dar'}`),
+            description: isAmharic
+              ? `አዲስ የተሽከርካሪ ምዝገባ - ክፍለ ከተማ: ${reg.subCity || 'ባህር ዳር'}`
+              : `New Motor Registration - Subcity: ${reg.subCity || 'Bahir Dar'}`,
             time: reg.registrationDate,
-            actionPage: (reg.isCorrection || reg.lastRejectionReason) ? 'today_submissions_adjust' : 'tables',
+            actionPage: 'tables',
             actionTab: 'pending',
           })),
         });
@@ -723,9 +702,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
         const reg = pendingRegs[0];
         list.push({
           id: `reg_pending_single_${reg.id}`,
-          title: reg.isCorrection || reg.lastRejectionReason
-            ? (isAmharic ? `ማስተካከያ ተደርጎ የቀረበ: ${reg.fullName} (${reg.plateNumber || reg.id})` : `Correction Resubmitted: ${reg.fullName} (${reg.plateNumber || reg.id})`)
-            : (isAmharic ? `አዲስ ማመልከቻ: ${reg.fullName} (${reg.plateNumber || reg.id})` : `New Submission: ${reg.fullName} (${reg.plateNumber || reg.id})`),
+          title: isAmharic ? `አዲስ ማመልከቻ: ${reg.fullName} (${reg.plateNumber || reg.id})` : `New Submission: ${reg.fullName} (${reg.plateNumber || reg.id})`,
           description: isAmharic
             ? `የማመልከቻ ቁጥር ${reg.plateNumber || reg.id} በፀሐፊ ተመዝግቦ የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።`
             : `Registration application for ${reg.fullName} (${reg.plateNumber || reg.id}) submitted by clerk is waiting for manager decision.`,
@@ -736,7 +713,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
           badgeLabel: isAmharic ? 'ማፅደቂያ' : 'Approval Needed',
           badgeBg: 'bg-slate-200 dark:bg-slate-700',
           badgeText: 'text-slate-800 dark:text-slate-200',
-          actionPage: (reg.isCorrection || reg.lastRejectionReason) ? 'today_submissions_adjust' : 'tables',
+          actionPage: 'tables',
           actionTab: 'pending',
         });
       }
@@ -928,9 +905,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
         const isWasCorrection = reg.isCorrection || reg.lastRejectionReason;
         list.push({
           id: `reg_approved_single_${reg.id}`,
-          title: isWasCorrection
-            ? (isAmharic ? `ማስተካከያው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Correction Approved by Manager: ${reg.fullName}`)
-            : (isAmharic ? `ማመልከቻው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Application Approved by Manager: ${reg.fullName}`),
+          title: isAmharic ? `ማመልከቻው በስራ አስኪያጅ ጸድቋል: ${reg.fullName}` : `Application Approved by Manager: ${reg.fullName}`,
           description: isAmharic
             ? `ለ ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'}) የቀረበው ማመልከቻ ጸድቋል፤ የባጅ/ሰሌዳ ፈቃድ ማተም ይችላሉ።`
             : `Registration for ${reg.fullName} (${reg.plateNumber || 'Plate'}) was approved by manager. Ready for permit issue.`,
@@ -943,60 +918,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
           badgeText: 'text-emerald-700 dark:text-emerald-300',
           actionPage: 'tables',
           actionTab: 'approved',
-        });
-      }
-
-      // Rejected / Correction Needed submissions notification for Clerks
-      const rejectedRegs = registrations.filter((r) => r.status === 'rejected');
-      if (rejectedRegs.length > 1) {
-        list.push({
-          id: `rejected_regs_summary_${rejectedRegs.length}`,
-          title: isAmharic
-            ? `${rejectedRegs.length} ማመልከቻዎች ማስተካከያ ይፈልጋሉ (ውድቅ ተደርገዋል)`
-            : `${rejectedRegs.length} Applications Require Correction (Rejected)`,
-          description: isAmharic
-            ? 'በስራ አስኪያጅ አስተያየት ተሰጥቶባቸው የተመለሱ ማመልከቻዎች፤ እባክዎን በCorrection Table አስተካክለው ድጋሚ ያቅርቡ።'
-            : 'Applications returned by manager with correction notes. Please update and resubmit in Submission Correction table.',
-          type: 'flagged_inspection',
-          icon: 'published_with_changes',
-          iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
-          badgeLabel: isAmharic ? 'ማስተካከያ ይፈልጋል' : 'Needs Correction',
-          badgeBg: 'bg-rose-500/20',
-          badgeText: 'text-rose-700 dark:text-rose-300',
-          actionPage: 'today_submissions_adjust',
-          actionTab: 'pending',
-          subItems: rejectedRegs.map((reg) => ({
-            id: `sub_rejected_${reg.id}`,
-            title: `${reg.fullName} (${reg.plateNumber || reg.id})`,
-            description: reg.rejectionReason
-              ? (isAmharic ? `ምክንያት: ${reg.rejectionReason}` : `Reason: ${reg.rejectionReason}`)
-              : (isAmharic ? 'ምክንያት: ሰነዶች አልሟሉም ወይም ማስተካከያ ይፈልጋል' : 'Reason: Documents incomplete or require correction'),
-            time: reg.registrationDate,
-            actionPage: 'today_submissions_adjust',
-            actionTab: 'pending',
-          })),
-        });
-      } else if (rejectedRegs.length === 1) {
-        const reg = rejectedRegs[0];
-        const reasonText = reg.rejectionReason
-          ? (isAmharic ? `የስራ አስኪያጅ አስተያየት: ${reg.rejectionReason}` : `Manager Rejection Reason: ${reg.rejectionReason}`)
-          : (isAmharic ? 'የስራ አስኪያጅ አስተያየት: ሰነዶች አልሟሉም ወይም ማስተካከያ ይፈልጋል' : 'Manager Rejection Reason: Documents incomplete or require correction');
-
-        list.push({
-          id: `reg_rejected_single_${reg.id}`,
-          title: isAmharic
-            ? `ማስተካከያ ይፈልጋል (ውድቅ): ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'})`
-            : `Correction Required (Rejected): ${reg.fullName} (${reg.plateNumber || 'Plate'})`,
-          description: reasonText,
-          time: reg.registrationDate,
-          type: 'flagged_inspection',
-          icon: 'published_with_changes',
-          iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
-          badgeLabel: isAmharic ? 'ማስተካከያ ይፈልጋል' : 'Needs Correction',
-          badgeBg: 'bg-rose-500/20',
-          badgeText: 'text-rose-700 dark:text-rose-300',
-          actionPage: 'today_submissions_adjust',
-          actionTab: 'pending',
         });
       }
 
@@ -1418,7 +1339,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
   const handleQuickAction = (actionKey: string) => {
     if (actionKey === 'today_submissions_adjust') {
-      setActivePage('today_submissions_adjust');
+      setTableInitialTab('pending');
+      setActivePage('tables');
     } else if (actionKey === 'quick_verify') {
       setActivePage('scan');
     } else if (actionKey === 'approved_vehicles' || actionKey === 'kpi_approved') {
@@ -1626,21 +1548,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           </button>
                         )}
 
-                        {(settings.showClerkEditSubmissionAction ?? true) && isTaskViewable(userRole, 2) && (
-                          <button
-                            type="button"
-                            onClick={() => setActivePage('today_submissions_adjust')}
-                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
-                              activePage === 'today_submissions_adjust'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
-                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
-                            }`}
-                          >
-                            <Icon className="material-symbols-outlined text-[16px] shrink-0">edit_note</Icon>
-                            <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
-                          </button>
-                        )}
-
                         {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 3) && (
                           <button
                             type="button"
@@ -1688,25 +1595,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                           >
                             <Icon className="material-symbols-outlined text-[16px] shrink-0">app_registration</Icon>
                             <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
-                          </button>
-                        )}
-
-                        {userRole !== 'officer' && isTaskViewable(userRole, 2) && (
-                          <button
-                            type="button"
-                            onClick={() => setActivePage('today_submissions_adjust')}
-                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer active:scale-[0.98] ${
-                              activePage === 'today_submissions_adjust'
-                                ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
-                                : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
-                            }`}
-                          >
-                            <Icon className="material-symbols-outlined text-[16px] shrink-0 text-amber-400">edit_note</Icon>
-                            <span>
-                              {isAmharic
-                                ? (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
-                                : (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'Submitted Corrections' : 'Submission Correction')}
-                            </span>
                           </button>
                         )}
 
@@ -2333,27 +2221,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               </button>
                             )}
 
-                            {(settings.showClerkEditSubmissionAction ?? true) && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActivePage('today_submissions_adjust');
-                                  setIsMobileMenuOpen(false);
-                                }}
-                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                                  activePage === 'today_submissions_adjust'
-                                    ? 'bg-yellow-500 text-[#1e293b] font-black shadow-2xs'
-                                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Icon className="material-symbols-outlined text-[18px] text-amber-400">edit_note</Icon>
-                                  <span>{isAmharic ? 'ማመልከቻ ማስተካከያ' : 'Submission Correction'}</span>
-                                </div>
-                                <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
-                              </button>
-                            )}
-
                              {settings.showClerkSubmissionsAction && isTaskViewable(userRole, 3) && (
                               <button
                                 type="button"
@@ -2415,31 +2282,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                                 <div className="flex items-center gap-2">
                                   <Icon className="material-symbols-outlined text-[18px] text-amber-400">app_registration</Icon>
                                   <span>{isAmharic ? 'ምዝገባ' : 'Registration'}</span>
-                                </div>
-                                <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
-                              </button>
-                            )}
-
-                            {userRole !== 'officer' && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setActivePage('today_submissions_adjust');
-                                  setIsMobileMenuOpen(false);
-                                }}
-                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
-                                  activePage === 'today_submissions_adjust'
-                                    ? 'bg-yellow-500 text-[#1e293b] font-black shadow-2xs'
-                                    : 'text-slate-200 hover:bg-white/10 hover:text-white'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Icon className="material-symbols-outlined text-[18px] text-amber-400">edit_note</Icon>
-                                  <span>
-                                    {isAmharic
-                                      ? (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'የቀረቡ ማስተካከያዎች' : 'ማመልከቻ ማስተካከያ')
-                                      : (['admin', 'superadmin', 'super_admin', 'manager'].includes(userRole) ? 'Submitted Corrections' : 'Submission Correction')}
-                                  </span>
                                 </div>
                                 <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
                               </button>
