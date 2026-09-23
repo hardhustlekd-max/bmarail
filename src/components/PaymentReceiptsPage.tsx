@@ -7,6 +7,8 @@ import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
 import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian } from '../utils/ethiopianCalendar';
 import { LoadingSpinner } from './ui/Skeleton';
+import { EthiopianDateRangePicker, DateRangePreset, computeEthiopianPresetRange } from './EthiopianDateRangePicker';
+import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
 
 interface PaymentReceiptsPageProps {
   userBadgeId: string;
@@ -243,50 +245,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     return activeMainTab;
   }, [canViewTable, canViewKPIs, activeMainTab]);
 
-  // Date Range state: defaulted to 'this_month' with preset pills and native date controls styled matching the table toolbar
-  type DateRangePreset = 'this_month' | 'all' | 'last_30_days' | 'this_year' | 'custom';
-
-  const getPresetRange = (preset: DateRangePreset) => {
-    const now = new Date();
-    if (preset === 'all') return { start: '', end: '' };
-    const ethNow = toEthiopianDate(now);
-    if (preset === 'this_month') {
-      const ethStart = ethiopianToGregorian(ethNow.year, ethNow.month, 1);
-      const lastEthDay = ethNow.isPagume ? 6 : 30;
-      const ethEnd = ethiopianToGregorian(ethNow.year, ethNow.month, lastEthDay);
-      return {
-        start: ethStart.dateStr,
-        end: ethEnd.dateStr,
-      };
-    }
-    if (preset === 'last_30_days') {
-      const past = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-      const formatDate = (d: Date) =>
-        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      return {
-        start: formatDate(past),
-        end: formatDate(now),
-      };
-    }
-    if (preset === 'this_year') {
-      const ethStart = ethiopianToGregorian(ethNow.year, 1, 1);
-      const ethEnd = ethiopianToGregorian(ethNow.year, 13, 6);
-      return {
-        start: ethStart.dateStr,
-        end: ethEnd.dateStr,
-      };
-    }
-    return { start: '', end: '' };
-  };
-
   const [dateRangePreset, setDateRangePreset] = useState<DateRangePreset>('this_month');
-  const [startDate, setStartDate] = useState<string>(() => getPresetRange('this_month').start);
-  const [endDate, setEndDate] = useState<string>(() => getPresetRange('this_month').end);
+  const [startDate, setStartDate] = useState<string>(() => computeEthiopianPresetRange('this_month').start);
+  const [endDate, setEndDate] = useState<string>(() => computeEthiopianPresetRange('this_month').end);
 
   const handleSelectPreset = (preset: DateRangePreset) => {
     setDateRangePreset(preset);
     if (preset !== 'custom') {
-      const range = getPresetRange(preset);
+      const range = computeEthiopianPresetRange(preset);
       setStartDate(range.start);
       setEndDate(range.end);
     }
@@ -597,136 +563,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   // Reusable Tailwind-styled Date Range Picker matching table toolbar UI and controls
   const renderDateRangePicker = () => {
-    const presetOptions: { key: DateRangePreset; label: string }[] = [
-      { key: 'this_month', label: isAmharic ? 'ይህ ወር' : 'This Month' },
-      { key: 'all', label: isAmharic ? 'ሁሉም ጊዜ' : 'All Time' },
-      { key: 'last_30_days', label: isAmharic ? 'ያለፉት 30 ቀናት' : 'Last 30 Days' },
-      { key: 'this_year', label: isAmharic ? 'ይህ ዓመት' : 'This Year' },
-      { key: 'custom', label: isAmharic ? 'ብጁ ቀን' : 'Custom' },
-    ];
-
-    let ethDateDisplay = '';
-    if (startDate && endDate) {
-      try {
-        const ethStart = toEthiopianDate(startDate);
-        const ethEnd = toEthiopianDate(endDate);
-        if (ethStart.month === ethEnd.month && ethStart.year === ethEnd.year) {
-          ethDateDisplay = isAmharic
-            ? `${ethStart.monthNameAm} ${ethStart.year} ዓ.ም`
-            : `${ethStart.monthNameEn} ${ethStart.year} E.C.`;
-        } else {
-          ethDateDisplay = isAmharic
-            ? `${ethStart.monthNameAm} - ${ethEnd.monthNameAm} ${ethEnd.year}`
-            : `${ethStart.monthNameEn} - ${ethEnd.monthNameEn} ${ethEnd.year}`;
-        }
-      } catch {}
-    }
-
     return (
-      <div className="p-3.5 sm:px-6 bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        {/* Left Side: Title + Preset Tabs */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <div className="flex items-center gap-1.5 text-[#1C2434] dark:text-white shrink-0">
-            <span className="p-1.5 rounded-md bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-blue-400/10 dark:text-blue-400 flex items-center justify-center">
-              <Icon className="material-symbols-outlined text-[16px]">calendar_month</Icon>
-            </span>
-            <span className="text-xs font-black tracking-tight uppercase">
-              {isAmharic ? 'የቀን ማጣሪያ' : 'Date Range Filter'}
-            </span>
-          </div>
-
-          {/* Preset Buttons matching TailAdmin toolbar segment controls */}
-          <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] overflow-x-auto scrollbar-none">
-            {presetOptions.map((opt) => {
-              const isActive = dateRangePreset === opt.key;
-              return (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => handleSelectPreset(opt.key)}
-                  className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all whitespace-nowrap cursor-pointer select-none ${
-                    isActive
-                      ? 'bg-white dark:bg-[#3C50E0] text-[#3C50E0] dark:text-white shadow-2xs font-extrabold'
-                      : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active Ethiopian Date Range Badge */}
-          {ethDateDisplay && (
-            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-blue-400/10 dark:text-blue-300 border border-[#3C50E0]/20">
-              <Icon className="material-symbols-outlined text-[13px]">schedule</Icon>
-              {ethDateDisplay}
-            </span>
-          )}
-        </div>
-
-        {/* Right Side: Custom Date Inputs & Action */}
-        <div className="flex flex-wrap items-center gap-2 self-start lg:self-auto">
-          {/* Start Date */}
-          <div className="flex items-center gap-1.5 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md px-2 py-1 shadow-2xs">
-            <span className="text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
-              {isAmharic ? 'ከ' : 'From'}
-            </span>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
-                setDateRangePreset('custom');
-              }}
-              className="bg-transparent text-xs font-bold text-[#1C2434] dark:text-white outline-none cursor-pointer"
-            />
-          </div>
-
-          <span className="text-[#64748B] dark:text-[#8A99AD] text-xs font-bold">→</span>
-
-          {/* End Date */}
-          <div className="flex items-center gap-1.5 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md px-2 py-1 shadow-2xs">
-            <span className="text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
-              {isAmharic ? 'እስከ' : 'To'}
-            </span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
-                setDateRangePreset('custom');
-              }}
-              className="bg-transparent text-xs font-bold text-[#1C2434] dark:text-white outline-none cursor-pointer"
-            />
-          </div>
-
-          {/* Clear / Reset Button */}
-          {(startDate || endDate) && (
-            <button
-              type="button"
-              onClick={() => {
-                if (dateRangePreset === 'this_month') {
-                  handleSelectPreset('all');
-                } else {
-                  handleSelectPreset('this_month');
-                }
-              }}
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-100 dark:bg-[#1C2434] dark:hover:bg-[#2E3A47] border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-bold rounded-md text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer transition-all shadow-2xs shrink-0"
-              title={dateRangePreset === 'this_month' ? (isAmharic ? 'ሁሉንም አሳይ' : 'Show All') : (isAmharic ? 'ወደዚህ ወር መልስ' : 'Reset to This Month')}
-            >
-              <Icon className="material-symbols-outlined text-[14px]">
-                {dateRangePreset === 'this_month' ? 'clear_all' : 'restart_alt'}
-              </Icon>
-              <span>
-                {dateRangePreset === 'this_month'
-                  ? (isAmharic ? 'ሁሉንም' : 'All')
-                  : (isAmharic ? 'ይህ ወር' : 'This Month')}
-              </span>
-            </button>
-          )}
-        </div>
-      </div>
+      <EthiopianDateRangePicker
+        startDate={startDate}
+        endDate={endDate}
+        preset={dateRangePreset}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+        onPresetChange={setDateRangePreset}
+        lang={isAmharic ? 'am' : 'en'}
+      />
     );
   };
 
@@ -736,36 +582,38 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   return (
     <div className="space-y-4 pb-12">
-      {/* HEADER SECTION: Clean, high-contrast, non-nested */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      {/* HEADER SECTION: Minimized, sleek, matching other tables in the app */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-4 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs">
         <div>
-          <h2 className="text-lg sm:text-xl font-black text-slate-950 dark:text-white tracking-tight flex items-center gap-2">
-            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px] text-slate-700 dark:text-slate-300 shrink-0">
-              account_balance_wallet
-            </Icon>
+          <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
+            <span className="p-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Icon className="material-symbols-outlined text-[18px] shrink-0">
+                payments
+              </Icon>
+            </span>
             <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
           </h2>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           {canAddReceipt ? (
             <button
               type="button"
               onClick={() => setIsFormOpen((prev) => !prev)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-black hover:bg-slate-800 dark:hover:bg-white transition-all shadow-xs cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3C50E0] hover:bg-[#3C50E0]/90 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
             >
-              <Icon className="material-symbols-outlined text-[18px]">
-                {isFormOpen ? 'remove_circle' : 'add_circle'}
+              <Icon className="material-symbols-outlined text-[16px]">
+                {isFormOpen ? 'close' : 'add'}
               </Icon>
               <span>
                 {isFormOpen
                   ? isAmharic ? 'ቅጹን ዝጋ' : 'Close Form'
-                  : isAmharic ? '+ አዲስ የክፍያ ደረሰኝ መዝግብ' : '+ New Payment Receipt'}
+                  : isAmharic ? 'አዲስ ክፍያ' : 'New payment'}
               </span>
             </button>
           ) : (
-            <div className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-bold flex items-center gap-1.5">
-              <Icon className="material-symbols-outlined text-[16px]">lock</Icon>
+            <div className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-bold flex items-center gap-1.5">
+              <Icon className="material-symbols-outlined text-[15px]">lock</Icon>
               <span>{isAmharic ? 'የደረሰኝ መመዝገቢያ ተገድቧል' : 'Receipt Entry Restricted'}</span>
             </div>
           )}
@@ -827,7 +675,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {currentTab === 'metrics' && canViewKPIs && (
         <div className="space-y-4 animate-in fade-in duration-150">
           {/* Date Filter Card for Metrics */}
-          <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
+          <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative">
             {renderDateRangePicker()}
           </div>
 
@@ -1197,20 +1045,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 )}
               </div>
 
-              {/* Payment Date Input */}
+              {/* Payment Date Input in Ethiopian Calendar */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide flex items-center justify-between">
-                  <span>{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
-                  <span className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200">
-                    {formatEthiopianDate(paymentDate, isAmharic ? 'am' : 'en')}
-                  </span>
+                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 tracking-wide">
+                  <span>{isAmharic ? 'የተከፈለበት ቀን (E.C.)' : 'Payment Date (E.C.)'}</span>
                 </label>
-                <input
-                  type="date"
-                  required
+                <EthiopianDatePickerPopover
                   value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  onChange={setPaymentDate}
+                  lang={isAmharic ? 'am' : 'en'}
+                  className="w-full"
                 />
               </div>
             </div>
@@ -1536,7 +1380,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* TAB 2: TABLE SECTION (STANDALONE DEDICATED TAB) */}
       {currentTab === 'table' && canViewTable && (
-        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden animate-in fade-in duration-150">
+        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative animate-in fade-in duration-150">
           {/* NATIVE DATE RANGE PICKER (TAILWIND STYLED) */}
           {renderDateRangePicker()}
 

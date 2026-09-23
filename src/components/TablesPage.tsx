@@ -2,6 +2,7 @@ import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
+import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
 import {
   updateRegistrationInDb,
   deleteRegistrationFromDb,
@@ -2491,27 +2492,24 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               {/* Payment Date & Calculated Expiration Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block text-xs">
+                    {isAmharic ? 'የተከፈለበት ቀን (E.C.)' : 'Payment Date (E.C.)'}
                   </label>
-                  <input
-                    type="date"
+                  <EthiopianDatePickerPopover
                     value={renewalPaymentDate}
-                    onChange={(e) => setRenewalPaymentDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono"
+                    onChange={setRenewalPaymentDate}
+                    lang={isAmharic ? 'am' : 'en'}
+                    className="w-full"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
+                  <label className="font-bold text-slate-700 dark:text-slate-300 block text-xs">
                     {isAmharic ? 'የሚያበቃበት ቀን (1 ወር)' : 'Expiration Date (1 month)'}
                   </label>
-                  <input
-                    type="text"
-                    readOnly
-                    value={calculateOneMonthExpiration(renewalPaymentDate)}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-800 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono font-bold cursor-not-allowed"
-                  />
+                  <div className="px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs cursor-not-allowed">
+                    {formatEthiopianDate(calculateOneMonthExpiration(renewalPaymentDate), isAmharic ? 'am' : 'en')}
+                  </div>
                 </div>
               </div>
 

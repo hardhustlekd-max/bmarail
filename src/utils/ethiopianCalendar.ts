@@ -192,6 +192,34 @@ export function ethiopianToGregorian(ethYear: number, ethMonth: number, ethDay: 
   };
 }
 
+export function isEthiopianLeapYear(ethYear: number): boolean {
+  return ethYear % 4 === 3;
+}
+
+export function getEthiopianDaysInMonth(ethYear: number, ethMonth: number): number {
+  if (ethMonth === 13) {
+    return isEthiopianLeapYear(ethYear) ? 6 : 5;
+  }
+  return 30;
+}
+
+export function getEthiopianMonthDetails(ethYear: number, ethMonth: number) {
+  const daysInMonth = getEthiopianDaysInMonth(ethYear, ethMonth);
+  const firstDayG = ethiopianToGregorian(ethYear, ethMonth, 1);
+  const d = new Date(`${firstDayG.dateStr}T12:00:00Z`);
+  const startDayOfWeek = d.getUTCDay(); // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  const monthObj = ETHIOPIAN_MONTHS[ethMonth - 1] || ETHIOPIAN_MONTHS[0];
+  return {
+    ethYear,
+    ethMonth,
+    daysInMonth,
+    startDayOfWeek,
+    firstDayGregorian: firstDayG.dateStr,
+    monthNameAm: monthObj.am,
+    monthNameEn: monthObj.en,
+  };
+}
+
 export function formatEthiopianHeaderDate(date: Date = new Date(), lang: 'am' | 'en' = 'am'): string {
   const eth = toEthiopianDate(date);
   if (lang === 'am') {

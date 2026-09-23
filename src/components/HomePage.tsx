@@ -1744,7 +1744,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             : 'text-[#8A99AD] hover:text-white hover:bg-[#333A48]/60'
                         }`}
                       >
-                        <Icon className="material-symbols-outlined text-[15px] text-emerald-400 shrink-0">receipt_long</Icon>
+                        <Icon className="material-symbols-outlined text-[15px] text-emerald-400 shrink-0">payments</Icon>
                         <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
                       </button>
                     </div>
@@ -2455,7 +2455,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <Icon className="material-symbols-outlined text-[18px] text-emerald-400">receipt_long</Icon>
+                              <Icon className="material-symbols-outlined text-[18px] text-emerald-400">payments</Icon>
                               <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
                             </div>
                             <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
