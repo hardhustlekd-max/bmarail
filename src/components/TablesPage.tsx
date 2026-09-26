@@ -1787,7 +1787,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* QR Inspector Modal */}
       {selectedRegForQR && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto transition-all duration-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
@@ -1802,7 +1802,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* Full A4 Permit Paper Modal */}
       {selectedRegForA4 && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto transition-all duration-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
@@ -1821,7 +1821,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* Vehicle QR Sticker Modal */}
       {selectedRegForSticker && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto transition-all duration-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
@@ -1840,7 +1840,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* Rejection Reason Prompt Modal */}
       {rejectingId && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-200">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto transition-all duration-200">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 max-w-sm w-full space-y-4 shadow-xl">
             <h3 className="font-extrabold text-sm text-rose-600 dark:text-rose-400 flex items-center gap-2">
               <Icon className="material-symbols-outlined">cancel</Icon>
@@ -1876,7 +1876,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* Full Vehicle Registration Record Details Inspector Modal */}
       {selectedRegForDetails && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto transition-all duration-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
@@ -2411,7 +2411,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* RENEWAL MONTHLY PAYMENT RECEIPT MODAL */}
       {renewalModalReg && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
@@ -2594,7 +2594,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* --- BULK APPROVE CONFIRMATION MODAL --- */}
       {showBulkApproveModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
           <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               <div className="flex items-center gap-2.5">
@@ -2671,7 +2671,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* --- BULK DELETE CONFIRMATION MODAL --- */}
       {showBulkDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
           <div className="bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               <div className="flex items-center gap-2.5">
@@ -2754,7 +2754,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
       {/* --- BULK PRINT ROSTER MODAL --- */}
       {showBulkPrintRosterModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-6 overflow-y-auto">
           <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl animate-fade-in">
             {/* Modal Header */}
             <div className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between bg-[#F7F9FC] dark:bg-[#24303F]">

@@ -1434,7 +1434,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
   };
 
   return (
-    <div className="h-screen h-[100dvh] max-h-screen max-h-[100dvh] overflow-hidden bg-surface text-on-surface flex flex-col font-sans">
+    <div className="h-screen h-[100dvh] max-h-screen max-h-[100dvh] overflow-hidden bg-[#F1F5F9] dark:bg-[#1A222C] text-[#1C2434] dark:text-[#DEE4EE] flex flex-col font-sans">
       {/* ==================== DESKTOP SIDEBAR NAVIGATION (hidden md:flex) ==================== */}
       <aside 
         onMouseEnter={() => setIsSidebarHovered(true)}
@@ -2971,7 +2971,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
         <main className={
           activePage === 'scan'
             ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
-            : "flex-1 overflow-y-auto w-full max-w-7xl md:max-w-[1600px] px-3 sm:px-4 md:px-6 pt-1.5 sm:pt-2 md:pt-2 pb-6 md:pb-8 mx-auto min-h-0 flex flex-col"
+            : "flex-1 overflow-y-auto w-full px-3 sm:px-5 md:px-7 pt-2 sm:pt-3 pb-8 min-h-0 flex flex-col"
         }>
           {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (
@@ -3207,7 +3207,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
       {/* Universal Logout Confirmation Modal for All Users */}
       {isLogoutModalOpen && (
         <div
-          className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 px-3 sm:px-4 overflow-y-auto animate-in fade-in duration-200"
           onClick={() => setIsLogoutModalOpen(false)}
         >
           <div

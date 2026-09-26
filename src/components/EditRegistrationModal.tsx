@@ -239,7 +239,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
   return (
     <div
       id="edit-registration-modal-backdrop"
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}

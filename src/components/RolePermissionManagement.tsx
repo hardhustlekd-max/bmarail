@@ -891,7 +891,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
       {/* Modal for Creating Custom Role */}
       {showNewRoleModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto animate-in fade-in duration-200">
           <div className="bg-surface border border-outline-variant rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
               <h3 className="text-sm font-black text-on-surface">

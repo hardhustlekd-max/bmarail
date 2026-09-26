@@ -1990,7 +1990,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
       {/* ================= MODAL: ADD SYSTEM USER ================= */}
       {showAddUserModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
           <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-outline-variant pb-3">
               <h3 className="font-black text-base text-on-surface flex items-center gap-2">
@@ -2105,7 +2105,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
       {/* ================= MODAL: EDIT USER ================= */}
       {editingUser && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
           <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-outline-variant pb-3">
               <h3 className="font-black text-base text-on-surface flex items-center gap-2">
@@ -2203,7 +2203,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
       {/* ================= MODAL: DELETE CONFIRM ================= */}
       {deletingUser && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
           <div className="bg-surface-container-lowest w-full max-w-sm rounded-lg border border-red-200 shadow-2xl p-6 space-y-4 text-center">
             <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
               <Icon className="material-symbols-outlined text-[28px]">warning</Icon>
@@ -2241,7 +2241,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
       {/* ================= MODAL: DANGER ZONE CONFIRMATION ================= */}
       {dangerActionType && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
           <div className="bg-white w-full max-w-md rounded-lg border-2 border-red-400 shadow-2xl p-6 space-y-4">
             <div className="flex items-center gap-3 border-b border-red-100 pb-3">
               <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">

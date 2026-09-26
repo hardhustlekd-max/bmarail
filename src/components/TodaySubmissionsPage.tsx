@@ -1404,7 +1404,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
       {/* ==================== MODAL: CLERK EDIT & RE-SUBMIT APPLICATION ==================== */}
       {editingReg && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto">
           <div className="bg-surface-container-lowest dark:bg-slate-900 w-full max-w-2xl rounded-lg border border-outline-variant dark:border-slate-700 shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-outline-variant dark:border-slate-800 flex items-center justify-between bg-surface-container/30 dark:bg-slate-800/40">
@@ -1711,7 +1711,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
       {/* ==================== INSPECT PERMIT CARD MODAL ==================== */}
       {inspectReg && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto">
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
@@ -1736,7 +1736,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
       {/* ==================== BULK APPROVAL CONFIRMATION MODAL ==================== */}
       {showBulkConfirmModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto animate-fade-in">
           <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm max-w-lg w-full p-6 shadow-2xl space-y-5">
             {/* Modal Header */}
             <div className="flex items-start gap-2.5">

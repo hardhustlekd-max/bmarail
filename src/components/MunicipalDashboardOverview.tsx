@@ -1096,7 +1096,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* MODAL: INSPECT PERMIT CARD MODAL */}
       {selectedRegForModal && (
-        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto transition-all duration-200">
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}
@@ -1110,7 +1110,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* MODAL: INSPECT LOG DETAILS DIGITAL ID CARD */}
       {selectedLogForDetails && (
-        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto transition-all duration-200">
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
           <ZoomableDocumentContainer
             lang={lang}
             userRole={userRole}

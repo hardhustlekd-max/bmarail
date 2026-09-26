@@ -1066,7 +1066,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
     <div className="space-y-2 sm:space-y-2.5">
       {/* OFFLINE / UNSUCCESSFUL ONLINE SAVE CONFIRMATION MODAL */}
       {showOfflineConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
           <div className="bg-surface border border-outline-variant rounded-lg max-w-md w-full p-5 space-y-4 shadow-xl">
             <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
               <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">

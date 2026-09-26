@@ -78,7 +78,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="crash-dialog-title"
-      className="fixed inset-0 z-9999 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-[99999] flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto"
     >
       <div className="w-full max-w-xl bg-surface-container-lowest dark:bg-slate-900 border-2 border-rose-500/40 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header Alert Strip */}

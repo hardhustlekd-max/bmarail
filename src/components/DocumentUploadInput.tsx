@@ -360,7 +360,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
       {/* Lightbox Modal */}
       {showZoom && hasPhoto && (
         <div
-          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => setShowZoom(false)}
         >
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">

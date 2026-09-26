@@ -594,7 +594,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
       {/* MODAL 1: DETAILED SCANNED VEHICLE INSPECTION */}
       {selectedLogForDetails && selectedRegForCard && (
-        <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 transition-all duration-200">
+        <div className="fixed inset-0 z-[9999] bg-black/75 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
           <div className="bg-surface-container-lowest sm:border border-outline-variant rounded-none sm:rounded-lg p-5 max-w-xl w-full h-full sm:h-auto space-y-4 shadow-xl sm:max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-outline-variant pb-3 shrink-0">
               <div className="flex items-center gap-2">
@@ -708,7 +708,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
       {/* LIGHTBOX MODAL FOR EXPANDED DOCUMENT INSPECTION */}
       {zoomedImage && (
         <div
-          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => setZoomedImage(null)}
         >
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">

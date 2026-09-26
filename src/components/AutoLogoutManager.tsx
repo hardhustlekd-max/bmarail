@@ -284,7 +284,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
           aria-modal="true"
           aria-labelledby="inactivity-prompt-title"
           aria-describedby="inactivity-prompt-desc"
-          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200"
+          className="fixed inset-0 z-[99999] flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();

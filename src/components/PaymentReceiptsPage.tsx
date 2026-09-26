@@ -905,7 +905,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* RECEIPT ENTRY FORM WITH ZERO-JUMP INTEGRATED MANIFEST STRIP */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in overflow-hidden">
+        <div className="fixed inset-0 z-[1000] flex items-start justify-center pt-6 sm:pt-12 md:pt-14 pb-8 p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in overflow-y-auto">
           <div className="relative w-full max-w-2xl bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]">
@@ -2056,7 +2056,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* DELETE CONFIRMATION MODAL */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
             <div className="flex items-center gap-3 text-rose-600">
               <Icon className="material-symbols-outlined text-[28px]">warning</Icon>

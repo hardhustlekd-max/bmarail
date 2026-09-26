@@ -560,7 +560,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
       {/* Detail Modal */}
       {selectedReport && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-outline-variant pb-3">
@@ -691,7 +691,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
       {/* Image Zoom Modal */}
       {zoomedImage && (
         <div
-          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
+          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
           onClick={() => setZoomedImage(null)}
         >
           <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
