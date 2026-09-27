@@ -75,48 +75,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     <div className="w-full h-full flex-1 flex flex-col font-sans text-on-surface bg-surface min-h-0 overflow-y-auto">
       
       {/* ================= TOP NAVBAR ================= */}
-      <header className="w-full bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0] dark:border-[#2E3A47] shadow-xs px-4 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4 transition-colors">
+      <header className="w-full bg-[#1e293b] text-white shadow-sm px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4 border-b border-slate-700/60">
         
         {/* Left Brand & Logo */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-xs flex items-center justify-center shrink-0 overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47]">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border border-white/20 shadow-xs flex items-center justify-center shrink-0 overflow-hidden">
             <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
           </div>
           <div className="min-w-0">
-            <h1 className={`text-[#1C2434] dark:text-white leading-tight truncate whitespace-nowrap ${lang === 'am' ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
+            <h1 className={`text-white leading-tight truncate whitespace-nowrap ${lang === 'am' ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
               {lang === 'am' ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahir Dar Motorist Association'}
             </h1>
           </div>
-        </div>
-
-        {/* Right Action Tools (Language Toggle & Theme Toggle) */}
-        <div className="flex items-center gap-2">
-          {onToggleLang && (
-            <button
-              type="button"
-              onClick={onToggleLang}
-              className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 select-none"
-              title={lang === 'am' ? 'ወደ እንግሊዝኛ ቀይር' : 'Switch to Amharic'}
-              aria-label="Toggle Language"
-            >
-              <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300">translate</Icon>
-              <span className="font-bold">{lang === 'am' ? 'English' : 'አማርኛ'}</span>
-            </button>
-          )}
-
-          {onToggleTheme && (
-            <button
-              type="button"
-              onClick={onToggleTheme}
-              className="w-8.5 h-8.5 rounded-full border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 select-none"
-              title={currentTheme === 'dark' ? (lang === 'am' ? 'ወደ ብርሃን ገጽታ ቀይር' : 'Switch to Light Mode') : (lang === 'am' ? 'ወደ ጨለማ ገጽታ ቀይር' : 'Switch to Dark Mode')}
-              aria-label="Toggle Dark Mode"
-            >
-              <Icon className="material-symbols-outlined text-[18px] text-amber-500">
-                {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
-              </Icon>
-            </button>
-          )}
         </div>
       </header>
 
