@@ -116,6 +116,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
   // User profile dropdown toggle state for topbar
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 
   // Stored read / cleared notification IDs scoped per user account & role on Firestore database
   const userNotificationScope = `bahirdar_notif_${userBadgeId || 'badge'}_${userRole || 'role'}`;
@@ -166,10 +167,48 @@ const HomePageShell: React.FC<HomePageProps> = ({
   };
 
   const notificationDropdownRef = React.useRef<HTMLDivElement>(null);
+  const userDropdownRef = React.useRef<HTMLDivElement>(null);
+  const dateDropdownRef = React.useRef<HTMLDivElement>(null);
   const mobileNotificationRef = React.useRef<HTMLDivElement>(null);
   const mobileNotificationModalRef = React.useRef<HTMLDivElement>(null);
   const mobileDrawerRef = React.useRef<HTMLDivElement>(null);
   const mobileMenuButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isUserDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (!target) return;
+      if (userDropdownRef.current && userDropdownRef.current.contains(target)) {
+        return;
+      }
+      setIsUserDropdownOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isUserDropdownOpen]);
+
+  useEffect(() => {
+    if (!isDateDropdownOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (!target) return;
+      if (dateDropdownRef.current && dateDropdownRef.current.contains(target)) {
+        return;
+      }
+      setIsDateDropdownOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isDateDropdownOpen]);
 
   useEffect(() => {
     if (!isNotificationOpen) return;
@@ -319,7 +358,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
   // Live real-time clock and Ethiopian Calendar state
   const [currentDateTime, setCurrentDateTime] = useState<Date>(() => new Date());
-  const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -1879,44 +1917,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
               </div>
             </div>
           </nav>
-
-          {/* Sidebar Bottom Profile Card & Logout (TailAdmin Dark Card Style) */}
-          <div className="pt-2 border-t border-[#2E3A47] space-y-1.5 mt-auto w-full">
-            <div className={`bg-[#24303F] border border-[#2E3A47] rounded-sm text-white shadow-xs transition-all flex items-center ${
-              isCollapsed ? 'p-1 justify-center' : 'p-2 gap-2'
-            }`}>
-              <div className="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-600 shrink-0 overflow-hidden shadow-xs flex items-center justify-center">
-                <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-              </div>
-              {!isCollapsed && (
-                <div className="min-w-0 flex-1">
-                  <span className="text-xs font-semibold text-white block truncate leading-tight">
-                    {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
-                  </span>
-                  <span className="text-[10.5px] text-[#8A99AD] font-normal block truncate">
-                    {userRole === 'superadmin' ? 'Super Admin' : userRole === 'admin' ? 'Manager' : userRole === 'clerk' ? 'Secretary' : 'Officer'}
-                  </span>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#10B981]"></span>
-                    <span className="text-[9.5px] text-[#10B981] font-medium">Online</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Bottom TailAdmin Style Logout Button */}
-            <button
-              type="button"
-              onClick={() => setIsLogoutModalOpen(true)}
-              className={`w-full bg-[#24303F] hover:bg-[#333A48] text-[#DEE4EE] hover:text-white border border-[#2E3A47] font-medium text-xs rounded-sm flex items-center justify-center transition-all cursor-pointer active:scale-98 ${
-                isCollapsed ? 'p-2' : 'py-1.5 gap-1.5'
-              }`}
-              title={isAmharic ? 'ወጣ (Logout)' : 'Logout'}
-            >
-              <Icon className="material-symbols-outlined text-[15px] text-[#F87171] shrink-0">logout</Icon>
-              {!isCollapsed && <span>{isAmharic ? 'ወጣ (Logout)' : 'Logout'}</span>}
-            </button>
-          </div>
         </div>
       </aside>
 
@@ -2677,92 +2677,19 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </div>
           </div>
 
-          {/* Right Side Tools: Language, Theme, Notifications, Date Dropdown, User Dropdown */}
-          <div className="flex items-center gap-2">
-            {/* Desktop Language Selector Toggle */}
-            {onToggleLang && (
-              <button
-                type="button"
-                onClick={onToggleLang}
-                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 select-none"
-                title={isAmharic ? 'ወደ እንግሊዝኛ ቀይር' : 'Switch to Amharic'}
-                aria-label="Toggle Language"
-              >
-                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300">translate</Icon>
-                <span className="font-bold">{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
-              </button>
-            )}
-
-            {/* Desktop Theme Selector Toggle */}
-            {onToggleTheme && (
-              <button
-                type="button"
-                onClick={onToggleTheme}
-                className="w-8.5 h-8.5 rounded-full border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 select-none"
-                title={currentTheme === 'dark' ? (isAmharic ? 'ወደ ብርሃን ገጽታ ቀይር' : 'Switch to Light Mode') : (isAmharic ? 'ወደ ጨለማ ገጽታ ቀይር' : 'Switch to Dark Mode')}
-                aria-label="Toggle Dark Mode"
-              >
-                <Icon className="material-symbols-outlined text-[18px] text-amber-500">
-                  {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
-                </Icon>
-              </button>
-            )}
-
-            {/* Notification Bell Icon Button with dynamic unread badge */}
-            <div className="relative" ref={notificationDropdownRef}>
-              <button
-                type="button"
-                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center transition-all cursor-pointer relative shadow-xs ${
-                  isNotificationOpen
-                    ? 'border-slate-800 bg-slate-800 text-white'
-                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
-                aria-label="Notifications"
-              >
-                <Icon className="material-symbols-outlined text-[19px]">notifications</Icon>
-                {unreadNotificationCount > 0 && (
-                  <span className="bg-[#FB5454] text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-2xs border border-white dark:border-[#1C2434]">
-                    {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Desktop Notification Dropdown */}
-              {isNotificationOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-84 sm:w-96 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                >
-                  <NotificationDropdown
-                    notifications={systemNotifications}
-                    readIds={readNotificationIds}
-                    onMarkAllAsRead={handleMarkAllNotificationsAsRead}
-                    onClearAll={handleClearAllNotifications}
-                    onSelectNotification={handleSelectNotification}
-                    onQuickAction={handleSelectNotification}
-                    onClose={() => setIsNotificationOpen(false)}
-                    isAmharic={isAmharic}
-                    isMobile={false}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Real Working Ethiopian Calendar Date & Time Selector Pill */}
-            <div className="relative">
+          {/* Right Side Tools: Date Dropdown, Notifications, User Dropdown */}
+          <div className="flex items-center gap-2.5">
+            {/* Real Working Ethiopian Calendar Date & Time Display (Clean unboxed style) */}
+            <div className="relative" ref={dateDropdownRef}>
               <button
                 type="button"
                 onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-                className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] text-xs font-semibold flex items-center gap-2 cursor-pointer transition-all shadow-xs select-none hover:border-slate-700"
+                className="px-2 py-1 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-colors select-none"
                 title={isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian Calendar'}
               >
-                <Icon className="material-symbols-outlined text-amber-500 text-[17px]">calendar_month</Icon>
-                <span className="font-bold">{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
-                <span className="hidden lg:inline text-[10px] bg-amber-500/15 text-amber-700 dark:text-amber-300 font-mono px-1.5 py-0.5 rounded font-bold">
+                <Icon className="material-symbols-outlined text-amber-500 text-[18px]">calendar_month</Icon>
+                <span className="font-semibold text-xs text-[#1C2434] dark:text-[#DEE4EE]">{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
+                <span className="hidden lg:inline text-[11px] text-[#64748B] dark:text-[#8A99AD] font-mono font-medium">
                   {isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}
                 </span>
                 <Icon className="material-symbols-outlined text-[#8A99AD] text-[15px]">
@@ -2878,8 +2805,52 @@ const HomePageShell: React.FC<HomePageProps> = ({
               )}
             </div>
 
+            {/* Notification Bell Icon Button with dynamic unread badge */}
+            <div className="relative" ref={notificationDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center transition-all cursor-pointer relative shadow-xs ${
+                  isNotificationOpen
+                    ? 'border-slate-800 bg-slate-800 text-white'
+                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white'
+                }`}
+                title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
+                aria-label="Notifications"
+              >
+                <Icon className="material-symbols-outlined text-[19px]">notifications</Icon>
+                {unreadNotificationCount > 0 && (
+                  <span className="bg-[#FB5454] text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-2xs border border-white dark:border-[#1C2434]">
+                    {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Desktop Notification Dropdown */}
+              {isNotificationOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-84 sm:w-96 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
+                  <NotificationDropdown
+                    notifications={systemNotifications}
+                    readIds={readNotificationIds}
+                    onMarkAllAsRead={handleMarkAllNotificationsAsRead}
+                    onClearAll={handleClearAllNotifications}
+                    onSelectNotification={handleSelectNotification}
+                    onQuickAction={handleSelectNotification}
+                    onClose={() => setIsNotificationOpen(false)}
+                    isAmharic={isAmharic}
+                    isMobile={false}
+                  />
+                </div>
+              )}
+            </div>
+
             {/* Top-Right Active User Dropdown Pill */}
-            <div className="relative">
+            <div className="relative" ref={userDropdownRef}>
               <button
                 type="button"
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
@@ -2949,16 +2920,18 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       <Icon className="material-symbols-outlined text-[17px] text-[#8A99AD]">settings</Icon>
                       <span>{isAmharic ? 'ቅንብሮች (Settings)' : 'Settings'}</span>
                     </button>
+                    {/* Logout Option (Moved from side bar) */}
                     <button
                       type="button"
                       onClick={() => {
                         setIsUserDropdownOpen(false);
                         setIsLogoutModalOpen(true);
                       }}
-                      className="w-full px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 flex items-center gap-2 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
+                      className="w-full px-3 py-2 text-xs font-medium text-[#F87171] hover:bg-rose-500/10 dark:hover:bg-rose-500/15 flex items-center gap-2 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
+                      title={isAmharic ? 'ወጣ (Logout)' : 'Logout'}
                     >
-                      <Icon className="material-symbols-outlined text-[17px] text-rose-600 dark:text-rose-400">logout</Icon>
-                      <span>{isAmharic ? 'ውጣ (Sign Out)' : 'Sign Out'}</span>
+                      <Icon className="material-symbols-outlined text-[17px] text-[#F87171]">logout</Icon>
+                      <span>{isAmharic ? 'ወጣ (Logout)' : 'Logout'}</span>
                     </button>
                   </div>
                 </div>

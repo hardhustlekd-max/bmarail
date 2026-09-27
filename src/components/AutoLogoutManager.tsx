@@ -390,7 +390,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                 ref={keepLoggedInButtonRef}
                 type="button"
                 onClick={handleKeepLoggedIn}
-                className="order-1 sm:order-2 px-6 py-3 rounded-lg text-xs sm:text-sm font-black bg-[#1e293b] hover:bg-[#162B5B] text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 group"
+                className="order-1 sm:order-2 px-6 py-3 rounded-lg text-xs sm:text-sm font-black bg-primary hover:bg-primary-hover text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 group"
               >
                 <Icon className="material-symbols-outlined text-[18px] text-yellow-400 group-hover:rotate-180 transition-transform duration-500">
                   lock_reset

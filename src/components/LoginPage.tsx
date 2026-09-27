@@ -75,31 +75,61 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     <div className="w-full h-full flex-1 flex flex-col font-sans text-on-surface bg-surface min-h-0 overflow-y-auto">
       
       {/* ================= TOP NAVBAR ================= */}
-      <header className="w-full bg-[#1e293b] text-white shadow-md px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4">
+      <header className="w-full bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0] dark:border-[#2E3A47] shadow-xs px-4 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4 transition-colors">
         
         {/* Left Brand & Logo */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-xs flex items-center justify-center shrink-0 overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47]">
             <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
           </div>
           <div className="min-w-0">
-            <h1 className={`text-white leading-tight truncate whitespace-nowrap ${lang === 'am' ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
+            <h1 className={`text-[#1C2434] dark:text-white leading-tight truncate whitespace-nowrap ${lang === 'am' ? 'font-black text-sm sm:text-base md:text-lg tracking-normal' : 'font-black text-xs sm:text-sm md:text-base tracking-tight'}`}>
               {lang === 'am' ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahir Dar Motorist Association'}
             </h1>
           </div>
+        </div>
+
+        {/* Right Action Tools (Language Toggle & Theme Toggle) */}
+        <div className="flex items-center gap-2">
+          {onToggleLang && (
+            <button
+              type="button"
+              onClick={onToggleLang}
+              className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 select-none"
+              title={lang === 'am' ? 'ወደ እንግሊዝኛ ቀይር' : 'Switch to Amharic'}
+              aria-label="Toggle Language"
+            >
+              <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300">translate</Icon>
+              <span className="font-bold">{lang === 'am' ? 'English' : 'አማርኛ'}</span>
+            </button>
+          )}
+
+          {onToggleTheme && (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              className="w-8.5 h-8.5 rounded-full border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95 select-none"
+              title={currentTheme === 'dark' ? (lang === 'am' ? 'ወደ ብርሃን ገጽታ ቀይር' : 'Switch to Light Mode') : (lang === 'am' ? 'ወደ ጨለማ ገጽታ ቀይር' : 'Switch to Dark Mode')}
+              aria-label="Toggle Dark Mode"
+            >
+              <Icon className="material-symbols-outlined text-[18px] text-amber-500">
+                {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
+              </Icon>
+            </button>
+          )}
         </div>
       </header>
 
       {/* ================= MAIN LOGIN CONTAINER ================= */}
       <main className="flex-1 flex flex-col justify-center items-center p-4 sm:p-6 pt-8 sm:pt-6 py-6 sm:py-10 mt-4 sm:mt-0 my-auto min-h-0 -translate-y-[5%] sm:-translate-y-[10%]">
-        <div className="w-full max-w-sm bg-surface-container-lowest border border-outline-variant rounded-md shadow-md p-4 sm:p-5 space-y-3 relative">
+        <div className="w-full max-w-sm bg-surface-container-lowest border border-outline-variant rounded-xl shadow-md p-4 sm:p-6 space-y-4 relative">
           
           {/* Header Inside Card */}
           <div className="text-center pb-0.5">
-            <h2 className="font-extrabold text-base text-on-surface tracking-tight leading-tight">
-              {lang === 'am' ? 'ወደ ሲይስተም መግቢያ' : 'System Login'}
+            <h2 className="font-extrabold text-lg text-on-surface tracking-tight leading-tight">
+              {lang === 'am' ? 'ወደ ሲስተም መግቢያ' : 'System Login'}
             </h2>
-            <p className="text-[11px] text-outline font-medium mt-1">
+            <p className="text-xs text-on-surface-variant font-medium mt-1">
               {lang === 'am'
                 ? 'እባክዎን የመታወቂያ ቁጥር እና የይለፍ ቃልዎን ያስገቡ'
                 : 'Enter your badge ID and password to sign in'}
@@ -144,7 +174,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             
             {/* Badge ID Input */}
             <div className="space-y-1.5">
-              <label htmlFor="badge-id-input" className="block text-xs sm:text-sm font-bold text-on-surface">
+              <label htmlFor="badge-id-input" className="block text-xs sm:text-sm font-bold text-on-surface-variant">
                 {lang === 'am' ? 'የመታወቂያ ቁጥር' : 'Badge ID'}
               </label>
               <div className="relative">
@@ -156,11 +186,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   placeholder={lang === 'am' ? 'የመታወቂያ ቁጥር ያስገቡ' : 'Enter Badge ID'}
                   required
                   autoComplete="off"
-                  className={`w-full bg-surface-container border ${
+                  className={`w-full bg-surface-container-low border ${
                     badgeIdError ? 'border-error' : 'border-outline-variant'
-                  } rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface focus:outline-hidden focus:border-[#1e293b] focus:ring-2 focus:ring-[#1e293b]/20 transition-all font-mono pr-11`}
+                  } rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-11`}
                 />
-                <div className="absolute right-3 inset-y-0 flex items-center justify-center text-secondary pointer-events-none">
+                <div className="absolute right-3 inset-y-0 flex items-center justify-center text-on-surface-variant pointer-events-none">
                   <Icon className="material-symbols-outlined text-[18px] leading-none">person</Icon>
                 </div>
               </div>
@@ -171,7 +201,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             {/* Password Input */}
             <div className="space-y-1.5">
-              <label htmlFor="password-input" className="block text-xs sm:text-sm font-bold text-on-surface">
+              <label htmlFor="password-input" className="block text-xs sm:text-sm font-bold text-on-surface-variant">
                 {lang === 'am' ? 'የይለፍ ቃል' : 'Password'}
               </label>
               <div className="relative">
@@ -182,14 +212,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={lang === 'am' ? 'የይለፍ ቃል ያስገቡ' : 'Enter Password'}
                   required
-                  className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface focus:outline-hidden focus:border-[#1e293b] focus:ring-2 focus:ring-[#1e293b]/20 transition-all font-mono pr-11"
+                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-11"
                 />
                 <div className="absolute right-2 inset-y-0 flex items-center">
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? (lang === 'am' ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (lang === 'am' ? 'የይለፍ ቃል አሳይ' : 'Show password')}
-                    className="w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                    className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
                   >
                     <Icon className="material-symbols-outlined text-[18px]">
                       {showPassword ? 'visibility_off' : 'visibility'}
@@ -201,7 +231,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             {/* Remember Me Checkbox */}
             <div className="flex items-center justify-between text-xs pt-0.5">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-secondary font-medium">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-on-surface-variant font-medium">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -216,7 +246,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#1e293b] hover:bg-[#0D2B5C] text-white py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer mt-1"
+              className="w-full bg-primary hover:bg-primary-hover text-white py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer mt-1"
             >
               {isLoading ? (
                 <>
@@ -234,7 +264,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           {/* Card Footer */}
           <div className="text-center pt-2 border-t border-outline-variant">
-            <p className="text-[11px] text-outline">
+            <p className="text-[11px] text-outline font-medium">
               {lang === 'am'
                 ? 'ባህር ዳር ሞተረኞች ማህበር • 2026'
                 : 'Bahirdar Motorist Association • 2026'}

@@ -31,7 +31,7 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
           {/* Header: Rectangular Avatar with Clean Neutral Border, Name, Badge */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Rectangular Avatar with Neutral Border (Portrait 3:4 Aspect Ratio) */}
-            <div className="w-9.5 h-12.5 sm:w-10 sm:h-13 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
+            <div className="w-9.5 h-12.5 sm:w-10 sm:h-13 rounded-md border border-outline-variant bg-surface-container-high p-0.5 shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
               {portraitUrl ? (
                 <img
                   src={portraitUrl}
@@ -52,14 +52,14 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
 
             {/* Member Details Header */}
             <div className="min-w-0 flex-1 space-y-0.5">
-              <h4 className="text-sm font-bold text-[#1C2434] dark:text-white leading-tight truncate">
-                {fullName} {roleOrTitle && <span className="text-slate-500 dark:text-slate-400 font-semibold text-xs">({roleOrTitle})</span>}
+              <h4 className="text-sm font-bold text-on-surface leading-tight truncate">
+                {fullName} {roleOrTitle && <span className="text-on-surface-variant font-semibold text-xs">({roleOrTitle})</span>}
               </h4>
 
               {/* Badge ID without box design */}
               {badgeId && (
                 <div>
-                  <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300 tracking-wide">
+                  <span className="font-mono text-xs font-bold text-on-surface-variant tracking-wide">
                     {badgeId}
                   </span>
                 </div>
@@ -68,7 +68,7 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
           </div>
 
           {/* Horizontal Divider */}
-          <div className="border-t border-[#F1F5F9] dark:border-[#2E3A47] my-2.5" />
+          <div className="border-t border-outline-variant my-2.5" />
         </>
       )}
 
@@ -76,10 +76,10 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
       <div className="space-y-2 text-xs sm:text-sm">
         {fields.map((field, index) => (
           <div key={index} className="grid grid-cols-2 gap-3 sm:gap-4 py-0.5 items-center">
-            <span className="text-[#1C2434] dark:text-white font-extrabold truncate min-w-0">
+            <span className="text-on-surface font-extrabold truncate min-w-0">
               {field.label}
             </span>
-            <span className="text-slate-500 dark:text-slate-400 font-extrabold text-left truncate min-w-0">
+            <span className="text-on-surface-variant font-extrabold text-left truncate min-w-0">
               {field.value || '—'}
             </span>
           </div>
