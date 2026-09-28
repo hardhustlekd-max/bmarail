@@ -379,26 +379,26 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
   return (
     <div
       id="fullscreen-photo-zoom-viewer"
-      className="fixed inset-0 z-[10000] w-full h-[100dvh] max-h-[100dvh] max-w-[100vw] bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden animate-in fade-in duration-200"
+      className="fixed inset-0 z-[10000] w-screen h-[100dvh] max-h-[100dvh] max-w-[100vw] bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden animate-in fade-in duration-200"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
       {/* 1. TOP FLOATING CONTROL BAR */}
-      <header className="shrink-0 h-14 sm:h-16 w-full px-2.5 sm:px-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-center justify-between z-30 pointer-events-auto">
+      <header className="shrink-0 h-14 sm:h-16 w-full px-2 sm:px-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-center justify-between z-30 pointer-events-auto">
         {/* Document Info / Title */}
-        <div className="flex items-center gap-2 min-w-0 pr-1 sm:pr-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
           <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
             <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
               {currentItem.icon || 'description'}
             </Icon>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <h3 className="text-xs sm:text-base font-black text-white truncate drop-shadow-md">
+              <h3 className="text-xs sm:text-sm md:text-base font-black text-white truncate drop-shadow-md">
                 {currentItem.title}
               </h3>
               {validItems.length > 1 && (
-                <span className="px-1.5 sm:px-2 py-0.2 sm:py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] sm:text-[10px] font-bold shrink-0 border border-white/10">
+                <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] sm:text-[10px] font-bold shrink-0 border border-white/10">
                   {currentIndex + 1}/{validItems.length}
                 </span>
               )}
@@ -413,45 +413,48 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
 
         {/* Toolbar Controls */}
         <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-          {/* Zoom Out */}
-          <button
-            type="button"
-            onClick={handleZoomOut}
-            title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out (-)'}
-            className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
-          >
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_out</Icon>
-          </button>
+          {/* Zoom Group */}
+          <div className="flex items-center bg-white/10 rounded-lg p-0.5 border border-white/10 shrink-0">
+            {/* Zoom Out */}
+            <button
+              type="button"
+              onClick={handleZoomOut}
+              title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out (-)'}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
+            >
+              <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">zoom_out</Icon>
+            </button>
 
-          {/* Zoom Level Indicator & Reset */}
-          <button
-            type="button"
-            onClick={resetTransform}
-            title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset View (0 / R)'}
-            className="h-7.5 sm:h-9 px-1.5 sm:px-2.5 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white text-[10px] sm:text-[11px] font-mono font-bold flex items-center justify-center gap-1 transition-all cursor-pointer border border-white/10"
-          >
-            <span>{Math.round(scale * 100)}%</span>
-            {scale !== 1 && <Icon className="material-symbols-outlined text-[12px] sm:text-[14px]">restart_alt</Icon>}
-          </button>
+            {/* Zoom Level Indicator & Reset */}
+            <button
+              type="button"
+              onClick={resetTransform}
+              title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset View (0 / R)'}
+              className="px-1.5 sm:px-2 h-7 sm:h-8 text-white text-[10px] sm:text-[11px] font-mono font-bold flex items-center gap-0.5 hover:bg-white/20 rounded transition-all cursor-pointer"
+            >
+              <span>{Math.round(scale * 100)}%</span>
+              {scale !== 1 && <Icon className="material-symbols-outlined text-[11px] sm:text-[13px]">restart_alt</Icon>}
+            </button>
 
-          {/* Zoom In */}
-          <button
-            type="button"
-            onClick={handleZoomIn}
-            title={isAmharic ? 'አጉላ (+)' : 'Zoom In (+)'}
-            className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
-          >
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_in</Icon>
-          </button>
+            {/* Zoom In */}
+            <button
+              type="button"
+              onClick={handleZoomIn}
+              title={isAmharic ? 'አጉላ (+)' : 'Zoom In (+)'}
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
+            >
+              <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">zoom_in</Icon>
+            </button>
+          </div>
 
           {/* Rotate */}
           <button
             type="button"
             onClick={handleRotate}
             title={isAmharic ? 'አሽከርክር' : 'Rotate (90°)'}
-            className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10"
+            className="w-7.5 h-7.5 sm:w-8.5 sm:h-8.5 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10 shrink-0"
           >
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">rotate_right</Icon>
+            <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">rotate_right</Icon>
           </button>
 
           {/* Toggle Thumbnails */}
@@ -460,13 +463,13 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               type="button"
               onClick={() => setShowThumbnails(!showThumbnails)}
               title={isAmharic ? 'ማውጫ አሳይ/ደብቅ' : 'Toggle Thumbnails'}
-              className={`w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-md flex items-center justify-center transition-all cursor-pointer border ${
+              className={`w-7.5 h-7.5 sm:w-8.5 sm:h-8.5 rounded-lg flex items-center justify-center transition-all cursor-pointer border shrink-0 ${
                 showThumbnails
                   ? 'bg-primary text-white border-primary/50'
                   : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">view_carousel</Icon>
+              <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">view_carousel</Icon>
             </button>
           )}
 
@@ -475,9 +478,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={onClose}
             title={isAmharic ? 'ዝጋ (Esc)' : 'Close (Esc)'}
-            className="w-7.5 h-7.5 sm:w-9 sm:h-9 ml-0.5 sm:ml-1 rounded-md bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95"
+            className="w-7.5 h-7.5 sm:w-8.5 sm:h-8.5 rounded-lg bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95 shrink-0"
           >
-            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">close</Icon>
+            <Icon className="material-symbols-outlined text-[17px] sm:text-[19px]">close</Icon>
           </button>
         </div>
       </header>
@@ -490,13 +493,13 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onDoubleClick={handleDoubleClick}
-        className={`flex-1 w-full h-full relative overflow-hidden flex items-center justify-center p-2 sm:p-4 max-h-[calc(100dvh-110px)] sm:max-h-[calc(100dvh-130px)] ${
+        className={`flex-1 min-h-0 w-full relative overflow-hidden flex items-center justify-center p-2 sm:p-4 select-none ${
           scale > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
         }`}
       >
         {/* Loading Spinner */}
         {!imageLoaded && !hasError && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-3 z-10">
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-3 z-10 pointer-events-none">
             <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
             <span className="text-xs font-semibold tracking-wide">
               {isAmharic ? 'ሰነዱ እየተጫነ ነው...' : 'Loading Document...'}
@@ -539,57 +542,63 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           </div>
         )}
 
-        {/* Image Display */}
-        <div
-          style={{
-            transform: `translate(${position.x + touchDeltaX}px, ${position.y}px) scale(${scale}) rotate(${rotation}deg)`,
-            transition: isDragging || touchDeltaX !== 0 ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
-            transformOrigin: 'center center',
-          }}
-          className="w-full h-full flex items-center justify-center will-change-transform"
-        >
-          {displayUrl && (
-            <img
-              key={displayUrl}
-              src={displayUrl}
-              alt={currentItem?.title || 'Document'}
-              referrerPolicy="no-referrer"
-              onLoad={(e) => {
-                const img = e.currentTarget;
-                setImageLoaded(true);
-                setHasError(false);
-                imageLogger.logSuccess(
-                  displayUrl,
-                  { width: img.naturalWidth, height: img.naturalHeight },
-                  undefined,
-                  { context: currentItem?.title }
-                );
-              }}
-              onError={() => {
-                if (!hasTriedProxy && currentItem?.url) {
-                  const resolved = resolveDisplayImageUrl(currentItem.url);
-                  const proxyTarget = resolved.proxyUrl || `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}`;
-                  if (proxyTarget !== displayUrl) {
-                    imageLogger.logRetry(displayUrl, proxyTarget, 'Direct carousel fetch failed, routing via proxy', {
-                      context: currentItem.title,
-                    });
-                    setHasTriedProxy(true);
-                    setDisplayUrl(proxyTarget);
-                    return;
+        {/* Image Display Container - Perfectly Centered */}
+        <div className="w-full h-full flex items-center justify-center overflow-hidden pointer-events-none">
+          <div
+            style={{
+              transform: `translate(${position.x + touchDeltaX}px, ${position.y}px) scale(${scale}) rotate(${rotation}deg)`,
+              transition: isDragging || touchDeltaX !== 0 ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
+              transformOrigin: 'center center',
+            }}
+            className="flex items-center justify-center max-w-full max-h-full will-change-transform pointer-events-auto"
+          >
+            {displayUrl && (
+              <img
+                key={displayUrl}
+                src={displayUrl}
+                alt={currentItem?.title || 'Document'}
+                referrerPolicy="no-referrer"
+                onLoad={(e) => {
+                  const img = e.currentTarget;
+                  setImageLoaded(true);
+                  setHasError(false);
+                  imageLogger.logSuccess(
+                    displayUrl,
+                    { width: img.naturalWidth, height: img.naturalHeight },
+                    undefined,
+                    { context: currentItem?.title }
+                  );
+                }}
+                onError={() => {
+                  if (!hasTriedProxy && currentItem?.url) {
+                    const resolved = resolveDisplayImageUrl(currentItem.url);
+                    const proxyTarget = resolved.proxyUrl || `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}`;
+                    if (proxyTarget !== displayUrl) {
+                      imageLogger.logRetry(displayUrl, proxyTarget, 'Direct carousel fetch failed, routing via proxy', {
+                        context: currentItem.title,
+                      });
+                      setHasTriedProxy(true);
+                      setDisplayUrl(proxyTarget);
+                      return;
+                    }
                   }
-                }
-                imageLogger.logError(displayUrl, 'Carousel image load failure', {
-                  context: currentItem?.title,
-                  originalUrl: currentItem?.url,
-                });
-                setImageLoaded(false);
-                setHasError(true);
-              }}
-              className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-200 pointer-events-none select-none ${
-                imageLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          )}
+                  imageLogger.logError(displayUrl, 'Carousel image load failure', {
+                    context: currentItem?.title,
+                    originalUrl: currentItem?.url,
+                  });
+                  setImageLoaded(false);
+                  setHasError(true);
+                }}
+                style={{
+                  maxHeight: rotation % 180 !== 0 ? '75vw' : '100%',
+                  maxWidth: rotation % 180 !== 0 ? '75vh' : '100%',
+                }}
+                className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-200 pointer-events-none select-none m-auto ${
+                  imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            )}
+          </div>
         </div>
 
         {/* Floating Left / Right Navigation Arrows */}
@@ -602,9 +611,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                 handlePrev();
               }}
               title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
-              className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
+              className="absolute left-1.5 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
             >
-              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px]">chevron_left</Icon>
+              <Icon className="material-symbols-outlined text-[22px] sm:text-[26px]">chevron_left</Icon>
             </button>
             <button
               type="button"
@@ -613,27 +622,11 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                 handleNext();
               }}
               title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
-              className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
+              className="absolute right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
             >
-              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px]">chevron_right</Icon>
+              <Icon className="material-symbols-outlined text-[22px] sm:text-[26px]">chevron_right</Icon>
             </button>
           </>
-        )}
-
-        {/* Mobile Swipe Pagination Dots Indicator */}
-        {validItems.length > 1 && (
-          <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/15 z-20 pointer-events-none">
-            {validItems.map((_, idx) => (
-              <span
-                key={idx}
-                className={`transition-all duration-200 rounded-full ${
-                  idx === currentIndex
-                    ? 'w-5 h-1.5 bg-primary'
-                    : 'w-1.5 h-1.5 bg-white/40'
-                }`}
-              />
-            ))}
-          </div>
         )}
       </div>
 
