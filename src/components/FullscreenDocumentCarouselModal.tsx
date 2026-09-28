@@ -391,60 +391,47 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
-      {/* 1. RESPONSIVE HEADER & TOOLS: 2-TIER ON MOBILE, 1-TIER ON DESKTOP */}
-      <header className="shrink-0 w-full bg-black/95 border-b border-white/10 z-30 pointer-events-auto flex flex-col sm:flex-row sm:items-center sm:justify-between px-2.5 sm:px-6 py-2 sm:py-0 sm:h-16 gap-2 sm:gap-4 shadow-xl">
-        {/* Tier 1 / Left Section: Document Title Info & Mobile Close Button */}
-        <div className="flex items-center justify-between gap-2 w-full sm:w-auto min-w-0 flex-1">
-          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
-              <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
-                {currentItem.icon || 'description'}
-              </Icon>
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <h3 className="text-xs sm:text-sm md:text-base font-black text-white truncate drop-shadow-md">
-                  {currentItem.title}
-                </h3>
-                {validItems.length > 1 && (
-                  <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] sm:text-[10px] font-bold shrink-0 border border-white/10">
-                    {currentIndex + 1}/{validItems.length}
-                  </span>
-                )}
-              </div>
-              {currentItem.subtitle && (
-                <p className="text-[10px] sm:text-[11px] text-slate-300 truncate drop-shadow-xs">
-                  {currentItem.subtitle}
-                </p>
+      {/* 1. SINGLE-TIER RESPONSIVE HEADER & TOOLS OPTIMIZED FOR MOBILE & DESKTOP */}
+      <header className="shrink-0 w-full bg-black/95 border-b border-white/10 z-30 pointer-events-auto h-13 sm:h-16 px-2.5 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 shadow-xl">
+        {/* Left Section: Document Title Info */}
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+          <div className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[20px]">
+              {currentItem.icon || 'description'}
+            </Icon>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h3 className="text-xs sm:text-sm md:text-base font-black text-white truncate drop-shadow-md">
+                {currentItem.title}
+              </h3>
+              {validItems.length > 1 && (
+                <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] sm:text-[10px] font-bold shrink-0 border border-white/10 font-mono">
+                  {currentIndex + 1}/{validItems.length}
+                </span>
               )}
             </div>
+            {currentItem.subtitle && (
+              <p className="text-[10px] sm:text-[11px] text-slate-300 truncate drop-shadow-xs hidden xs:block">
+                {currentItem.subtitle}
+              </p>
+            )}
           </div>
-
-          {/* Mobile-Only Prominent Close Button */}
-          <button
-            type="button"
-            onClick={onClose}
-            title={isAmharic ? 'ዝጋ (Esc)' : 'Close Viewer (Esc)'}
-            aria-label="Close Document Viewer"
-            className="sm:hidden w-8.5 h-8.5 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white flex items-center justify-center shadow-lg border border-white/20 shrink-0"
-          >
-            <Icon className="material-symbols-outlined text-[20px]">close</Icon>
-          </button>
         </div>
 
-        {/* Tier 2 / Right Section: Toolbar Controls (Evenly spaced on mobile, grouped on desktop) */}
-        <div className="flex items-center justify-between sm:justify-end gap-1.5 sm:gap-2 w-full sm:w-auto shrink-0 pt-1.5 sm:pt-0 border-t border-white/10 sm:border-t-0">
-          {/* Zoom Controls Pill */}
-          <div className="flex items-center bg-white/10 rounded-lg p-0.5 border border-white/10 shrink-0">
+        {/* Right Section: Desktop Toolbar Controls & Mobile Quick Actions */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Desktop Zoom Controls Pill (Hidden on mobile; mobile uses ergonomic bottom floating dock) */}
+          <div className="hidden sm:flex items-center bg-white/10 rounded-lg p-0.5 border border-white/10 shrink-0">
             {/* Zoom Out */}
             <button
               type="button"
               onClick={handleZoomOut}
               title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out (-)'}
               aria-label="Zoom Out"
-              className="w-7.5 h-7.5 sm:w-8 sm:h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
+              className="w-8 h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
             >
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_out</Icon>
+              <Icon className="material-symbols-outlined text-[18px]">zoom_out</Icon>
             </button>
 
             {/* Zoom Level Indicator & Reset */}
@@ -453,10 +440,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               onClick={resetTransform}
               title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset View (0 / R)'}
               aria-label="Reset View"
-              className="px-2 h-7.5 sm:h-8 text-white text-[10px] sm:text-[11px] font-mono font-bold flex items-center gap-0.5 hover:bg-white/20 rounded transition-all cursor-pointer"
+              className="px-2 h-8 text-white text-[11px] font-mono font-bold flex items-center gap-0.5 hover:bg-white/20 rounded transition-all cursor-pointer"
             >
               <span>{Math.round(scale * 100)}%</span>
-              {scale !== 1 && <Icon className="material-symbols-outlined text-[11px] sm:text-[13px]">restart_alt</Icon>}
+              {scale !== 1 && <Icon className="material-symbols-outlined text-[13px]">restart_alt</Icon>}
             </button>
 
             {/* Zoom In */}
@@ -465,54 +452,84 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               onClick={handleZoomIn}
               title={isAmharic ? 'አጉላ (+)' : 'Zoom In (+)'}
               aria-label="Zoom In"
-              className="w-7.5 h-7.5 sm:w-8 sm:h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
+              className="w-8 h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
             >
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_in</Icon>
+              <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
             </button>
           </div>
 
-          {/* Rotate Button */}
+          {/* Desktop Rotate Button */}
           <button
             type="button"
             onClick={handleRotate}
             title={isAmharic ? 'አሽከርክር (90°)' : 'Rotate (90°)'}
             aria-label="Rotate Document"
-            className="h-7.5 sm:h-8.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center gap-1 transition-all cursor-pointer border border-white/10 shrink-0 text-xs font-semibold"
+            className="hidden sm:flex h-8.5 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-white items-center justify-center gap-1 transition-all cursor-pointer border border-white/10 shrink-0 text-xs font-semibold"
           >
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">rotate_right</Icon>
+            <Icon className="material-symbols-outlined text-[18px]">rotate_right</Icon>
             <span className="text-[10px] font-mono">{rotation !== 0 ? `${rotation}°` : '90°'}</span>
           </button>
 
-          {/* Toggle Thumbnails */}
+          {/* Desktop Thumbnails Toggle */}
           {validItems.length > 1 && (
             <button
               type="button"
               onClick={() => setShowThumbnails(!showThumbnails)}
               title={isAmharic ? 'ማውጫ አሳይ/ደብቅ' : 'Toggle Thumbnails'}
               aria-label="Toggle Thumbnails"
-              className={`h-7.5 sm:h-8.5 px-2.5 rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer border shrink-0 text-xs font-semibold ${
+              className={`hidden sm:flex h-8.5 px-2.5 rounded-lg items-center justify-center gap-1 transition-all cursor-pointer border shrink-0 text-xs font-semibold ${
                 showThumbnails
                   ? 'bg-primary text-white border-primary/50 shadow-xs'
                   : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">view_carousel</Icon>
-              <span className="text-[10px] hidden xs:inline sm:inline">
+              <Icon className="material-symbols-outlined text-[18px]">view_carousel</Icon>
+              <span className="text-[10px] hidden md:inline">
                 {isAmharic ? 'ማውጫ' : 'Strip'}
               </span>
             </button>
           )}
 
-          {/* Desktop-Only High-Visibility Close Button */}
+          {/* Mobile Quick Rotate Button */}
+          <button
+            type="button"
+            onClick={handleRotate}
+            title={isAmharic ? 'አሽከርክር (90°)' : 'Rotate (90°)'}
+            aria-label="Rotate Document"
+            className="sm:hidden w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10 shrink-0"
+          >
+            <Icon className="material-symbols-outlined text-[17px]">rotate_right</Icon>
+          </button>
+
+          {/* Mobile Thumbnails Toggle Button */}
+          {validItems.length > 1 && (
+            <button
+              type="button"
+              onClick={() => setShowThumbnails(!showThumbnails)}
+              title={isAmharic ? 'ማውጫ አሳይ/ደብቅ' : 'Toggle Thumbnails'}
+              aria-label="Toggle Thumbnails"
+              className={`sm:hidden w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer border shrink-0 ${
+                showThumbnails
+                  ? 'bg-primary text-white border-primary/50'
+                  : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
+              }`}
+            >
+              <Icon className="material-symbols-outlined text-[17px]">view_carousel</Icon>
+            </button>
+          )}
+
+          {/* Prominent High-Visibility Close Button (Optimized for both mobile and desktop) */}
           <button
             type="button"
             onClick={onClose}
             title={isAmharic ? 'ዝጋ (Esc)' : 'Close Viewer (Esc)'}
             aria-label="Close Document Viewer"
-            className="hidden sm:flex px-3 sm:px-4 h-8 sm:h-9 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold items-center gap-1.5 transition-all cursor-pointer shadow-lg hover:shadow-red-600/30 border border-white/20 shrink-0 ml-1"
+            className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1 transition-all cursor-pointer shadow-lg hover:shadow-red-600/30 border border-white/20 shrink-0"
           >
             <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">close</Icon>
-            <span className="font-bold tracking-wide">{isAmharic ? 'ዝጋ' : 'Close'}</span>
+            <span className="font-bold tracking-wide hidden xs:inline sm:inline">
+              {isAmharic ? 'ዝጋ' : 'Close'}
+            </span>
           </button>
         </div>
       </header>
@@ -520,7 +537,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
       {/* 2. MAIN CAROUSEL STAGE: 3-COLUMN STRUCTURE OPTIMIZED FOR MOBILE */}
       <div className="flex-1 min-h-0 w-full flex items-center justify-between relative overflow-hidden">
         {/* Left Arrow Column - Guaranteed dedicated space so it never overlaps the image */}
-        <div className="w-10 sm:w-16 md:w-20 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
+        <div className="w-7 sm:w-16 md:w-20 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
           {validItems.length > 1 && (
             <button
               type="button"
@@ -530,9 +547,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               }}
               title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
               aria-label="Previous Document"
-              className="w-8.5 h-8.5 sm:w-11 sm:h-11 rounded-full bg-slate-900/85 hover:bg-slate-800 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
+              className="w-7.5 h-7.5 sm:w-11 sm:h-11 rounded-full bg-slate-900/85 hover:bg-slate-800 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
             >
-              <Icon className="material-symbols-outlined text-[20px] sm:text-[26px]">chevron_left</Icon>
+              <Icon className="material-symbols-outlined text-[18px] sm:text-[26px]">chevron_left</Icon>
             </button>
           )}
         </div>
@@ -655,7 +672,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
 
         {/* Right Arrow Column - Guaranteed dedicated space so it never overlaps the image */}
-        <div className="w-10 sm:w-16 md:w-20 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
+        <div className="w-7 sm:w-16 md:w-20 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
           {validItems.length > 1 && (
             <button
               type="button"
@@ -665,12 +682,66 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               }}
               title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
               aria-label="Next Document"
-              className="w-8.5 h-8.5 sm:w-11 sm:h-11 rounded-full bg-slate-900/85 hover:bg-slate-800 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
+              className="w-7.5 h-7.5 sm:w-11 sm:h-11 rounded-full bg-slate-900/85 hover:bg-slate-800 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
             >
-              <Icon className="material-symbols-outlined text-[20px] sm:text-[26px]">chevron_right</Icon>
+              <Icon className="material-symbols-outlined text-[18px] sm:text-[26px]">chevron_right</Icon>
             </button>
           )}
         </div>
+      </div>
+
+      {/* MOBILE-OPTIMIZED FLOATING TOOL DOCK: Ergonomically placed at bottom within thumb reach */}
+      <div
+        className={`sm:hidden fixed ${
+          showThumbnails && validItems.length > 1 ? 'bottom-22' : 'bottom-4'
+        } left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-2xl transition-all duration-200 pointer-events-auto`}
+      >
+        {/* Zoom Out */}
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out'}
+          aria-label="Zoom Out"
+          className="w-7.5 h-7.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
+        >
+          <Icon className="material-symbols-outlined text-[17px]">zoom_out</Icon>
+        </button>
+
+        {/* Zoom Scale & Reset */}
+        <button
+          type="button"
+          onClick={resetTransform}
+          title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset Scale'}
+          aria-label="Reset Scale"
+          className="px-2 h-6.5 rounded-full bg-white/15 text-white text-[11px] font-mono font-bold flex items-center gap-0.5 hover:bg-white/25 active:scale-95 cursor-pointer"
+        >
+          <span>{Math.round(scale * 100)}%</span>
+          {scale !== 1 && <Icon className="material-symbols-outlined text-[12px]">restart_alt</Icon>}
+        </button>
+
+        {/* Zoom In */}
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          title={isAmharic ? 'አጉላ (+)' : 'Zoom In'}
+          aria-label="Zoom In"
+          className="w-7.5 h-7.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
+        >
+          <Icon className="material-symbols-outlined text-[17px]">zoom_in</Icon>
+        </button>
+
+        <div className="w-px h-3.5 bg-white/20 mx-0.5" />
+
+        {/* Rotate */}
+        <button
+          type="button"
+          onClick={handleRotate}
+          title={isAmharic ? 'አሽከርክር (90°)' : 'Rotate (90°)'}
+          aria-label="Rotate Document"
+          className="w-7.5 h-7.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
+        >
+          <Icon className="material-symbols-outlined text-[17px]">rotate_right</Icon>
+        </button>
       </div>
 
       {/* 3. BOTTOM THUMBNAILS STRIP */}

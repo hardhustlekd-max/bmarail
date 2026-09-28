@@ -1,3 +1,5 @@
+import { toEthiopianDate, ethiopianToGregorian } from './ethiopianCalendar';
+
 export interface PaymentReceipt {
   id: string;
   receiptNumber: string;
@@ -44,14 +46,39 @@ export function calculateTermStatus(expirationDateStr?: string): TermStatus {
 }
 
 /**
- * Calculates expiration date 1 month from payment date.
+ * Calculates expiration date 1 Ethiopian month (30 days) from payment date.
  */
 export function calculateOneMonthExpiration(paymentDateStr: string): string {
   if (!paymentDateStr) return '';
+
+  // 1. Calculate strictly according to the Ethiopian calendar (30 days per month)
+  try {
+    const eth = toEthiopianDate(paymentDateStr);
+    if (eth && eth.year && eth.month) {
+      let nextYear = eth.year;
+      let nextMonth = eth.month + 1;
+      if (nextMonth > 13) {
+        nextMonth = 1;
+        nextYear += 1;
+      } else if (nextMonth === 13) {
+        // Month 13 is Pagume (5 or 6 days). In Ethiopian monthly billing, 1 month after Nehase is Meskerem of next year
+        nextMonth = 1;
+        nextYear += 1;
+      }
+      const nextDay = Math.min(eth.day, 30);
+      const greg = ethiopianToGregorian(nextYear, nextMonth, nextDay);
+      if (greg && greg.dateStr) {
+        return greg.dateStr;
+      }
+    }
+  } catch (err) {
+    // Fallback below
+  }
+
+  // 2. Gregorian fallback
   const dateObj = new Date(paymentDateStr);
   if (isNaN(dateObj.getTime())) return paymentDateStr;
 
-  // Add 1 month safely
   const targetMonth = dateObj.getMonth() + 1;
   dateObj.setMonth(targetMonth);
 

@@ -171,22 +171,204 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     return paymentReceipts;
   }, [paymentReceipts, scopedRegs, userRole, userBadgeId]);
 
-  // Payment Expiration Metrics calculation derived from scoped receipts
-  const paymentMetrics = React.useMemo(() => {
-    let total = scopedPaymentReceipts.length;
-    let activeCount = 0;
-    let expiringSoonCount = 0;
-    let expiredCount = 0;
+  // Current Ethiopian date reference for the dashboard
+  const currentEthDate = React.useMemo(() => toEthiopianDate(new Date()), []);
+  const currentEthYear = currentEthDate.year;
+  const currentEthMonth = currentEthDate.month; // 1 (መስከረም) to 13 (ጳጉሜ)
 
-    scopedPaymentReceipts.forEach((rc) => {
-      const { status } = getPaymentReceiptStatus(rc.expirationDate);
-      if (status === 'active') activeCount++;
-      else if (status === 'expiring_soon') expiringSoonCount++;
-      else if (status === 'expired') expiredCount++;
+  // Selected Ethiopian Month and Year for "የወርሃዊ ክፍያ ስታቲስቲክስ" (defaults to current Ethiopian month & year)
+  const [selectedFeeMonth, setSelectedFeeMonth] = useState<number>(() => currentEthDate.month);
+  const [selectedFeeYear, setSelectedFeeYear] = useState<number>(() => currentEthDate.year);
+
+  // Month navigation handlers for Ethiopian calendar fee statistics
+  const handlePrevFeeMonth = () => {
+    setSelectedFeeMonth((prev) => {
+      if (prev === 1) {
+        setSelectedFeeYear((y) => y - 1);
+        return 13;
+      }
+      return prev - 1;
+    });
+  };
+
+  const handleNextFeeMonth = () => {
+    setSelectedFeeMonth((prev) => {
+      if (prev === 13) {
+        setSelectedFeeYear((y) => y + 1);
+        return 1;
+      }
+      return prev + 1;
+    });
+  };
+
+  const handleResetFeeMonth = () => {
+    setSelectedFeeMonth(currentEthMonth);
+    setSelectedFeeYear(currentEthYear);
+  };
+
+  // Payment Expiration Metrics strictly calculated according to the Ethiopian calendar
+  const ethiopianMonthlyMetrics = React.useMemo(() => {
+    const targetMonth = selectedFeeMonth;
+    const targetYear = selectedFeeYear;
+    const targetPeriodIndex = targetYear * 13 + targetMonth;
+    const isCurrentMonth = targetMonth === currentEthMonth && targetYear === currentEthYear;
+
+    const cleanPlate = (s?: string) => (s || '').replace(/[\s\-_]/g, '').toLowerCase();
+    const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
+    const cleanPhone = (s?: string) => (s || '').replace(/[^0-9]/g, '');
+
+    // Combine scoped payment receipts with registration records that have payment data
+    const allReceipts = [...scopedPaymentReceipts];
+    scopedRegs.forEach((reg) => {
+      const hasRegReceipt = Boolean(
+        reg.receiptNumber ||
+        reg.lastReceiptNumber ||
+        reg.paymentAmount ||
+        reg.lastPaymentAmount ||
+        reg.lastPaymentDate ||
+        reg.activeTermExpirationDate
+      );
+      if (hasRegReceipt) {
+        const regReceiptNo = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
+        const alreadyInList = regReceiptNo && allReceipts.some((r) => cleanStr(r.receiptNumber) === regReceiptNo);
+        if (!alreadyInList) {
+          const payDate = reg.lastPaymentDate || reg.registrationDate || '';
+          const expDate = reg.activeTermExpirationDate || (payDate ? calculateOneMonthExpiration(payDate) : '');
+          if (payDate) {
+            allReceipts.push({
+              id: `reg-init-${reg.id}`,
+              receiptNumber: reg.lastReceiptNumber || reg.receiptNumber || 'INITIAL',
+              ownerRegistrationId: reg.id,
+              ownerName: reg.fullName || '',
+              plateNumber: reg.plateNumber,
+              phone: reg.phone,
+              paymentDate: payDate,
+              expirationDate: expDate,
+              amount: reg.lastPaymentAmount || reg.paymentAmount || 500,
+              enteredBy: reg.registeredBy || 'SYSTEM',
+              createdAt: payDate,
+            });
+          }
+        }
+      }
     });
 
-    return { total, activeCount, expiringSoonCount, expiredCount };
-  }, [scopedPaymentReceipts]);
+    // Parse all scoped receipts with Ethiopian dates
+    const parsedReceipts = allReceipts.map((rc) => {
+      const payDateStr = rc.paymentDate || rc.createdAt || '';
+      const expDateStr = rc.expirationDate || (payDateStr ? calculateOneMonthExpiration(payDateStr) : '');
+      let payEth: EthiopianDate | null = null;
+      let expEth: EthiopianDate | null = null;
+      try {
+        if (payDateStr) payEth = toEthiopianDate(payDateStr);
+      } catch {}
+      try {
+        if (expDateStr) expEth = toEthiopianDate(expDateStr);
+      } catch {}
+
+      const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
+      const amountNum = parseFloat(String(rc.amount || '500').replace(/[^0-9.]/g, '')) || 500;
+
+      return {
+        receipt: rc,
+        payEth,
+        expEth,
+        status,
+        daysRemaining,
+        amountNum,
+      };
+    });
+
+    // 1. Receipts collected in this specific Ethiopian month & year
+    const receiptsInSelectedMonth = parsedReceipts.filter(
+      (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
+    );
+    const totalMonthRevenue = receiptsInSelectedMonth.reduce((acc, curr) => acc + curr.amountNum, 0);
+    const totalReceiptsCount = receiptsInSelectedMonth.length;
+
+    // 2. Member status evaluation for this Ethiopian Month
+    let paidMembersCount = 0;
+    let dueSoonMembersCount = 0;
+    let unpaidMembersCount = 0;
+    let notEnrolledCount = 0;
+
+    // Active registered members who are subject to monthly fees
+    const billableRegs = scopedRegs.filter((r) => r.status !== 'rejected');
+
+    billableRegs.forEach((reg) => {
+      const regIdClean = cleanStr(reg.id);
+      const regPlateClean = cleanPlate(reg.plateNumber);
+      const regPhoneClean = cleanPhone(reg.phone);
+      const regNameClean = cleanStr(reg.fullName);
+
+      // Find all receipts belonging to this member
+      const memberReceipts = parsedReceipts.filter((item) => {
+        const rc = item.receipt;
+        if (rc.ownerRegistrationId && cleanStr(rc.ownerRegistrationId) === regIdClean) return true;
+        if (rc.plateNumber && regPlateClean && cleanPlate(rc.plateNumber) === regPlateClean) return true;
+        if (rc.phone && regPhoneClean && cleanPhone(rc.phone) === regPhoneClean) return true;
+        if (rc.ownerName && regNameClean && cleanStr(rc.ownerName) === regNameClean) return true;
+        return false;
+      });
+
+      // A. Check direct payment for this Ethiopian month
+      const directMatch = memberReceipts.find(
+        (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
+      );
+
+      // B. Check coverage across this Ethiopian month
+      const coveringMatch = memberReceipts.find((item) => {
+        if (!item.payEth) return false;
+        const payIndex = item.payEth.year * 13 + item.payEth.month;
+        const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
+        return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
+      });
+
+      const matchingItem = directMatch || coveringMatch;
+
+      if (matchingItem) {
+        if (isCurrentMonth && matchingItem.status === 'expiring_soon') {
+          dueSoonMembersCount++;
+        } else {
+          paidMembersCount++;
+        }
+      } else {
+        // Check if member was already registered before/during this month
+        let regEth: EthiopianDate | null = null;
+        try {
+          if (reg.registrationDate) regEth = toEthiopianDate(reg.registrationDate);
+        } catch {}
+
+        const regPeriodIndex = regEth ? regEth.year * 13 + regEth.month : 0;
+        if (regPeriodIndex && targetPeriodIndex < regPeriodIndex) {
+          notEnrolledCount++;
+        } else {
+          unpaidMembersCount++;
+        }
+      }
+    });
+
+    const activeBillableCount = Math.max(0, billableRegs.length - notEnrolledCount);
+    const complianceRate =
+      activeBillableCount > 0 ? Math.round(((paidMembersCount + dueSoonMembersCount) / activeBillableCount) * 100) : 0;
+
+    const monthObj = ETHIOPIAN_MONTHS[targetMonth - 1] || ETHIOPIAN_MONTHS[0];
+    const monthName = isAmharic ? monthObj.am : monthObj.en;
+
+    return {
+      targetMonth,
+      targetYear,
+      monthName,
+      isCurrentMonth,
+      totalRevenue: totalMonthRevenue,
+      totalReceiptsCount,
+      paidMembersCount,
+      dueSoonMembersCount,
+      unpaidMembersCount,
+      activeBillableCount,
+      complianceRate,
+    };
+  }, [scopedPaymentReceipts, scopedRegs, selectedFeeMonth, selectedFeeYear, currentEthMonth, currentEthYear, isAmharic]);
 
   // Verification logs for dashboard metrics:
   // - Only logs associated with hidden vehicles are excluded for non-superadmins
@@ -237,10 +419,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   // Monthly Matrix Ledger columns and member dues rows:
   // Dynamically generated for THIS Ethiopian year from Meskerem (month 1) up to the CURRENT Ethiopian month.
   // Real-time lookup from DB payment receipts with muted dot if no record is found.
-  const currentEthDate = React.useMemo(() => toEthiopianDate(new Date()), []);
-  const currentEthYear = currentEthDate.year;
-  const currentEthMonth = currentEthDate.month; // 1 (መስከረም) to 13 (ጳጉሜ)
-
   const matrixColumns = React.useMemo(() => {
     // Generate months from September (Meskerem / month 1) up to current month of this Ethiopian year
     const cols = [];
@@ -705,66 +883,209 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
 
-      {/* FINANCIAL & REVENUE METRICS (VISIBLE WHEN PAYMENT / REVENUE LEDGER / KPIS TASK IS VIEWABLE) */}
+      {/* FINANCIAL & REVENUE METRICS ACCORDING TO THE ETHIOPIAN CALENDAR (VISIBLE WHEN PAYMENT / REVENUE LEDGER / KPIS TASK IS VIEWABLE) */}
       {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
-        <div className="p-4 sm:p-5 space-y-3">
-              <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
-                <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">payments</Icon>
-                  <div>
-                    <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white  tracking-wider">
-                      {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
-                    </h3>
-                  </div>
-                </div>
+        <div className="p-4 sm:p-5 space-y-3.5 bg-white dark:bg-slate-900 rounded-xl border border-outline-variant/60 shadow-2xs">
+          {/* Header with Ethiopian Month Title & Interactive Month Switcher */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-outline-variant/60 pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
               </div>
-
-              <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
-                {/* Total Receipts */}
-                <div
-                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-                >
-                  <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-slate-700">
-                      {isAmharic ? 'ጠቅላላ የተከፈሉ' : 'Total Paid'}
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white tracking-wide">
+                    {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
+                  </h3>
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50 dark:border-emerald-700/50">
+                    {ethiopianMonthlyMetrics.monthName} {ethiopianMonthlyMetrics.targetYear} {isAmharic ? 'ዓ.ም' : 'E.C.'}
+                  </span>
+                  {ethiopianMonthlyMetrics.isCurrentMonth && (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                      {isAmharic ? 'ወቅታዊ ወር' : 'Current Month'}
                     </span>
-                  </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{paymentMetrics.total}</p>
+                  )}
                 </div>
-
-                {/* Expiring Soon */}
-                <div
-                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-                >
-                  <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-amber-600">
-                      {isAmharic ? 'የክፍያ ቀናቸው የደረሰ' : 'Payment Due'}
-                    </span>
-                  </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight text-center">
-                    {paymentMetrics.expiringSoonCount}
-                  </p>
-                </div>
-
-                {/* Expired */}
-                <div
-                  onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-                  className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-                >
-                  <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-rose-600">
-                      {isAmharic ? 'የክፍያ ቀን ያለፈበት' : 'Payment Overdue'}
-                    </span>
-                  </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
-                    {paymentMetrics.expiredCount}
-                  </p>
-                </div>
+                <p className="text-[11px] text-secondary mt-0.5">
+                  {isAmharic
+                    ? 'በኢትዮጵያ ዘመን አቆጣጠር መሠረት የተሰበሰበ ገቢና የአባላት የክፍያ ሁኔታ'
+                    : 'Revenue collection & member dues tracked according to the Ethiopian calendar'}
+                </p>
               </div>
             </div>
-          )}
+
+            {/* Ethiopian Calendar Month Navigation Controls */}
+            <div className="flex items-center gap-1.5 flex-wrap self-start md:self-auto bg-slate-50 dark:bg-slate-800/60 p-1 rounded-lg border border-outline-variant/60">
+              {/* Prev Month */}
+              <button
+                type="button"
+                onClick={handlePrevFeeMonth}
+                title={isAmharic ? 'ቀዳሚ የኢትዮጵያ ወር' : 'Previous Ethiopian Month'}
+                aria-label="Previous Month"
+                className="w-7.5 h-7.5 rounded flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xs active:scale-95 transition-all cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">chevron_left</Icon>
+              </button>
+
+              {/* Month Dropdown Selector */}
+              <select
+                value={selectedFeeMonth}
+                onChange={(e) => setSelectedFeeMonth(Number(e.target.value))}
+                aria-label={isAmharic ? 'የኢትዮጵያ ወር ምረጥ' : 'Select Ethiopian Month'}
+                className="bg-white dark:bg-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 rounded px-2 py-1 border border-outline-variant/60 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+              >
+                {ETHIOPIAN_MONTHS.map((m) => (
+                  <option key={`fee-month-${m.id}`} value={m.id}>
+                    {m.id}. {isAmharic ? m.am : m.en} ({isAmharic ? m.shortAm : m.shortEn})
+                  </option>
+                ))}
+              </select>
+
+              {/* Year Dropdown Selector */}
+              <select
+                value={selectedFeeYear}
+                onChange={(e) => setSelectedFeeYear(Number(e.target.value))}
+                aria-label={isAmharic ? 'የኢትዮጵያ ዓመት ምረጥ' : 'Select Ethiopian Year'}
+                className="bg-white dark:bg-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 rounded px-2 py-1 border border-outline-variant/60 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer font-mono"
+              >
+                {[currentEthYear - 3, currentEthYear - 2, currentEthYear - 1, currentEthYear, currentEthYear + 1].map((y) => (
+                  <option key={`fee-year-${y}`} value={y}>
+                    {y} {isAmharic ? 'ዓ.ም' : 'E.C.'}
+                  </option>
+                ))}
+              </select>
+
+              {/* Next Month */}
+              <button
+                type="button"
+                onClick={handleNextFeeMonth}
+                title={isAmharic ? 'ቀጣይ የኢትዮጵያ ወር' : 'Next Ethiopian Month'}
+                aria-label="Next Month"
+                className="w-7.5 h-7.5 rounded flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xs active:scale-95 transition-all cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+              </button>
+
+              {/* Reset to Current Month Button if navigated away */}
+              {!ethiopianMonthlyMetrics.isCurrentMonth && (
+                <button
+                  type="button"
+                  onClick={handleResetFeeMonth}
+                  title={isAmharic ? 'ወደ ወቅታዊው ወር ተመለስ' : 'Reset to Current Month'}
+                  className="px-2 py-1 rounded text-[11px] font-bold bg-primary text-white hover:bg-primary-dark active:scale-95 transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+                >
+                  <Icon className="material-symbols-outlined text-[14px]">today</Icon>
+                  <span>{isAmharic ? 'ወቅታዊ' : 'Current'}</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* 5-Column Responsive Metric Statistics Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
+            {/* 1. Paid Members */}
+            <div
+              onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+              className="p-3 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-500/20 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-300 truncate block">
+                  {isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
+                </span>
+                <Icon className="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400 shrink-0">check_circle</Icon>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 tracking-tight leading-tight">
+                {ethiopianMonthlyMetrics.paidMembersCount}
+              </p>
+              <p className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 mt-1 truncate">
+                {isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
+              </p>
+            </div>
+
+            {/* 2. Payment Due Soon */}
+            <div
+              onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+              className="p-3 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-500/20 hover:bg-amber-100/70 dark:hover:bg-amber-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-300 truncate block">
+                  {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon'}
+                </span>
+                <Icon className="material-symbols-outlined text-[16px] text-amber-600 dark:text-amber-400 shrink-0">schedule</Icon>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight">
+                {ethiopianMonthlyMetrics.dueSoonMembersCount}
+              </p>
+              <p className="text-[10px] text-amber-600/80 dark:text-amber-400/80 mt-1 truncate">
+                {isAmharic ? 'በ5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
+              </p>
+            </div>
+
+            {/* 3. Unpaid / Overdue */}
+            <div
+              onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+              className="p-3 rounded-xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-500/20 hover:bg-rose-100/70 dark:hover:bg-rose-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-300 truncate block">
+                  {isAmharic ? 'ያልተከፈለባቸው' : 'Unpaid / Overdue'}
+                </span>
+                <Icon className="material-symbols-outlined text-[16px] text-rose-600 dark:text-rose-400 shrink-0">warning</Icon>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight">
+                {ethiopianMonthlyMetrics.unpaidMembersCount}
+              </p>
+              <p className="text-[10px] text-rose-600/80 dark:text-rose-400/80 mt-1 truncate">
+                {isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
+              </p>
+            </div>
+
+            {/* 4. Month Revenue */}
+            <div
+              onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+              className="p-3 rounded-xl bg-blue-50/80 dark:bg-blue-950/30 border border-blue-500/20 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-extrabold text-blue-800 dark:text-blue-300 truncate block">
+                  {isAmharic ? 'የወሩ ገቢ' : 'Month Revenue'}
+                </span>
+                <Icon className="material-symbols-outlined text-[16px] text-blue-600 dark:text-blue-400 shrink-0">account_balance_wallet</Icon>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-blue-700 dark:text-blue-300 tracking-tight leading-tight">
+                {ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
+                <span className="text-xs font-bold text-blue-600 dark:text-blue-400 ml-1">
+                  {isAmharic ? 'ብር' : 'ETB'}
+                </span>
+              </p>
+              <p className="text-[10px] text-blue-600/80 dark:text-blue-400/80 mt-1 truncate">
+                {ethiopianMonthlyMetrics.totalReceiptsCount} {isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}
+              </p>
+            </div>
+
+            {/* 5. Compliance Rate */}
+            <div
+              onClick={() => onQuickAction && onQuickAction('payment_receipts')}
+              className="p-3 rounded-xl bg-purple-50/80 dark:bg-purple-950/30 border border-purple-500/20 hover:bg-purple-100/70 dark:hover:bg-purple-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none col-span-2 sm:col-span-1"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] font-extrabold text-purple-800 dark:text-purple-300 truncate block">
+                  {isAmharic ? 'የክፍያ ምጣኔ' : 'Compliance Rate'}
+                </span>
+                <Icon className="material-symbols-outlined text-[16px] text-purple-600 dark:text-purple-400 shrink-0">pie_chart</Icon>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-purple-700 dark:text-purple-300 tracking-tight leading-tight">
+                {ethiopianMonthlyMetrics.complianceRate}%
+              </p>
+              <div className="w-full bg-purple-200/60 dark:bg-purple-900/50 h-1.5 rounded-full overflow-hidden mt-1.5">
+                <div
+                  className="bg-purple-600 dark:bg-purple-400 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.max(0, ethiopianMonthlyMetrics.complianceRate))}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
           {/* 2. Member Directory Statistics */}
           {isTaskViewable(userRole, 3) && (
