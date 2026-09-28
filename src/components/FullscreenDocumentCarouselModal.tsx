@@ -123,7 +123,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [touchDeltaX, setTouchDeltaX] = useState<number>(0);
-  const [showThumbnails, setShowThumbnails] = useState<boolean>(true);
   const [imageLoaded, setImageLoaded] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
 
@@ -131,7 +130,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const initialTouchDistanceRef = useRef<number | null>(null);
   const initialScaleRef = useRef<number>(1);
-  const thumbnailScrollRef = useRef<HTMLDivElement>(null);
 
   const currentItem: DocumentViewerItem | undefined = validItems[currentIndex];
 
@@ -224,16 +222,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, handlePrev, handleNext, resetTransform]);
-
-  // Scroll active thumbnail into view
-  useEffect(() => {
-    if (thumbnailScrollRef.current) {
-      const activeEl = thumbnailScrollRef.current.children[currentIndex] as HTMLElement;
-      if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    }
-  }, [currentIndex]);
 
   // Mouse wheel zoom listener (non-passive)
   useEffect(() => {
@@ -393,24 +381,22 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
     >
       {/* 1. SINGLE-TIER RESPONSIVE HEADER & TOOLS OPTIMIZED FOR MOBILE & DESKTOP */}
       <header className="shrink-0 w-full bg-black/95 border-b border-white/10 z-30 pointer-events-auto h-13 sm:h-16 px-2.5 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 shadow-xl">
-        {/* Left Section: Document Title Info */}
+        {/* Left Section: Document Title Info with Fixed Position Counter */}
         <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
           <div className="w-7.5 h-7.5 sm:w-9 sm:h-9 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
             <Icon className="material-symbols-outlined text-[16px] sm:text-[20px]">
               {currentItem.icon || 'description'}
             </Icon>
           </div>
+          {validItems.length > 1 && (
+            <span className="px-2 py-0.5 sm:py-1 rounded-md bg-white/10 text-white text-[10px] sm:text-xs font-mono font-bold shrink-0 border border-white/15 shadow-xs tracking-wider">
+              {currentIndex + 1} / {validItems.length}
+            </span>
+          )}
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <h3 className="text-xs sm:text-sm md:text-base font-black text-white truncate drop-shadow-md">
-                {currentItem.title}
-              </h3>
-              {validItems.length > 1 && (
-                <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] sm:text-[10px] font-bold shrink-0 border border-white/10 font-mono">
-                  {currentIndex + 1}/{validItems.length}
-                </span>
-              )}
-            </div>
+            <h3 className="text-xs sm:text-sm md:text-base font-black text-white truncate drop-shadow-md">
+              {currentItem.title}
+            </h3>
             {currentItem.subtitle && (
               <p className="text-[10px] sm:text-[11px] text-slate-300 truncate drop-shadow-xs hidden xs:block">
                 {currentItem.subtitle}
@@ -470,26 +456,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             <span className="text-[10px] font-mono">{rotation !== 0 ? `${rotation}°` : '90°'}</span>
           </button>
 
-          {/* Desktop Thumbnails Toggle */}
-          {validItems.length > 1 && (
-            <button
-              type="button"
-              onClick={() => setShowThumbnails(!showThumbnails)}
-              title={isAmharic ? 'ማውጫ አሳይ/ደብቅ' : 'Toggle Thumbnails'}
-              aria-label="Toggle Thumbnails"
-              className={`hidden sm:flex h-8.5 px-2.5 rounded-lg items-center justify-center gap-1 transition-all cursor-pointer border shrink-0 text-xs font-semibold ${
-                showThumbnails
-                  ? 'bg-primary text-white border-primary/50 shadow-xs'
-                  : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
-              }`}
-            >
-              <Icon className="material-symbols-outlined text-[18px]">view_carousel</Icon>
-              <span className="text-[10px] hidden md:inline">
-                {isAmharic ? 'ማውጫ' : 'Strip'}
-              </span>
-            </button>
-          )}
-
           {/* Mobile Quick Rotate Button */}
           <button
             type="button"
@@ -500,23 +466,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           >
             <Icon className="material-symbols-outlined text-[17px]">rotate_right</Icon>
           </button>
-
-          {/* Mobile Thumbnails Toggle Button */}
-          {validItems.length > 1 && (
-            <button
-              type="button"
-              onClick={() => setShowThumbnails(!showThumbnails)}
-              title={isAmharic ? 'ማውጫ አሳይ/ደብቅ' : 'Toggle Thumbnails'}
-              aria-label="Toggle Thumbnails"
-              className={`sm:hidden w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer border shrink-0 ${
-                showThumbnails
-                  ? 'bg-primary text-white border-primary/50'
-                  : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
-              }`}
-            >
-              <Icon className="material-symbols-outlined text-[17px]">view_carousel</Icon>
-            </button>
-          )}
 
           {/* Prominent High-Visibility Close Button (Optimized for both mobile and desktop) */}
           <button
@@ -690,11 +639,59 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
       </div>
 
+      {/* FIXED BOTTOM COUNTER & STEP DOTS INDICATOR (Fixed position, replaces bottom thumbnail strip) */}
+      {validItems.length > 1 && (
+        <div
+          className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white select-none transition-all"
+        >
+          <button
+            type="button"
+            onClick={handlePrev}
+            title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
+            aria-label="Previous Document"
+            className="w-5 h-5 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all cursor-pointer"
+          >
+            <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
+          </button>
+
+          <span className="text-[11px] sm:text-xs font-mono font-bold text-white px-1 tracking-wider">
+            {currentIndex + 1} / {validItems.length}
+          </span>
+
+          {validItems.length <= 10 && (
+            <div className="flex items-center gap-1.5 px-1">
+              {validItems.map((item, idx) => (
+                <button
+                  key={`${item.url}-${idx}`}
+                  type="button"
+                  onClick={() => goToIndex(idx)}
+                  title={item.title}
+                  aria-label={`Document ${idx + 1}: ${item.title}`}
+                  className={`transition-all rounded-full cursor-pointer ${
+                    idx === currentIndex
+                      ? 'w-4.5 h-1.5 bg-primary shadow-xs'
+                      : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleNext}
+            title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
+            aria-label="Next Document"
+            className="w-5 h-5 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all cursor-pointer"
+          >
+            <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
+          </button>
+        </div>
+      )}
+
       {/* MOBILE-OPTIMIZED FLOATING TOOL DOCK: Ergonomically placed at bottom within thumb reach */}
       <div
-        className={`sm:hidden fixed ${
-          showThumbnails && validItems.length > 1 ? 'bottom-22' : 'bottom-4'
-        } left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-2xl transition-all duration-200 pointer-events-auto`}
+        className="sm:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-2xl pointer-events-auto"
       >
         {/* Zoom Out */}
         <button
@@ -743,55 +740,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           <Icon className="material-symbols-outlined text-[17px]">rotate_right</Icon>
         </button>
       </div>
-
-      {/* 3. BOTTOM THUMBNAILS STRIP */}
-      {validItems.length > 1 && showThumbnails && (
-        <div className="shrink-0 w-full py-2 sm:py-2.5 px-2.5 sm:px-6 bg-black/90 backdrop-blur-md border-t border-white/10 z-30">
-          <div
-            ref={thumbnailScrollRef}
-            className="flex items-center justify-start sm:justify-center gap-2 sm:gap-3 overflow-x-auto py-1 scrollbar-none max-w-full"
-          >
-            {validItems.map((item, idx) => {
-              const isActive = idx === currentIndex;
-              const thumbResolved = resolveDisplayImageUrl(item.url);
-              return (
-                <button
-                  key={`${item.url}-${idx}`}
-                  type="button"
-                  onClick={() => goToIndex(idx)}
-                  title={item.title}
-                  className={`group relative flex items-center gap-2 p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
-                    isActive
-                      ? 'bg-primary/25 border-primary ring-2 ring-primary/40 shadow-lg scale-105'
-                      : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md overflow-hidden bg-slate-900 flex items-center justify-center shrink-0 border border-white/10">
-                    <img
-                      src={thumbResolved.primaryUrl}
-                      alt={item.title}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                    />
-                  </div>
-                  <div className="text-left pr-2 hidden md:block max-w-[130px]">
-                    <p
-                      className={`text-[11px] font-bold truncate ${
-                        isActive ? 'text-white' : 'text-slate-300'
-                      }`}
-                    >
-                      {item.title}
-                    </p>
-                    <span className="text-[9px] text-slate-400 block">
-                      {idx + 1} of {validItems.length}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 
