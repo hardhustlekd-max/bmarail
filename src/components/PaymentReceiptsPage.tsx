@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Icon } from './ui/Icon';
-import { KpiCard } from './ui/AssocDesignSystem';
+import { KpiCard, MonthlyMatrixLedger, StatusDot } from './ui/AssocDesignSystem';
 import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
-import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian } from '../utils/ethiopianCalendar';
+import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian, ETHIOPIAN_MONTHS, EthiopianDate } from '../utils/ethiopianCalendar';
 import { LoadingSpinner } from './ui/Skeleton';
 import { EthiopianDateRangePicker, DateRangePreset, computeEthiopianPresetRange } from './EthiopianDateRangePicker';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
@@ -658,6 +658,243 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     };
   }, [combinedReceipts, startDate, endDate, dateRangePreset]);
 
+  // Current Ethiopian date reference for the Matrix Ledger
+  const currentEthDate = useMemo(() => toEthiopianDate(new Date()), []);
+  const currentEthYear = currentEthDate.year;
+  const currentEthMonth = currentEthDate.month; // 1 (መስከረም) to 13 (ጳጉሜ)
+
+  // Monthly Matrix Ledger columns: Meskerem up to current Ethiopian month of this Ethiopian year
+  const matrixColumns = useMemo(() => {
+    const cols = [];
+    const maxMonth = Math.min(Math.max(currentEthMonth, 1), 13);
+    for (let m = 1; m <= maxMonth; m++) {
+      const monthObj = ETHIOPIAN_MONTHS[m - 1];
+      const label = isAmharic ? monthObj.shortAm : monthObj.shortEn;
+      const fullTitle = isAmharic ? `${monthObj.am} (${monthObj.en})` : `${monthObj.en} - ${monthObj.am}`;
+      cols.push({
+        key: `eth_m_${m}`,
+        monthNum: m,
+        label,
+        title: fullTitle,
+        year: currentEthYear,
+      });
+    }
+    return cols;
+  }, [currentEthMonth, currentEthYear, isAmharic]);
+
+  // All Matrix Rows generated across member registrations with real-time payment status lookup
+  const allMatrixRows = useMemo(() => {
+    const cleanPlate = (s?: string) => (s || '').replace(/[\s\-_]/g, '').toLowerCase();
+    const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
+    const cleanPhone = (s?: string) => (s || '').replace(/[^0-9]/g, '');
+
+    const members = Array.isArray(registrations) ? registrations : [];
+
+    return members.map((reg) => {
+      const regIdClean = cleanStr(reg.id);
+      const regPlateClean = cleanPlate(reg.plateNumber);
+      const regPhoneClean = cleanPhone(reg.phone);
+      const regNameClean = cleanStr(reg.fullName);
+
+      // 1. Match from full combinedReceipts collection across multiple keys
+      const matchedReceipts = combinedReceipts.filter((rc) => {
+        if (!rc) return false;
+        if (rc.ownerRegistrationId && cleanStr(rc.ownerRegistrationId) === regIdClean) return true;
+        if (regPlateClean && rc.plateNumber && cleanPlate(rc.plateNumber) === regPlateClean) return true;
+        if (regPhoneClean && rc.phone && cleanPhone(rc.phone) === regPhoneClean) return true;
+        if (regNameClean && rc.ownerName && cleanStr(rc.ownerName) === regNameClean) return true;
+        return false;
+      });
+
+      // 2. Also incorporate payment receipt data directly attached to the registration intake record
+      const allReceipts = [...matchedReceipts];
+      const hasRegReceipt = Boolean(
+        reg.receiptNumber ||
+        reg.lastReceiptNumber ||
+        reg.paymentAmount ||
+        reg.lastPaymentAmount ||
+        reg.lastPaymentDate ||
+        reg.activeTermExpirationDate
+      );
+
+      if (hasRegReceipt) {
+        const regReceiptNo = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
+        const alreadyInList = allReceipts.some((r) => r.receiptNumber && cleanStr(r.receiptNumber) === regReceiptNo);
+        if (!alreadyInList) {
+          const payDate = reg.lastPaymentDate || reg.registrationDate || new Date().toISOString().split('T')[0];
+          const expDate = reg.activeTermExpirationDate || calculateOneMonthExpiration(payDate);
+          allReceipts.push({
+            id: `reg-init-${reg.id}`,
+            receiptNumber: reg.lastReceiptNumber || reg.receiptNumber || 'INITIAL',
+            ownerRegistrationId: reg.id,
+            ownerName: reg.fullName || '',
+            plateNumber: reg.plateNumber,
+            phone: reg.phone,
+            paymentDate: payDate,
+            expirationDate: expDate,
+            amount: reg.lastPaymentAmount || reg.paymentAmount || '500 ETB',
+            enteredBy: reg.registeredBy || 'SYSTEM',
+            createdAt: payDate,
+          });
+        }
+      }
+
+      // Check if this member has ANY payment history in the database at all
+      const hasAnyPaymentRecord = allReceipts.length > 0 || Boolean(reg.termStatus && reg.termStatus !== 'DELINQUENT');
+
+      // Parse Ethiopian calendar dates and active status for each receipt
+      const parsedReceipts = allReceipts.map((rc) => {
+        const payDateStr = rc.paymentDate || rc.createdAt || '';
+        const expDateStr = rc.expirationDate || (payDateStr ? calculateOneMonthExpiration(payDateStr) : '');
+        let payEth: EthiopianDate | null = null;
+        let expEth: EthiopianDate | null = null;
+        try {
+          if (payDateStr) payEth = toEthiopianDate(payDateStr);
+        } catch {}
+        try {
+          if (expDateStr) expEth = toEthiopianDate(expDateStr);
+        } catch {}
+
+        const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
+        return {
+          receipt: rc,
+          payEth,
+          expEth,
+          status, // 'active' | 'expiring_soon' | 'expired'
+          daysRemaining,
+        };
+      });
+
+      // Map each column month to its status
+      const periods: Record<string, 'paid' | 'unpaid' | 'pending' | 'muted'> = {};
+
+      matrixColumns.forEach((col) => {
+        const targetMonth = col.monthNum;
+        const targetYear = col.year;
+        const isCurrentMonth = targetMonth === currentEthMonth && targetYear === currentEthYear;
+
+        // If member has no payment records whatsoever in the DB, show muted dot
+        if (!hasAnyPaymentRecord) {
+          periods[col.key] = 'muted';
+          return;
+        }
+
+        // A. Check if any receipt was paid specifically in this Ethiopian month/year
+        const directMonthMatches = parsedReceipts.filter(
+          (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
+        );
+
+        // B. Check if any receipt term covers this Ethiopian month (validity duration spans across this month)
+        const targetPeriodIndex = targetYear * 13 + targetMonth;
+        const coveringMatches = parsedReceipts.filter((item) => {
+          if (!item.payEth) return false;
+          const payIndex = item.payEth.year * 13 + item.payEth.month;
+          const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
+          return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
+        });
+
+        const activeReceipt = parsedReceipts.find((r) => r.status === 'active');
+        const expiringReceipt = parsedReceipts.find((r) => r.status === 'expiring_soon');
+
+        if (isCurrentMonth) {
+          // For current month: evaluate live active status
+          if (reg.termStatus === 'CURRENT' || activeReceipt) {
+            periods[col.key] = 'paid';
+          } else if (reg.termStatus === 'DUE' || expiringReceipt) {
+            periods[col.key] = 'pending';
+          } else if (coveringMatches.length > 0 || directMonthMatches.length > 0) {
+            const hasActiveCover = coveringMatches.some((m) => m.status === 'active');
+            const hasExpiringCover = coveringMatches.some((m) => m.status === 'expiring_soon');
+            if (hasActiveCover) periods[col.key] = 'paid';
+            else if (hasExpiringCover) periods[col.key] = 'pending';
+            else periods[col.key] = 'unpaid';
+          } else if (hasAnyPaymentRecord) {
+            // Member has payment history but has not paid for the current month
+            periods[col.key] = 'unpaid';
+          } else {
+            periods[col.key] = 'muted';
+          }
+        } else {
+          // For other/past months:
+          if (directMonthMatches.length > 0 || coveringMatches.length > 0) {
+            periods[col.key] = 'paid';
+          } else {
+            // Check registration date to see if member was already enrolled during that month
+            let regEth: EthiopianDate | null = null;
+            try {
+              if (reg.registrationDate) regEth = toEthiopianDate(reg.registrationDate);
+            } catch {}
+
+            const regPeriodIndex = regEth ? regEth.year * 13 + regEth.month : 0;
+            if (regPeriodIndex && targetPeriodIndex < regPeriodIndex) {
+              // Member was not yet registered in this past month
+              periods[col.key] = 'muted';
+            } else {
+              // Member was registered but has no payment for that month
+              periods[col.key] = 'unpaid';
+            }
+          }
+        }
+      });
+
+      return {
+        id: reg.id,
+        title: reg.fullName || (isAmharic ? 'ያልተገለጸ አባል' : 'Unnamed Member'),
+        subtitle: undefined, // Plate number and motorcycle type removed from matrix ledger per design specification
+        periods,
+        member: reg,
+        allReceipts,
+        currentMonthStatus: periods[`eth_m_${currentEthMonth}`] || 'muted',
+      };
+    });
+  }, [registrations, combinedReceipts, matrixColumns, currentEthMonth, currentEthYear, isAmharic]);
+
+  // Filter matrix rows according to search query and status filter
+  const filteredMatrixRows = useMemo(() => {
+    return allMatrixRows.filter((row) => {
+      // 1. Search Query filter (matches Name, Plate, Phone, ID, or Receipt Number)
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim().toLowerCase();
+        const matchesName = row.title.toLowerCase().includes(q);
+        const matchesPlate = (row.member?.plateNumber || '').toLowerCase().includes(q);
+        const matchesPhone = (row.member?.phone || '').toLowerCase().includes(q);
+        const matchesId = String(row.member?.id || '').toLowerCase().includes(q);
+        const matchesReceipt = row.allReceipts.some((rc) =>
+          (rc.receiptNumber || '').toLowerCase().includes(q)
+        );
+        if (!matchesName && !matchesPlate && !matchesPhone && !matchesId && !matchesReceipt) {
+          return false;
+        }
+      }
+
+      // 2. Status filter
+      if (statusFilter === 'all') return true;
+      if (statusFilter === 'active') return row.currentMonthStatus === 'paid';
+      if (statusFilter === 'expiring_soon') return row.currentMonthStatus === 'pending';
+      if (statusFilter === 'expired') return row.currentMonthStatus === 'unpaid';
+
+      return true;
+    });
+  }, [allMatrixRows, searchQuery, statusFilter]);
+
+  // Matrix member counts according to current month status
+  const matrixCounts = useMemo(() => {
+    let active = 0;
+    let expiring = 0;
+    let expired = 0;
+    allMatrixRows.forEach((r) => {
+      if (r.currentMonthStatus === 'paid') active++;
+      else if (r.currentMonthStatus === 'pending') expiring++;
+      else if (r.currentMonthStatus === 'unpaid') expired++;
+    });
+    return {
+      all: allMatrixRows.length,
+      active,
+      expiring,
+      expired,
+    };
+  }, [allMatrixRows]);
+
   // Reusable Tailwind-styled Date Range Picker matching table toolbar UI and controls
   const renderDateRangePicker = () => {
     return (
@@ -739,7 +976,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
                 }`}
               >
-                {filteredReceipts.length}
+                {filteredMatrixRows.length}
               </span>
             </button>
 
@@ -1513,10 +1750,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             {/* Status Tabs with Counts in Underline Tabs Style */}
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap shrink-0 max-w-full -mb-[1px]">
               {[
-                { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: combinedReceipts.length },
-                { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: metrics.activeCount },
-                { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: metrics.expiringCount },
-                { key: 'expired' as const, label: isAmharic ? 'ያለፈበት' : 'Expired', count: metrics.expiredCount },
+                { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
+                { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: matrixCounts.active },
+                { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: matrixCounts.expiring },
+                { key: 'expired' as const, label: isAmharic ? 'ያለፈበት' : 'Expired', count: matrixCounts.expired },
               ].map((tab) => {
                 const isActive = statusFilter === tab.key;
                 return (
@@ -1548,362 +1785,56 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
 
 
-          {/* DESKTOP TABLE VIEW (>= md) WITH STANDALONE COLUMNS & TAILADMIN DESIGN */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full table-auto text-left border-collapse">
-              <thead>
-                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                  <th className="py-4 px-3 text-center w-12 font-medium">#</th>
-                  <th className="py-4 px-4 font-medium">{isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt #'}</th>
-                  <th className="py-4 px-4 font-medium">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
-                  <th className="py-4 px-3 font-medium">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
-                  <th className="py-4 px-3 font-medium">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
-                  <th className="py-4 px-3 font-medium">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
-                  <th className="py-4 px-3 font-medium">{isAmharic ? 'የማብቂያ ቀን' : 'Expiration Date'}</th>
-                  <th className="py-4 px-4 text-center font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                  <th className="py-4 px-3 font-medium">{isAmharic ? 'መጠን' : 'Amount'}</th>
-                  <th className="py-4 px-3 text-center font-medium">{isAmharic ? 'ማረጋገጫ' : 'Proof'}</th>
-                  <th className="py-4 px-3 font-medium">{isAmharic ? 'መዝጋቢ' : 'Clerk'}</th>
-                  <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
-                {filteredReceipts.length === 0 ? (
-                  <tr>
-                    <td colSpan={12} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
-                      <div className="flex flex-col items-center justify-center space-y-2">
-                        <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD]">
-                          find_in_page
-                        </Icon>
-                        <p className="font-semibold text-sm text-[#1C2434] dark:text-white">
-                          {isAmharic
-                            ? 'ምንም የተመዘገበ የክፍያ ደረሰኝ አልተገኘም።'
-                            : 'No payment receipts found matching criteria.'}
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredReceipts.map((rc, idx) => {
-                    const { status, daysRemaining } = getPaymentReceiptStatus(rc.expirationDate);
-
-                    return (
-                      <tr
-                        key={rc.id}
-                        className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]"
-                      >
-                        {/* 1. Index */}
-                        <td className="py-4 px-3 text-center font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
-                          {idx + 1}
-                        </td>
-
-                        {/* 2. Standalone Receipt Number */}
-                        <td className="py-4 px-4 font-mono font-medium text-[#1C2434] dark:text-white whitespace-nowrap">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <button
-                              type="button"
-                              onClick={() => setReconcileReceipt(rc)}
-                              className="inline-flex items-center gap-1.5 font-bold text-[#3C50E0] hover:underline cursor-pointer text-xs"
-                              title={isAmharic ? 'የማስታረቂያ ዝርዝር ክፈት' : 'Open Reconciliation Drawer'}
-                            >
-                              <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
-                              <span>{rc.receiptNumber}</span>
-                            </button>
-                            {rc.verifiedByCheki && (
-                              <span
-                                className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-[#10B981]"
-                                title={`Verified on Bank System via Cheki API (${rc.chekiBank || 'Bank'})`}
-                              >
-                                <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
-                                <span>Cheki</span>
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* 3. Standalone Owner Name */}
-                        <td className="py-4 px-4">
-                          <span className="font-semibold text-[#1C2434] dark:text-white block truncate max-w-[160px]">
-                            {rc.ownerName}
-                          </span>
-                        </td>
-
-                        {/* 4. Standalone Plate Number */}
-                        <td className="py-4 px-3 whitespace-nowrap">
-                          {rc.plateNumber ? (
-                            <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white">
-                              {rc.plateNumber}
-                            </span>
-                          ) : (
-                            <span className="text-[#64748B] dark:text-[#8A99AD]">—</span>
-                          )}
-                        </td>
-
-                        {/* 5. Standalone Phone Number */}
-                        <td className="py-4 px-3 font-mono text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
-                          {rc.phone || '—'}
-                        </td>
-
-                        {/* 6. Standalone Payment Date */}
-                        <td className="py-4 px-3 whitespace-nowrap">
-                          <div className="font-medium text-[#1C2434] dark:text-white text-xs">
-                            {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
-                          </div>
-                          {!isAmharic && (
-                            <div className="font-mono text-[10px] text-[#64748B] dark:text-[#8A99AD]">
-                              GC: {rc.paymentDate}
-                            </div>
-                          )}
-                        </td>
-
-                        {/* 7. Standalone Expiration Date */}
-                        <td className="py-4 px-3 whitespace-nowrap">
-                          <div className="font-mono font-medium text-[#1C2434] dark:text-white text-xs">
-                            {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
-                          </div>
-                          {!isAmharic && (
-                            <div className="font-mono text-[10px] text-[#64748B] dark:text-[#8A99AD]">
-                              GC: {rc.expirationDate}
-                            </div>
-                          )}
-                        </td>
-
-                        {/* 8. Standalone Status Badge */}
-                        <td className="py-4 px-4 text-center whitespace-nowrap">
-                          {status === 'active' && (
-                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
-                              <Icon className="material-symbols-outlined text-[14px]">verified</Icon>
-                              <span>
-                                {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን ይቀራል' : 'd left'})
-                              </span>
-                            </span>
-                          )}
-                          {status === 'expiring_soon' && (
-                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]">
-                              <Icon className="material-symbols-outlined text-[14px]">alarm</Icon>
-                              <span>
-                                {isAmharic ? 'ሊያልቅ ነው' : 'Due Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
-                              </span>
-                            </span>
-                          )}
-                          {status === 'expired' && (
-                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#FB5454]">
-                              <Icon className="material-symbols-outlined text-[14px]">error</Icon>
-                              <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
-                            </span>
-                          )}
-                        </td>
-
-                        {/* 9. Standalone Amount */}
-                        <td className="py-4 px-3 font-semibold whitespace-nowrap text-[#1C2434] dark:text-white font-mono">
-                          {rc.amount || '500 ETB'}
-                        </td>
-
-                        {/* 10. Standalone Proof Screenshot Thumbnail */}
-                        <td className="py-4 px-3 text-center">
-                          {rc.receiptScreenshot ? (
-                            <button
-                              type="button"
-                              onClick={() => setReconcileReceipt(rc)}
-                              className="inline-block relative w-9 h-9 rounded-sm overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs hover:scale-105 transition-transform cursor-pointer group bg-black"
-                              title={isAmharic ? 'ስክሪንሾት በትልቅ መጠን ይመልከቱ' : 'View screenshot in drawer'}
-                            >
-                              <img
-                                src={rc.receiptScreenshot}
-                                alt="Receipt Proof"
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 flex items-center justify-center text-white">
-                                <Icon className="material-symbols-outlined text-[14px]">zoom_in</Icon>
-                              </div>
-                            </button>
-                          ) : (
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">
-                              {isAmharic ? 'ምንም ፎቶ የለም' : 'No Proof'}
-                            </span>
-                          )}
-                        </td>
-
-                        {/* 11. Standalone Entered By Clerk */}
-                        <td className="py-4 px-3 whitespace-nowrap">
-                          <span className="text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
-                            {rc.enteredBy}
-                          </span>
-                        </td>
-
-                        {/* 12. Actions: Open Reconciliation Drawer or Delete */}
-                        <td className="py-4 px-4 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => setReconcileReceipt(rc)}
-                              className="h-8.5 px-3 rounded-md bg-[#3C50E0] text-white text-xs font-semibold hover:bg-opacity-90 transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-2xs whitespace-nowrap"
-                              title={isAmharic ? 'የባንክ ማስታረቂያ' : 'Reconcile Bank Reference'}
-                            >
-                              <Icon className="material-symbols-outlined text-[16px]">compare_arrows</Icon>
-                              <span>{isAmharic ? 'አስታርቅ' : 'Reconcile'}</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setDeleteConfirmId(rc.id)}
-                              className="w-8.5 h-8.5 rounded-md text-[#FB5454] hover:bg-[#FB5454]/10 transition-all cursor-pointer border border-transparent hover:border-[#FB5454]/20 inline-flex items-center justify-center shrink-0"
-                              title={isAmharic ? 'ሰርዝ' : 'Delete'}
-                            >
-                              <Icon className="material-symbols-outlined text-[18px]">delete</Icon>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+          {/* MATRIX STATUS LEGEND & ETHIOPIAN CALENDAR HEADER */}
+          <div className="px-4 md:px-6 py-2.5 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">calendar_month</Icon>
+              <span className="font-bold text-xs text-[#1C2434] dark:text-white">
+                {isAmharic ? `የ${currentEthYear} ዓ.ም የወርሃዊ መዋጮ ማትሪክስ መዝገብ` : `${currentEthYear} Ethiopian Monthly Matrix Ledger Lookup`}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-400 flex-wrap">
+              <span className="inline-flex items-center gap-1.5">
+                <StatusDot status="paid" size={10} />
+                <span>{isAmharic ? 'የተከፈለ' : 'Paid'}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <StatusDot status="pending" size={10} />
+                <span>{isAmharic ? 'ሊያልቅ የደረሰ' : 'Due'}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <StatusDot status="unpaid" size={10} />
+                <span>{isAmharic ? 'ያልተከፈለ' : 'Unpaid'}</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <StatusDot status="muted" size={10} />
+                <span>{isAmharic ? 'መረጃ የለም' : 'No Record'}</span>
+              </span>
+            </div>
           </div>
 
-          {/* MOBILE CARD VIEW (< md) WITH DUAL-CALENDAR TIMELINES */}
-          <div className="block md:hidden divide-y divide-slate-200 dark:divide-slate-800">
-            {filteredReceipts.length === 0 ? (
-              <div className="p-8 text-center text-slate-700 dark:text-slate-300 space-y-1.5">
-                <Icon className="material-symbols-outlined text-[36px] text-slate-500 mx-auto block">find_in_page</Icon>
-                <p className="font-bold text-xs text-slate-800 dark:text-slate-200">
-                  {isAmharic ? 'ምንም የተመዘገበ የክፍያ ደረሰኝ አልተገኘም።' : 'No payment receipts found matching criteria.'}
-                </p>
-              </div>
-            ) : (
-              filteredReceipts.map((rc) => {
-                const { status, daysRemaining } = getPaymentReceiptStatus(rc.expirationDate);
-
-                return (
-                  <div
-                    key={rc.id}
-                    className="p-3.5 sm:p-4 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors space-y-3"
-                  >
-                    {/* Top Header Row: Receipt # & Status Badge */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="inline-flex items-center gap-1 font-mono font-bold text-xs text-[#3C50E0]">
-                          <Icon className="material-symbols-outlined text-[14px]">receipt</Icon>
-                          <span>{rc.receiptNumber}</span>
-                        </span>
-                        {rc.verifiedByCheki && (
-                          <span
-                            className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-[#10B981]"
-                            title={`Verified on Bank System via Cheki (${rc.chekiBank || 'Bank'})`}
-                          >
-                            <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
-                            <span>Cheki</span>
-                          </span>
-                        )}
-                      </div>
-
-                      <div>
-                        {status === 'active' && (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
-                            <Icon className="material-symbols-outlined text-[13px]">verified</Icon>
-                            <span>
-                              {isAmharic ? 'ህጋዊ' : 'Active'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
-                            </span>
-                          </span>
-                        )}
-                        {status === 'expiring_soon' && (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]">
-                            <Icon className="material-symbols-outlined text-[13px]">alarm</Icon>
-                            <span>
-                              {isAmharic ? 'ሊያልቅ ነው' : 'Due Soon'} ({daysRemaining} {isAmharic ? 'ቀን' : 'd'})
-                            </span>
-                          </span>
-                        )}
-                        {status === 'expired' && (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#FB5454]">
-                            <Icon className="material-symbols-outlined text-[13px]">error</Icon>
-                            <span>{isAmharic ? 'ጊዜው አልፏል' : 'Expired'}</span>
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Owner & Plate Information */}
-                    <div>
-                      <h4 className="font-black text-sm text-slate-950 dark:text-white">
-                        {rc.ownerName}
-                      </h4>
-                      <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 mt-0.5">
-                        {rc.plateNumber && (
-                          <span className="font-mono font-bold text-slate-900 dark:text-white">
-                            {rc.plateNumber}
-                          </span>
-                        )}
-                        {rc.phone && <span className="font-mono">{rc.phone}</span>}
-                      </div>
-                    </div>
-
-                    {/* Details Grid: Ethiopian Calendar Primary */}
-                    <div className="grid grid-cols-2 gap-2 bg-slate-50 dark:bg-slate-800/80 p-2.5 rounded-lg text-xs border border-slate-200 dark:border-slate-700">
-                      <div>
-                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
-                          {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}
-                        </span>
-                        <span className="font-black text-slate-950 dark:text-white text-xs block">
-                          {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300">
-                          GC: {rc.paymentDate}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
-                          {isAmharic ? 'የ1 ወር ማብቂያ' : 'Expiration Date'}
-                        </span>
-                        <span className="font-black text-emerald-800 dark:text-emerald-300 text-xs block">
-                          {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300">
-                          GC: {rc.expirationDate}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
-                          {isAmharic ? 'መጠን' : 'Amount'}
-                        </span>
-                        <span className="font-black text-slate-950 dark:text-white font-mono">
-                          {rc.amount || '500 ETB'}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="block text-[10px]  font-extrabold text-slate-700 dark:text-slate-300">
-                          {isAmharic ? 'መዝጋቢ' : 'Clerk'}
-                        </span>
-                        <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
-                          {rc.enteredBy}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions & Reconciliation Drawer Trigger */}
-                    <div className="flex items-center justify-between pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setReconcileReceipt(rc)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-black hover:bg-slate-800 cursor-pointer shadow-xs"
-                      >
-                        <Icon className="material-symbols-outlined text-[16px]">compare_arrows</Icon>
-                        <span>{isAmharic ? 'አስታርቅ / ማረጋገጫ' : 'Reconcile & Proof'}</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setDeleteConfirmId(rc.id)}
-                        className="px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-800 text-xs font-bold hover:bg-rose-100 cursor-pointer flex items-center gap-1"
-                      >
-                        <Icon className="material-symbols-outlined text-[15px]">delete</Icon>
-                        <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
-                      </button>
-                    </div>
-                  </div>
+          {/* MONTHLY MATRIX LEDGER TABLE (RESPONSIVE HORIZONTAL SCROLL) */}
+          <div className="overflow-x-auto">
+            <MonthlyMatrixLedger
+              columns={matrixColumns}
+              rows={filteredMatrixRows}
+              memberHeaderLabel={isAmharic ? 'አባል / ባለቤት' : 'Member / Owner'}
+              emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
+              onRowClick={(row) => {
+                const memberReg = registrations.find((r) => String(r.id) === String(row.id));
+                const matchedRc = combinedReceipts.find(
+                  (rc) =>
+                    (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                    (rc.plateNumber && memberReg?.plateNumber && rc.plateNumber.toLowerCase() === memberReg.plateNumber.toLowerCase())
                 );
-              })
-            )}
+                if (matchedRc) {
+                  setReconcileReceipt(matchedRc);
+                } else if (memberReg) {
+                  handleRegNumberChange(memberReg.plateNumber || memberReg.id);
+                  setIsFormOpen(true);
+                }
+              }}
+            />
           </div>
         </div>
       )}
