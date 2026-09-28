@@ -3028,6 +3028,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 lang={currentLang}
                 userRole={userRole}
                 userBadgeId={userBadgeId}
+                paymentReceipts={paymentReceipts}
+                registrations={registrations}
               />
             )}
 

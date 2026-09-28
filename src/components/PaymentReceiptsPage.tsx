@@ -165,6 +165,57 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     return calculateOneMonthExpiration(paymentDate);
   }, [paymentDate]);
 
+  // Combine explicit payment receipts with all member registration records that have payment data
+  const combinedReceipts = useMemo<PaymentReceipt[]>(() => {
+    const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
+    const list: PaymentReceipt[] = [...(paymentReceipts || [])];
+    const existingKeys = new Set(list.map((r) => cleanStr(r.receiptNumber)));
+
+    if (Array.isArray(registrations)) {
+      registrations.forEach((reg) => {
+        if (!reg) return;
+        const hasPayment = Boolean(
+          reg.receiptNumber ||
+          reg.lastReceiptNumber ||
+          reg.lastPaymentDate ||
+          reg.paymentAmount ||
+          reg.lastPaymentAmount ||
+          reg.receiptScreenshot ||
+          reg.activeTermExpirationDate
+        );
+        if (!hasPayment) return;
+
+        const rcNum = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
+        if (rcNum && existingKeys.has(rcNum)) return;
+        if (rcNum) existingKeys.add(rcNum);
+
+        const payDate = reg.lastPaymentDate || reg.registrationDate || new Date().toISOString().split('T')[0];
+        const expDate = reg.activeTermExpirationDate || (payDate ? calculateOneMonthExpiration(payDate) : '');
+
+        list.push({
+          id: `reg-receipt-${reg.id}`,
+          receiptNumber: reg.lastReceiptNumber || reg.receiptNumber || `REC-${reg.id}`,
+          ownerRegistrationId: reg.id,
+          ownerName: reg.fullName || '',
+          plateNumber: reg.plateNumber,
+          phone: reg.phone,
+          paymentDate: payDate,
+          expirationDate: expDate,
+          amount: reg.lastPaymentAmount || reg.paymentAmount || '500 ETB',
+          receiptScreenshot: reg.receiptScreenshot,
+          enteredBy: reg.registeredBy || 'SYSTEM',
+          createdAt: (reg as any).createdAt || `${payDate}T08:00:00Z`,
+          status: 'valid',
+          verifiedByCheki: true,
+          chekiBank: 'CBE',
+          notes: reg.plateNumber ? `Plate: ${reg.plateNumber}` : undefined,
+        });
+      });
+    }
+
+    return list;
+  }, [paymentReceipts, registrations]);
+
   // Auto-calculated registration details, last payment expiration status, and debt
   const selectedRegInfo = useMemo(() => {
     const val = regNumber.trim().toLowerCase();
@@ -180,7 +231,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
     if (!found) return null;
 
-    const prevReceipts = paymentReceipts.filter(
+    const prevReceipts = combinedReceipts.filter(
       (rc) =>
         (rc.ownerRegistrationId && rc.ownerRegistrationId === found.id) ||
         (rc.plateNumber && found.plateNumber && rc.plateNumber.toLowerCase() === found.plateNumber.toLowerCase()) ||
@@ -228,7 +279,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       unpaidDebtAmount,
       overdueMonths,
     };
-  }, [regNumber, registrations, paymentReceipts]);
+  }, [regNumber, registrations, combinedReceipts]);
 
   // Filter & Search state for table
   const [searchQuery, setSearchQuery] = useState('');
@@ -259,15 +310,61 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   };
 
   const matchesDateFilter = (rc: PaymentReceipt) => {
-    const rawDate = rc.paymentDate || rc.createdAt || '';
-    if (!rawDate) return true;
-    const dStr = rawDate.split('T')[0].split(' ')[0].trim();
-    if (!dStr) return true;
+    if (dateRangePreset === 'all') return true;
 
-    if (startDate && dStr < startDate) return false;
-    if (endDate && dStr > endDate) return false;
+    const rawPayDate = rc.paymentDate || rc.createdAt || '';
+    if (!rawPayDate) return true;
+    const payDateStr = rawPayDate.split('T')[0].split(' ')[0].trim();
+    if (!payDateStr) return true;
 
-    return true;
+    // 1. Direct match with selected date range
+    if (startDate && endDate) {
+      if (payDateStr >= startDate && payDateStr <= endDate) return true;
+    } else if (startDate && !endDate) {
+      if (payDateStr >= startDate) return true;
+    } else if (!startDate && endDate) {
+      if (payDateStr <= endDate) return true;
+    }
+
+    // 2. Preset 'this_month': Ensure payments in current Ethiopian month OR current calendar month OR active term covering this month match
+    if (dateRangePreset === 'this_month') {
+      const today = new Date();
+      const currentGregMonth = today.toISOString().slice(0, 7); // e.g. "2026-09"
+      if (payDateStr.startsWith(currentGregMonth)) {
+        return true;
+      }
+
+      try {
+        const ethPay = toEthiopianDate(payDateStr);
+        const ethNow = toEthiopianDate(today);
+        if (ethPay.year === ethNow.year && ethPay.month === ethNow.month) {
+          return true;
+        }
+      } catch {}
+
+      // Active term coverage: if payment was made for this month
+      const expDateStr = (rc.expirationDate || '').split('T')[0].split(' ')[0].trim();
+      if (expDateStr && startDate && expDateStr >= startDate && payDateStr <= (endDate || startDate)) {
+        return true;
+      }
+    }
+
+    // 3. Preset 'this_year': Ensure payments in current Ethiopian year OR current calendar year match
+    if (dateRangePreset === 'this_year') {
+      const currentGregYear = new Date().toISOString().slice(0, 4);
+      if (payDateStr.startsWith(currentGregYear)) {
+        return true;
+      }
+      try {
+        const ethPay = toEthiopianDate(payDateStr);
+        const ethNow = toEthiopianDate(new Date());
+        if (ethPay.year === ethNow.year) {
+          return true;
+        }
+      } catch {}
+    }
+
+    return false;
   };
 
   // Handle typing or selecting Registration Number
@@ -514,7 +611,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   // Filtered Receipts for table & cards
   const filteredReceipts = useMemo(() => {
-    return paymentReceipts.filter((rc) => {
+    return combinedReceipts.filter((rc) => {
       const matchesSearch =
         !searchQuery.trim() ||
         rc.receiptNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -530,7 +627,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       const { status } = getPaymentReceiptStatus(rc.expirationDate);
       return status === statusFilter;
     });
-  }, [paymentReceipts, searchQuery, statusFilter, startDate, endDate]);
+  }, [combinedReceipts, searchQuery, statusFilter, startDate, endDate, dateRangePreset]);
 
   // KPI Metrics Summary
   const metrics = useMemo(() => {
@@ -540,7 +637,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     let totalRevenue = 0;
     let count = 0;
 
-    paymentReceipts.forEach((rc) => {
+    combinedReceipts.forEach((rc) => {
       if (!matchesDateFilter(rc)) return;
       count++;
       const { status } = getPaymentReceiptStatus(rc.expirationDate);
@@ -559,7 +656,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       expiredCount,
       totalRevenue,
     };
-  }, [paymentReceipts, startDate, endDate]);
+  }, [combinedReceipts, startDate, endDate, dateRangePreset]);
 
   // Reusable Tailwind-styled Date Range Picker matching table toolbar UI and controls
   const renderDateRangePicker = () => {
@@ -1416,7 +1513,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             {/* Status Tabs with Counts in Underline Tabs Style */}
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap shrink-0 max-w-full -mb-[1px]">
               {[
-                { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: paymentReceipts.length },
+                { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: combinedReceipts.length },
                 { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: metrics.activeCount },
                 { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: metrics.expiringCount },
                 { key: 'expired' as const, label: isAmharic ? 'ያለፈበት' : 'Expired', count: metrics.expiredCount },

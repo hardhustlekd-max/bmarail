@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserRole } from '../../types';
+import { UserRole, PaymentReceipt, MotorcycleRegistration } from '../../types';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
 import { PaymentReceiptsPage } from '../../components/PaymentReceiptsPage';
@@ -11,6 +11,8 @@ interface RevenueRouterProps {
   lang: 'am' | 'en';
   userRole: UserRole;
   userBadgeId: string;
+  paymentReceipts?: PaymentReceipt[];
+  registrations?: MotorcycleRegistration[];
 }
 
 export const RevenueRouter: React.FC<RevenueRouterProps> = ({
@@ -18,14 +20,26 @@ export const RevenueRouter: React.FC<RevenueRouterProps> = ({
   lang,
   userRole,
   userBadgeId,
+  paymentReceipts: propPaymentReceipts,
+  registrations: propRegistrations,
 }) => {
   const {
-    paymentReceipts,
-    registrations,
+    paymentReceipts: contextPaymentReceipts,
+    registrations: contextRegistrations,
     addPaymentReceipt,
     deletePaymentReceipt,
     isLoading,
   } = useData();
+
+  const effectiveReceipts =
+    propPaymentReceipts && propPaymentReceipts.length > 0
+      ? propPaymentReceipts
+      : contextPaymentReceipts;
+
+  const effectiveRegistrations =
+    propRegistrations && propRegistrations.length > 0
+      ? propRegistrations
+      : contextRegistrations;
 
   const { addToast } = useToast();
 
@@ -46,8 +60,8 @@ export const RevenueRouter: React.FC<RevenueRouterProps> = ({
         lang={lang}
         userRole={userRole}
         userBadgeId={userBadgeId}
-        paymentReceipts={paymentReceipts}
-        registrations={registrations}
+        paymentReceipts={effectiveReceipts}
+        registrations={effectiveRegistrations}
         onSaveReceipt={addPaymentReceipt}
         onAddPaymentReceipt={addPaymentReceipt}
         onDeleteReceipt={deletePaymentReceipt}
