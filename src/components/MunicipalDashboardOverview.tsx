@@ -175,42 +175,12 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   const currentEthYear = currentEthDate.year;
   const currentEthMonth = currentEthDate.month; // 1 (መስከረም) to 13 (ጳጉሜ)
 
-  // Selected Ethiopian Month and Year for "የወርሃዊ ክፍያ ስታቲስቲክስ" (defaults to current Ethiopian month & year)
-  const [selectedFeeMonth, setSelectedFeeMonth] = useState<number>(() => currentEthDate.month);
-  const [selectedFeeYear, setSelectedFeeYear] = useState<number>(() => currentEthDate.year);
-
-  // Month navigation handlers for Ethiopian calendar fee statistics
-  const handlePrevFeeMonth = () => {
-    setSelectedFeeMonth((prev) => {
-      if (prev === 1) {
-        setSelectedFeeYear((y) => y - 1);
-        return 13;
-      }
-      return prev - 1;
-    });
-  };
-
-  const handleNextFeeMonth = () => {
-    setSelectedFeeMonth((prev) => {
-      if (prev === 13) {
-        setSelectedFeeYear((y) => y + 1);
-        return 1;
-      }
-      return prev + 1;
-    });
-  };
-
-  const handleResetFeeMonth = () => {
-    setSelectedFeeMonth(currentEthMonth);
-    setSelectedFeeYear(currentEthYear);
-  };
-
-  // Payment Expiration Metrics strictly calculated according to the Ethiopian calendar
+  // Payment Expiration Metrics strictly calculated according to the current Ethiopian calendar month
   const ethiopianMonthlyMetrics = React.useMemo(() => {
-    const targetMonth = selectedFeeMonth;
-    const targetYear = selectedFeeYear;
+    const targetMonth = currentEthMonth;
+    const targetYear = currentEthYear;
     const targetPeriodIndex = targetYear * 13 + targetMonth;
-    const isCurrentMonth = targetMonth === currentEthMonth && targetYear === currentEthYear;
+    const isCurrentMonth = true;
 
     const cleanPlate = (s?: string) => (s || '').replace(/[\s\-_]/g, '').toLowerCase();
     const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
@@ -367,7 +337,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       activeBillableCount,
       complianceRate,
     };
-  }, [scopedPaymentReceipts, scopedRegs, selectedFeeMonth, selectedFeeYear, currentEthMonth, currentEthYear, isAmharic]);
+  }, [scopedPaymentReceipts, scopedRegs, currentEthMonth, currentEthYear, isAmharic]);
 
   // Verification logs for dashboard metrics:
   // - Only logs associated with hidden vehicles are excluded for non-superadmins
@@ -700,94 +670,25 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* FINANCIAL & REVENUE METRICS ACCORDING TO THE ETHIOPIAN CALENDAR (VISIBLE WHEN PAYMENT / REVENUE LEDGER / KPIS TASK IS VIEWABLE) */}
       {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
         <div className="p-3.5 sm:p-5 space-y-3.5 bg-white dark:bg-slate-900 rounded-xl border border-outline-variant/60 shadow-2xs">
-          {/* Header with Ethiopian Month Title & Interactive Month Switcher (Optimized for Mobile & Desktop) */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/60 pb-3">
-            {/* Title & Month Badge Row */}
-            <div className="flex items-center justify-between md:justify-start gap-2 sm:gap-2.5 min-w-0">
-              <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                  <Icon className="material-symbols-outlined text-[19px] sm:text-[20px]">payments</Icon>
-                </div>
-                <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white tracking-wide truncate">
-                  {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
-                </h3>
+          {/* Header with Ethiopian Month Title & Badge (Month Filter Removed per User Request) */}
+          <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/60 pb-3">
+            {/* Title */}
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <Icon className="material-symbols-outlined text-[19px] sm:text-[20px]">payments</Icon>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50 dark:border-emerald-700/50 whitespace-nowrap">
-                  {ethiopianMonthlyMetrics.monthName} {ethiopianMonthlyMetrics.targetYear} {isAmharic ? 'ዓ.ም' : 'E.C.'}
-                </span>
-                {ethiopianMonthlyMetrics.isCurrentMonth && (
-                  <span className="px-1.5 sm:px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 shrink-0 hidden xs:inline-block">
-                    {isAmharic ? 'ወቅታዊ' : 'Current'}
-                  </span>
-                )}
-              </div>
+              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white tracking-wide truncate">
+                {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
+              </h3>
             </div>
-
-            {/* Ethiopian Calendar Month Navigation Controls (Optimized Mobile Strip) */}
-            <div className="w-full md:w-auto flex items-center justify-between sm:justify-start gap-1 sm:gap-1.5 bg-slate-50 dark:bg-slate-800/60 p-1 rounded-lg border border-outline-variant/60">
-              {/* Prev Month */}
-              <button
-                type="button"
-                onClick={handlePrevFeeMonth}
-                title={isAmharic ? 'ቀዳሚ የኢትዮጵያ ወር' : 'Previous Ethiopian Month'}
-                aria-label="Previous Month"
-                className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xs active:scale-95 transition-all cursor-pointer shrink-0"
-              >
-                <Icon className="material-symbols-outlined text-[17px] sm:text-[18px]">chevron_left</Icon>
-              </button>
-
-              {/* Month Dropdown Selector */}
-              <select
-                value={selectedFeeMonth}
-                onChange={(e) => setSelectedFeeMonth(Number(e.target.value))}
-                aria-label={isAmharic ? 'የኢትዮጵያ ወር ምረጥ' : 'Select Ethiopian Month'}
-                className="flex-1 sm:flex-none min-w-0 bg-white dark:bg-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 rounded px-1.5 sm:px-2 py-1 border border-outline-variant/60 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer truncate"
-              >
-                {ETHIOPIAN_MONTHS.map((m) => (
-                  <option key={`fee-month-${m.id}`} value={m.id}>
-                    {m.id}. {isAmharic ? m.am : m.en}
-                  </option>
-                ))}
-              </select>
-
-              {/* Year Dropdown Selector */}
-              <select
-                value={selectedFeeYear}
-                onChange={(e) => setSelectedFeeYear(Number(e.target.value))}
-                aria-label={isAmharic ? 'የኢትዮጵያ ዓመት ምረጥ' : 'Select Ethiopian Year'}
-                className="shrink-0 bg-white dark:bg-slate-700 text-xs font-bold text-slate-800 dark:text-slate-100 rounded px-1.5 sm:px-2 py-1 border border-outline-variant/60 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer font-mono"
-              >
-                {[currentEthYear - 3, currentEthYear - 2, currentEthYear - 1, currentEthYear, currentEthYear + 1].map((y) => (
-                  <option key={`fee-year-${y}`} value={y}>
-                    {y} {isAmharic ? 'ዓ.ም' : 'E.C.'}
-                  </option>
-                ))}
-              </select>
-
-              {/* Next Month */}
-              <button
-                type="button"
-                onClick={handleNextFeeMonth}
-                title={isAmharic ? 'ቀጣይ የኢትዮጵያ ወር' : 'Next Ethiopian Month'}
-                aria-label="Next Month"
-                className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:shadow-xs active:scale-95 transition-all cursor-pointer shrink-0"
-              >
-                <Icon className="material-symbols-outlined text-[17px] sm:text-[18px]">chevron_right</Icon>
-              </button>
-
-              {/* Reset to Current Month Button if navigated away */}
-              {!ethiopianMonthlyMetrics.isCurrentMonth && (
-                <button
-                  type="button"
-                  onClick={handleResetFeeMonth}
-                  title={isAmharic ? 'ወደ ወቅታዊው ወር ተመለስ' : 'Reset to Current Month'}
-                  className="px-2 py-1 rounded text-[11px] font-bold bg-primary text-white hover:bg-primary-dark active:scale-95 transition-all cursor-pointer flex items-center gap-1 shadow-2xs shrink-0"
-                >
-                  <Icon className="material-symbols-outlined text-[13px] sm:text-[14px]">today</Icon>
-                  <span className="hidden xs:inline">{isAmharic ? 'ወቅታዊ' : 'Current'}</span>
-                </button>
-              )}
+            {/* Month Badge */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50 dark:border-emerald-700/50 whitespace-nowrap">
+                {ethiopianMonthlyMetrics.monthName} {ethiopianMonthlyMetrics.targetYear} {isAmharic ? 'ዓ.ም' : 'E.C.'}
+              </span>
+              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 shrink-0">
+                {isAmharic ? 'ወቅታዊ' : 'Current'}
+              </span>
             </div>
           </div>
 

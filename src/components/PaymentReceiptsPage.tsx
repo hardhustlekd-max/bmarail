@@ -895,6 +895,33 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     };
   }, [allMatrixRows]);
 
+  // Ethiopian Monthly Fee Statistics metrics
+  const ethiopianMonthlyMetrics = useMemo(() => {
+    const monthObj = ETHIOPIAN_MONTHS[currentEthMonth - 1] || ETHIOPIAN_MONTHS[0];
+    const monthName = isAmharic ? monthObj.am : monthObj.en;
+
+    const paidMembersCount = matrixCounts.active;
+    const dueSoonMembersCount = matrixCounts.expiring;
+    const unpaidMembersCount = matrixCounts.expired;
+    const billableCount = matrixCounts.all;
+    const complianceRate =
+      billableCount > 0 ? Math.round(((paidMembersCount + dueSoonMembersCount) / billableCount) * 100) : 0;
+
+    return {
+      targetMonth: currentEthMonth,
+      targetYear: currentEthYear,
+      monthName,
+      isCurrentMonth: true,
+      totalRevenue: metrics.totalRevenue,
+      totalReceiptsCount: metrics.totalReceipts,
+      paidMembersCount,
+      dueSoonMembersCount,
+      unpaidMembersCount,
+      activeBillableCount: billableCount,
+      complianceRate,
+    };
+  }, [currentEthMonth, currentEthYear, isAmharic, matrixCounts, metrics]);
+
   // Reusable Tailwind-styled Date Range Picker matching table toolbar UI and controls
   const renderDateRangePicker = () => {
     return (
@@ -989,8 +1016,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[18px]">analytics</Icon>
-              <span>{isAmharic ? 'የክፍያ ማጠቃለያ & ሜትሪክስ' : 'Financial Metrics & Analytics'}</span>
+              <Icon className="material-symbols-outlined text-[18px]">payments</Icon>
+              <span>{isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}</span>
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                   currentTab === 'metrics'
@@ -998,240 +1025,246 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
                 }`}
               >
-                {metrics.totalRevenue.toLocaleString()} ETB
+                {ethiopianMonthlyMetrics.totalRevenue.toLocaleString()} ETB
               </span>
             </button>
           </div>
         </div>
       )}
 
-      {/* TAB 1: METRICS & ANALYTICS VIEW (STANDALONE DEDICATED TAB) */}
+      {/* TAB 1: MONTHLY FEE STATISTICS VIEW (STANDALONE DEDICATED TAB) */}
       {currentTab === 'metrics' && canViewKPIs && (
         <div className="space-y-4 animate-in fade-in duration-150">
-          {/* Date Filter Card for Metrics */}
+          {/* Date Filter Card for Metrics (Kept per User Request) */}
           <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative">
             {renderDateRangePicker()}
           </div>
 
-          {/* Primary 4 KPI Metric Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              label={isAmharic ? 'አጠቃላይ ገቢ' : 'Total Revenue'}
-              value={`${metrics.totalRevenue.toLocaleString()} ETB`}
-              subtext={`${metrics.totalReceipts} ${isAmharic ? 'የተመዘገቡ ደረሰኞች' : 'receipts recorded'}`}
-              colorVariant="default"
-              icon="account_balance_wallet"
-              onClick={() => {
-                setStatusFilter('all');
-                setActiveMainTab('table');
-              }}
-              className="cursor-pointer transition-all hover:shadow-md"
-            />
-            <KpiCard
-              label={isAmharic ? 'ህጋዊ' : 'Active'}
-              value={`${metrics.activeCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
-              subtext={isAmharic ? 'ክፍያቸው ያልተጠናቀቀ (ጠቅ አድርግ)' : 'Click to view in table'}
-              colorVariant="success"
-              icon="verified"
-              onClick={() => {
-                setStatusFilter('active');
-                setActiveMainTab('table');
-              }}
-              className="cursor-pointer transition-all hover:shadow-md"
-            />
-            <KpiCard
-              label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due soon'}
-              value={`${metrics.expiringCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
-              subtext={isAmharic ? 'በ 7 ቀናት ውስጥ የሚያልቅ' : 'Expires within 7 days'}
-              colorVariant="warning"
-              icon="warning"
-              onClick={() => {
-                setStatusFilter('expiring_soon');
-                setActiveMainTab('table');
-              }}
-              className="cursor-pointer transition-all hover:shadow-md"
-            />
-            <KpiCard
-              label={isAmharic ? 'ያለፈበት' : 'Expired'}
-              value={`${metrics.expiredCount} ${isAmharic ? 'ባለቤቶች' : 'owners'}`}
-              subtext={isAmharic ? 'ዕዳ ያለባቸው (ጠቅ አድርግ)' : 'Click to view in table'}
-              colorVariant="danger"
-              icon="error"
-              onClick={() => {
-                setStatusFilter('expired');
-                setActiveMainTab('table');
-              }}
-              className="cursor-pointer transition-all hover:shadow-md"
-            />
-          </div>
-
-          {/* Analytical Breakdown: Status Distribution & Revenue Highlights */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Status Distribution Progress Bars */}
-            <div className="rounded-sm border border-[#E2E8F0] bg-white p-5 shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] space-y-4">
-              <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
-                <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[#3C50E0] dark:text-blue-400 text-[20px]">donut_large</Icon>
-                  <h4 className="text-xs font-black uppercase text-[#1C2434] dark:text-white tracking-wider">
-                    {isAmharic ? 'የአባልነት ክፍያ ሁኔታዎች ክፍፍል' : 'Membership Status Distribution'}
-                  </h4>
+          {/* MONTHLY FEE STATISTICS CONTAINER */}
+          <div className="p-3.5 sm:p-5 space-y-4 bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default">
+            {/* Header with Ethiopian Month Title & Badge */}
+            <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+              {/* Title */}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
                 </div>
-                <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD]">
-                  {isAmharic ? `ጠቅላላ ${metrics.totalReceipts} ደረሰኞች` : `Total ${metrics.totalReceipts} Receipts`}
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-wide truncate">
+                    {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
+                  </h3>
+                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium">
+                    {isAmharic
+                      ? 'የኢትዮጵያ ዘመን አቆጣጠር መሠረት ያደረገ የወርሃዊ መዋጮ እና የክፍያ ተገዢነት ማጠቃለያ'
+                      : 'Ethiopian calendar monthly dues collection & compliance summary'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Month Badge */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50 dark:border-emerald-700/50 whitespace-nowrap">
+                  {ethiopianMonthlyMetrics.monthName} {ethiopianMonthlyMetrics.targetYear} {isAmharic ? 'ዓ.ም' : 'E.C.'}
                 </span>
-              </div>
-
-              <div className="space-y-3.5">
-                {/* Active */}
-                <div>
-                  <div className="flex justify-between text-xs font-bold mb-1">
-                    <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      {isAmharic ? 'ህጋዊ (Active)' : 'Active Term'}
-                    </span>
-                    <span className="text-[#1C2434] dark:text-white font-mono">
-                      {metrics.activeCount} ({metrics.totalReceipts > 0 ? Math.round((metrics.activeCount / metrics.totalReceipts) * 100) : 0}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-[#E2E8F0] dark:bg-[#2E3A47] h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-emerald-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${metrics.totalReceipts > 0 ? (metrics.activeCount / metrics.totalReceipts) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Due Soon */}
-                <div>
-                  <div className="flex justify-between text-xs font-bold mb-1">
-                    <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-                      <span className="w-2 h-2 rounded-full bg-amber-500" />
-                      {isAmharic ? 'ሊያልቅ የደረሰ (Due Soon)' : 'Due Soon'}
-                    </span>
-                    <span className="text-[#1C2434] dark:text-white font-mono">
-                      {metrics.expiringCount} ({metrics.totalReceipts > 0 ? Math.round((metrics.expiringCount / metrics.totalReceipts) * 100) : 0}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-[#E2E8F0] dark:bg-[#2E3A47] h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-amber-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${metrics.totalReceipts > 0 ? (metrics.expiringCount / metrics.totalReceipts) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Expired */}
-                <div>
-                  <div className="flex justify-between text-xs font-bold mb-1">
-                    <span className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
-                      <span className="w-2 h-2 rounded-full bg-rose-500" />
-                      {isAmharic ? 'ያለፈበት / ዕዳ (Expired)' : 'Expired / Overdue'}
-                    </span>
-                    <span className="text-[#1C2434] dark:text-white font-mono">
-                      {metrics.expiredCount} ({metrics.totalReceipts > 0 ? Math.round((metrics.expiredCount / metrics.totalReceipts) * 100) : 0}%)
-                    </span>
-                  </div>
-                  <div className="w-full bg-[#E2E8F0] dark:bg-[#2E3A47] h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-rose-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${metrics.totalReceipts > 0 ? (metrics.expiredCount / metrics.totalReceipts) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* View in Table CTA */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStatusFilter('all');
-                    setActiveMainTab('table');
-                  }}
-                  className="w-full py-2 px-3 rounded-sm bg-[#F1F5F9] dark:bg-[#24303F] text-xs font-bold text-[#3C50E0] dark:text-blue-400 hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <span>{isAmharic ? 'ሁሉንም በሰንጠረዥ ተመልከት' : 'View Full Table Records'}</span>
-                  <Icon className="material-symbols-outlined text-[16px]">arrow_forward</Icon>
-                </button>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#3C50E0]/10 text-[#3C50E0] dark:text-blue-400 border border-[#3C50E0]/20 shrink-0">
+                  {isAmharic ? 'ወቅታዊ' : 'Current'}
+                </span>
               </div>
             </div>
 
-            {/* Revenue Highlights */}
-            <div className="rounded-sm border border-[#E2E8F0] bg-white p-5 shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] space-y-4">
-              <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
-                <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[20px]">payments</Icon>
-                  <h4 className="text-xs font-black uppercase text-[#1C2434] dark:text-white tracking-wider">
-                    {isAmharic ? 'የክፍያ አሰባሰብ ማጠቃለያ' : 'Financial Revenue Metrics'}
+            {/* 5-Column Responsive Metric Statistics Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              {/* 1. Paid Members */}
+              <div
+                onClick={() => {
+                  setStatusFilter('active');
+                  setActiveMainTab('table');
+                }}
+                className="p-3.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-500/20 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-300 truncate block">
+                    {isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
+                  </span>
+                  <Icon className="material-symbols-outlined text-[18px] text-emerald-600 dark:text-emerald-400 shrink-0">check_circle</Icon>
+                </div>
+                <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 tracking-tight leading-tight">
+                  {ethiopianMonthlyMetrics.paidMembersCount}
+                </p>
+                <p className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 mt-1 truncate">
+                  {isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
+                </p>
+              </div>
+
+              {/* 2. Payment Due Soon */}
+              <div
+                onClick={() => {
+                  setStatusFilter('expiring_soon');
+                  setActiveMainTab('table');
+                }}
+                className="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-500/20 hover:bg-amber-100/70 dark:hover:bg-amber-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-300 truncate block">
+                    {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon'}
+                  </span>
+                  <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0">schedule</Icon>
+                </div>
+                <p className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight">
+                  {ethiopianMonthlyMetrics.dueSoonMembersCount}
+                </p>
+                <p className="text-[10px] text-amber-600/80 dark:text-amber-400/80 mt-1 truncate">
+                  {isAmharic ? 'በ 5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
+                </p>
+              </div>
+
+              {/* 3. Unpaid / Overdue */}
+              <div
+                onClick={() => {
+                  setStatusFilter('expired');
+                  setActiveMainTab('table');
+                }}
+                className="p-3.5 rounded-xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-500/20 hover:bg-rose-100/70 dark:hover:bg-rose-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-300 truncate block">
+                    {isAmharic ? 'ያልተከፈለባቸው' : 'Unpaid / Overdue'}
+                  </span>
+                  <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0">warning</Icon>
+                </div>
+                <p className="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight">
+                  {ethiopianMonthlyMetrics.unpaidMembersCount}
+                </p>
+                <p className="text-[10px] text-rose-600/80 dark:text-rose-400/80 mt-1 truncate">
+                  {isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
+                </p>
+              </div>
+
+              {/* 4. Month Revenue */}
+              <div
+                onClick={() => {
+                  setStatusFilter('all');
+                  setActiveMainTab('table');
+                }}
+                className="p-3.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/30 border border-blue-500/20 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[11px] font-extrabold text-blue-800 dark:text-blue-300 truncate block">
+                    {isAmharic ? 'የወሩ ገቢ' : 'Month Revenue'}
+                  </span>
+                  <Icon className="material-symbols-outlined text-[18px] text-blue-600 dark:text-blue-400 shrink-0">account_balance_wallet</Icon>
+                </div>
+                <p className="text-xl sm:text-2xl font-black text-blue-700 dark:text-blue-300 tracking-tight leading-tight">
+                  {ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
+                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400 ml-1">
+                    {isAmharic ? 'ብር' : 'ETB'}
+                  </span>
+                </p>
+                <p className="text-[10px] text-blue-600/80 dark:text-blue-400/80 mt-1 truncate">
+                  {ethiopianMonthlyMetrics.totalReceiptsCount} {isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}
+                </p>
+              </div>
+
+              {/* 5. Compliance Rate */}
+              <div
+                onClick={() => {
+                  setStatusFilter('all');
+                  setActiveMainTab('table');
+                }}
+                className="p-3.5 rounded-xl bg-purple-50/80 dark:bg-purple-950/30 border border-purple-500/20 hover:bg-purple-100/70 dark:hover:bg-purple-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none col-span-2 sm:col-span-1"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[11px] font-extrabold text-purple-800 dark:text-purple-300 truncate block">
+                    {isAmharic ? 'የክፍያ ምጣኔ' : 'Compliance Rate'}
+                  </span>
+                  <Icon className="material-symbols-outlined text-[18px] text-purple-600 dark:text-purple-400 shrink-0">pie_chart</Icon>
+                </div>
+                <p className="text-xl sm:text-2xl font-black text-purple-700 dark:text-purple-300 tracking-tight leading-tight">
+                  {ethiopianMonthlyMetrics.complianceRate}%
+                </p>
+                <div className="w-full bg-purple-200/60 dark:bg-purple-900/50 h-1.5 rounded-full overflow-hidden mt-1.5">
+                  <div
+                    className="bg-purple-600 dark:bg-purple-400 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(0, ethiopianMonthlyMetrics.complianceRate))}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Status Distribution & Quick Actions Card */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div className="p-4 bg-[#F7F9FC] dark:bg-[#24303F] rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] space-y-3">
+                <h4 className="text-xs font-bold text-[#1C2434] dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-[18px] text-[#3C50E0]">donut_large</Icon>
+                  <span>{isAmharic ? 'የክፍያ ሁኔታዎች ስርጭት' : 'Payment Status Breakdown'}</span>
+                </h4>
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-semibold">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      {isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
+                    </span>
+                    <span className="font-mono font-bold text-[#1C2434] dark:text-white">
+                      {ethiopianMonthlyMetrics.paidMembersCount} / {ethiopianMonthlyMetrics.activeBillableCount} ({ethiopianMonthlyMetrics.complianceRate}%)
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-300 font-semibold">
+                      <span className="w-2 h-2 rounded-full bg-amber-500" />
+                      {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon'}
+                    </span>
+                    <span className="font-mono font-bold text-[#1C2434] dark:text-white">
+                      {ethiopianMonthlyMetrics.dueSoonMembersCount}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-rose-700 dark:text-rose-300 font-semibold">
+                      <span className="w-2 h-2 rounded-full bg-rose-500" />
+                      {isAmharic ? 'ያልተከፈለባቸው (ዕዳ)' : 'Unpaid / Overdue'}
+                    </span>
+                    <span className="font-mono font-bold text-[#1C2434] dark:text-white">
+                      {ethiopianMonthlyMetrics.unpaidMembersCount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-[#F7F9FC] dark:bg-[#24303F] rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-3">
+                <div>
+                  <h4 className="text-xs font-bold text-[#1C2434] dark:text-white uppercase tracking-wider flex items-center gap-2">
+                    <Icon className="material-symbols-outlined text-[18px] text-emerald-600">account_balance</Icon>
+                    <span>{isAmharic ? 'የአባልነት ክፍያ እርምጃዎች' : 'Membership Fee Actions'}</span>
                   </h4>
+                  <p className="text-xs text-[#64748B] dark:text-[#8A99AD] mt-1">
+                    {isAmharic
+                      ? 'የወርሃዊ መዋጮ ማትሪክስ መዝገብን ለማየት ወይም አዲስ ክፍያ ለመመዝገብ ከታች ያሉትን አቋራጮች ይጠቀሙ።'
+                      : 'Use quick links below to jump to the matrix table or record a new dues receipt.'}
+                  </p>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
-                  ETB
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
-                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
-                    {isAmharic ? 'አማካይ ክፍያ' : 'Avg. Payment'}
-                  </span>
-                  <span className="text-base sm:text-lg font-black text-[#1C2434] dark:text-white font-mono">
-                    {Math.round(metrics.totalRevenue / (metrics.totalReceipts || 1)).toLocaleString()} ETB
-                  </span>
-                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
-                    {isAmharic ? 'በአንድ ደረሰኝ አማካይ' : 'Per transaction average'}
-                  </span>
-                </div>
-
-                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
-                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
-                    {isAmharic ? 'የክፍያ ተገዢነት' : 'Compliance Rate'}
-                  </span>
-                  <span className="text-base sm:text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono">
-                    {metrics.totalReceipts > 0 ? Math.round((metrics.activeCount / metrics.totalReceipts) * 100) : 0}%
-                  </span>
-                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
-                    {isAmharic ? 'ህጋዊ አባላት ጥምርታ' : 'Active valid status ratio'}
-                  </span>
-                </div>
-
-                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
-                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
-                    {isAmharic ? 'የሚጠበቅ ገቢ' : 'Upcoming Due'}
-                  </span>
-                  <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-400 font-mono">
-                    {(metrics.expiringCount * 500).toLocaleString()} ETB
-                  </span>
-                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
-                    {isAmharic ? 'ሊያልቅ ከደረሰ የሚሰበሰብ' : 'From expiring soon terms'}
-                  </span>
-                </div>
-
-                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
-                  <span className="block text-[10px] font-black uppercase text-[#64748B] dark:text-[#8A99AD]">
-                    {isAmharic ? 'ያልተሰበሰበ ዕዳ' : 'Overdue Arrears'}
-                  </span>
-                  <span className="text-base sm:text-lg font-black text-rose-600 dark:text-rose-400 font-mono">
-                    {(metrics.expiredCount * 500).toLocaleString()} ETB
-                  </span>
-                  <span className="block text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5">
-                    {isAmharic ? 'ካለፈባቸው የሚሰበሰብ ዕዳ' : 'From overdue members'}
-                  </span>
-                </div>
-              </div>
-
-              {canAddReceipt && (
-                <div className="pt-2">
+                <div className="flex items-center gap-2 pt-1">
                   <button
                     type="button"
-                    onClick={() => setIsFormOpen(true)}
-                    className="w-full py-2 px-3 rounded-sm bg-[#3C50E0] hover:bg-[#2e3ea8] text-white text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    onClick={() => {
+                      setStatusFilter('all');
+                      setActiveMainTab('table');
+                    }}
+                    className="flex-1 py-2 px-3 rounded-lg bg-[#3C50E0] hover:bg-[#3C50E0]/90 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   >
-                    <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
-                    <span>{isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record New Payment Receipt'}</span>
+                    <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
+                    <span>{isAmharic ? 'ማትሪክስ መዝገብ ይመልከቱ' : 'View Matrix Table'}</span>
                   </button>
+                  {canAddReceipt && (
+                    <button
+                      type="button"
+                      onClick={() => setIsFormOpen(true)}
+                      className="py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <Icon className="material-symbols-outlined text-[16px]">add</Icon>
+                      <span>{isAmharic ? 'አዲስ ክፍያ' : 'New payment'}</span>
+                    </button>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
