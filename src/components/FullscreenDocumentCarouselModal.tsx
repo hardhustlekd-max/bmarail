@@ -306,7 +306,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
       } else if (scale <= 1 && touchStartRef.current && validItems.length > 1) {
         const diffX = e.touches[0].clientX - touchStartRef.current.x;
         const diffY = e.touches[0].clientY - touchStartRef.current.y;
-        // If gesture is horizontal, track drag offset
         if (Math.abs(diffX) > Math.abs(diffY) * 0.8) {
           setTouchDeltaX(diffX);
         }
@@ -333,7 +332,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
       const diffY = e.changedTouches[0].clientY - touchStartRef.current.y;
       const duration = Date.now() - touchStartRef.current.time;
 
-      // Horizontal swipe threshold: > 40px travel or fast flick
       const isSwipe = (Math.abs(diffX) > 40 || (Math.abs(diffX) > 25 && duration < 250)) && Math.abs(diffX) > Math.abs(diffY) * 0.8;
 
       if (isSwipe) {
@@ -379,14 +377,14 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
   return (
     <div
       id="fullscreen-photo-zoom-viewer"
-      className="fixed inset-0 z-[10000] w-screen h-[100dvh] max-h-[100dvh] max-w-[100vw] bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden animate-in fade-in duration-200"
+      className="fixed inset-0 z-[10000] w-full h-full bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden animate-in fade-in duration-200"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
-      {/* 1. TOP FLOATING CONTROL BAR */}
-      <header className="shrink-0 h-14 sm:h-16 w-full px-2 sm:px-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-center justify-between z-30 pointer-events-auto">
-        {/* Document Info / Title */}
-        <div className="flex items-center gap-2 min-w-0 flex-1 pr-2">
+      {/* 1. TOP CONTROL HEADER BAR */}
+      <header className="shrink-0 h-14 sm:h-16 w-full px-3 sm:px-6 bg-gradient-to-b from-black/95 via-black/80 to-transparent flex items-center justify-between gap-2 z-30 pointer-events-auto border-b border-white/10">
+        {/* Document Title Info */}
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
             <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
               {currentItem.icon || 'description'}
@@ -412,7 +410,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
 
         {/* Toolbar Controls */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Zoom Group */}
           <div className="flex items-center bg-white/10 rounded-lg p-0.5 border border-white/10 shrink-0">
             {/* Zoom Out */}
@@ -473,19 +471,20 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             </button>
           )}
 
-          {/* Close Button */}
+          {/* High-Visibility Close Button */}
           <button
             type="button"
             onClick={onClose}
-            title={isAmharic ? 'ዝጋ (Esc)' : 'Close (Esc)'}
-            className="w-7.5 h-7.5 sm:w-8.5 sm:h-8.5 rounded-lg bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center transition-all cursor-pointer shadow-md hover:scale-105 active:scale-95 shrink-0"
+            title={isAmharic ? 'ዝጋ (Esc)' : 'Close Viewer (Esc)'}
+            className="px-2.5 sm:px-3.5 h-8 sm:h-9 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer shadow-lg hover:shadow-red-600/30 border border-white/20 shrink-0 ml-1.5"
           >
-            <Icon className="material-symbols-outlined text-[17px] sm:text-[19px]">close</Icon>
+            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">close</Icon>
+            <span className="font-bold">{isAmharic ? 'ዝጋ' : 'Close'}</span>
           </button>
         </div>
       </header>
 
-      {/* 2. 100% VIEWPORT MAIN STAGE */}
+      {/* 2. MAIN CAROUSEL STAGE - ABSOLUTELY CENTERED FLEXBOX STAGE WITH NON-OVERLAPPING NAV BUTTONS */}
       <div
         ref={containerRef}
         onMouseDown={handleMouseDown}
@@ -493,7 +492,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onDoubleClick={handleDoubleClick}
-        className={`flex-1 min-h-0 w-full relative overflow-hidden flex items-center justify-center p-2 sm:p-4 select-none ${
+        className={`relative flex-1 min-h-0 w-full overflow-hidden select-none ${
           scale > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
         }`}
       >
@@ -542,15 +541,15 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           </div>
         )}
 
-        {/* Image Display Container - Perfectly Centered */}
-        <div className="w-full h-full flex items-center justify-center overflow-hidden pointer-events-none">
+        {/* Centered Document Slide Wrapper - Absolute flexbox positioning for guaranteed centering */}
+        <div className="absolute inset-0 flex items-center justify-center p-12 sm:p-20 md:p-28 pointer-events-none">
           <div
             style={{
-              transform: `translate(${position.x + touchDeltaX}px, ${position.y}px) scale(${scale}) rotate(${rotation}deg)`,
-              transition: isDragging || touchDeltaX !== 0 ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
+              transform: `translate3d(${position.x + touchDeltaX}px, ${position.y}px, 0) scale(${scale}) rotate(${rotation}deg)`,
               transformOrigin: 'center center',
+              transition: isDragging || touchDeltaX !== 0 ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
             }}
-            className="flex items-center justify-center max-w-full max-h-full will-change-transform pointer-events-auto"
+            className="relative flex items-center justify-center max-w-full max-h-full will-change-transform m-auto pointer-events-auto"
           >
             {displayUrl && (
               <img
@@ -590,10 +589,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                   setHasError(true);
                 }}
                 style={{
-                  maxHeight: rotation % 180 !== 0 ? '75vw' : '100%',
-                  maxWidth: rotation % 180 !== 0 ? '75vh' : '100%',
+                  maxHeight: rotation % 180 !== 0 ? '70vw' : 'calc(100vh - 160px)',
+                  maxWidth: rotation % 180 !== 0 ? '70vh' : 'calc(100vw - 220px)',
                 }}
-                className={`max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-opacity duration-200 pointer-events-none select-none m-auto ${
+                className={`max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-opacity duration-200 pointer-events-none select-none block mx-auto my-auto ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -601,7 +600,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           </div>
         </div>
 
-        {/* Floating Left / Right Navigation Arrows */}
+        {/* Floating Left & Right Navigation Arrows (Positioned safely outside image boundaries) */}
         {validItems.length > 1 && (
           <>
             <button
@@ -611,9 +610,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                 handlePrev();
               }}
               title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
-              className="absolute left-1.5 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
+              className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-black hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60 group"
             >
-              <Icon className="material-symbols-outlined text-[22px] sm:text-[26px]">chevron_left</Icon>
+              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px] group-hover:-translate-x-0.5 transition-transform">chevron_left</Icon>
             </button>
             <button
               type="button"
@@ -622,17 +621,17 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                 handleNext();
               }}
               title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
-              className="absolute right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/80 text-white flex items-center justify-center border border-white/20 transition-all cursor-pointer backdrop-blur-md shadow-xl hover:scale-105 active:scale-95"
+              className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-black hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60 group"
             >
-              <Icon className="material-symbols-outlined text-[22px] sm:text-[26px]">chevron_right</Icon>
+              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px] group-hover:translate-x-0.5 transition-transform">chevron_right</Icon>
             </button>
           </>
         )}
       </div>
 
-      {/* 4. BOTTOM THUMBNAIL CAROUSEL STRIP */}
+      {/* 3. BOTTOM THUMBNAIL CAROUSEL STRIP */}
       {validItems.length > 1 && showThumbnails && (
-        <div className="shrink-0 w-full py-2.5 px-3 sm:px-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-30 pointer-events-auto">
+        <div className="shrink-0 w-full py-2.5 px-3 sm:px-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-30 pointer-events-auto border-t border-white/10">
           <div
             ref={thumbnailScrollRef}
             className="flex items-center justify-center gap-2 sm:gap-3 overflow-x-auto py-1 scrollbar-none max-w-full"
@@ -646,13 +645,13 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                   type="button"
                   onClick={() => goToIndex(idx)}
                   title={item.title}
-                  className={`group relative flex items-center gap-2 p-1.5 rounded-md border transition-all cursor-pointer shrink-0 ${
+                  className={`group relative flex items-center gap-2 p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
                     isActive
-                      ? 'bg-primary/20 border-primary ring-2 ring-primary/40 shadow-md scale-105'
+                      ? 'bg-primary/25 border-primary ring-2 ring-primary/40 shadow-lg scale-105'
                       : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 opacity-70 hover:opacity-100'
                   }`}
                 >
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-slate-900 flex items-center justify-center shrink-0 border border-white/10">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md overflow-hidden bg-slate-900 flex items-center justify-center shrink-0 border border-white/10">
                     <img
                       src={thumbResolved.primaryUrl}
                       alt={item.title}
