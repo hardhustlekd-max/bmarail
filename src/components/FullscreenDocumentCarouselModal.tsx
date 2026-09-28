@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from './ui/Icon';
 import { Language } from '../types';
 import { resolveDisplayImageUrl } from '../utils/imageUrlResolver';
@@ -139,6 +140,15 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
     currentItem ? resolveDisplayImageUrl(currentItem.url).primaryUrl : ''
   );
   const [hasTriedProxy, setHasTriedProxy] = useState<boolean>(false);
+
+  // Lock body scroll while modal is mounted
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     if (!currentItem || !currentItem.url) {
@@ -374,29 +384,29 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
     return null;
   }
 
-  return (
+  const modalContent = (
     <div
       id="fullscreen-photo-zoom-viewer"
-      className="fixed inset-0 z-[10000] w-full h-full bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden animate-in fade-in duration-200"
+      className="fixed inset-0 z-[999999] w-screen h-[100dvh] max-w-none max-h-none bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
       {/* 1. TOP CONTROL HEADER BAR */}
-      <header className="shrink-0 h-14 sm:h-16 w-full px-3 sm:px-6 bg-gradient-to-b from-black/95 via-black/80 to-transparent flex items-center justify-between gap-2 z-30 pointer-events-auto border-b border-white/10">
+      <header className="shrink-0 h-14 sm:h-16 w-full px-3 sm:px-6 bg-black/90 border-b border-white/10 flex items-center justify-between gap-3 z-30 pointer-events-auto">
         {/* Document Title Info */}
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
+        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0 shadow-xs">
             <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
               {currentItem.icon || 'description'}
             </Icon>
           </div>
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-2">
               <h3 className="text-xs sm:text-sm md:text-base font-black text-white truncate drop-shadow-md">
                 {currentItem.title}
               </h3>
               {validItems.length > 1 && (
-                <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 text-white/90 text-[9px] sm:text-[10px] font-bold shrink-0 border border-white/10">
+                <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/90 text-[10px] font-bold shrink-0 border border-white/10">
                   {currentIndex + 1}/{validItems.length}
                 </span>
               )}
@@ -410,17 +420,18 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
 
         {/* Toolbar Controls */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {/* Zoom Group */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Zoom Controls Pill */}
           <div className="flex items-center bg-white/10 rounded-lg p-0.5 border border-white/10 shrink-0">
             {/* Zoom Out */}
             <button
               type="button"
               onClick={handleZoomOut}
               title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out (-)'}
+              aria-label="Zoom Out"
               className="w-7 h-7 sm:w-8 sm:h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
             >
-              <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">zoom_out</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_out</Icon>
             </button>
 
             {/* Zoom Level Indicator & Reset */}
@@ -428,10 +439,11 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               type="button"
               onClick={resetTransform}
               title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset View (0 / R)'}
-              className="px-1.5 sm:px-2 h-7 sm:h-8 text-white text-[10px] sm:text-[11px] font-mono font-bold flex items-center gap-0.5 hover:bg-white/20 rounded transition-all cursor-pointer"
+              aria-label="Reset View"
+              className="px-2 h-7 sm:h-8 text-white text-[11px] font-mono font-bold flex items-center gap-0.5 hover:bg-white/20 rounded transition-all cursor-pointer"
             >
               <span>{Math.round(scale * 100)}%</span>
-              {scale !== 1 && <Icon className="material-symbols-outlined text-[11px] sm:text-[13px]">restart_alt</Icon>}
+              {scale !== 1 && <Icon className="material-symbols-outlined text-[12px] sm:text-[14px]">restart_alt</Icon>}
             </button>
 
             {/* Zoom In */}
@@ -439,9 +451,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               type="button"
               onClick={handleZoomIn}
               title={isAmharic ? 'አጉላ (+)' : 'Zoom In (+)'}
+              aria-label="Zoom In"
               className="w-7 h-7 sm:w-8 sm:h-8 rounded flex items-center justify-center text-white hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
             >
-              <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">zoom_in</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">zoom_in</Icon>
             </button>
           </div>
 
@@ -450,9 +463,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={handleRotate}
             title={isAmharic ? 'አሽከርክር' : 'Rotate (90°)'}
-            className="w-7.5 h-7.5 sm:w-8.5 sm:h-8.5 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10 shrink-0"
+            aria-label="Rotate Document"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10 shrink-0"
           >
-            <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">rotate_right</Icon>
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">rotate_right</Icon>
           </button>
 
           {/* Toggle Thumbnails */}
@@ -461,13 +475,14 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
               type="button"
               onClick={() => setShowThumbnails(!showThumbnails)}
               title={isAmharic ? 'ማውጫ አሳይ/ደብቅ' : 'Toggle Thumbnails'}
-              className={`w-7.5 h-7.5 sm:w-8.5 sm:h-8.5 rounded-lg flex items-center justify-center transition-all cursor-pointer border shrink-0 ${
+              aria-label="Toggle Thumbnails"
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer border shrink-0 ${
                 showThumbnails
                   ? 'bg-primary text-white border-primary/50'
                   : 'bg-white/10 hover:bg-white/20 text-white border-white/10'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[15px] sm:text-[17px]">view_carousel</Icon>
+              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px]">view_carousel</Icon>
             </button>
           )}
 
@@ -476,133 +491,20 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             type="button"
             onClick={onClose}
             title={isAmharic ? 'ዝጋ (Esc)' : 'Close Viewer (Esc)'}
-            className="px-2.5 sm:px-3.5 h-8 sm:h-9 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 transition-all cursor-pointer shadow-lg hover:shadow-red-600/30 border border-white/20 shrink-0 ml-1.5"
+            aria-label="Close Document Viewer"
+            className="px-3 sm:px-4 h-8 sm:h-9 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-lg hover:shadow-red-600/30 border border-white/20 shrink-0 ml-1"
           >
             <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">close</Icon>
-            <span className="font-bold">{isAmharic ? 'ዝጋ' : 'Close'}</span>
+            <span className="font-bold tracking-wide">{isAmharic ? 'ዝጋ' : 'Close'}</span>
           </button>
         </div>
       </header>
 
-      {/* 2. MAIN CAROUSEL STAGE - ABSOLUTELY CENTERED FLEXBOX STAGE WITH NON-OVERLAPPING NAV BUTTONS */}
-      <div
-        ref={containerRef}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onDoubleClick={handleDoubleClick}
-        className={`relative flex-1 min-h-0 w-full overflow-hidden select-none ${
-          scale > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
-        }`}
-      >
-        {/* Loading Spinner */}
-        {!imageLoaded && !hasError && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-3 z-10 pointer-events-none">
-            <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-xs font-semibold tracking-wide">
-              {isAmharic ? 'ሰነዱ እየተጫነ ነው...' : 'Loading Document...'}
-            </span>
-          </div>
-        )}
-
-        {/* Error Fallback */}
-        {hasError && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-2 z-10 p-6 text-center">
-            <div className="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 mb-2">
-              <Icon className="material-symbols-outlined text-[32px]">broken_image</Icon>
-            </div>
-            <h4 className="text-base font-bold text-white">
-              {isAmharic ? 'ሰነዱን ማሳየት አልተቻለም' : 'Failed to load document'}
-            </h4>
-            <p className="text-xs text-white/60 max-w-sm mb-2">
-              {isAmharic ? 'ምስሉ አልተገኘም ወይም ተሰርዟል' : 'The image could not be loaded or is corrupted.'}
-            </p>
-            {currentItem && (
-              <button
-                type="button"
-                onClick={() => {
-                  setHasError(false);
-                  setImageLoaded(false);
-                  setHasTriedProxy(true);
-                  const sep = currentItem.url.includes('?') ? '&' : '?';
-                  const retryUrl = `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}${sep}_t=${Date.now()}`;
-                  imageLogger.logRetry(currentItem.url, retryUrl, 'Manual user retry in Carousel', {
-                    context: currentItem.title,
-                  });
-                  setDisplayUrl(retryUrl);
-                }}
-                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition-colors flex items-center gap-1.5 cursor-pointer"
-              >
-                <Icon name="refresh" size={14} />
-                <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry Loading'}</span>
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Centered Document Slide Wrapper - Absolute flexbox positioning for guaranteed centering */}
-        <div className="absolute inset-0 flex items-center justify-center p-12 sm:p-20 md:p-28 pointer-events-none">
-          <div
-            style={{
-              transform: `translate3d(${position.x + touchDeltaX}px, ${position.y}px, 0) scale(${scale}) rotate(${rotation}deg)`,
-              transformOrigin: 'center center',
-              transition: isDragging || touchDeltaX !== 0 ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
-            }}
-            className="relative flex items-center justify-center max-w-full max-h-full will-change-transform m-auto pointer-events-auto"
-          >
-            {displayUrl && (
-              <img
-                key={displayUrl}
-                src={displayUrl}
-                alt={currentItem?.title || 'Document'}
-                referrerPolicy="no-referrer"
-                onLoad={(e) => {
-                  const img = e.currentTarget;
-                  setImageLoaded(true);
-                  setHasError(false);
-                  imageLogger.logSuccess(
-                    displayUrl,
-                    { width: img.naturalWidth, height: img.naturalHeight },
-                    undefined,
-                    { context: currentItem?.title }
-                  );
-                }}
-                onError={() => {
-                  if (!hasTriedProxy && currentItem?.url) {
-                    const resolved = resolveDisplayImageUrl(currentItem.url);
-                    const proxyTarget = resolved.proxyUrl || `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}`;
-                    if (proxyTarget !== displayUrl) {
-                      imageLogger.logRetry(displayUrl, proxyTarget, 'Direct carousel fetch failed, routing via proxy', {
-                        context: currentItem.title,
-                      });
-                      setHasTriedProxy(true);
-                      setDisplayUrl(proxyTarget);
-                      return;
-                    }
-                  }
-                  imageLogger.logError(displayUrl, 'Carousel image load failure', {
-                    context: currentItem?.title,
-                    originalUrl: currentItem?.url,
-                  });
-                  setImageLoaded(false);
-                  setHasError(true);
-                }}
-                style={{
-                  maxHeight: rotation % 180 !== 0 ? '70vw' : 'calc(100vh - 160px)',
-                  maxWidth: rotation % 180 !== 0 ? '70vh' : 'calc(100vw - 220px)',
-                }}
-                className={`max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-opacity duration-200 pointer-events-none select-none block mx-auto my-auto ${
-                  imageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Floating Left & Right Navigation Arrows (Positioned safely outside image boundaries) */}
-        {validItems.length > 1 && (
-          <>
+      {/* 2. MAIN CAROUSEL STAGE: 3-COLUMN STRUCTURE PREVENTING ANY BUTTON OVERLAP */}
+      <div className="flex-1 min-h-0 w-full flex items-center justify-between relative overflow-hidden">
+        {/* Left Arrow Column - Guaranteed dedicated space so it never overlaps the image */}
+        <div className="w-14 sm:w-20 md:w-24 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
+          {validItems.length > 1 && (
             <button
               type="button"
               onClick={(e) => {
@@ -610,10 +512,134 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                 handlePrev();
               }}
               title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
-              className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-black hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60 group"
+              aria-label="Previous Document"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-850/90 hover:bg-slate-750 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
             >
-              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px] group-hover:-translate-x-0.5 transition-transform">chevron_left</Icon>
+              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px]">chevron_left</Icon>
             </button>
+          )}
+        </div>
+
+        {/* Center Document Stage - 100% Symmetrically Centered */}
+        <div
+          ref={containerRef}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onDoubleClick={handleDoubleClick}
+          className={`flex-1 h-full min-w-0 relative flex items-center justify-center p-2 sm:p-4 overflow-hidden select-none ${
+            scale > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
+          }`}
+        >
+          {/* Loading Spinner */}
+          {!imageLoaded && !hasError && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-3 z-10 pointer-events-none">
+              <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-xs font-semibold tracking-wide">
+                {isAmharic ? 'ሰነዱ እየተጫነ ነው...' : 'Loading Document...'}
+              </span>
+            </div>
+          )}
+
+          {/* Error Fallback */}
+          {hasError && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-2 z-10 p-6 text-center">
+              <div className="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 mb-2">
+                <Icon className="material-symbols-outlined text-[32px]">broken_image</Icon>
+              </div>
+              <h4 className="text-base font-bold text-white">
+                {isAmharic ? 'ሰነዱን ማሳየት አልተቻለም' : 'Failed to load document'}
+              </h4>
+              <p className="text-xs text-white/60 max-w-sm mb-2">
+                {isAmharic ? 'ምስሉ አልተገኘም ወይም ተሰርዟል' : 'The image could not be loaded or is corrupted.'}
+              </p>
+              {currentItem && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHasError(false);
+                    setImageLoaded(false);
+                    setHasTriedProxy(true);
+                    const sep = currentItem.url.includes('?') ? '&' : '?';
+                    const retryUrl = `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}${sep}_t=${Date.now()}`;
+                    imageLogger.logRetry(currentItem.url, retryUrl, 'Manual user retry in Carousel', {
+                      context: currentItem.title,
+                    });
+                    setDisplayUrl(retryUrl);
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Icon name="refresh" size={14} />
+                  <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry Loading'}</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Centered Document Transform Container */}
+          <div className="w-full h-full flex items-center justify-center pointer-events-none">
+            <div
+              style={{
+                transform: `translate3d(${position.x + touchDeltaX}px, ${position.y}px, 0) scale(${scale}) rotate(${rotation}deg)`,
+                transformOrigin: 'center center',
+                transition: isDragging || touchDeltaX !== 0 ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
+              }}
+              className="relative flex items-center justify-center max-w-full max-h-full will-change-transform m-auto pointer-events-auto"
+            >
+              {displayUrl && (
+                <img
+                  key={displayUrl}
+                  src={displayUrl}
+                  alt={currentItem?.title || 'Document'}
+                  referrerPolicy="no-referrer"
+                  onLoad={(e) => {
+                    const img = e.currentTarget;
+                    setImageLoaded(true);
+                    setHasError(false);
+                    imageLogger.logSuccess(
+                      displayUrl,
+                      { width: img.naturalWidth, height: img.naturalHeight },
+                      undefined,
+                      { context: currentItem?.title }
+                    );
+                  }}
+                  onError={() => {
+                    if (!hasTriedProxy && currentItem?.url) {
+                      const resolved = resolveDisplayImageUrl(currentItem.url);
+                      const proxyTarget = resolved.proxyUrl || `/api/storage/proxy?url=${encodeURIComponent(currentItem.url)}`;
+                      if (proxyTarget !== displayUrl) {
+                        imageLogger.logRetry(displayUrl, proxyTarget, 'Direct carousel fetch failed, routing via proxy', {
+                          context: currentItem.title,
+                        });
+                        setHasTriedProxy(true);
+                        setDisplayUrl(proxyTarget);
+                        return;
+                      }
+                    }
+                    imageLogger.logError(displayUrl, 'Carousel image load failure', {
+                      context: currentItem?.title,
+                      originalUrl: currentItem?.url,
+                    });
+                    setImageLoaded(false);
+                    setHasError(true);
+                  }}
+                  style={{
+                    maxHeight: rotation % 180 !== 0 ? '70vw' : '100%',
+                    maxWidth: rotation % 180 !== 0 ? '70vh' : '100%',
+                  }}
+                  className={`max-w-full max-h-full object-contain rounded-xl shadow-2xl transition-opacity duration-200 pointer-events-none select-none block m-auto ${
+                    imageLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Arrow Column - Guaranteed dedicated space so it never overlaps the image */}
+        <div className="w-14 sm:w-20 md:w-24 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
+          {validItems.length > 1 && (
             <button
               type="button"
               onClick={(e) => {
@@ -621,17 +647,18 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
                 handleNext();
               }}
               title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
-              className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900/80 hover:bg-black hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60 group"
+              aria-label="Next Document"
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-850/90 hover:bg-slate-750 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
             >
-              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px] group-hover:translate-x-0.5 transition-transform">chevron_right</Icon>
+              <Icon className="material-symbols-outlined text-[24px] sm:text-[28px]">chevron_right</Icon>
             </button>
-          </>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* 3. BOTTOM THUMBNAIL CAROUSEL STRIP */}
+      {/* 3. BOTTOM THUMBNAILS STRIP */}
       {validItems.length > 1 && showThumbnails && (
-        <div className="shrink-0 w-full py-2.5 px-3 sm:px-6 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-30 pointer-events-auto border-t border-white/10">
+        <div className="shrink-0 w-full py-2.5 px-3 sm:px-6 bg-black/90 backdrop-blur-md border-t border-white/10 z-30">
           <div
             ref={thumbnailScrollRef}
             className="flex items-center justify-center gap-2 sm:gap-3 overflow-x-auto py-1 scrollbar-none max-w-full"
@@ -679,4 +706,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
       )}
     </div>
   );
+
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  return createPortal(modalContent, document.body);
 };
