@@ -1063,7 +1063,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* MONTHLY FEE STATISTICS CONTAINER */}
           <div className="p-3.5 sm:p-5 space-y-4 bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default">
-            {/* Header with Ethiopian Month Title & Badge */}
+            {/* Header with Ethiopian Month Title */}
             <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               {/* Title */}
               <div className="flex items-center gap-2.5 min-w-0">
@@ -1080,16 +1080,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       : 'Ethiopian calendar monthly dues collection & compliance summary'}
                   </p>
                 </div>
-              </div>
-
-              {/* Month Badge */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50 dark:border-emerald-700/50 whitespace-nowrap">
-                  {ethiopianMonthlyMetrics.monthName} {ethiopianMonthlyMetrics.targetYear} {isAmharic ? 'ዓ.ም' : 'E.C.'}
-                </span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary dark:text-primary border border-primary/20 shrink-0">
-                  {isAmharic ? 'ወቅታዊ' : 'Current'}
-                </span>
               </div>
             </div>
 

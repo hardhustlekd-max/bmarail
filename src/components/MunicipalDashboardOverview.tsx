@@ -681,15 +681,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
               </h3>
             </div>
-            {/* Month Badge */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50 dark:border-emerald-700/50 whitespace-nowrap">
-                {ethiopianMonthlyMetrics.monthName} {ethiopianMonthlyMetrics.targetYear} {isAmharic ? 'ዓ.ም' : 'E.C.'}
-              </span>
-              <span className="px-1.5 sm:px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 shrink-0">
-                {isAmharic ? 'ወቅታዊ' : 'Current'}
-              </span>
-            </div>
           </div>
 
           {/* 5-Column Responsive Metric Statistics Cards */}
