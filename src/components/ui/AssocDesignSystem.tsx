@@ -507,7 +507,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
             </th>
           ))}
           {expandableMobile && (
-            <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 md:hidden w-10">
+            <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-10">
               <button
                 type="button"
                 onClick={toggleAllMobile}
@@ -530,10 +530,10 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
           return (
             <React.Fragment key={row.id}>
               <tr
-                onClick={() => onRowClick && onRowClick(row)}
-                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
-                  onRowClick ? 'cursor-pointer' : ''
-                } ${isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40' : ''}`}
+                onClick={() => toggleRow(row.id)}
+                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer select-none ${
+                  isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40' : ''
+                }`}
               >
                 {showNumbering && (
                   <td className="py-3.5 px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
@@ -565,7 +565,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                   );
                 })}
                 {expandableMobile && (
-                  <td className="py-3.5 px-2 text-center md:hidden w-10">
+                  <td className="py-3.5 px-2 text-center w-10">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -585,11 +585,11 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                 )}
               </tr>
 
-              {/* Collapsible/Expandable Monthly Drawer for Mobile View */}
+              {/* Collapsible/Expandable Monthly Drawer */}
               {expandableMobile && isExpanded && (
-                <tr className="md:hidden bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800">
+                <tr className="bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800">
                   <td colSpan={totalCols} className="p-3 sm:p-4">
-                    <div className="space-y-2.5">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between text-xs pb-1.5 border-b border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200">
                         <span>{isAmharic ? 'የወርሃዊ ክፍያዎች ዝርዝር' : 'Monthly Dues Breakdown'}</span>
                         {row.plateNumber && (
@@ -598,7 +598,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                           </span>
                         )}
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
                         {columns.map((col) => {
                           const status = row.periods[col.key] || 'muted';
                           const statusText =
@@ -633,6 +633,23 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                           );
                         })}
                       </div>
+
+                      {/* Explicit Action to Open Verification Drawer */}
+                      {onRowClick && (
+                        <div className="pt-2 flex items-center justify-end border-t border-slate-200 dark:border-slate-700/60">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRowClick(row);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#3C50E0] hover:bg-[#3243be] text-white shadow-xs transition-colors cursor-pointer"
+                          >
+                            <Icon name="verified" size={16} />
+                            <span>{isAmharic ? 'ደረሰኝ አረጋግጥ / ዝርዝር ክፈት' : 'Open Verification Drawer'}</span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </td>
                 </tr>
