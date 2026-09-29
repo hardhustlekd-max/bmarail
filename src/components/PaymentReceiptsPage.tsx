@@ -869,12 +869,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       const matchedPlateFromReceipt = matchedReceipts.find((rc) => rc.plateNumber && rc.plateNumber.trim())?.plateNumber;
       const plate = (reg.plateNumber ? reg.plateNumber.trim() : '') || (matchedPlateFromReceipt ? matchedPlateFromReceipt.trim() : '');
-      const phone = reg.phone ? reg.phone.trim() : '';
 
       return {
         id: reg.id,
         title: reg.fullName || (isAmharic ? 'ያልተገለጸ አባል' : 'Unnamed Member'),
-        subtitle: phone || undefined,
         plateNumber: plate || undefined,
         periods,
         member: reg,
