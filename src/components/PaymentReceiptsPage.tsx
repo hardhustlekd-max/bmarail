@@ -663,24 +663,20 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const currentEthYear = currentEthDate.year;
   const currentEthMonth = currentEthDate.month; // 1 (መስከረም) to 13 (ጳጉሜ)
 
-  // Monthly Matrix Ledger columns: Meskerem up to current Ethiopian month of this Ethiopian year
+  // Monthly Matrix Ledger columns: All 13 months of the Ethiopian year (Meskerem through Pagume)
   const matrixColumns = useMemo(() => {
-    const cols = [];
-    const maxMonth = Math.min(Math.max(currentEthMonth, 1), 13);
-    for (let m = 1; m <= maxMonth; m++) {
-      const monthObj = ETHIOPIAN_MONTHS[m - 1];
+    return ETHIOPIAN_MONTHS.map((monthObj) => {
       const label = isAmharic ? monthObj.shortAm : monthObj.shortEn;
       const fullTitle = isAmharic ? `${monthObj.am} (${monthObj.en})` : `${monthObj.en} - ${monthObj.am}`;
-      cols.push({
-        key: `eth_m_${m}`,
-        monthNum: m,
+      return {
+        key: `eth_m_${monthObj.id}`,
+        monthNum: monthObj.id,
         label,
         title: fullTitle,
         year: currentEthYear,
-      });
-    }
-    return cols;
-  }, [currentEthMonth, currentEthYear, isAmharic]);
+      };
+    });
+  }, [currentEthYear, isAmharic]);
 
   // All Matrix Rows generated across member registrations with real-time payment status lookup
   const allMatrixRows = useMemo(() => {
@@ -837,32 +833,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             const hasExpiringCover = coveringMatches.some((m) => m.status === 'expiring_soon');
             if (hasActiveCover) periods[col.key] = 'paid';
             else if (hasExpiringCover) periods[col.key] = 'pending';
-            else periods[col.key] = 'unpaid';
-          } else if (hasAnyPaymentRecord) {
-            // Member has payment history but has not paid for the current month
-            periods[col.key] = 'unpaid';
+            else periods[col.key] = 'paid';
           } else {
+            // No payment data for current month
             periods[col.key] = 'muted';
           }
         } else {
-          // For other/past months:
+          // For other months: show paid if payment record exists, otherwise grey dot (muted)
           if (directMonthMatches.length > 0 || coveringMatches.length > 0) {
             periods[col.key] = 'paid';
           } else {
-            // Check registration date to see if member was already enrolled during that month
-            let regEth: EthiopianDate | null = null;
-            try {
-              if (reg.registrationDate) regEth = toEthiopianDate(reg.registrationDate);
-            } catch {}
-
-            const regPeriodIndex = regEth ? regEth.year * 13 + regEth.month : 0;
-            if (regPeriodIndex && targetPeriodIndex < regPeriodIndex) {
-              // Member was not yet registered in this past month
-              periods[col.key] = 'muted';
-            } else {
-              // Member was registered but has no payment for that month
-              periods[col.key] = 'unpaid';
-            }
+            // No payment data for this column -> grey dot
+            periods[col.key] = 'muted';
           }
         }
       });
