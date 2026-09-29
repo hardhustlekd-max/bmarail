@@ -425,6 +425,7 @@ export interface MatrixRowItem {
   id: string | number;
   title: string;
   subtitle?: string;
+  plateNumber?: string;
   periods: Record<string, 'paid' | 'unpaid' | 'pending' | 'muted'>;
 }
 
@@ -434,6 +435,8 @@ export interface MonthlyMatrixLedgerProps {
   onRowClick?: (row: MatrixRowItem) => void;
   className?: string;
   memberHeaderLabel?: string;
+  plateHeaderLabel?: string;
+  showPlateColumn?: boolean;
   emptyMessage?: string;
 }
 
@@ -443,67 +446,89 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
   onRowClick,
   className = '',
   memberHeaderLabel = 'Member / Entity',
+  plateHeaderLabel = 'Plate Number',
+  showPlateColumn = true,
   emptyMessage = 'No ledger records available.',
-}) => (
-  <table className={`w-full border-collapse text-left ${className}`}>
-    <thead>
-      <tr className="border-b border-slate-200 dark:border-slate-800">
-        <th className="py-3 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 text-left">
-          {memberHeaderLabel}
-        </th>
-        {columns.map((col) => (
-          <th
-            key={col.key}
-            title={col.title}
-            className="py-3 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 text-center whitespace-nowrap"
-          >
-            {col.label}
+}) => {
+  const hasPlate = showPlateColumn || rows.some((r) => Boolean(r.plateNumber));
+
+  return (
+    <table className={`w-full border-collapse text-left ${className}`}>
+      <thead>
+        <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F7F9FC] dark:bg-[#24303F]">
+          <th className="py-3 px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap">
+            {memberHeaderLabel}
           </th>
-        ))}
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-      {rows.map((row) => (
-        <tr
-          key={row.id}
-          onClick={() => onRowClick && onRowClick(row)}
-          className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
-            onRowClick ? 'cursor-pointer' : ''
-          }`}
-        >
-          <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100">
-            <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
-            {row.subtitle && (
-              <div className="text-xs text-slate-400 dark:text-slate-500">{row.subtitle}</div>
-            )}
-          </td>
-          {columns.map((col) => {
-            const status = row.periods[col.key] || 'muted';
-            return (
-              <td key={col.key} className="py-3.5 px-4 text-center">
-                <StatusDot
-                  status={status}
-                  size={12}
-                  title={`${row.title} - ${col.label}: ${status}`}
-                />
-              </td>
-            );
-          })}
+          {hasPlate && (
+            <th className="py-3 px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono">
+              {plateHeaderLabel}
+            </th>
+          )}
+          {columns.map((col) => (
+            <th
+              key={col.key}
+              title={col.title}
+              className="py-3 px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap"
+            >
+              {col.label}
+            </th>
+          ))}
         </tr>
-      ))}
-      {rows.length === 0 && (
-        <tr>
-          <td
-            colSpan={columns.length + 1}
-            className="py-8 text-center text-sm text-slate-400 dark:text-slate-500"
+      </thead>
+      <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+        {rows.map((row) => (
+          <tr
+            key={row.id}
+            onClick={() => onRowClick && onRowClick(row)}
+            className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+              onRowClick ? 'cursor-pointer' : ''
+            }`}
           >
-            {emptyMessage}
-          </td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-);
+            <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
+              <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
+              {row.subtitle && (
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{row.subtitle}</div>
+              )}
+            </td>
+            {hasPlate && (
+              <td className="py-3.5 px-4 text-xs font-mono font-bold whitespace-nowrap">
+                {row.plateNumber ? (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[#1C2434] dark:text-white">
+                    {row.plateNumber}
+                  </span>
+                ) : (
+                  <span className="text-slate-400 dark:text-slate-600 font-normal">—</span>
+                )}
+              </td>
+            )}
+            {columns.map((col) => {
+              const status = row.periods[col.key] || 'muted';
+              return (
+                <td key={col.key} className="py-3.5 px-3 sm:px-4 text-center">
+                  <StatusDot
+                    status={status}
+                    size={12}
+                    title={`${row.title} ${row.plateNumber ? `(${row.plateNumber})` : ''} - ${col.label}: ${status}`}
+                  />
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+        {rows.length === 0 && (
+          <tr>
+            <td
+              colSpan={columns.length + (hasPlate ? 2 : 1)}
+              className="py-8 text-center text-sm text-slate-400 dark:text-slate-500"
+            >
+              {emptyMessage}
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  );
+};
 
 export interface HistoryItemData {
   id: string | number;

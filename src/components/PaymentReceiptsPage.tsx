@@ -837,10 +837,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         }
       });
 
+      const plate = reg.plateNumber ? reg.plateNumber.trim() : '';
+      const phone = reg.phone ? reg.phone.trim() : '';
+
       return {
         id: reg.id,
         title: reg.fullName || (isAmharic ? 'ያልተገለጸ አባል' : 'Unnamed Member'),
-        subtitle: undefined, // Plate number and motorcycle type removed from matrix ledger per design specification
+        subtitle: phone || undefined,
+        plateNumber: plate || undefined,
         periods,
         member: reg,
         allReceipts,
@@ -1852,6 +1856,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               columns={matrixColumns}
               rows={filteredMatrixRows}
               memberHeaderLabel={isAmharic ? 'አባል / ባለቤት' : 'Member / Owner'}
+              plateHeaderLabel={isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
+              showPlateColumn={true}
               emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
               onRowClick={(row) => {
                 const memberReg = registrations.find((r) => String(r.id) === String(row.id));
