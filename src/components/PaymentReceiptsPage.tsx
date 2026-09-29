@@ -85,6 +85,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [reconcileVerifyStatus, setReconcileVerifyStatus] = useState<'idle' | 'matched' | 'mismatch'>('idle');
   const [reconcileCopiedField, setReconcileCopiedField] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isTableCollapsedMobile, setIsTableCollapsedMobile] = useState(false);
 
   const handleVerifyReceiptInForm = async () => {
     const ref = receiptNumber.trim();
@@ -1857,15 +1858,26 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
 
 
-          {/* MATRIX STATUS LEGEND & ETHIOPIAN CALENDAR HEADER */}
-          <div className="px-4 md:px-6 py-2.5 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">calendar_month</Icon>
-              <span className="font-bold text-xs text-[#1C2434] dark:text-white">
-                {isAmharic ? `የ${currentEthYear} ዓ.ም የወርሃዊ መዋጮ ማትሪክስ መዝገብ` : `${currentEthYear} Ethiopian Monthly Matrix Ledger Lookup`}
-              </span>
+          {/* MATRIX STATUS LEGEND & MOBILE COLLAPSIBLE TOGGLE */}
+          <div className="px-4 md:px-6 py-2 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 md:hidden">
+              <button
+                type="button"
+                onClick={() => setIsTableCollapsedMobile((prev) => !prev)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded bg-slate-200/80 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">
+                  {isTableCollapsedMobile ? 'expand_more' : 'expand_less'}
+                </Icon>
+                <span>
+                  {isTableCollapsedMobile
+                    ? (isAmharic ? 'ሰንጠረዡን ዘርጋ' : 'Expand Table')
+                    : (isAmharic ? 'ሰንጠረዡን ሰብስብ' : 'Collapse Table')}
+                </span>
+              </button>
             </div>
-            <div className="flex items-center gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-400 flex-wrap">
+
+            <div className="flex items-center gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-400 flex-wrap ml-auto">
               <span className="inline-flex items-center gap-1.5">
                 <StatusDot status="paid" size={10} />
                 <span>{isAmharic ? 'የተከፈለ' : 'Paid'}</span>
@@ -1885,34 +1897,50 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           </div>
 
-          {/* MONTHLY MATRIX LEDGER TABLE (RESPONSIVE HORIZONTAL SCROLL) */}
-          <div className="overflow-x-auto">
-            <MonthlyMatrixLedger
-              columns={matrixColumns}
-              rows={filteredMatrixRows}
-              showNumbering={true}
-              numberHeaderLabel={isAmharic ? 'ተ.ቁ' : '#'}
-              memberHeaderLabel={isAmharic ? 'አባል / ባለቤት' : 'Member / Owner'}
-              plateHeaderLabel={isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
-              showPlateColumn={true}
-              emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
-              onRowClick={(row) => {
-                const memberReg = registrations.find((r) => String(r.id) === String(row.id));
-                const matchedRc = combinedReceipts.find(
-                  (rc) =>
-                    (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
-                    (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
-                    (rc.plateNumber && memberReg?.plateNumber && rc.plateNumber.toLowerCase() === memberReg.plateNumber.toLowerCase())
-                );
-                if (matchedRc) {
-                  setReconcileReceipt(matchedRc);
-                } else if (memberReg || row.plateNumber) {
-                  handleRegNumberChange(row.plateNumber || memberReg?.plateNumber || String(row.id));
-                  setIsFormOpen(true);
-                }
-              }}
-            />
-          </div>
+          {/* MONTHLY MATRIX LEDGER TABLE (RESPONSIVE HORIZONTAL SCROLL & COLLAPSIBLE ON MOBILE) */}
+          {!isTableCollapsedMobile ? (
+            <div className="overflow-x-auto">
+              <MonthlyMatrixLedger
+                columns={matrixColumns}
+                rows={filteredMatrixRows}
+                showNumbering={true}
+                numberHeaderLabel={isAmharic ? 'ተ.ቁ' : '#'}
+                memberHeaderLabel={isAmharic ? 'አባል / ባለቤት' : 'Member / Owner'}
+                plateHeaderLabel={isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
+                showPlateColumn={true}
+                isAmharic={isAmharic}
+                expandableMobile={true}
+                emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
+                onRowClick={(row) => {
+                  const memberReg = registrations.find((r) => String(r.id) === String(row.id));
+                  const matchedRc = combinedReceipts.find(
+                    (rc) =>
+                      (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                      (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
+                      (rc.plateNumber && memberReg?.plateNumber && rc.plateNumber.toLowerCase() === memberReg.plateNumber.toLowerCase())
+                  );
+                  if (matchedRc) {
+                    setReconcileReceipt(matchedRc);
+                  } else if (memberReg || row.plateNumber) {
+                    handleRegNumberChange(row.plateNumber || memberReg?.plateNumber || String(row.id));
+                    setIsFormOpen(true);
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              onClick={() => setIsTableCollapsedMobile(false)}
+              className="p-4 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-slate-900/30 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors flex items-center justify-center gap-1.5 md:hidden"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">table_rows</Icon>
+              <span>
+                {isAmharic
+                  ? `ሰንጠረዡ ተሰብስቧል (${filteredMatrixRows.length} አባላት) — ለመዘርጋት እዚህ ይጫኑ`
+                  : `Table is collapsed (${filteredMatrixRows.length} members) — Tap to expand`}
+              </span>
+            </div>
+          )}
         </div>
       )}
 

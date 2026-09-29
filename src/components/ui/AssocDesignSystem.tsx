@@ -440,6 +440,8 @@ export interface MonthlyMatrixLedgerProps {
   plateHeaderLabel?: string;
   showPlateColumn?: boolean;
   emptyMessage?: string;
+  isAmharic?: boolean;
+  expandableMobile?: boolean;
 }
 
 export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
@@ -453,8 +455,30 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
   plateHeaderLabel = 'Plate Number',
   showPlateColumn = true,
   emptyMessage = 'No ledger records available.',
+  isAmharic = true,
+  expandableMobile = true,
 }) => {
   const hasPlate = showPlateColumn || rows.some((r) => Boolean(r.plateNumber));
+  const [expandedMobileRowIds, setExpandedMobileRowIds] = useState<Set<string | number>>(new Set());
+
+  const toggleRow = (id: string | number) => {
+    setExpandedMobileRowIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAllMobile = () => {
+    if (expandedMobileRowIds.size === rows.length) {
+      setExpandedMobileRowIds(new Set());
+    } else {
+      setExpandedMobileRowIds(new Set(rows.map((r) => r.id)));
+    }
+  };
+
+  const totalCols = columns.length + (hasPlate ? 1 : 0) + (showNumbering ? 1 : 0) + 1 + (expandableMobile ? 1 : 0);
 
   return (
     <table className={`w-full border-collapse text-left ${className}`}>
@@ -482,52 +506,144 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
               {col.label}
             </th>
           ))}
+          {expandableMobile && (
+            <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 md:hidden w-10">
+              <button
+                type="button"
+                onClick={toggleAllMobile}
+                title={expandedMobileRowIds.size === rows.length ? (isAmharic ? 'ሁሉንም ሰብስብ' : 'Collapse All') : (isAmharic ? 'ሁሉንም ዘርጋ' : 'Expand All')}
+                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 cursor-pointer"
+              >
+                <Icon
+                  name={expandedMobileRowIds.size === rows.length ? 'unfold_less' : 'unfold_more'}
+                  size={18}
+                />
+              </button>
+            </th>
+          )}
         </tr>
       </thead>
       <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-        {rows.map((row, index) => (
-          <tr
-            key={row.id}
-            onClick={() => onRowClick && onRowClick(row)}
-            className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
-              onRowClick ? 'cursor-pointer' : ''
-            }`}
-          >
-            {showNumbering && (
-              <td className="py-3.5 px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
-                {index + 1}
-              </td>
-            )}
-            <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
-              <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
-            </td>
-            {hasPlate && (
-              <td className="py-3.5 px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200">
-                {row.plateNumber ? (
-                  <span>{row.plateNumber}</span>
-                ) : (
-                  <span className="text-slate-400 dark:text-slate-600 font-normal italic">—</span>
+        {rows.map((row, index) => {
+          const isExpanded = expandedMobileRowIds.has(row.id);
+
+          return (
+            <React.Fragment key={row.id}>
+              <tr
+                onClick={() => onRowClick && onRowClick(row)}
+                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+                  onRowClick ? 'cursor-pointer' : ''
+                } ${isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40' : ''}`}
+              >
+                {showNumbering && (
+                  <td className="py-3.5 px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
+                    {index + 1}
+                  </td>
                 )}
-              </td>
-            )}
-            {columns.map((col) => {
-              const status = row.periods[col.key] || 'muted';
-              return (
-                <td key={col.key} className="py-3.5 px-3 sm:px-4 text-center">
-                  <StatusDot
-                    status={status}
-                    size={12}
-                    title={`${row.title} ${row.plateNumber ? `(${row.plateNumber})` : ''} - ${col.label}: ${status}`}
-                  />
+                <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
+                  <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
                 </td>
-              );
-            })}
-          </tr>
-        ))}
+                {hasPlate && (
+                  <td className="py-3.5 px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200">
+                    {row.plateNumber ? (
+                      <span>{row.plateNumber}</span>
+                    ) : (
+                      <span className="text-slate-400 dark:text-slate-600 font-normal italic">—</span>
+                    )}
+                  </td>
+                )}
+                {columns.map((col) => {
+                  const status = row.periods[col.key] || 'muted';
+                  return (
+                    <td key={col.key} className="py-3.5 px-3 sm:px-4 text-center">
+                      <StatusDot
+                        status={status}
+                        size={12}
+                        title={`${row.title} ${row.plateNumber ? `(${row.plateNumber})` : ''} - ${col.label}: ${status}`}
+                      />
+                    </td>
+                  );
+                })}
+                {expandableMobile && (
+                  <td className="py-3.5 px-2 text-center md:hidden w-10">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleRow(row.id);
+                      }}
+                      className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                      title={isExpanded ? (isAmharic ? 'ሰብስብ' : 'Collapse') : (isAmharic ? 'ዘርጋ' : 'Expand')}
+                    >
+                      <Icon
+                        name={isExpanded ? 'expand_less' : 'expand_more'}
+                        size={20}
+                        className="transition-transform"
+                      />
+                    </button>
+                  </td>
+                )}
+              </tr>
+
+              {/* Collapsible/Expandable Monthly Drawer for Mobile View */}
+              {expandableMobile && isExpanded && (
+                <tr className="md:hidden bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800">
+                  <td colSpan={totalCols} className="p-3 sm:p-4">
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between text-xs pb-1.5 border-b border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200">
+                        <span>{isAmharic ? 'የወርሃዊ ክፍያዎች ዝርዝር' : 'Monthly Dues Breakdown'}</span>
+                        {row.plateNumber && (
+                          <span className="font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                            {row.plateNumber}
+                          </span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {columns.map((col) => {
+                          const status = row.periods[col.key] || 'muted';
+                          const statusText =
+                            status === 'paid'
+                              ? isAmharic ? 'የተከፈለ' : 'Paid'
+                              : status === 'pending'
+                              ? isAmharic ? 'ሊያልቅ የደረሰ' : 'Due'
+                              : status === 'unpaid'
+                              ? isAmharic ? 'ያልተከፈለ' : 'Unpaid'
+                              : isAmharic ? 'መረጃ የለም' : 'No Record';
+
+                          const statusBadgeClass =
+                            status === 'paid'
+                              ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                              : status === 'pending'
+                              ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                              : status === 'unpaid'
+                              ? 'bg-rose-50 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 border-rose-200 dark:border-rose-800'
+                              : 'bg-slate-100 text-slate-600 dark:bg-slate-800/80 dark:text-slate-400 border-slate-200 dark:border-slate-700';
+
+                          return (
+                            <div
+                              key={col.key}
+                              className={`flex items-center justify-between p-2 rounded-md border text-xs ${statusBadgeClass}`}
+                            >
+                              <span className="font-bold text-[11px]">{col.label}</span>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <StatusDot status={status} size={8} />
+                                <span className="text-[10px] font-medium">{statusText}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
+          );
+        })}
         {rows.length === 0 && (
           <tr>
             <td
-              colSpan={columns.length + (hasPlate ? 2 : 1) + (showNumbering ? 1 : 0)}
+              colSpan={totalCols}
               className="py-8 text-center text-sm text-slate-400 dark:text-slate-500"
             >
               {emptyMessage}
