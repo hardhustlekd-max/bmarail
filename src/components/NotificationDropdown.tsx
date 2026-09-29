@@ -124,7 +124,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           }}
           className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             filter === 'all'
-              ? 'bg-[#3C50E0] text-white shadow-xs'
+              ? 'bg-primary text-white shadow-xs'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47]'
           }`}
         >
@@ -142,7 +142,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           }}
           className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             filter === 'unread'
-              ? 'bg-[#3C50E0] text-white shadow-xs'
+              ? 'bg-primary text-white shadow-xs'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47]'
           }`}
         >
@@ -213,7 +213,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       )}
                     </div>
 
-                    <h4 className="text-xs font-extrabold text-[#1C2434] dark:text-white group-hover:text-[#3C50E0] dark:group-hover:text-blue-400 transition-colors leading-snug break-words text-wrap">
+                    <h4 className="text-xs font-extrabold text-[#1C2434] dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors leading-snug break-words text-wrap">
                       {item.title}
                     </h4>
 
@@ -227,7 +227,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                         <button
                           type="button"
                           onClick={(e) => toggleGroupExpand(e, item.id)}
-                          className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#3C50E0] dark:text-blue-400 hover:underline cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[10px] font-extrabold text-primary dark:text-primary hover:underline cursor-pointer"
                         >
                           <span>
                             {isExpanded
@@ -244,7 +244,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
                   {/* Unread Indicator Dot */}
                   {!isRead && (
-                    <div className="w-2 h-2 rounded-full bg-[#3C50E0] shrink-0 mt-2" title="Unread" />
+                    <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" title="Unread" />
                   )}
                 </div>
 
@@ -274,9 +274,9 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                             actionTab: sub.actionTab || item.actionTab,
                           });
                         }}
-                        className="p-2 rounded-sm bg-white dark:bg-[#1C2434] border border-[#F1F5F9] dark:border-[#2E3A47] hover:border-[#3C50E0]/30 transition-all cursor-pointer flex items-start gap-2 shadow-2xs"
+                        className="p-2 rounded-sm bg-white dark:bg-[#1C2434] border border-[#F1F5F9] dark:border-[#2E3A47] hover:border-primary/30 transition-all cursor-pointer flex items-start gap-2 shadow-2xs"
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#3C50E0] mt-1.5 shrink-0" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-1 flex-wrap">
                             <span className="text-[11px] font-extrabold text-[#1C2434] dark:text-white break-words text-wrap">

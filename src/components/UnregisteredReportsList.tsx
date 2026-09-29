@@ -111,14 +111,14 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
         );
       case 'registered':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 whitespace-nowrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-primary/10 text-primary border border-primary/20 whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">how_to_reg</Icon>
             <span>{isAmharic ? 'ተመዝግቧል' : 'Registered'}</span>
           </span>
         );
       case 'under_investigation':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 whitespace-nowrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-primary/10 text-primary border border-primary/20 whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px]">search</Icon>
             <span>{isAmharic ? 'በምርመራ' : 'Investigating'}</span>
           </span>
@@ -159,7 +159,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             <button
               type="button"
               onClick={onNewReportClick}
-              className="hidden sm:flex px-4 py-2 rounded-sm bg-[#3C50E0] hover:bg-opacity-90 text-white text-xs font-medium transition-all shadow-xs items-center gap-1.5 shrink-0 cursor-pointer"
+              className="hidden sm:flex px-4 py-2 rounded-sm bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-all shadow-xs items-center gap-1.5 shrink-0 cursor-pointer"
             >
               <Icon className="material-symbols-outlined text-[16px]">add_alert</Icon>
               <span>{isAmharic ? 'አዲስ ሪፖርት ጨምር' : 'New Incident Report'}</span>
@@ -186,7 +186,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ፣ ኦፊሰር ወይም መታወቂያ ፈልግ...'
                   : 'Search plate, driver, location, officer, ID...'
               }
-              className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-[#3C50E0] active:border-[#3C50E0] dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
+              className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
             />
             {searchTerm && (
               <button
@@ -243,7 +243,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     }}
                     className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                       isActive
-                        ? 'border-[#3C50E0] text-[#3C50E0] dark:text-white dark:border-[#3C50E0] font-bold'
+                        ? 'border-primary text-primary dark:text-primary dark:border-primary font-bold'
                         : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
                     }`}
                   >
@@ -251,7 +251,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
                         isActive
-                          ? 'bg-[#3C50E0]/12 text-[#3C50E0] dark:bg-[#3C50E0]/30 dark:text-blue-300'
+                          ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-primary'
                           : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >
@@ -269,7 +269,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                 setSubCityFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="py-1.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs focus:border-[#3C50E0] outline-none cursor-pointer"
+              className="py-1.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs focus:border-primary outline-none cursor-pointer"
             >
               <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
               {BAHIR_DAR_SUBCITIES.map((sc) => (
@@ -357,7 +357,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       </td>
 
                       {/* 3. Standalone Report ID */}
-                      <td className="py-4 px-3 font-mono font-medium text-[#3C50E0] whitespace-nowrap">
+                      <td className="py-4 px-3 font-mono font-medium text-primary whitespace-nowrap">
                         {rep.id}
                       </td>
 
@@ -369,7 +369,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       {/* 5. Standalone Plate Number */}
                       <td className="py-4 px-3 whitespace-nowrap">
                         {rep.plateNumber ? (
-                          <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 inline-block shadow-2xs">
+                          <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-primary/10 text-primary border border-primary/20 inline-block shadow-2xs">
                             {rep.plateNumber}
                           </span>
                         ) : (
@@ -417,7 +417,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3 py-1.5 rounded-sm bg-[#3C50E0] hover:bg-opacity-90 text-white text-xs font-medium transition-all cursor-pointer shadow-xs inline-flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-all cursor-pointer shadow-xs inline-flex items-center gap-1"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ዝርዝር' : 'View Details'}</span>
@@ -513,7 +513,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-[#3C50E0] outline-none cursor-pointer"
+                  className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-primary outline-none cursor-pointer"
                 >
                   <option value={5}>5</option>
                   <option value={10}>10</option>
@@ -538,7 +538,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
                 </button>
 
-                <span className="px-3 py-1.5 bg-[#3C50E0] text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
+                <span className="px-3 py-1.5 bg-primary text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
                   {activePage} / {totalPages}
                 </span>
 

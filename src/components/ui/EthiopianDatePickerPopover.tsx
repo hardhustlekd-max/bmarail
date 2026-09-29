@@ -136,12 +136,12 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
         onClick={() => !disabled && setIsOpen((prev) => !prev)}
         className={`flex items-center justify-between gap-2 px-3 py-1.5 bg-white dark:bg-[#1C2434] border rounded-lg text-xs font-bold transition-all shadow-2xs cursor-pointer ${
           isOpen
-            ? 'border-[#3C50E0] ring-2 ring-[#3C50E0]/20 text-[#3C50E0] dark:text-blue-400'
-            : 'border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-white hover:border-[#3C50E0]/50'
+            ? 'border-primary ring-2 ring-primary/20 text-primary dark:text-primary'
+            : 'border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-white hover:border-primary/50'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span className="flex items-center gap-1.5 truncate">
-          <Icon className="material-symbols-outlined text-[15px] text-[#3C50E0] dark:text-blue-400 shrink-0">
+          <Icon className="material-symbols-outlined text-[15px] text-primary dark:text-primary shrink-0">
             calendar_month
           </Icon>
           <span className="truncate">{formattedDisplay}</span>
@@ -245,15 +245,15 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
                   onClick={() => handleSelectDay(day)}
                   className={`h-7 w-7 text-xs font-bold rounded-lg flex items-center justify-center transition-all cursor-pointer select-none relative ${
                     isSelected
-                      ? 'bg-[#3C50E0] text-white font-black shadow-sm ring-2 ring-[#3C50E0]/30 scale-105'
+                      ? 'bg-primary text-white font-black shadow-sm ring-2 ring-primary/30 scale-105'
                       : isToday
-                      ? 'bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-blue-400/20 dark:text-blue-300 font-extrabold border border-[#3C50E0]/30'
+                      ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 font-extrabold border border-primary/30'
                       : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1C2434]'
                   }`}
                 >
                   {day}
                   {isToday && !isSelected && (
-                    <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-[#3C50E0] dark:bg-blue-400" />
+                    <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-primary" />
                   )}
                 </button>
               );
@@ -265,7 +265,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
             <button
               type="button"
               onClick={handleSelectToday}
-              className="text-[#3C50E0] dark:text-blue-400 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-primary hover:underline flex items-center gap-1 cursor-pointer font-bold"
             >
               <Icon className="material-symbols-outlined text-[13px]">today</Icon>
               <span>{isAmharic ? 'ዛሬ (E.C.)' : 'Today (E.C.)'}</span>

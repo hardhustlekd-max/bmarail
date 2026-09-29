@@ -182,6 +182,8 @@ html.dark {
   --color-assoc-border: var(--assoc-border);
   --color-assoc-accent: var(--assoc-accent);
   --color-assoc-accent-hover: var(--assoc-accent-hover);
+  --color-accent: var(--assoc-accent);
+  --color-accent-hover: var(--assoc-accent-hover);
   --color-assoc-text: var(--assoc-text-main);
   --color-assoc-muted: var(--assoc-text-muted);
   --color-assoc-subtle: var(--assoc-text-subtle);

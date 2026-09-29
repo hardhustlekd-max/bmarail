@@ -222,7 +222,7 @@ export const FormInput: React.FC<FormInputProps> = ({
       className={`w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none transition-colors ${
         error
           ? 'border-rose-500 focus:border-rose-600 focus:ring-1 focus:ring-rose-500'
-          : 'border-slate-300 dark:border-slate-700 focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]'
+          : 'border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary'
       } ${className}`}
       {...props}
     />
@@ -259,7 +259,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full pl-10 pr-9 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg outline-none focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] placeholder-slate-400 transition-colors"
+      className="w-full pl-10 pr-9 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-slate-400 transition-colors"
     />
     {value && (
       <button
@@ -309,7 +309,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
         className={`w-full pl-3.5 pr-9 py-2.5 text-sm appearance-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none cursor-pointer transition-colors ${
           error
             ? 'border-rose-500 focus:border-rose-600'
-            : 'border-slate-300 dark:border-slate-700 focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]'
+            : 'border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary'
         } ${className}`}
         {...props}
       >
@@ -361,7 +361,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
     success: 'text-[#16a34a] dark:text-[#22c55e]',
     danger: 'text-[#dc2626] dark:text-[#ef4444]',
     warning: 'text-[#d97706] dark:text-[#f59e0b]',
-    accent: 'text-[#2563eb] dark:text-[#3b82f6]',
+    accent: 'text-primary dark:text-primary',
   };
 
   return (
@@ -643,7 +643,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                               e.stopPropagation();
                               onRowClick(row);
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#3C50E0] hover:bg-[#3243be] text-white shadow-xs transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary hover:bg-primary-hover text-white shadow-xs transition-colors cursor-pointer"
                           >
                             <Icon name="verified" size={16} />
                             <span>{isAmharic ? 'ደረሰኝ አረጋግጥ / ዝርዝር ክፈት' : 'Open Verification Drawer'}</span>
@@ -949,7 +949,7 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
                 onClick={() => handleRowClick(item)}
                 className={`cursor-pointer transition-colors duration-150 select-none ${
                   isSelected
-                    ? 'bg-blue-50/60 dark:bg-blue-950/30 border-l-2 border-[#2563eb]'
+                    ? 'bg-blue-50/60 dark:bg-blue-950/30 border-l-2 border-primary'
                     : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
                 }`}
               >

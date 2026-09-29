@@ -264,7 +264,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                   onClick={() => handleSelectPreset(opt.key)}
                   className={`px-2 py-1 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-bold rounded-md transition-all whitespace-nowrap cursor-pointer select-none ${
                     isActive
-                      ? 'bg-white dark:bg-[#3C50E0] text-[#3C50E0] dark:text-white shadow-2xs font-extrabold'
+                      ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
                       : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                   }`}
                 >
@@ -283,7 +283,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                 }}
                 className={`px-2 py-1 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-bold rounded-md transition-all whitespace-nowrap cursor-pointer select-none flex items-center gap-1 ${
                   preset === 'custom' || isCustomOpen
-                    ? 'bg-white dark:bg-[#3C50E0] text-[#3C50E0] dark:text-white shadow-2xs font-extrabold ring-1 ring-[#3C50E0]/30'
+                    ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold ring-1 ring-primary/30'
                     : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                 }`}
               >
@@ -309,11 +309,11 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                       onClick={() => setActiveDateTab('from')}
                       className={`flex flex-col items-start px-2 py-1 rounded-md transition-all text-left cursor-pointer ${
                         activeDateTab === 'from'
-                          ? 'bg-white dark:bg-[#3C50E0] text-[#3C50E0] dark:text-white shadow-2xs font-bold'
+                          ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-bold'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
-                      <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'from' ? 'text-[#3C50E0] dark:text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
+                      <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'from' ? 'text-primary dark:text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
                         {isAmharic ? 'የመነሻ ቀን (ከ)' : 'From Date'}
                       </span>
                       <span className="text-[11px] font-extrabold truncate max-w-full">
@@ -326,11 +326,11 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                       onClick={() => setActiveDateTab('to')}
                       className={`flex flex-col items-start px-2 py-1 rounded-md transition-all text-left cursor-pointer ${
                         activeDateTab === 'to'
-                          ? 'bg-white dark:bg-[#3C50E0] text-[#3C50E0] dark:text-white shadow-2xs font-bold'
+                          ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-bold'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
-                      <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'to' ? 'text-[#3C50E0] dark:text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
+                      <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'to' ? 'text-primary dark:text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
                         {isAmharic ? 'የማብቂያ ቀን (እስከ)' : 'To Date'}
                       </span>
                       <span className="text-[11px] font-extrabold truncate max-w-full">
@@ -423,11 +423,11 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                           onClick={() => handleDayClick(day)}
                           className={`h-6.5 w-6.5 sm:h-7 sm:w-7 text-[11px] font-bold rounded-md flex items-center justify-center transition-all cursor-pointer select-none relative ${
                             isStart || isEnd
-                              ? 'bg-[#3C50E0] text-white font-black shadow-xs ring-2 ring-[#3C50E0]/30 scale-105 z-10'
+                              ? 'bg-primary text-white font-black shadow-xs ring-2 ring-primary/30 scale-105 z-10'
                               : isInRange
-                              ? 'bg-[#3C50E0]/15 text-[#3C50E0] dark:bg-blue-400/20 dark:text-blue-200 rounded-none font-bold'
+                              ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-blue-200 rounded-none font-bold'
                               : isToday
-                              ? 'bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-blue-400/20 dark:text-blue-300 font-extrabold border border-[#3C50E0]/30'
+                              ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 font-extrabold border border-primary/30'
                               : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1C2434]'
                           }`}
                         >
@@ -461,7 +461,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                       <button
                         type="button"
                         onClick={handleApplyCustom}
-                        className="px-3 py-1 bg-[#3C50E0] hover:bg-[#3C50E0]/90 text-white text-[11px] font-black rounded shadow-xs transition-all cursor-pointer"
+                        className="px-3 py-1 bg-primary hover:bg-primary-hover text-white text-[11px] font-black rounded shadow-xs transition-all cursor-pointer"
                       >
                         {isAmharic ? 'ተግብር' : 'Apply'}
                       </button>
@@ -476,7 +476,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
         {/* Right Section: Active Ethiopian Range Indicator Badge */}
         {ethRangeDisplay && (
           <div className="flex items-center gap-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-bold bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-blue-400/10 dark:text-blue-300 border border-[#3C50E0]/20">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-bold bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 border border-primary/20">
               <Icon className="material-symbols-outlined text-[13px] sm:text-[14px]">calendar_today</Icon>
               <span>{ethRangeDisplay}</span>
             </span>
@@ -485,7 +485,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
               <button
                 type="button"
                 onClick={() => handleSelectPreset('this_month')}
-                className="p-1 rounded-md text-slate-400 hover:text-[#3C50E0] dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-[#1C2434] transition-colors cursor-pointer"
+                className="p-1 rounded-md text-slate-400 hover:text-primary dark:hover:text-primary hover:bg-slate-100 dark:hover:bg-[#1C2434] transition-colors cursor-pointer"
                 title={isAmharic ? 'ወደዚህ ወር መልስ' : 'Reset to this month'}
               >
                 <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>

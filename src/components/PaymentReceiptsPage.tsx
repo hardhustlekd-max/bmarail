@@ -982,7 +982,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <button
               type="button"
               onClick={() => setIsFormOpen((prev) => !prev)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3C50E0] hover:bg-[#3C50E0]/90 text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
             >
               <Icon className="material-symbols-outlined text-[16px]">
                 {isFormOpen ? 'close' : 'add'}
@@ -1011,7 +1011,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               onClick={() => setActiveMainTab('table')}
               className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'table'
-                  ? 'border-[#3C50E0] text-[#3C50E0] dark:text-blue-400 dark:border-blue-400'
+                  ? 'border-primary text-primary dark:text-primary dark:border-primary'
                   : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
               }`}
             >
@@ -1020,7 +1020,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
                   currentTab === 'table'
-                    ? 'bg-[#3C50E0]/10 text-[#3C50E0] dark:bg-blue-400/10 dark:text-blue-300'
+                    ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary'
                     : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
                 }`}
               >
@@ -1033,7 +1033,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               onClick={() => setActiveMainTab('metrics')}
               className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
                 currentTab === 'metrics'
-                  ? 'border-[#3C50E0] text-[#3C50E0] dark:text-blue-400 dark:border-blue-400'
+                  ? 'border-primary text-primary dark:text-primary dark:border-primary'
                   : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
               }`}
             >
@@ -1087,7 +1087,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100/80 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300/50 dark:border-emerald-700/50 whitespace-nowrap">
                   {ethiopianMonthlyMetrics.monthName} {ethiopianMonthlyMetrics.targetYear} {isAmharic ? 'ዓ.ም' : 'E.C.'}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#3C50E0]/10 text-[#3C50E0] dark:text-blue-400 border border-[#3C50E0]/20 shrink-0">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary dark:text-primary border border-primary/20 shrink-0">
                   {isAmharic ? 'ወቅታዊ' : 'Current'}
                 </span>
               </div>
@@ -1216,7 +1216,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               <div className="p-4 bg-[#F7F9FC] dark:bg-[#24303F] rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] space-y-3">
                 <h4 className="text-xs font-bold text-[#1C2434] dark:text-white uppercase tracking-wider flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px] text-[#3C50E0]">donut_large</Icon>
+                  <Icon className="material-symbols-outlined text-[18px] text-primary">donut_large</Icon>
                   <span>{isAmharic ? 'የክፍያ ሁኔታዎች ስርጭት' : 'Payment Status Breakdown'}</span>
                 </h4>
                 <div className="space-y-2 text-xs">
@@ -1269,7 +1269,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       setStatusFilter('all');
                       setActiveMainTab('table');
                     }}
-                    className="flex-1 py-2 px-3 rounded-lg bg-[#3C50E0] hover:bg-[#3C50E0]/90 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    className="flex-1 py-2 px-3 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
                     <span>{isAmharic ? 'ማትሪክስ መዝገብ ይመልከቱ' : 'View Matrix Table'}</span>
@@ -1788,7 +1788,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
                     : 'Search receipt #, owner name, or plate...'
                 }
-                className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-[#3C50E0] active:border-[#3C50E0] dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
+                className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
               />
               {searchQuery && (
                 <button
@@ -1817,7 +1817,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     onClick={() => setStatusFilter(tab.key)}
                     className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                       isActive
-                        ? 'border-[#3C50E0] text-[#3C50E0] dark:text-white dark:border-[#3C50E0] font-bold'
+                        ? 'border-primary text-primary dark:text-primary dark:border-primary font-bold'
                         : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
                     }`}
                   >
@@ -1825,7 +1825,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
                         isActive
-                          ? 'bg-[#3C50E0]/12 text-[#3C50E0] dark:bg-[#3C50E0]/30 dark:text-blue-300'
+                          ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-primary'
                           : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >

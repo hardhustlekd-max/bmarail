@@ -866,7 +866,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                     user.role === 'superadmin'
                                       ? 'bg-purple-600'
                                       : user.role === 'admin'
-                                      ? 'bg-[#3C50E0]'
+                                      ? 'bg-primary'
                                       : user.role === 'officer'
                                       ? 'bg-[#F59E0B]'
                                       : 'bg-[#10B981]'
@@ -893,7 +893,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                   user.role === 'superadmin'
                                     ? 'bg-purple-500/10 text-purple-600 border border-purple-500/20'
                                     : user.role === 'admin'
-                                    ? 'bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20'
+                                    ? 'bg-primary/10 text-primary border border-primary/20'
                                     : user.role === 'officer'
                                     ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
                                     : 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
@@ -1355,7 +1355,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
             <div className="p-4 md:px-6 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between">
               <h3 className="font-semibold text-sm text-[#1C2434] dark:text-white flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[18px] text-[#3C50E0]">history</Icon>
+                <Icon className="material-symbols-outlined text-[18px] text-primary">history</Icon>
                 {isAmharic ? 'የሲስተም ኦዲት ታሪክ (System Audit Logs)' : 'System Audit Trail'}
               </h3>
               <span className="text-xs text-[#64748B] dark:text-[#8A99AD] font-mono">{auditLogs.length} Records</span>
@@ -1400,7 +1400,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
                         {/* Standalone Action */}
                         <td className="py-4 px-3 whitespace-nowrap">
-                          <span className="px-2.5 py-1 bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20 rounded-sm font-mono text-xs font-medium inline-block">
+                          <span className="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-sm font-mono text-xs font-medium inline-block">
                             {log.action}
                           </span>
                         </td>
@@ -1416,7 +1416,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                 ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'
                                 ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
-                                : 'bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20'
+                                : 'bg-primary/10 text-primary border border-primary/20'
                             }`}
                           >
                             {log.severity}
@@ -1686,7 +1686,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
                         {/* Standalone Action */}
                         <td className="py-3.5 px-3 whitespace-nowrap">
-                          <span className="px-2.5 py-1 bg-[#3C50E0]/10 text-[#3C50E0] rounded-sm border border-[#3C50E0]/20 font-mono text-xs font-medium">
+                          <span className="px-2.5 py-1 bg-primary/10 text-primary rounded-sm border border-primary/20 font-mono text-xs font-medium">
                             {log.action}
                           </span>
                         </td>
@@ -1699,7 +1699,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                 ? 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                 : log.severity === 'warning'
                                 ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
-                                : 'bg-[#3C50E0]/10 text-[#3C50E0] border border-[#3C50E0]/20'
+                                : 'bg-primary/10 text-primary border border-primary/20'
                             }`}
                           >
                             {log.severity || 'info'}
