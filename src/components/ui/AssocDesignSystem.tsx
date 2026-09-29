@@ -333,6 +333,215 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   </div>
 );
 
+export interface RadioOptionItem {
+  value: string;
+  label: string;
+  description?: string;
+  disabled?: boolean;
+}
+
+export interface RadioGroupProps {
+  id: string;
+  name: string;
+  label?: string;
+  required?: boolean;
+  value: string;
+  onChange: (val: string) => void;
+  options: RadioOptionItem[];
+  orientation?: 'horizontal' | 'vertical';
+  error?: string;
+  className?: string;
+}
+
+export const RadioGroup: React.FC<RadioGroupProps> = ({
+  id,
+  name,
+  label,
+  required,
+  value,
+  onChange,
+  options,
+  orientation = 'horizontal',
+  error,
+  className = '',
+}) => (
+  <div className={`flex flex-col gap-2 ${className}`}>
+    {label && (
+      <label className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">
+        {label}
+        {required && <span className="text-rose-500 ml-1 font-bold">*</span>}
+      </label>
+    )}
+    <div
+      className={`flex ${
+        orientation === 'horizontal' ? 'flex-wrap items-center gap-4 sm:gap-6' : 'flex-col gap-2.5'
+      }`}
+    >
+      {options.map((opt) => {
+        const isChecked = value === opt.value;
+        return (
+          <label
+            key={opt.value}
+            htmlFor={`${id}-${opt.value}`}
+            className={`inline-flex items-center gap-2 cursor-pointer select-none text-xs font-semibold transition-colors ${
+              isChecked
+                ? 'text-primary dark:text-primary font-bold'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            } ${opt.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            <input
+              type="radio"
+              id={`${id}-${opt.value}`}
+              name={name}
+              value={opt.value}
+              checked={isChecked}
+              disabled={opt.disabled}
+              onChange={() => onChange(opt.value)}
+              className="w-4 h-4 text-primary focus:ring-primary accent-primary cursor-pointer"
+            />
+            <span>{opt.label}</span>
+            {opt.description && (
+              <span className="text-[10px] text-slate-400 ml-1">({opt.description})</span>
+            )}
+          </label>
+        );
+      })}
+    </div>
+    {error && <p className="text-xs text-rose-500 font-medium">{error}</p>}
+  </div>
+);
+
+export interface CheckboxFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  id: string;
+  label: ReactNode;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  error?: string;
+}
+
+export const CheckboxField: React.FC<CheckboxFieldProps> = ({
+  id,
+  label,
+  checked,
+  onChange,
+  error,
+  className = '',
+  disabled,
+  ...props
+}) => (
+  <div className={`flex flex-col gap-1 ${className}`}>
+    <label
+      htmlFor={id}
+      className={`inline-flex items-center gap-2 cursor-pointer select-none text-xs font-semibold ${
+        checked ? 'text-primary dark:text-primary font-bold' : 'text-slate-700 dark:text-slate-300'
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+    >
+      <input
+        type="checkbox"
+        id={id}
+        checked={checked}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.checked)}
+        className="w-4 h-4 rounded text-primary focus:ring-primary accent-primary cursor-pointer"
+        {...props}
+      />
+      <span>{label}</span>
+    </label>
+    {error && <p className="text-xs text-rose-500 font-medium">{error}</p>}
+  </div>
+);
+
+export interface TabItem<T extends string = string> {
+  id: T;
+  label: string;
+  icon?: string;
+  count?: number;
+}
+
+export interface TabListProps<T extends string = string> {
+  tabs: TabItem<T>[];
+  activeTab: T;
+  onChange: (tabId: T) => void;
+  variant?: 'underline' | 'pill';
+  className?: string;
+}
+
+export const TabList = <T extends string>({
+  tabs,
+  activeTab,
+  onChange,
+  variant = 'underline',
+  className = '',
+}: TabListProps<T>) => {
+  if (variant === 'pill') {
+    return (
+      <div className={`flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg ${className}`}>
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onChange(tab.id)}
+              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+                isActive
+                  ? 'bg-primary text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              {tab.icon && <Icon name={tab.icon} size={16} />}
+              <span>{tab.label}</span>
+              {typeof tab.count === 'number' && (
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex items-center gap-2 sm:gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-none -mb-[1px] ${className}`}>
+      {tabs.map((tab) => {
+        const isActive = activeTab === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onChange(tab.id)}
+            className={`group relative flex items-center gap-1.5 py-3 px-3 text-xs sm:text-sm font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap select-none ${
+              isActive
+                ? 'border-primary text-primary dark:text-primary font-bold'
+                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700'
+            }`}
+          >
+            {tab.icon && <Icon name={tab.icon} size={18} />}
+            <span>{tab.label}</span>
+            {typeof tab.count === 'number' && (
+              <span
+                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                  isActive
+                    ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-primary'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                }`}
+              >
+                {tab.count}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
 // ============================================================================
 // 3. KPI & SURFACE MOLECULES
 // ============================================================================

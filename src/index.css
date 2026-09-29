@@ -188,8 +188,8 @@ html.dark {
   --color-assoc-muted: var(--assoc-text-muted);
   --color-assoc-subtle: var(--assoc-text-subtle);
 
-  --color-primary: var(--color-primary);
-  --color-primary-hover: var(--color-primary-hover);
+  --color-primary: var(--assoc-accent);
+  --color-primary-hover: var(--assoc-accent-hover);
   --color-primary-container: var(--color-primary-container);
   --color-primary-light: var(--color-primary-light);
   --color-secondary-container: var(--color-secondary-container);
@@ -207,7 +207,7 @@ html.dark {
   --color-secondary: var(--color-secondary);
   --color-outline: var(--color-outline);
   --color-outline-variant: var(--color-outline-variant);
-  --color-brand-indigo: var(--color-brand-indigo);
+  --color-brand-indigo: var(--assoc-accent);
   --color-topnav: var(--color-topnav);
   --color-topnav-hover: var(--color-topnav-hover);
   --color-topnav-dark: var(--color-topnav-dark);
@@ -227,7 +227,24 @@ html.dark {
   --color-tailadmin-text: #DEE4EE;
   --color-tailadmin-muted: #8A99AD;
   --color-tailadmin-primary: #1E293B;
+  --color-tailadmin-accent: var(--assoc-accent);
+}
 
+/* Universal Design System Accent Enforcement for Native Form Controls */
+:root {
+  accent-color: var(--assoc-accent);
+}
+
+input[type="radio"],
+input[type="checkbox"],
+input[type="range"],
+progress {
+  accent-color: var(--assoc-accent) !important;
+}
+
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+  accent-color: var(--assoc-accent) !important;
 }
 
 /* Base default body and system typography: clean English sans-serif */

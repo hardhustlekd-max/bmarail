@@ -315,7 +315,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             onClick={() => setActiveTab('owner')}
             className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'owner'
-                ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
+                ? 'border-primary text-primary dark:text-primary font-bold'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -328,7 +328,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             onClick={() => setActiveTab('vehicle')}
             className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'vehicle'
-                ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
+                ? 'border-primary text-primary dark:text-primary font-bold'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -341,7 +341,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             onClick={() => setActiveTab('documents')}
             className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'documents'
-                ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
+                ? 'border-primary text-primary dark:text-primary font-bold'
                 : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
@@ -355,7 +355,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               onClick={() => setActiveTab('status')}
               className={`px-3.5 py-2 text-xs font-black border-b-2 flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === 'status'
-                  ? 'border-yellow-500 text-yellow-600 dark:text-yellow-400'
+                  ? 'border-primary text-primary dark:text-primary font-bold'
                   : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -751,7 +751,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 id="save-edit-registration-btn"
                 type="submit"
                 disabled={isSubmitting || !canEdit}
-                className="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed text-[#1e293b] text-xs rounded-lg font-black cursor-pointer shadow-md flex items-center gap-1.5 transition-transform active:scale-98"
+                className="px-5 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs rounded-lg font-black cursor-pointer shadow-md flex items-center gap-1.5 transition-transform active:scale-98"
               >
                 {isSubmitting ? (
                   <>
