@@ -688,7 +688,37 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
     const cleanPhone = (s?: string) => (s || '').replace(/[^0-9]/g, '');
 
-    const members = Array.isArray(registrations) ? registrations : [];
+    const members = Array.isArray(registrations) ? [...registrations] : [];
+
+    // Also include any unique receipt owners with plate numbers not in registrations
+    const regIds = new Set(members.map((m) => cleanStr(m.id)));
+    const regPlates = new Set(members.map((m) => cleanPlate(m.plateNumber)).filter(Boolean));
+    const regNames = new Set(members.map((m) => cleanStr(m.fullName)).filter(Boolean));
+
+    combinedReceipts.forEach((rc) => {
+      const rcRegId = cleanStr(rc.ownerRegistrationId);
+      const rcPlate = cleanPlate(rc.plateNumber);
+      const rcName = cleanStr(rc.ownerName);
+
+      const alreadyCovered =
+        (rcRegId && regIds.has(rcRegId)) ||
+        (rcPlate && regPlates.has(rcPlate)) ||
+        (rcName && regNames.has(rcName));
+
+      if (!alreadyCovered && (rcPlate || rcName)) {
+        members.push({
+          id: rc.ownerRegistrationId || rc.id,
+          fullName: rc.ownerName || rc.plateNumber || 'Unknown Owner',
+          plateNumber: rc.plateNumber || '',
+          phone: rc.phone || '',
+          registrationDate: rc.paymentDate || rc.createdAt,
+          termStatus: 'CURRENT',
+        } as any);
+        if (rcRegId) regIds.add(rcRegId);
+        if (rcPlate) regPlates.add(rcPlate);
+        if (rcName) regNames.add(rcName);
+      }
+    });
 
     return members.map((reg) => {
       const regIdClean = cleanStr(reg.id);
@@ -837,7 +867,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         }
       });
 
-      const plate = reg.plateNumber ? reg.plateNumber.trim() : '';
+      const matchedPlateFromReceipt = matchedReceipts.find((rc) => rc.plateNumber && rc.plateNumber.trim())?.plateNumber;
+      const plate = (reg.plateNumber ? reg.plateNumber.trim() : '') || (matchedPlateFromReceipt ? matchedPlateFromReceipt.trim() : '');
       const phone = reg.phone ? reg.phone.trim() : '';
 
       return {
@@ -859,12 +890,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       // 1. Search Query filter (matches Name, Plate, Phone, ID, or Receipt Number)
       if (searchQuery.trim()) {
         const q = searchQuery.trim().toLowerCase();
+        const cleanQ = q.replace(/[\s\-_]/g, '');
         const matchesName = row.title.toLowerCase().includes(q);
-        const matchesPlate = (row.member?.plateNumber || '').toLowerCase().includes(q);
+        const matchesPlate =
+          (row.plateNumber || '').toLowerCase().includes(q) ||
+          (row.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase().includes(cleanQ) ||
+          (row.member?.plateNumber || '').toLowerCase().includes(q) ||
+          (row.member?.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase().includes(cleanQ);
         const matchesPhone = (row.member?.phone || '').toLowerCase().includes(q);
         const matchesId = String(row.member?.id || '').toLowerCase().includes(q);
         const matchesReceipt = row.allReceipts.some((rc) =>
-          (rc.receiptNumber || '').toLowerCase().includes(q)
+          (rc.receiptNumber || '').toLowerCase().includes(q) ||
+          (rc.plateNumber || '').toLowerCase().includes(q)
         );
         if (!matchesName && !matchesPlate && !matchesPhone && !matchesId && !matchesReceipt) {
           return false;
@@ -1864,12 +1901,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 const matchedRc = combinedReceipts.find(
                   (rc) =>
                     (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                    (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
                     (rc.plateNumber && memberReg?.plateNumber && rc.plateNumber.toLowerCase() === memberReg.plateNumber.toLowerCase())
                 );
                 if (matchedRc) {
                   setReconcileReceipt(matchedRc);
-                } else if (memberReg) {
-                  handleRegNumberChange(memberReg.plateNumber || memberReg.id);
+                } else if (memberReg || row.plateNumber) {
+                  handleRegNumberChange(row.plateNumber || memberReg?.plateNumber || String(row.id));
                   setIsFormOpen(true);
                 }
               }}

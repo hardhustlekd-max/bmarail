@@ -461,7 +461,10 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
           </th>
           {hasPlate && (
             <th className="py-3 px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono">
-              {plateHeaderLabel}
+              <span className="inline-flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[15px] text-slate-500">directions_car</span>
+                <span>{plateHeaderLabel}</span>
+              </span>
             </th>
           )}
           {columns.map((col) => (
@@ -486,18 +489,25 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
           >
             <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
               <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
-              {row.subtitle && (
-                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{row.subtitle}</div>
-              )}
+              <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                {row.plateNumber && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-mono font-bold text-[11px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
+                    <span className="material-symbols-outlined text-[12px] text-slate-500">directions_car</span>
+                    <span>{row.plateNumber}</span>
+                  </span>
+                )}
+                {row.subtitle && <span>{row.subtitle}</span>}
+              </div>
             </td>
             {hasPlate && (
               <td className="py-3.5 px-4 text-xs font-mono font-bold whitespace-nowrap">
                 {row.plateNumber ? (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[#1C2434] dark:text-white">
-                    {row.plateNumber}
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-[#1C2434] dark:text-white shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="font-mono font-bold tracking-wider">{row.plateNumber}</span>
                   </span>
                 ) : (
-                  <span className="text-slate-400 dark:text-slate-600 font-normal">—</span>
+                  <span className="text-slate-400 dark:text-slate-600 font-normal italic">—</span>
                 )}
               </td>
             )}
