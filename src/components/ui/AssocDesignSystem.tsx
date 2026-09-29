@@ -434,6 +434,8 @@ export interface MonthlyMatrixLedgerProps {
   rows: MatrixRowItem[];
   onRowClick?: (row: MatrixRowItem) => void;
   className?: string;
+  showNumbering?: boolean;
+  numberHeaderLabel?: string;
   memberHeaderLabel?: string;
   plateHeaderLabel?: string;
   showPlateColumn?: boolean;
@@ -445,6 +447,8 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
   rows,
   onRowClick,
   className = '',
+  showNumbering = true,
+  numberHeaderLabel = '#',
   memberHeaderLabel = 'Member / Entity',
   plateHeaderLabel = 'Plate Number',
   showPlateColumn = true,
@@ -456,6 +460,11 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
     <table className={`w-full border-collapse text-left ${className}`}>
       <thead>
         <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F7F9FC] dark:bg-[#24303F]">
+          {showNumbering && (
+            <th className="py-3 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-12 font-mono">
+              {numberHeaderLabel}
+            </th>
+          )}
           <th className="py-3 px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap">
             {memberHeaderLabel}
           </th>
@@ -476,7 +485,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
         </tr>
       </thead>
       <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-        {rows.map((row) => (
+        {rows.map((row, index) => (
           <tr
             key={row.id}
             onClick={() => onRowClick && onRowClick(row)}
@@ -484,6 +493,11 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
               onRowClick ? 'cursor-pointer' : ''
             }`}
           >
+            {showNumbering && (
+              <td className="py-3.5 px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
+                {index + 1}
+              </td>
+            )}
             <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
               <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
             </td>
@@ -513,7 +527,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
         {rows.length === 0 && (
           <tr>
             <td
-              colSpan={columns.length + (hasPlate ? 2 : 1)}
+              colSpan={columns.length + (hasPlate ? 2 : 1) + (showNumbering ? 1 : 0)}
               className="py-8 text-center text-sm text-slate-400 dark:text-slate-500"
             >
               {emptyMessage}

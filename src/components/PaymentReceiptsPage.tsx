@@ -1890,6 +1890,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <MonthlyMatrixLedger
               columns={matrixColumns}
               rows={filteredMatrixRows}
+              showNumbering={true}
+              numberHeaderLabel={isAmharic ? 'ተ.ቁ' : '#'}
               memberHeaderLabel={isAmharic ? 'አባል / ባለቤት' : 'Member / Owner'}
               plateHeaderLabel={isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
               showPlateColumn={true}
