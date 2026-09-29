@@ -2983,7 +2983,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
             className={
               activePage === 'scan'
                 ? "flex-1 w-full h-full min-h-[500px] flex flex-col overflow-hidden"
-                : "animate-page-enter flex-none flex flex-col"
+                : "flex-none flex flex-col"
             }
           >
             {/* Domain 1: Universal Dashboard Overview */}

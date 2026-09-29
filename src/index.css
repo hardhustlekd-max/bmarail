@@ -916,20 +916,6 @@ input[type="radio"]:active {
   }
 }
 
-/* Smooth Page Transitions */
-@keyframes pageEnterAnim {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.animate-page-enter {
-  animation: pageEnterAnim 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
 /* Smooth Modal & Dialog Backdrop and Content Animations */
 @keyframes modalBackdropFadeIn {
   from { opacity: 0; }

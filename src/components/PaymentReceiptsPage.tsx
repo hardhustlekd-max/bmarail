@@ -1055,7 +1055,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* TAB 1: MONTHLY FEE STATISTICS VIEW (STANDALONE DEDICATED TAB) */}
       {currentTab === 'metrics' && canViewKPIs && (
-        <div className="space-y-4 animate-in fade-in duration-150">
+        <div className="space-y-4">
           {/* Date Filter Card for Metrics (Kept per User Request) */}
           <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative">
             {renderDateRangePicker()}
@@ -1768,7 +1768,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* TAB 2: TABLE SECTION (STANDALONE DEDICATED TAB) */}
       {currentTab === 'table' && canViewTable && (
-        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative animate-in fade-in duration-150">
+        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative">
           {/* NATIVE DATE RANGE PICKER (TAILWIND STYLED) */}
           {renderDateRangePicker()}
 
