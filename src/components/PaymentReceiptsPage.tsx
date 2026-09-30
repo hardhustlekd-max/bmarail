@@ -1952,93 +1952,153 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
             {/* Drawer Body: Scrollable */}
             <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs">
-              {/* Profile Hero Card */}
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                {selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail ? (
-                  <div
-                    onClick={() => {
-                      const photoUrl = selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail;
-                      if (photoUrl) {
-                        setPreviewDocPhoto({
-                          url: photoUrl,
-                          title: isAmharic ? 'የአባል ፎቶ' : 'Member Portrait Photo',
-                        });
-                      }
-                    }}
-                    className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-xl overflow-hidden border-2 border-primary shadow-xs shrink-0 cursor-pointer group bg-slate-200 dark:bg-slate-700"
-                  >
-                    <SmartImage
-                      src={selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail || ''}
-                      alt={selectedMemberDetail.member?.fullName || 'Member Photo'}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                      <Icon name="zoom_in" size={20} />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-xl bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-primary text-2xl font-black shrink-0">
-                    {(selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title || 'M').charAt(0).toUpperCase()}
-                  </div>
-                )}
-
-                <div className="space-y-1.5 flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="text-base font-black text-slate-900 dark:text-white truncate">
-                      {selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title}
-                    </h4>
-                    {selectedMemberDetail.member?.status && (
-                      <span
-                        className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                          selectedMemberDetail.member.status === 'approved'
-                            ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-300'
-                            : selectedMemberDetail.member.status === 'pending_approval'
-                            ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-300'
-                            : selectedMemberDetail.member.status === 'printed' || selectedMemberDetail.member.status === 'ordered_print'
-                            ? 'bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-blue-200 border border-blue-300'
-                            : 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-200 border border-rose-300'
-                        }`}
-                      >
-                        {selectedMemberDetail.member.status}
+              {/* Member Overview: 2-Column Side-by-Side Grid (Portrait & Member Information) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Column 1: Portrait Photo Card */}
+                <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-center relative overflow-hidden">
+                  <div className="w-full flex items-center justify-between pb-2 mb-2 border-b border-slate-200 dark:border-slate-700/80 text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                    <span className="flex items-center gap-1.5">
+                      <Icon name="person" size={14} className="text-primary" />
+                      <span>{isAmharic ? 'የአባል ፎቶ' : 'Member Portrait'}</span>
+                    </span>
+                    {(selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail) && (
+                      <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
+                        <Icon name="zoom_in" size={12} />
+                        {isAmharic ? 'አጉላ' : 'Zoom'}
                       </span>
                     )}
                   </div>
 
-                  {selectedMemberDetail.member?.phone && (
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                      <Icon name="phone" size={14} className="text-primary shrink-0" />
-                      <a
-                        href={`tel:${selectedMemberDetail.member.phone}`}
-                        className="font-mono font-bold hover:text-primary transition-colors"
-                      >
-                        {selectedMemberDetail.member.phone}
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => copyToClipboard(selectedMemberDetail.member?.phone || '', 'Phone')}
-                        className="text-[10px] text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
-                        title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
-                      >
-                        <Icon name="content_copy" size={13} />
-                      </button>
+                  {selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail ? (
+                    <div
+                      onClick={() => {
+                        const photoUrl = selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail;
+                        if (photoUrl) {
+                          setPreviewDocPhoto({
+                            url: photoUrl,
+                            title: isAmharic ? 'የአባል ፎቶ' : 'Member Portrait Photo',
+                          });
+                        }
+                      }}
+                      className="relative w-full max-w-[180px] aspect-square rounded-xl overflow-hidden border-2 border-primary/60 shadow-md cursor-pointer group bg-slate-200 dark:bg-slate-700"
+                    >
+                      <SmartImage
+                        src={selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail || ''}
+                        alt={selectedMemberDetail.member?.fullName || 'Member Photo'}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity font-bold gap-1 text-xs">
+                        <Icon name="zoom_in" size={18} />
+                        <span>{isAmharic ? 'ትልቅ እይ' : 'View Full'}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-full max-w-[180px] aspect-square rounded-xl bg-primary/10 border-2 border-dashed border-primary/30 flex flex-col items-center justify-center text-primary gap-2">
+                      <span className="text-4xl font-black">
+                        {(selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title || 'M').charAt(0).toUpperCase()}
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                        {isAmharic ? 'ፎቶ አልተጫነም' : 'No Photo Uploaded'}
+                      </span>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-600 dark:text-slate-400 font-medium">
-                    {selectedMemberDetail.member?.subCity && (
-                      <span className="flex items-center gap-1 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                        <Icon name="location_on" size={13} className="text-slate-500" />
-                        <span>{selectedMemberDetail.member.subCity}</span>
-                      </span>
-                    )}
-                    <span className="font-mono font-bold bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                      ID: #{selectedMemberDetail.member?.id || selectedMemberDetail.row.id}
+                  {/* Subtitle / Plate badge in portrait card */}
+                  <div className="mt-3 flex items-center gap-1.5 justify-center flex-wrap">
+                    <span className="font-mono font-bold text-xs bg-slate-900 text-amber-400 dark:bg-slate-950 px-2.5 py-0.5 rounded border border-slate-700">
+                      {selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber || '—'}
                     </span>
-                    {selectedMemberDetail.member?.registrationDate && (
-                      <span className="bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                        {isAmharic ? 'የተመዘገበበት:' : 'Reg:'}{' '}
-                        {formatEthiopianDate(selectedMemberDetail.member.registrationDate, isAmharic ? 'am' : 'en')}
+                  </div>
+                </div>
+
+                {/* Column 2: Member Information Card */}
+                <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between space-y-3">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-700/80">
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                        <Icon name="assignment_ind" size={14} className="text-primary" />
+                        <span>{isAmharic ? 'የአባል ዝርዝር መረጃ' : 'Member Details'}</span>
                       </span>
+                      {selectedMemberDetail.member?.status && (
+                        <span
+                          className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                            selectedMemberDetail.member.status === 'approved'
+                              ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-300'
+                              : selectedMemberDetail.member.status === 'pending_approval'
+                              ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-300'
+                              : selectedMemberDetail.member.status === 'printed' || selectedMemberDetail.member.status === 'ordered_print'
+                              ? 'bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-blue-200 border border-blue-300'
+                              : 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-200 border border-rose-300'
+                          }`}
+                        >
+                          {selectedMemberDetail.member.status}
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                        {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
+                      </span>
+                      <h4 className="text-sm font-black text-slate-900 dark:text-white truncate">
+                        {selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title}
+                      </h4>
+                    </div>
+
+                    {selectedMemberDetail.member?.phone && (
+                      <div>
+                        <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                          {isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}
+                        </span>
+                        <div className="flex items-center gap-2 text-slate-700 dark:text-slate-200 mt-0.5">
+                          <Icon name="phone" size={13} className="text-primary shrink-0" />
+                          <a
+                            href={`tel:${selectedMemberDetail.member.phone}`}
+                            className="font-mono font-bold hover:text-primary transition-colors text-xs"
+                          >
+                            {selectedMemberDetail.member.phone}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(selectedMemberDetail.member?.phone || '', 'Phone')}
+                            className="text-[10px] p-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-primary transition-colors cursor-pointer"
+                            title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
+                          >
+                            <Icon name="content_copy" size={11} />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <div className="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                          {isAmharic ? 'ክፍለ ከተማ' : 'Subcity'}
+                        </span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200 text-xs block truncate mt-0.5">
+                          {selectedMemberDetail.member?.subCity || '—'}
+                        </span>
+                      </div>
+
+                      <div className="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                          {isAmharic ? 'የመታወቂያ ቁጥር' : 'Member ID'}
+                        </span>
+                        <span className="font-mono font-bold text-slate-800 dark:text-slate-200 text-xs block truncate mt-0.5">
+                          #{selectedMemberDetail.member?.id || selectedMemberDetail.row.id}
+                        </span>
+                      </div>
+                    </div>
+
+                    {selectedMemberDetail.member?.registrationDate && (
+                      <div className="bg-white dark:bg-slate-900 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                          {isAmharic ? 'የተመዘገበበት ቀን (ኢትዮጵያ)' : 'Registration Date (E.C.)'}
+                        </span>
+                        <span className="font-medium text-slate-800 dark:text-slate-200 text-xs block mt-0.5">
+                          {formatEthiopianDate(selectedMemberDetail.member.registrationDate, isAmharic ? 'am' : 'en')}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </div>
