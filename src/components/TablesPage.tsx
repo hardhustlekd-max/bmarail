@@ -375,6 +375,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   // Mobile and desktop expanded row states (accordion: only 1 row expanded at a time)
   const [expandedRegs, setExpandedRegs] = useState<Record<string, boolean>>({});
 
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const copyToClipboard = (text: string, label: string) => {
+    if (!text) return;
+    navigator.clipboard?.writeText(text);
+    setCopiedField(label);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
   const toggleRegExpand = (id: string) => {
     setExpandedRegs((prev) => (prev[id] ? {} : { [id]: true }));
   };
@@ -1046,357 +1054,158 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     </tr>
                   ) : (
                       paginatedRegistrations.map((reg, index) => {
-                        const isExpanded = !!expandedRegs[reg.id];
                         const isRowSelected = selectedRegIds.has(reg.id);
                         return (
-                          <React.Fragment key={reg.id}>
-                            <tr className={`align-middle transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47] ${
+                          <tr
+                            key={reg.id}
+                            onClick={() => setSelectedRegForDetails(reg)}
+                            className={`align-middle transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47] cursor-pointer ${
                               isRowSelected
                                 ? 'bg-primary/8 dark:bg-primary/15 hover:bg-primary/12 dark:hover:bg-primary/20'
                                 : 'hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50'
-                            }`}>
-                              {/* Index Number & Expand Toggle + Bulk Select Checkbox */}
-                              <td className="px-3 py-2.5 align-middle text-center font-mono font-medium text-[#8A99AD]">
-                                <div className="flex items-center justify-center gap-1.5">
-                                  <input
-                                    type="checkbox"
-                                    checked={isRowSelected}
-                                    onChange={() => toggleSelectRow(reg.id)}
-                                    className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer shrink-0"
-                                    title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
-                                  />
-                                  <button
-                                    type="button"
-                                    onClick={() => toggleRegExpand(reg.id)}
-                                    className={`p-0.5 transition-colors cursor-pointer flex items-center justify-center ${
-                                      isExpanded
-                                        ? 'text-primary dark:text-white'
-                                        : 'text-[#8A99AD] hover:text-primary dark:hover:text-white'
-                                    }`}
-                                    title={isExpanded ? (isAmharic ? 'አጣጥፍ' : 'Collapse') : (isAmharic ? 'ሰነዶችን እና ዝርዝር አሳይ' : 'Expand Documents & Details')}
-                                  >
-                                    <Icon className="material-symbols-outlined text-[18px]">
-                                      {isExpanded ? 'expand_less' : 'expand_more'}
-                                    </Icon>
-                                  </button>
-                                  <span>{regStartIndex + index + 1}</span>
-                                </div>
-                              </td>
+                            }`}
+                          >
+                            {/* Index Number + Bulk Select Checkbox (No expandable chevron in desktop) */}
+                            <td
+                              className="px-3 py-2.5 align-middle text-center font-mono font-medium text-[#8A99AD]"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="flex items-center justify-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={isRowSelected}
+                                  onChange={() => toggleSelectRow(reg.id)}
+                                  className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer shrink-0"
+                                  title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
+                                />
+                                <span>{regStartIndex + index + 1}</span>
+                              </div>
+                            </td>
 
-                              {/* Standalone Column 1: Owner Name */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedRegForDetails(reg)}
-                                  className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer max-w-[180px]"
-                                >
-                                  <span className="truncate">{getDisplayName(reg)}</span>
-                                  {reg.hideFromOtherUsers && isSuperAdmin && (
-                                    <span className="px-1 py-0.2 rounded-sm text-[9px] font-bold bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shrink-0">
-                                      🔒
-                                    </span>
-                                  )}
-                                </button>
-                              </td>
-
-                              {/* Standalone Column 2: Phone Number */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                <span className="text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
-                                  {getDisplayPhone(reg)}
-                                </span>
-                              </td>
-
-                              {/* Standalone Column 3: Plate Number */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white">
-                                  {reg.plateNumber || '—'}
-                                </span>
-                              </td>
-
-                              {/* Standalone Column 4: Vehicle Category (Fuel / EV) */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                {reg.vehicleCategory === 'electric' ? (
-                                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
-                                    <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
-                                    <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
-                                    <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
-                                    <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
+                            {/* Standalone Column 1: Owner Name */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedRegForDetails(reg);
+                                }}
+                                className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer max-w-[180px]"
+                              >
+                                <span className="truncate">{getDisplayName(reg)}</span>
+                                {reg.hideFromOtherUsers && isSuperAdmin && (
+                                  <span className="px-1 py-0.2 rounded-sm text-[9px] font-bold bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shrink-0">
+                                    🔒
                                   </span>
                                 )}
-                              </td>
+                              </button>
+                            </td>
 
-                              {/* Standalone Column 5: Chasis */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                <span className="font-mono font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[130px] truncate" title={getChassisDisplay(reg)}>
-                                  {getChassisDisplay(reg)}
+                            {/* Standalone Column 2: Phone Number */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              <span className="text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
+                                {getDisplayPhone(reg)}
+                              </span>
+                            </td>
+
+                            {/* Standalone Column 3: Plate Number */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white">
+                                {reg.plateNumber || '—'}
+                              </span>
+                            </td>
+
+                            {/* Standalone Column 4: Vehicle Category (Fuel / EV) */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              {reg.vehicleCategory === 'electric' ? (
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
+                                  <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
+                                  <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                                 </span>
-                              </td>
-
-                              {/* Standalone Column 6: Brand & Model */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                <span className="font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[120px] truncate" title={`${reg.motorBrand || ''} ${reg.motorModel || ''}`}>
-                                  {reg.motorBrand ? `${reg.motorBrand} ${reg.motorModel || ''}`.trim() : '—'}
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                                  <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
+                                  <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
                                 </span>
-                              </td>
+                              )}
+                            </td>
 
-                              {/* Standalone Column 7: Sub-City */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                <span className="text-xs text-[#1C2434] dark:text-white block">
-                                  {reg.subCity || '—'}
-                                </span>
-                              </td>
+                            {/* Standalone Column 5: Chasis */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              <span className="font-mono font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[130px] truncate" title={getChassisDisplay(reg)}>
+                                {getChassisDisplay(reg)}
+                              </span>
+                            </td>
 
-                              {/* Standalone Column 8: Registration Date */}
-                              <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                                <span className="font-mono text-xs text-[#64748B] dark:text-[#8A99AD] block">
-                                  {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                                </span>
-                              </td>
+                            {/* Standalone Column 6: Brand & Model */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              <span className="font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[120px] truncate" title={`${reg.motorBrand || ''} ${reg.motorModel || ''}`}>
+                                {reg.motorBrand ? `${reg.motorBrand} ${reg.motorModel || ''}`.trim() : '—'}
+                              </span>
+                            </td>
 
-                              {/* Permit Status */}
-                              <td className="px-3 py-2.5 align-middle text-center whitespace-nowrap">
-                                {renderStatusBadge(reg.status, false, reg)}
-                              </td>
+                            {/* Standalone Column 7: Sub-City */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              <span className="text-xs text-[#1C2434] dark:text-white block">
+                                {reg.subCity || '—'}
+                              </span>
+                            </td>
 
-                              {/* Actions Column: Clean Expand / Action Trigger */}
-                              <td className="px-3 py-2.5 align-middle text-right whitespace-nowrap">
-                                <div className="inline-flex items-center justify-end gap-1.5">
-                                  {canApprove && (
-                                    <button
-                                      type="button"
-                                      id={`table-row-approve-btn-${reg.id}`}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (reg.status !== 'approved') {
-                                          onApproveRegistration(reg.id);
-                                        }
-                                      }}
-                                      disabled={reg.status === 'approved'}
-                                      className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs ${
-                                        reg.status === 'approved'
-                                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default opacity-90'
-                                          : 'bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95'
-                                      }`}
-                                      title={reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Already Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}
-                                    >
-                                      <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
-                                      <span>{reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}</span>
-                                    </button>
-                                  )}
+                            {/* Standalone Column 8: Registration Date */}
+                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                              <span className="font-mono text-xs text-[#64748B] dark:text-[#8A99AD] block">
+                                {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                              </span>
+                            </td>
+
+                            {/* Permit Status */}
+                            <td className="px-3 py-2.5 align-middle text-center whitespace-nowrap">
+                              {renderStatusBadge(reg.status, false, reg)}
+                            </td>
+
+                            {/* Actions Column: Open Drawer & Quick Approve */}
+                            <td
+                              className="px-3 py-2.5 align-middle text-right whitespace-nowrap"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="inline-flex items-center justify-end gap-1.5">
+                                {canApprove && (
                                   <button
                                     type="button"
-                                    onClick={() => toggleRegExpand(reg.id)}
-                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-medium transition-all cursor-pointer ${
-                                      isExpanded
-                                        ? 'bg-primary text-white shadow-xs'
-                                        : 'border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:text-primary'
+                                    id={`table-row-approve-btn-${reg.id}`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (reg.status !== 'approved') {
+                                        onApproveRegistration(reg.id);
+                                      }
+                                    }}
+                                    disabled={reg.status === 'approved'}
+                                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs ${
+                                      reg.status === 'approved'
+                                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default opacity-90'
+                                        : 'bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95'
                                     }`}
-                                    title={isExpanded ? (isAmharic ? 'ተግባራትን እና ሰነዶችን ዝጋ' : 'Close Actions & Documents') : (isAmharic ? 'ተግባራትን እና ሰነዶችን ዘርጋ' : 'Expand Actions & Documents')}
+                                    title={reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Already Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}
                                   >
-                                    <span>{isExpanded ? (isAmharic ? 'ዝጋ' : 'Close') : (isAmharic ? 'ተግባራት' : 'Actions')}</span>
-                                    <Icon className="material-symbols-outlined text-[16px]">
-                                      {isExpanded ? 'expand_less' : 'expand_more'}
-                                    </Icon>
+                                    <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
+                                    <span>{reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}</span>
                                   </button>
-                                </div>
-                              </td>
-                            </tr>
-
-                            {/* Desktop Collapsible Sub-row: Action Buttons & Member Card */}
-                            {isExpanded && (
-                              <tr className="bg-[#F7F9FC]/90 dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                                <td colSpan={11} className="px-5 py-3">
-                                  <div className="space-y-3">
-                                    {/* Member Information Card (Redesigned Style) */}
-                                    <ExpandableMemberCard
-                                      fullName={getDisplayName(reg)}
-                                      roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
-                                      badgeId={reg.plateNumber || reg.id}
-                                      status={reg.status}
-                                      portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
-                                      isAmharic={isAmharic}
-                                      fields={[
-                                        { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },
-                                        { label: isAmharic ? 'የሞተር አይነት:' : 'Motor Type:', value: reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline') },
-                                        { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
-                                        { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: getDisplayPhone(reg) },
-                                        { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
-                                        { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },
-                                        { label: isAmharic ? 'የተመዘገበበት ቀን:' : 'Registered Date:', value: reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—' }
-                                      ]}
-                                    />
-
-                                    {/* Action Buttons Toolbar - Clean, Non-Competing Layout */}
-                                    <div className="pt-2 pb-1 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex flex-wrap items-center justify-between gap-3">
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-bold text-xs text-[#1C2434] dark:text-white  tracking-wider">
-                                          {isAmharic ? 'የተግባር አዝራሮች:' : 'Actions:'}
-                                        </span>
-                                        {renderStatusBadge(reg.status)}
-                                      </div>
-
-                                      {/* Action Controls List */}
-                                      <div className="flex flex-wrap items-center gap-2">
-                                        {/* 1. Open Document Carousel Modal Button */}
-                                        <button
-                                          type="button"
-                                          onClick={() => openMemberDocumentCarousel(reg)}
-                                          className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
-                                          title={isAmharic ? 'የተያያዙ ሰነዶችን በሙሉ እይ' : 'View Attached Documents Carousel'}
-                                        >
-                                          <Icon className="material-symbols-outlined text-[16px] text-amber-600 dark:text-amber-400">photo_library</Icon>
-                                          <span>{isAmharic ? `የተያያዙ ሰነዶች (${getRegistrationDocCount(reg)})` : `Documents (${getRegistrationDocCount(reg)})`}</span>
-                                        </button>
-
-                                        {/* 2. Approval Controls */}
-                                        {(userRole === 'admin' || isSuperAdmin) && reg.status === 'pending_approval' && (
-                                          <>
-                                            <button
-                                              type="button"
-                                              onClick={() => onApproveRegistration(reg.id)}
-                                              className="h-8.5 px-3 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap"
-                                            >
-                                              <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
-                                              <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
-                                            </button>
-                                            <button
-                                              type="button"
-                                              onClick={() => setRejectingId(reg.id)}
-                                              className="h-8.5 px-3 rounded-md border border-[#FB5454]/30 hover:border-[#FB5454] bg-[#FB5454]/10 text-[#FB5454] hover:bg-[#FB5454]/20 font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
-                                            >
-                                              <Icon className="material-symbols-outlined text-[16px]">cancel</Icon>
-                                              <span>{isAmharic ? 'ሰርዝ (Reject)' : 'Reject'}</span>
-                                            </button>
-                                          </>
-                                        )}
-
-                                        {/* 3. Edit Registration */}
-                                        {canEditRegistration && (
-                                          <button
-                                            id={`edit-reg-btn-${reg.id}`}
-                                            type="button"
-                                            onClick={() => setEditingRegistration(reg)}
-                                            className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
-                                            title={isAmharic ? 'የአባል መረጃ አሻሽል (Edit)' : 'Edit Registration'}
-                                          >
-                                            <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
-                                            <span>{isAmharic ? 'መረጃ አሻሽል' : 'Edit Info'}</span>
-                                          </button>
-                                        )}
-
-                                        {/* 4. Association ID Card */}
-                                        {(userRole === 'admin' || isSuperAdmin) && (
-                                          <button
-                                            type="button"
-                                            onClick={() => setSelectedRegForQR(reg)}
-                                            className="h-8.5 px-3 rounded-md bg-primary hover:bg-opacity-90 text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
-                                            title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
-                                          >
-                                            <Icon className="material-symbols-outlined text-[16px]">badge</Icon>
-                                            <span>{isAmharic ? 'የማህበር መታወቂያ' : 'Association ID'}</span>
-                                          </button>
-                                        )}
-
-                                        {/* 5. Permits (Print Permit & Sticker) */}
-                                        {(reg.status === 'approved' || reg.status === 'printed' || reg.status === 'ordered_print') && (
-                                          <>
-                                            <button
-                                              type="button"
-                                              onClick={() => setSelectedRegForA4(reg)}
-                                              className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs transition-all cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
-                                              title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ ወረቀት አትም' : 'Print Movement Permit Document'}
-                                            >
-                                              <Icon className="material-symbols-outlined text-[16px]">print</Icon>
-                                              <span>{isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Print Permit'}</span>
-                                            </button>
-
-                                            <button
-                                              type="button"
-                                              onClick={() => setSelectedRegForSticker(reg)}
-                                              className="h-8.5 px-3 rounded-md border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs bg-white dark:bg-[#1C2434]"
-                                              title={isAmharic ? 'የሞተር QR ተለጣፊ አትም' : 'Print Vehicle QR Sticker'}
-                                            >
-                                              <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
-                                              <span>{isAmharic ? 'QR ተለጣፊ' : 'QR Sticker'}</span>
-                                            </button>
-                                          </>
-                                        )}
-
-                                        {/* 6. View Full Details Modal */}
-                                        <button
-                                          type="button"
-                                          onClick={() => setSelectedRegForDetails(reg)}
-                                          className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-primary dark:hover:text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
-                                          title={isAmharic ? 'ዝርዝር መረጃ ይመልከቱ' : 'View Full Details'}
-                                        >
-                                          <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
-                                          <span>{isAmharic ? 'ዝርዝር እይ' : 'Full Details'}</span>
-                                        </button>
-
-                                        {/* 7. SuperAdmin Visibility Toggle */}
-                                        {showHiddenControls && isSuperAdmin && (() => {
-                                          const isSuperUserRegistered = !reg.registeredBy || 
-                                            reg.registeredBy.toLowerCase() === 'superadmin' || 
-                                            reg.registeredBy.toLowerCase() === 'super_admin' || 
-                                            reg.registeredBy.toLowerCase().includes('super');
-                                          return (
-                                            <button
-                                              type="button"
-                                              disabled={isSuperUserRegistered}
-                                              onClick={async () => {
-                                                if (isSuperUserRegistered) return;
-                                                const newHide = !reg.hideFromOtherUsers;
-                                                await updateRegistrationInDb(reg.id, { hideFromOtherUsers: newHide });
-                                              }}
-                                              className={`h-8.5 px-3 rounded-md transition-colors cursor-pointer font-semibold text-xs flex items-center gap-1.5 border shadow-2xs ${
-                                                isSuperUserRegistered
-                                                  ? 'opacity-40 cursor-not-allowed text-[#8A99AD] bg-[#F7F9FC] dark:bg-[#24303F] border-[#E2E8F0] dark:border-[#2E3A47]'
-                                                  : reg.hideFromOtherUsers
-                                                  ? 'border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100'
-                                                  : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434]'
-                                              }`}
-                                              title={
-                                                isSuperUserRegistered
-                                                  ? (isAmharic ? 'የሱፐር አድሚን ምዝገባ (መደበቅ አይቻልም)' : 'Super Admin Entry (Cannot Hide)')
-                                                  : reg.hideFromOtherUsers
-                                                  ? (isAmharic ? 'መረጃውን ለሌሎች ግልፅ አድርግ' : 'Show Owner to Others')
-                                                  : (isAmharic ? 'መረጃውን ከሌሎች ደብቅ' : 'Hide Owner from Others')
-                                              }
-                                            >
-                                              <Icon className="material-symbols-outlined text-[16px]">
-                                                {reg.hideFromOtherUsers ? 'visibility_off' : 'visibility'}
-                                              </Icon>
-                                              <span>{reg.hideFromOtherUsers ? (isAmharic ? 'ግልፅ አድርግ' : 'Unhide') : (isAmharic ? 'ደብቅ' : 'Hide')}</span>
-                                            </button>
-                                          );
-                                        })()}
-
-                                        {/* 8. Permanent Delete */}
-                                        {isTaskAllowed(userRole, 11) && (
-                                          <button
-                                            type="button"
-                                            onClick={async () => {
-                                              if (window.confirm(isAmharic ? 'ይህንን ምዝገባ በቋሚነት መሰረዝ ይፈልጋሉ?' : 'Are you sure you want to permanently delete this registration?')) {
-                                                await deleteRegistrationFromDb(reg.id);
-                                              }
-                                            }}
-                                            className="h-8.5 px-3 bg-[#FB5454]/10 hover:bg-[#FB5454] hover:text-white text-[#FB5454] border border-[#FB5454]/20 font-semibold text-xs rounded-md transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                                            title={isAmharic ? 'ምዝገባውን ሰርዝ' : 'Delete Registration'}
-                                          >
-                                            <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
-                                            <span>{isAmharic ? 'አጥፋ' : 'Delete'}</span>
-                                          </button>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                            )}
-                          </React.Fragment>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedRegForDetails(reg);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                                  title={isAmharic ? 'የአባል ሙሉ መረጃ እና ተግባራትን በጎን መስኮት ክፈት' : 'View full member details in drawer'}
+                                >
+                                  <Icon className="material-symbols-outlined text-[16px] text-primary">assignment_ind</Icon>
+                                  <span>{isAmharic ? 'ዝርዝር / ተግባራት' : 'View Details'}</span>
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
                         );
                       })
                   )}
@@ -1520,202 +1329,291 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           </div>
                         </div>
 
-                        {/* Right Side Expand Icon & Quick Approve */}
-                        <div className="shrink-0 pl-1 flex items-center gap-1.5">
-                          {canApprove && (
-                            <button
-                              type="button"
-                              id={`mobile-row-approve-btn-${reg.id}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (reg.status !== 'approved') {
-                                  onApproveRegistration(reg.id);
-                                }
-                              }}
-                              disabled={reg.status === 'approved'}
-                              className={`px-2 py-1 rounded-sm text-xs font-semibold inline-flex items-center gap-1 transition-all ${
-                                reg.status === 'approved'
-                                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default opacity-90'
-                                  : 'bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95 shadow-2xs'
-                              }`}
-                              title={reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Already Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}
-                            >
-                              <Icon className="material-symbols-outlined text-[14px]">check_circle</Icon>
-                              <span>{reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}</span>
-                            </button>
-                          )}
+                        {/* Right Side: Status Badge & Expand Indicator (No Action Buttons in unexpanded header) */}
+                        <div className="shrink-0 pl-1 flex items-center gap-2">
+                          <div className="scale-90 origin-right">
+                            {renderStatusBadge(reg.status, false, reg)}
+                          </div>
                           <div className="text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
-                            <Icon className="material-symbols-outlined text-[20px] transition-transform">
-                              {isExpanded ? 'expand_less' : 'expand_more'}
+                            <Icon className={`material-symbols-outlined text-[20px] transition-transform duration-200 ${isExpanded ? 'rotate-180 text-primary dark:text-white' : ''}`}>
+                              expand_more
                             </Icon>
                           </div>
                         </div>
                       </div>
 
-                      {/* Collapsible Mobile Body Drawer */}
+                      {/* Collapsible Mobile Body Drawer - Refined UI */}
                       <div className={`collapsible-grid ${isExpanded ? 'expanded' : ''}`}>
                         <div className="collapsible-grid-inner">
                           <div className="mt-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47] space-y-3">
-                            {/* Member Information List */}
-                            <ExpandableMemberCard
-                              showHeader={false}
-                              isAmharic={isAmharic}
-                              fields={[
-                                { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },
-                                { label: isAmharic ? 'የሞተር አይነት:' : 'Motor Type:', value: reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline') },
-                                { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
-                                { label: isAmharic ? 'ስልክ ቁጥር:' : 'Phone Number:', value: getDisplayPhone(reg) },
-                                { label: isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:', value: reg.plateNumber || '—' },
-                                { label: isAmharic ? 'የቻሲስ ቁጥር:' : 'Chassis Number:', value: getChassisDisplay(reg) },
-                                { label: isAmharic ? 'የተመዘገበበት ቀን:' : 'Registered Date:', value: reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—' }
-                              ]}
-                            />
+                            {/* Rejection notice if status is rejected */}
+                            {reg.status === 'rejected' && reg.rejectionReason && (
+                              <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-800 dark:text-rose-200 flex items-start gap-2">
+                                <Icon className="material-symbols-outlined text-[16px] text-rose-600 shrink-0 mt-0.5">error</Icon>
+                                <div>
+                                  <span className="font-bold block">{isAmharic ? 'የመሰረዣ ምክንያት:' : 'Rejection Reason:'}</span>
+                                  <p className="text-[11px] mt-0.5">{reg.rejectionReason}</p>
+                                </div>
+                              </div>
+                            )}
 
-                            {/* Mobile Actions Bar - Harmonious & Non-competing */}
-                            <div className="flex items-center gap-2 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex-wrap">
-                              {/* Open Documents Carousel Modal */}
-                              <button
-                                type="button"
-                                onClick={() => openMemberDocumentCarousel(reg)}
-                                className="h-8 px-2.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold rounded-md text-xs cursor-pointer inline-flex items-center gap-1.5 shadow-2xs"
-                              >
-                                <Icon className="material-symbols-outlined text-[15px] text-amber-600 dark:text-amber-400">photo_library</Icon>
-                                <span>{isAmharic ? `ሰነዶች (${getRegistrationDocCount(reg)})` : `Documents (${getRegistrationDocCount(reg)})`}</span>
-                              </button>
+                            {/* Refined Structured Member Specifications Card */}
+                            <div className="bg-[#F7F9FC] dark:bg-[#1C2434]/80 p-3 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5 text-xs">
+                              <div className="grid grid-cols-2 gap-2.5">
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'የአባል መለያ' : 'Member ID'}
+                                  </span>
+                                  <span className="font-mono font-bold text-xs text-primary dark:text-yellow-400 block truncate">
+                                    {reg.id}
+                                  </span>
+                                </div>
 
-                              <button
-                                type="button"
-                                onClick={() => setSelectedRegForDetails(reg)}
-                                className="h-8 px-2.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] font-semibold rounded-md text-xs cursor-pointer inline-flex items-center gap-1 shadow-2xs"
-                              >
-                                <Icon className="material-symbols-outlined text-[15px]">visibility</Icon>
-                                <span>{isAmharic ? 'ዝርዝር' : 'Details'}</span>
-                              </button>
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}
+                                  </span>
+                                  {reg.phone ? (
+                                    <a
+                                      href={`tel:${reg.phone}`}
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="font-mono font-semibold text-xs text-primary hover:underline flex items-center gap-1 truncate"
+                                    >
+                                      <Icon className="material-symbols-outlined text-[13px] shrink-0">call</Icon>
+                                      <span>{getDisplayPhone(reg)}</span>
+                                    </a>
+                                  ) : (
+                                    <span className="text-slate-400">—</span>
+                                  )}
+                                </div>
 
-                              {canEditRegistration && (
-                                <button
-                                  id={`mobile-edit-reg-btn-${reg.id}`}
-                                  type="button"
-                                  onClick={() => setEditingRegistration(reg)}
-                                  className="h-8 px-2.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold rounded-md text-xs cursor-pointer inline-flex items-center gap-1 shadow-2xs transition-colors"
-                                  title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
-                                >
-                                  <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
-                                  <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
-                                </button>
-                              )}
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}
+                                  </span>
+                                  <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">
+                                    {reg.subCity || 'በላይ ዘለቀ ክፍለ ከተማ'}
+                                  </span>
+                                </div>
 
-                              {showHiddenControls && isSuperAdmin && (() => {
-                                const isSuperUserRegistered = !reg.registeredBy || 
-                                  reg.registeredBy.toLowerCase() === 'superadmin' || 
-                                  reg.registeredBy.toLowerCase() === 'super_admin' || 
-                                  reg.registeredBy.toLowerCase().includes('super');
-                                return (
-                                  <button
-                                    type="button"
-                                    disabled={isSuperUserRegistered}
-                                    onClick={async () => {
-                                      if (isSuperUserRegistered) return;
-                                      const newHide = !reg.hideFromOtherUsers;
-                                      await updateRegistrationInDb(reg.id, { hideFromOtherUsers: newHide });
-                                    }}
-                                    className={`h-8 px-2.5 rounded-md text-xs font-semibold transition-all inline-flex items-center gap-1 border shadow-2xs cursor-pointer ${
-                                      isSuperUserRegistered
-                                        ? 'opacity-40 cursor-not-allowed text-[#8A99AD] bg-[#F7F9FC] dark:bg-[#24303F] border-[#E2E8F0] dark:border-[#2E3A47]'
-                                        : reg.hideFromOtherUsers
-                                        ? 'border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400'
-                                        : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD]'
-                                    }`}
-                                    title={
-                                      isSuperUserRegistered
-                                        ? (isAmharic ? 'የሱፐር አድሚን ምዝገባ (መደበቅ አይቻልም)' : 'Super Admin Entry (Cannot Hide)')
-                                        : reg.hideFromOtherUsers
-                                        ? (isAmharic ? 'ለሌሎች አሳይ' : 'Show Owner')
-                                        : (isAmharic ? 'ለሌሎች ደብቅ' : 'Hide Owner')
-                                    }
-                                  >
-                                    <Icon className="material-symbols-outlined text-[15px]">
-                                      {reg.hideFromOtherUsers ? 'visibility_off' : 'visibility'}
-                                    </Icon>
-                                    <span>
-                                      {isSuperUserRegistered
-                                        ? (isAmharic ? 'የተጠበቀ' : 'Protected')
-                                        : reg.hideFromOtherUsers
-                                        ? (isAmharic ? 'የተደበቀ' : 'Hidden')
-                                        : (isAmharic ? 'ደብቅ' : 'Hide')}
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}
+                                  </span>
+                                  <span className="font-mono text-slate-700 dark:text-slate-300 block truncate">
+                                    {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
+                                  </span>
+                                  <span className="font-mono font-bold text-slate-900 dark:text-white block truncate">
+                                    {reg.plateNumber || '—'}
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis Number'}
+                                  </span>
+                                  <span className="font-mono text-slate-700 dark:text-slate-300 block truncate" title={getChassisDisplay(reg)}>
+                                    {getChassisDisplay(reg)}
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'የሞተር ብራንድ/ሞዴል' : 'Brand & Model'}
+                                  </span>
+                                  <span className="font-medium text-slate-800 dark:text-slate-200 block truncate">
+                                    {reg.motorBrand ? `${reg.motorBrand} ${reg.motorModel || ''}`.trim() : '—'}
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                    {isAmharic ? 'የሞተር አይነት' : 'Category'}
+                                  </span>
+                                  {reg.vehicleCategory === 'electric' ? (
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#10B981]">
+                                      <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
+                                      <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                                     </span>
-                                  </button>
-                                );
-                              })()}
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-primary">
+                                      <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
+                                      <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
 
-                              {(userRole === 'admin' || isSuperAdmin) && (
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedRegForQR(reg)}
-                                  className="h-8 px-2.5 bg-primary hover:bg-opacity-90 text-white font-semibold rounded-md text-xs cursor-pointer inline-flex items-center gap-1 shadow-2xs"
-                                >
-                                  <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
-                                  <span>{isAmharic ? 'መታወቂያ' : 'Digital ID'}</span>
-                                </button>
-                              )}
+                            {/* Attached Documents Quick Strip */}
+                            <button
+                              type="button"
+                              onClick={() => openMemberDocumentCarousel(reg)}
+                              className="w-full flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-[0.99]"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Icon className="material-symbols-outlined text-[18px] text-amber-500">photo_library</Icon>
+                                <span>{isAmharic ? 'የተያያዙ ሰነዶች እና ፎቶዎች' : 'Attached Documents & Photos'}</span>
+                              </div>
+                              <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-900 font-extrabold text-[11px] flex items-center gap-1 shadow-2xs">
+                                <span>{getRegistrationDocCount(reg)}</span>
+                                <Icon className="material-symbols-outlined text-[13px]">chevron_right</Icon>
+                              </span>
+                            </button>
 
-                              {(reg.status === 'approved' || reg.status === 'printed' || reg.status === 'ordered_print') && (
-                                <>
-                                  <button
-                                    type="button"
-                                    onClick={() => setSelectedRegForA4(reg)}
-                                    className="h-8 px-2.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold rounded-md text-xs cursor-pointer inline-flex items-center gap-1 shadow-2xs"
-                                  >
-                                    <Icon className="material-symbols-outlined text-[15px]">print</Icon>
-                                    <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    onClick={() => setSelectedRegForSticker(reg)}
-                                    className="h-8 px-2.5 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-semibold rounded-md text-xs cursor-pointer inline-flex items-center gap-1 shadow-2xs"
-                                  >
-                                    <Icon className="material-symbols-outlined text-[15px]">qr_code_scanner</Icon>
-                                    <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
-                                  </button>
-                                </>
-                              )}
-
+                            {/* Refined Mobile Action Controls */}
+                            <div className="space-y-2 pt-1">
+                              {/* 1. Approval Decision Row (If pending approval & Admin) */}
                               {(userRole === 'admin' || isSuperAdmin) && reg.status === 'pending_approval' && (
-                                <>
+                                <div className="grid grid-cols-2 gap-2">
                                   <button
                                     type="button"
                                     onClick={() => onApproveRegistration(reg.id)}
-                                    className="h-8 px-2.5 bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs rounded-md cursor-pointer inline-flex items-center gap-1 shadow-2xs"
+                                    className="py-2 px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] cursor-pointer"
                                   >
-                                    <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
+                                    <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
                                     <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => setRejectingId(reg.id)}
-                                    className="h-8 px-2.5 bg-rose-50 dark:bg-rose-950/30 border border-rose-300 dark:border-rose-700 text-rose-600 dark:text-rose-400 font-semibold text-xs rounded-md cursor-pointer inline-flex items-center gap-1 shadow-2xs"
+                                    className="py-2 px-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-extrabold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer hover:bg-rose-100"
                                   >
-                                    <Icon className="material-symbols-outlined text-[15px]">cancel</Icon>
+                                    <Icon className="material-symbols-outlined text-[16px]">cancel</Icon>
                                     <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
                                   </button>
-                                </>
+                                </div>
                               )}
 
-                              {isTaskAllowed(userRole, 11) && (
+                              {/* 2. Main Inspection & Edit Row */}
+                              <div className="flex items-center gap-2">
                                 <button
                                   type="button"
-                                  onClick={async () => {
-                                    if (window.confirm(isAmharic ? 'ይህንን ምዝገባ በቋሚነት መሰረዝ ይፈልጋሉ?' : 'Are you sure you want to permanently delete this registration?')) {
-                                      await deleteRegistrationFromDb(reg.id);
-                                    }
-                                  }}
-                                  className="h-8 px-2.5 bg-[#FB5454]/10 hover:bg-[#FB5454] hover:text-white text-[#FB5454] border border-[#FB5454]/20 font-semibold text-xs rounded-md cursor-pointer inline-flex items-center gap-1 shadow-2xs"
-                                  title={isAmharic ? 'ምዝገባውን ሰርዝ' : 'Delete Registration'}
+                                  onClick={() => setSelectedRegForDetails(reg)}
+                                  className="flex-1 py-2 px-3 rounded-lg bg-primary hover:bg-opacity-90 text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-[0.98]"
                                 >
-                                  <Icon className="material-symbols-outlined text-[15px]">delete</Icon>
-                                  <span>{isAmharic ? 'አጥፋ' : 'Delete'}</span>
+                                  <Icon className="material-symbols-outlined text-[16px]">assignment_ind</Icon>
+                                  <span>{isAmharic ? 'ሙሉ መረጃ በጎን መስኮት ክፈት' : 'Full Details in Drawer'}</span>
                                 </button>
+
+                                {canEditRegistration && (
+                                  <button
+                                    id={`mobile-edit-reg-btn-${reg.id}`}
+                                    type="button"
+                                    onClick={() => setEditingRegistration(reg)}
+                                    className="py-2 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold text-xs inline-flex items-center justify-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                                    title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
+                                  >
+                                    <Icon className="material-symbols-outlined text-[15px] text-amber-500">edit</Icon>
+                                    <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* 3. Printing & Credentials Row */}
+                              <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                                {(userRole === 'admin' || isSuperAdmin) && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedRegForQR(reg)}
+                                    className="flex-1 min-w-[100px] py-1.5 px-2.5 bg-purple-700 hover:bg-purple-800 text-white font-semibold rounded-md text-xs cursor-pointer inline-flex items-center justify-center gap-1 shadow-2xs"
+                                  >
+                                    <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
+                                    <span>{isAmharic ? 'መታወቂያ' : 'ID Card'}</span>
+                                  </button>
+                                )}
+
+                                {(reg.status === 'approved' || reg.status === 'printed' || reg.status === 'ordered_print') && (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={() => setSelectedRegForA4(reg)}
+                                      className="flex-1 min-w-[90px] py-1.5 px-2.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold rounded-md text-xs cursor-pointer inline-flex items-center justify-center gap-1 shadow-2xs"
+                                    >
+                                      <Icon className="material-symbols-outlined text-[15px]">print</Icon>
+                                      <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
+                                    </button>
+
+                                    <button
+                                      type="button"
+                                      onClick={() => setSelectedRegForSticker(reg)}
+                                      className="flex-1 min-w-[90px] py-1.5 px-2.5 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-semibold rounded-md text-xs cursor-pointer inline-flex items-center justify-center gap-1 shadow-2xs"
+                                    >
+                                      <Icon className="material-symbols-outlined text-[15px]">qr_code_scanner</Icon>
+                                      <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
+                                    </button>
+                                  </>
+                                )}
+                              </div>
+
+                              {/* 4. SuperAdmin Privacy & Permanent Delete Actions */}
+                              {(showHiddenControls && isSuperAdmin || isTaskAllowed(userRole, 11)) && (
+                                <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+                                  {showHiddenControls && isSuperAdmin && (() => {
+                                    const isSuperUserRegistered = !reg.registeredBy || 
+                                      reg.registeredBy.toLowerCase() === 'superadmin' || 
+                                      reg.registeredBy.toLowerCase() === 'super_admin' || 
+                                      reg.registeredBy.toLowerCase().includes('super');
+                                    return (
+                                      <button
+                                        type="button"
+                                        disabled={isSuperUserRegistered}
+                                        onClick={async () => {
+                                          if (isSuperUserRegistered) return;
+                                          const newHide = !reg.hideFromOtherUsers;
+                                          await updateRegistrationInDb(reg.id, { hideFromOtherUsers: newHide });
+                                        }}
+                                        className={`py-1 px-2.5 rounded-md text-[11px] font-semibold transition-all inline-flex items-center gap-1 border shadow-2xs cursor-pointer ${
+                                          isSuperUserRegistered
+                                            ? 'opacity-40 cursor-not-allowed text-[#8A99AD] bg-[#F7F9FC] dark:bg-[#24303F] border-[#E2E8F0] dark:border-[#2E3A47]'
+                                            : reg.hideFromOtherUsers
+                                            ? 'border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400'
+                                            : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD]'
+                                        }`}
+                                        title={
+                                          isSuperUserRegistered
+                                            ? (isAmharic ? 'የሱፐር አድሚን ምዝገባ (መደበቅ አይቻልም)' : 'Super Admin Entry (Cannot Hide)')
+                                            : reg.hideFromOtherUsers
+                                            ? (isAmharic ? 'ለሌሎች አሳይ' : 'Show Owner')
+                                            : (isAmharic ? 'ለሌሎች ደብቅ' : 'Hide Owner')
+                                        }
+                                      >
+                                        <Icon className="material-symbols-outlined text-[14px]">
+                                          {reg.hideFromOtherUsers ? 'visibility_off' : 'visibility'}
+                                        </Icon>
+                                        <span>
+                                          {isSuperUserRegistered
+                                            ? (isAmharic ? 'የተጠበቀ' : 'Protected')
+                                            : reg.hideFromOtherUsers
+                                            ? (isAmharic ? 'የተደበቀ' : 'Hidden')
+                                            : (isAmharic ? 'ደብቅ' : 'Hide')}
+                                        </span>
+                                      </button>
+                                    );
+                                  })()}
+
+                                  {isTaskAllowed(userRole, 11) && (
+                                    <button
+                                      type="button"
+                                      onClick={async () => {
+                                        if (window.confirm(isAmharic ? 'ይህንን ምዝገባ በቋሚነት መሰረዝ ይፈልጋሉ?' : 'Are you sure you want to permanently delete this registration?')) {
+                                          await deleteRegistrationFromDb(reg.id);
+                                        }
+                                      }}
+                                      className="py-1 px-2.5 bg-[#FB5454]/10 hover:bg-[#FB5454] hover:text-white text-[#FB5454] border border-[#FB5454]/20 font-semibold text-[11px] rounded-md transition-colors cursor-pointer flex items-center gap-1 shadow-2xs ml-auto"
+                                      title={isAmharic ? 'ምዝገባውን ሰርዝ' : 'Delete Registration'}
+                                    >
+                                      <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
+                                      <span>{isAmharic ? 'አጥፋ' : 'Delete'}</span>
+                                    </button>
+                                  )}
+                                </div>
                               )}
                             </div>
                           </div>
@@ -1874,31 +1772,52 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         </div>
       )}
 
-      {/* Full Vehicle Registration Record Details Inspector Modal */}
+      {/* MEMBER FULL INFORMATION DRAWER (Slide-Over Side-Sheet - Same as Membership Fee Directory) */}
       {selectedRegForDetails && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg max-w-2xl w-full p-4 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-              <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">two_wheeler</Icon>
-                <div>
-                  <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
-                    {isAmharic ? 'የተሟላ የሞተር ሳይክል ምዝገባ መረጃ' : 'Motorcycle Registration Record Details'}
+        <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
+          {/* Subtle semi-transparent backdrop */}
+          <div
+            onClick={() => setSelectedRegForDetails(null)}
+            className="fixed inset-0 bg-slate-950/40 dark:bg-black/60 transition-opacity backdrop-blur-xs"
+          />
+
+          {/* Side-Sheet Drawer Content Container */}
+          <div className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-300 dark:border-slate-800 shadow-2xl z-10 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
+            {/* Drawer Header */}
+            <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
+                  <Icon className="material-symbols-outlined text-[24px]">assignment_ind</Icon>
+                </div>
+                <div className="space-y-0.5 min-w-0">
+                  <h3 className="text-sm sm:text-base font-black tracking-wide truncate flex items-center gap-2">
+                    <span>{isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Full Information'}</span>
                   </h3>
-                  <p className="text-xs font-mono text-slate-500">
-                    Record ID: <span className="font-bold text-[#1e293b] dark:text-yellow-400">{selectedRegForDetails.id}</span>
+                  <p className="text-xs text-slate-300 font-medium truncate">
+                    {selectedRegForDetails.fullName || '—'}
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setSelectedRegForDetails(null)}
-                className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[20px]">close</Icon>
-              </button>
+
+              <div className="flex items-center gap-2">
+                {selectedRegForDetails.plateNumber && (
+                  <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-amber-400">
+                    {selectedRegForDetails.plateNumber}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedRegForDetails(null)}
+                  className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-sm font-bold shrink-0"
+                  title={isAmharic ? 'ዝጋ' : 'Close Drawer'}
+                >
+                  ✕
+                </button>
+              </div>
             </div>
+
+            {/* Drawer Body: Scrollable */}
+            <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs">
 
             {/* Status Banner */}
             <div className="flex flex-wrap items-center justify-between gap-2 p-3 bg-slate-50 dark:bg-slate-800/60 rounded-md border border-slate-200 dark:border-slate-700">
@@ -2319,9 +2238,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 })()}
               </div>
             </div>
+          </div>
 
-            {/* Modal Actions */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+          {/* Drawer Footer Actions */}
+          <div className="p-4 bg-slate-100 dark:bg-slate-800/90 border-t border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2.5 shrink-0">
               <div className="flex items-center gap-2 flex-wrap">
 
                 {canEditRegistration && (
@@ -2400,9 +2320,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedRegForDetails(null)}
-                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-md font-bold cursor-pointer transition-colors"
+                className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-black transition-all cursor-pointer shadow-xs ml-auto"
               >
-                {isAmharic ? 'ዝጋ' : 'Close'}
+                {isAmharic ? 'ዝጋ' : 'Close Drawer'}
               </button>
             </div>
           </div>
