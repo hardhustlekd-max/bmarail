@@ -98,7 +98,11 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [newBadgeId, setNewBadgeId] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [newRole, setNewRole] = useState<UserRole>('clerk');
-  const [newPassword, setNewPassword] = useState('DefaultPass123!');
+  const [newPassword, setNewPassword] = useState('');
+  const [newConfirmPassword, setNewConfirmPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordMismatchError, setPasswordMismatchError] = useState('');
 
   // Security Toggles State
   const [enforce2FA, setEnforce2FA] = useState(true);
@@ -162,6 +166,18 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       return;
     }
 
+    if (!newPassword) {
+      if (onShowToast) onShowToast(isAmharic ? 'እባክዎን የይለፍ ቃል ያስገቡ' : 'Please enter a password', 'warning');
+      return;
+    }
+
+    if (newPassword !== newConfirmPassword) {
+      const err = isAmharic ? 'የይለፍ ቃሎች አይዛመዱም' : 'Passwords do not match';
+      setPasswordMismatchError(err);
+      if (onShowToast) onShowToast(err, 'warning');
+      return;
+    }
+
     const newUser: SystemUser = {
       uid: `user-${newRole}-${newBadgeId.trim().toUpperCase()}`,
       badgeId: newBadgeId.trim().toUpperCase(),
@@ -172,7 +188,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       createdAt: new Date().toISOString(),
     };
 
-    await saveSystemUserToDb(newUser);
+    await saveSystemUserToDb({
+      ...newUser,
+      password: newPassword,
+    });
     await addAuditLogToDb({
       actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
       actorRole: 'superadmin',
@@ -195,6 +214,11 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     setNewBadgeId('');
     setNewPhone('');
     setNewRole('clerk');
+    setNewPassword('');
+    setNewConfirmPassword('');
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
+    setPasswordMismatchError('');
     setShowAddUserModal(false);
   };
 
@@ -2016,7 +2040,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 {isAmharic ? 'አዲስ የሲስተም ተጠቃሚ መመዝገቢያ' : 'Register New System User'}
               </h3>
               <button
-                onClick={() => setShowAddUserModal(false)}
+                onClick={() => {
+                  setShowAddUserModal(false);
+                  setPasswordMismatchError('');
+                  setNewPassword('');
+                  setNewConfirmPassword('');
+                  setShowNewPassword(false);
+                  setShowConfirmPassword(false);
+                }}
                 className="text-outline hover:text-on-surface p-1 rounded-lg"
               >
                 <Icon className="material-symbols-outlined text-[20px]">close</Icon>
@@ -2084,10 +2115,87 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 />
               </div>
 
+              {/* Password: and Confirm password: fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-on-surface mb-1">
+                    {isAmharic ? 'የይለፍ ቃል:' : 'Password:'}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      value={newPassword}
+                      onChange={(e) => {
+                        setNewPassword(e.target.value);
+                        if (passwordMismatchError) setPasswordMismatchError('');
+                      }}
+                      placeholder={isAmharic ? 'የይለፍ ቃል ያስገቡ' : 'Enter password'}
+                      className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b] pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
+                    >
+                      <Icon className="material-symbols-outlined text-[18px]">
+                        {showNewPassword ? 'visibility_off' : 'visibility'}
+                      </Icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-on-surface mb-1">
+                    {isAmharic ? 'የይለፍ ቃል አረጋግጥ:' : 'Confirm password:'}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      required
+                      value={newConfirmPassword}
+                      onChange={(e) => {
+                        setNewConfirmPassword(e.target.value);
+                        if (passwordMismatchError) setPasswordMismatchError('');
+                      }}
+                      placeholder={isAmharic ? 'የይለፍ ቃል በድጋሚ ያስገቡ' : 'Confirm password'}
+                      className={`w-full bg-surface-container border rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden pr-10 ${
+                        passwordMismatchError ? 'border-red-500 focus:border-red-500' : 'border-outline-variant focus:border-[#1e293b]'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
+                    >
+                      <Icon className="material-symbols-outlined text-[18px]">
+                        {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                      </Icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {passwordMismatchError && (
+                <div className="text-[11px] font-bold text-red-600 flex items-center gap-1.5 animate-in fade-in">
+                  <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                  <span>{passwordMismatchError}</span>
+                </div>
+              )}
+
               <div className="pt-3 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setShowAddUserModal(false)}
+                  onClick={() => {
+                    setShowAddUserModal(false);
+                    setPasswordMismatchError('');
+                    setNewPassword('');
+                    setNewConfirmPassword('');
+                    setShowNewPassword(false);
+                    setShowConfirmPassword(false);
+                  }}
                   className="px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface"
                 >
                   {isAmharic ? 'ሰርዝ' : 'Cancel'}

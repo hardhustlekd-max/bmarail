@@ -139,6 +139,8 @@ export interface SystemUser {
   phone?: string;
   role: UserRole;
   fullName: string;
+  password?: string;
+  passwordHash?: string;
   status?: 'active' | 'disabled';
   createdAt?: string;
   lastLoginAt?: string;

@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS system_users (
 );
 
 CREATE INDEX IF NOT EXISTS idx_system_users_badge_id ON system_users(badge_id);
+CREATE INDEX IF NOT EXISTS idx_system_users_phone ON system_users(phone);
 CREATE INDEX IF NOT EXISTS idx_system_users_email ON system_users(email);
 CREATE INDEX IF NOT EXISTS idx_system_users_role ON system_users(role);
 

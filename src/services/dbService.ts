@@ -2129,7 +2129,7 @@ export async function saveSystemUserToDb(user: Partial<SystemUser> & { password?
         await fetch('/api/auth/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formatted),
+          body: JSON.stringify({ ...formatted, password: user.password }),
         }).catch(() => {});
       } catch {}
     },
