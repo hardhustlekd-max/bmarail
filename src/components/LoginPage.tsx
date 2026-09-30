@@ -216,7 +216,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary-hover text-white py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer mt-1"
+              className="w-full bg-primary hover:bg-primary-hover text-white dark:text-slate-900 py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-[0.99] disabled:opacity-60 cursor-pointer mt-1 focus:ring-2 focus:ring-slate-900/30 dark:focus:ring-slate-100/30"
             >
               {isLoading ? (
                 <>

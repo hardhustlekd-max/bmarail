@@ -654,7 +654,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     type="button"
                     disabled={isUpdating}
                     onClick={() => handleStatusChange('under_investigation')}
-                    className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer transition-all disabled:opacity-50 shadow-2xs"
+                    className="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold cursor-pointer transition-all disabled:opacity-50 shadow-2xs"
                   >
                     {isAmharic ? 'በምርመራ ላይ አድርግ' : 'Mark Under Investigation'}
                   </button>
