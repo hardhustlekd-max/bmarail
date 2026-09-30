@@ -43,7 +43,7 @@ export const Button: React.FC<ButtonProps> = ({
     secondary:
       'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-slate-400/30',
     danger:
-      'bg-[#ef4444] hover:bg-[#dc2626] active:bg-[#b91c1c] text-white font-semibold shadow-xs focus:ring-2 focus:ring-[#ef4444]/40',
+      'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold shadow-xs focus:ring-2 focus:ring-rose-500/40',
     ghost:
       'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus:ring-2 focus:ring-slate-300',
   };
@@ -165,11 +165,11 @@ export const StatusDot: React.FC<StatusDotProps> = ({
   className = '',
 }) => {
   const colorMap: Record<string, string> = {
-    paid: 'bg-[#22c55e]',
-    active: 'bg-[#22c55e]',
-    unpaid: 'bg-[#ef4444]',
-    inactive: 'bg-[#ef4444]',
-    pending: 'bg-[#f59e0b]',
+    paid: 'bg-emerald-500',
+    active: 'bg-emerald-500',
+    unpaid: 'bg-rose-500',
+    inactive: 'bg-rose-500',
+    pending: 'bg-amber-500',
     muted: 'bg-slate-300 dark:bg-slate-600/70',
   };
 
@@ -567,9 +567,9 @@ export const KpiCard: React.FC<KpiCardProps> = ({
 }) => {
   const valueColors = {
     default: 'text-slate-900 dark:text-slate-100',
-    success: 'text-[#16a34a] dark:text-[#22c55e]',
-    danger: 'text-[#dc2626] dark:text-[#ef4444]',
-    warning: 'text-[#d97706] dark:text-[#f59e0b]',
+    success: 'text-emerald-600 dark:text-emerald-400',
+    danger: 'text-rose-600 dark:text-rose-400',
+    warning: 'text-amber-600 dark:text-amber-400',
     accent: 'text-primary dark:text-primary',
   };
 
@@ -916,11 +916,11 @@ export const HistoryItem: React.FC<{ item: HistoryItemData }> = ({ item }) => {
   const isPending = item.status === 'Pending';
 
   const statusColor = isPaid
-    ? 'text-[#16a34a] dark:text-[#22c55e]'
+    ? 'text-emerald-600 dark:text-emerald-400'
     : isFailed
-    ? 'text-[#dc2626] dark:text-[#ef4444]'
+    ? 'text-rose-600 dark:text-rose-400'
     : isPending
-    ? 'text-[#d97706] dark:text-[#f59e0b]'
+    ? 'text-amber-600 dark:text-amber-400'
     : 'text-slate-600 dark:text-slate-300';
 
   return (
