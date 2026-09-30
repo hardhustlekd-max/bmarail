@@ -687,6 +687,18 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
     }
   };
 
+  const handleRowClick = (row: MatrixRowItem) => {
+    // On desktop screens (>= 768px), click directly triggers onRowClick (no accordion expansion)
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+      onRowClick?.(row);
+    } else if (expandableMobile) {
+      // On mobile viewports, toggle the mobile breakdown drawer
+      toggleRow(row.id);
+    } else {
+      onRowClick?.(row);
+    }
+  };
+
   const totalCols = columns.length + (hasPlate ? 1 : 0) + (showNumbering ? 1 : 0) + 1 + (expandableMobile ? 1 : 0);
 
   return (
@@ -694,15 +706,15 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
       <thead>
         <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F7F9FC] dark:bg-[#24303F]">
           {showNumbering && (
-            <th className="py-3 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-12 font-mono">
+            <th className="py-3 px-2.5 sm:px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-10 sm:w-12 font-mono">
               {numberHeaderLabel}
             </th>
           )}
-          <th className="py-3 px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap">
+          <th className="py-3 px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap min-w-[130px] sm:min-w-[170px]">
             {memberHeaderLabel}
           </th>
           {hasPlate && (
-            <th className="py-3 px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono">
+            <th className="py-3 px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono min-w-[90px] sm:min-w-[110px]">
               {plateHeaderLabel}
             </th>
           )}
@@ -710,18 +722,21 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
             <th
               key={col.key}
               title={col.title}
-              className="py-3 px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap"
+              className="py-3 px-2 sm:px-3.5 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[38px] sm:min-w-[46px]"
             >
               {col.label}
             </th>
           ))}
           {expandableMobile && (
-            <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-10">
+            <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-10 md:hidden">
               <button
                 type="button"
-                onClick={toggleAllMobile}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleAllMobile();
+                }}
                 title={expandedMobileRowIds.size === rows.length ? (isAmharic ? 'ሁሉንም ሰብስብ' : 'Collapse All') : (isAmharic ? 'ሁሉንም ዘርጋ' : 'Expand All')}
-                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 cursor-pointer"
+                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
               >
                 <Icon
                   name={expandedMobileRowIds.size === rows.length ? 'unfold_less' : 'unfold_more'}
@@ -739,21 +754,24 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
           return (
             <React.Fragment key={row.id}>
               <tr
-                onClick={() => toggleRow(row.id)}
+                onClick={() => handleRowClick(row)}
                 className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer select-none ${
-                  isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40' : ''
+                  isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40 md:bg-transparent md:dark:bg-transparent' : ''
                 }`}
               >
                 {showNumbering && (
-                  <td className="py-3.5 px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
+                  <td className="py-3.5 px-2.5 sm:px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
                     {index + 1}
                   </td>
                 )}
-                <td className="py-3.5 px-4 text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
+                <td className="py-3.5 px-3 sm:px-4 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
                   <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
+                  {row.subtitle && (
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">{row.subtitle}</div>
+                  )}
                 </td>
                 {hasPlate && (
-                  <td className="py-3.5 px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200">
+                  <td className="py-3.5 px-3 sm:px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200">
                     {row.plateNumber ? (
                       <span>{row.plateNumber}</span>
                     ) : (
@@ -764,7 +782,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                 {columns.map((col) => {
                   const status = row.periods[col.key] || 'muted';
                   return (
-                    <td key={col.key} className="py-3.5 px-3 sm:px-4 text-center">
+                    <td key={col.key} className="py-3.5 px-2 sm:px-3.5 text-center">
                       <StatusDot
                         status={status}
                         size={12}
@@ -774,7 +792,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                   );
                 })}
                 {expandableMobile && (
-                  <td className="py-3.5 px-2 text-center w-10">
+                  <td className="py-3.5 px-2 text-center w-10 md:hidden">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -794,20 +812,23 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                 )}
               </tr>
 
-              {/* Collapsible/Expandable Monthly Drawer */}
+              {/* Collapsible/Expandable Monthly Drawer - ONLY rendered in Mobile View Mode */}
               {expandableMobile && isExpanded && (
-                <tr className="bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800">
+                <tr className="md:hidden bg-slate-50/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800">
                   <td colSpan={totalCols} className="p-3 sm:p-4">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between text-xs pb-1.5 border-b border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200">
-                        <span>{isAmharic ? 'የወርሃዊ ክፍያዎች ዝርዝር' : 'Monthly Dues Breakdown'}</span>
+                        <div className="flex items-center gap-1.5">
+                          <Icon name="event_note" size={16} className="text-primary" />
+                          <span>{isAmharic ? 'የወርሃዊ ክፍያዎች ዝርዝር' : 'Monthly Dues Breakdown'}</span>
+                        </div>
                         {row.plateNumber && (
-                          <span className="font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                          <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold">
                             {row.plateNumber}
                           </span>
                         )}
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {columns.map((col) => {
                           const status = row.periods[col.key] || 'muted';
                           const statusText =
@@ -833,7 +854,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                               key={col.key}
                               className={`flex items-center justify-between p-2 rounded-md border text-xs ${statusBadgeClass}`}
                             >
-                              <span className="font-bold text-[11px]">{col.label}</span>
+                              <span className="font-bold text-[11px] truncate">{col.label}</span>
                               <div className="flex items-center gap-1.5 shrink-0">
                                 <StatusDot status={status} size={8} />
                                 <span className="text-[10px] font-medium">{statusText}</span>
@@ -852,7 +873,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                               e.stopPropagation();
                               onRowClick(row);
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary hover:bg-primary-hover text-white shadow-xs transition-colors cursor-pointer"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-primary hover:bg-primary-hover active:scale-98 text-white shadow-xs transition-all cursor-pointer"
                           >
                             <Icon name="verified" size={16} />
                             <span>{isAmharic ? 'ደረሰኝ አረጋግጥ / ዝርዝር ክፈት' : 'Open Verification Drawer'}</span>
