@@ -64,7 +64,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   // User credentials details
   const creds = SYSTEM_ROLE_CREDENTIALS[userRole] || SYSTEM_ROLE_CREDENTIALS.clerk;
   const displayName = creds.fullName;
-  const displayEmail = creds.email;
+  const displayPhone = creds.phone || '0918123456';
 
   // Password strength helper
   const getPasswordStrength = (pass: string) => {
@@ -260,12 +260,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
               <div className="space-y-2 text-xs border-t border-outline-variant/60 pt-3">
                 <div className="flex justify-between items-center py-1">
-                  <span className="text-outline">{isAmharic ? 'ኢሜይል' : 'Email Address'}:</span>
-                  <span className="font-bold text-on-surface truncate max-w-[180px]">{displayEmail}</span>
-                </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-outline">{isAmharic ? 'ክፍለ ከተማ' : 'Assigned Sub-City'}:</span>
-                  <span className="font-bold text-on-surface">{isAmharic ? 'በላይ ዘለቀ ክፍለ ከተማ' : 'Belay Zeleke Sub-City'}</span>
+                  <span className="text-outline">{isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}:</span>
+                  <span className="font-bold font-mono text-on-surface truncate max-w-[180px]">{displayPhone}</span>
                 </div>
                 <div className="flex justify-between items-center py-1">
                   <span className="text-outline">{isAmharic ? 'የስራ ድርሻ' : 'Role Access'}:</span>

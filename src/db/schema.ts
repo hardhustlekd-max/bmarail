@@ -47,12 +47,20 @@ export function mapRegistrationToDb(reg: MotorcycleRegistration) {
     qrCodeData: reg.qrCodeData,
     registeredBy: reg.registeredBy,
     rejectionReason: reg.rejectionReason || null,
+    lastRejectionReason: reg.lastRejectionReason || null,
+    isCorrection: Boolean(reg.isCorrection),
     subCity: reg.subCity || null,
+    email: reg.email || null,
     bloodGroup: reg.bloodGroup || null,
     hideFromOtherUsers: Boolean(reg.hideFromOtherUsers),
     receiptNumber: reg.receiptNumber || null,
     paymentAmount: reg.paymentAmount || null,
     receiptScreenshot: reg.receiptScreenshot || null,
+    termStatus: reg.termStatus || null,
+    activeTermExpirationDate: reg.activeTermExpirationDate || null,
+    lastPaymentDate: reg.lastPaymentDate || null,
+    lastReceiptNumber: reg.lastReceiptNumber || null,
+    lastPaymentAmount: reg.lastPaymentAmount !== undefined ? String(reg.lastPaymentAmount) : null,
   };
 }
 
@@ -81,12 +89,20 @@ export function mapRegistrationFromDb(row: any): MotorcycleRegistration {
     qrCodeData: row.qrCodeData || row.qr_code_data || '',
     registeredBy: row.registeredBy || row.registered_by || '',
     rejectionReason: row.rejectionReason || row.rejection_reason,
+    lastRejectionReason: row.lastRejectionReason || row.last_rejection_reason,
+    isCorrection: Boolean(row.isCorrection ?? row.is_correction),
     subCity: row.subCity || row.sub_city,
+    email: row.email,
     bloodGroup: row.bloodGroup || row.blood_group,
     hideFromOtherUsers: Boolean(row.hideFromOtherUsers ?? row.hide_from_other_users),
     receiptNumber: row.receiptNumber || row.receipt_number,
     paymentAmount: row.paymentAmount || row.payment_amount,
     receiptScreenshot: row.receiptScreenshot || row.receipt_screenshot,
+    termStatus: row.termStatus || row.term_status,
+    activeTermExpirationDate: row.activeTermExpirationDate || row.active_term_expiration_date,
+    lastPaymentDate: row.lastPaymentDate || row.last_payment_date,
+    lastReceiptNumber: row.lastReceiptNumber || row.last_receipt_number,
+    lastPaymentAmount: row.lastPaymentAmount || row.last_payment_amount,
   };
 }
 
@@ -271,7 +287,11 @@ export function mapPaymentReceiptToDb(receipt: PaymentReceipt) {
     notes: receipt.notes || null,
     enteredBy: receipt.enteredBy,
     status: receipt.status || 'valid',
+    verifiedByCheki: Boolean(receipt.verifiedByCheki),
+    chekiBank: receipt.chekiBank || null,
+    enteredAt: receipt.enteredAt || null,
     createdAt: receipt.createdAt || new Date().toISOString(),
+    updatedAt: receipt.updatedAt || new Date().toISOString(),
   };
 }
 
@@ -290,6 +310,10 @@ export function mapPaymentReceiptFromDb(row: any): PaymentReceipt {
     notes: row.notes || '',
     enteredBy: row.enteredBy || row.entered_by || '',
     status: row.status || 'valid',
+    verifiedByCheki: Boolean(row.verifiedByCheki ?? row.verified_by_cheki),
+    chekiBank: row.chekiBank || row.cheki_bank,
+    enteredAt: row.enteredAt || row.entered_at,
+    updatedAt: row.updatedAt || row.updated_at,
     createdAt: row.createdAt || row.created_at || new Date().toISOString(),
   };
 }
@@ -383,6 +407,64 @@ export function mapSettingsFromDb(row: any, defaultSettings: SystemSettings): Sy
       ? (() => { try { return JSON.parse(row.role_definitions); } catch { return []; } })()
       : defaultSettings.roleDefinitions || [],
     updatedAt: row.updatedAt ?? row.updated_at,
+  };
+}
+
+export function mapUserToDb(user: SystemUser) {
+  return {
+    id: user.id || user.uid,
+    uid: user.uid,
+    badgeId: user.badgeId,
+    phone: user.phone || null,
+    role: user.role,
+    fullName: user.fullName,
+    status: user.status || 'active',
+    createdAt: user.createdAt || new Date().toISOString(),
+    lastLoginAt: user.lastLoginAt || null,
+    email: user.email || null,
+    subCity: user.subCity || null,
+  };
+}
+
+export function mapUserFromDb(row: any): SystemUser {
+  return {
+    id: row.id || row.uid,
+    uid: row.uid || row.id,
+    badgeId: row.badgeId || row.badge_id || '',
+    phone: row.phone || '',
+    role: row.role || 'clerk',
+    fullName: row.fullName || row.full_name || '',
+    status: row.status || 'active',
+    createdAt: row.createdAt || row.created_at,
+    lastLoginAt: row.lastLoginAt || row.last_login_at,
+    email: row.email,
+    subCity: row.subCity || row.sub_city,
+  };
+}
+
+export function mapAuditLogToDb(log: SystemAuditLog) {
+  return {
+    id: log.id,
+    timestamp: log.timestamp || new Date().toISOString(),
+    actorBadgeId: log.actorBadgeId,
+    actorRole: log.actorRole,
+    action: log.action,
+    details: log.details,
+    ipAddress: log.ipAddress || null,
+    severity: log.severity || 'info',
+  };
+}
+
+export function mapAuditLogFromDb(row: any): SystemAuditLog {
+  return {
+    id: row.id,
+    timestamp: row.timestamp || row.created_at || new Date().toISOString(),
+    actorBadgeId: row.actorBadgeId || row.actor_badge_id || '',
+    actorRole: row.actorRole || row.actor_role || 'clerk',
+    action: row.action || '',
+    details: row.details || '',
+    ipAddress: row.ipAddress || row.ip_address,
+    severity: row.severity || 'info',
   };
 }
 

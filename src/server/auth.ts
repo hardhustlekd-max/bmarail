@@ -15,27 +15,31 @@ export interface JwtPayload {
   fullName: string;
 }
 
-export const PRESET_USERS: Record<UserRole, { badgeId: string; email: string; fullName: string; role: UserRole }> = {
+export const PRESET_USERS: Record<UserRole, { badgeId: string; phone: string; email: string; fullName: string; role: UserRole }> = {
   clerk: {
     badgeId: 'CLERK-001',
+    phone: '0918123456',
     email: 'clerk@permit.gov.et',
     fullName: 'Abebe Bekele (Clerk)',
     role: 'clerk',
   },
   officer: {
     badgeId: 'OFFICER-8842',
+    phone: '0918654321',
     email: 'officer@permit.gov.et',
     fullName: 'Officer Solomon Desta',
     role: 'officer',
   },
   admin: {
     badgeId: 'ADMIN-PRO-1',
+    phone: '0911223344',
     email: 'admin@permit.gov.et',
     fullName: 'Tigist Alemu (System Admin)',
     role: 'admin',
   },
   superadmin: {
     badgeId: 'SUPER-ADMIN-01',
+    phone: '0911000001',
     email: 'superadmin@permit.gov.et',
     fullName: 'Kaleb Tadesse (Chief Super Admin)',
     role: 'superadmin',
@@ -125,6 +129,7 @@ export async function ensureDefaultUsers(): Promise<void> {
           id: userId,
           uid: userId,
           badgeId: cred.badgeId,
+          phone: cred.phone,
           email: cred.email,
           passwordHash: defaultHash,
           role: cred.role,

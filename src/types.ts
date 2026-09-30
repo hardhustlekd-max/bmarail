@@ -136,13 +136,14 @@ export interface SystemUser {
   id?: string;
   uid: string;
   badgeId: string;
-  email: string;
+  phone?: string;
   role: UserRole;
   fullName: string;
-  subCity?: string;
   status?: 'active' | 'disabled';
   createdAt?: string;
   lastLoginAt?: string;
+  email?: string;
+  subCity?: string;
 }
 
 export interface SystemAuditLog {

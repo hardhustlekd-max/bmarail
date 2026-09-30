@@ -4,6 +4,7 @@ export const SYSTEM_ROLE_CREDENTIALS: Record<
   UserRole,
   {
     badgeId: string;
+    phone: string;
     email: string;
     password: string;
     fullName: string;
@@ -12,6 +13,7 @@ export const SYSTEM_ROLE_CREDENTIALS: Record<
 > = {
   clerk: {
     badgeId: 'CLERK-001',
+    phone: '0918123456',
     email: 'clerk@permit.gov.et',
     password: 'ClerkPassword123!',
     fullName: 'Abebe Bekele (Clerk)',
@@ -19,6 +21,7 @@ export const SYSTEM_ROLE_CREDENTIALS: Record<
   },
   officer: {
     badgeId: 'OFFICER-8842',
+    phone: '0918654321',
     email: 'officer@permit.gov.et',
     password: 'OfficerPassword123!',
     fullName: 'Officer Solomon Desta',
@@ -26,6 +29,7 @@ export const SYSTEM_ROLE_CREDENTIALS: Record<
   },
   admin: {
     badgeId: 'ADMIN-PRO-1',
+    phone: '0911223344',
     email: 'admin@permit.gov.et',
     password: 'AdminPassword123!',
     fullName: 'Tigist Alemu (System Admin)',
@@ -33,6 +37,7 @@ export const SYSTEM_ROLE_CREDENTIALS: Record<
   },
   superadmin: {
     badgeId: 'SUPER-ADMIN-01',
+    phone: '0911000001',
     email: 'superadmin@permit.gov.et',
     password: 'SuperAdminPassword123!',
     fullName: 'Kaleb Tadesse (Chief Super Admin)',
@@ -76,6 +81,7 @@ export async function ensureOnlineAuth(): Promise<SystemUser | null> {
   return {
     uid: `user-clerk-${defaultCreds.badgeId}`,
     badgeId: defaultCreds.badgeId,
+    phone: defaultCreds.phone,
     email: defaultCreds.email,
     role: 'clerk',
     fullName: defaultCreds.fullName,
@@ -159,6 +165,7 @@ export async function loginOnlineUser(
   const userProfile: SystemUser = {
     uid: `user-${detectedRole}-${trimmedId || 'default'}`,
     badgeId: trimmedId || 'CLERK-001',
+    phone: SYSTEM_ROLE_CREDENTIALS[detectedRole]?.phone || '0918123456',
     email,
     role: detectedRole,
     fullName,
@@ -277,6 +284,7 @@ export async function fetchOnlineSystemUsers(): Promise<SystemUser[]> {
   return Object.values(SYSTEM_ROLE_CREDENTIALS).map((c) => ({
     uid: `preset-${c.role}`,
     badgeId: c.badgeId,
+    phone: c.phone,
     email: c.email,
     role: c.role,
     fullName: c.fullName,

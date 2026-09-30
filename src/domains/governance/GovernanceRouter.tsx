@@ -30,12 +30,18 @@ export const GovernanceRouter: React.FC<GovernanceRouterProps> = ({
 
   if (activePage.startsWith('superadmin') && userRole === 'superadmin') {
     const initialTab =
-      activePage === 'superadmin_subcities'
+      activePage === 'superadmin_roles' || activePage === 'superadmin_permissions'
+        ? 'roles'
+        : activePage === 'superadmin_users'
+        ? 'users'
+        : activePage === 'superadmin_subcities'
         ? 'subcities'
         : activePage === 'superadmin_owners' || activePage === 'superadmin_permits'
         ? 'permits'
         : activePage === 'superadmin_maintenance'
         ? 'maintenance'
+        : activePage === 'superadmin_security'
+        ? 'security'
         : 'users';
 
     return (

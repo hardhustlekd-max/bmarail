@@ -39,10 +39,12 @@ import { SCANNER_THEMES, ScannerThemeKey } from '../utils/scannerThemes';
 
 import { formatEthiopianDateTime } from '../utils/ethiopianCalendar';
 
+export type SuperAdminTab = 'users' | 'roles' | 'subcities' | 'permits' | 'maintenance' | 'security';
+
 interface SuperAdminInterfaceProps {
   currentLang: Language;
   currentUserBadgeId: string;
-  initialTab?: 'users' | 'subcities' | 'permits' | 'maintenance' | 'security';
+  initialTab?: SuperAdminTab;
   onShowToast?: (msg: string, type?: 'success' | 'warning' | 'info') => void;
 }
 
@@ -55,22 +57,17 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const isAmharic = currentLang === 'am';
 
   // State
-  const [activeTab, setActiveTab] = useState<'users' | 'subcities' | 'permits' | 'maintenance' | 'security'>(
-    initialTab as any
-  );
+  const [activeTab, setActiveTab] = useState<SuperAdminTab>(initialTab);
 
   useEffect(() => {
     if (initialTab) {
-      setActiveTab(initialTab as any);
+      setActiveTab(initialTab);
     }
   }, [initialTab]);
   const [users, setUsers] = useState<SystemUser[]>([]);
   const [auditLogs, setAuditLogs] = useState<SystemAuditLog[]>([]);
   const [registrations, setRegistrations] = useState<MotorcycleRegistration[]>([]);
   const [officers, setOfficers] = useState<OfficerAssignment[]>([]);
-
-  // Sub-view mode for Tab 1 (Role & Permission Matrix vs User List)
-  const [userViewMode, setUserViewMode] = useState<'matrix' | 'table'>('matrix');
 
   // User Filter & Search
   const [userSearch, setUserSearch] = useState('');
@@ -99,9 +96,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   // Form State for New User
   const [newFullName, setNewFullName] = useState('');
   const [newBadgeId, setNewBadgeId] = useState('');
-  const [newEmail, setNewEmail] = useState('');
+  const [newPhone, setNewPhone] = useState('');
   const [newRole, setNewRole] = useState<UserRole>('clerk');
-  const [newSubCity, setNewSubCity] = useState<string>(BAHIR_DAR_SUBCITIES[0].en);
   const [newPassword, setNewPassword] = useState('DefaultPass123!');
 
   // Security Toggles State
@@ -152,8 +148,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     const matchesSearch =
       (u.fullName || '').toLowerCase().includes(userSearch.toLowerCase()) ||
       (u.badgeId || '').toLowerCase().includes(userSearch.toLowerCase()) ||
-      (u.email || '').toLowerCase().includes(userSearch.toLowerCase()) ||
-      (u.subCity || '').toLowerCase().includes(userSearch.toLowerCase());
+      (u.phone || '').toLowerCase().includes(userSearch.toLowerCase());
 
     const matchesRole = roleFilter === 'all' || u.role === roleFilter;
     return matchesSearch && matchesRole;
@@ -170,10 +165,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     const newUser: SystemUser = {
       uid: `user-${newRole}-${newBadgeId.trim().toUpperCase()}`,
       badgeId: newBadgeId.trim().toUpperCase(),
-      email: newEmail.trim() || `${newBadgeId.trim().toLowerCase()}@permit.gov.et`,
+      phone: newPhone.trim() || '0918123456',
       role: newRole,
       fullName: newFullName.trim(),
-      subCity: newSubCity,
       status: 'active',
       createdAt: new Date().toISOString(),
     };
@@ -199,7 +193,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     // Reset Form
     setNewFullName('');
     setNewBadgeId('');
-    setNewEmail('');
+    setNewPhone('');
     setNewRole('clerk');
     setShowAddUserModal(false);
   };
@@ -675,69 +669,96 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
   const subCitiesList = BAHIR_DAR_SUBCITIES;
 
+  const superAdminTabs = [
+    {
+      id: 'users' as const,
+      label: isAmharic ? 'የተጠቃሚዎች ዝርዝር' : 'System Users',
+      icon: 'group',
+      count: users.length,
+    },
+    {
+      id: 'roles' as const,
+      label: isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions',
+      icon: 'shield_person',
+    },
+    {
+      id: 'subcities' as const,
+      label: isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-Cities',
+      icon: 'location_city',
+    },
+    {
+      id: 'permits' as const,
+      label: isAmharic ? 'የፈቃድ ቁጥጥር' : 'Permit Rules',
+      icon: 'workspace_premium',
+    },
+    {
+      id: 'maintenance' as const,
+      label: isAmharic ? 'የሲስተም ጥገና' : 'Maintenance',
+      icon: 'storage',
+    },
+    {
+      id: 'security' as const,
+      label: isAmharic ? 'ደህንነት እና ኦዲት' : 'Security & Audit',
+      icon: 'security',
+    },
+  ];
+
   return (
     <div className="space-y-6 pb-12 font-sans text-on-surface">
       {/* Container with header with icon and header text */}
       <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
         {/* Header with Icon and Text */}
-        <div className="px-4 sm:px-5 py-3.5 sm:py-4 bg-surface-container border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-surface-container border-b border-outline-variant flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[22px] sm:text-[24px] shrink-0">
-              {activeTab === 'users' && 'manage_accounts'}
+              {activeTab === 'users' && 'group'}
+              {activeTab === 'roles' && 'shield_person'}
               {activeTab === 'subcities' && 'location_city'}
               {activeTab === 'permits' && 'workspace_premium'}
               {activeTab === 'maintenance' && 'storage'}
+              {activeTab === 'security' && 'security'}
             </Icon>
             <h2 className="text-xs sm:text-base font-black text-on-surface truncate">
-              {activeTab === 'users' && (isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions')}
+              {activeTab === 'users' && (isAmharic ? 'የተጠቃሚዎች መዝገብ አስተዳደር' : 'System User Management')}
+              {activeTab === 'roles' && (isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance')}
               {activeTab === 'subcities' && (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')}
               {activeTab === 'permits' && (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')}
               {activeTab === 'maintenance' && (isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance')}
+              {activeTab === 'security' && (isAmharic ? 'የሴኪዩሪቲ ኦዲትና ቁጥጥር' : 'Security & Audit Governance')}
             </h2>
           </div>
 
-          {activeTab === 'users' && (
-            <div className="hidden sm:flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-center sm:justify-start flex-nowrap overflow-x-auto scrollbar-none max-w-full -mb-[1px]">
-              {[
-                {
-                  id: 'matrix' as const,
-                  label: isAmharic ? 'የሚና ፈቃድ' : 'Permission Matrix',
-                },
-                {
-                  id: 'table' as const,
-                  label: isAmharic ? 'ተጠቃሚዎች' : 'Users List',
-                  count: users.length,
-                },
-              ].map((tab) => {
-                const isActive = userViewMode === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setUserViewMode(tab.id)}
-                    className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
-                      isActive
-                        ? 'border-primary text-primary font-bold'
-                        : 'border-transparent text-secondary hover:text-on-surface hover:border-outline-variant/60 font-medium'
-                    }`}
-                  >
-                    <span className="tracking-tight">{tab.label}</span>
-                    {typeof tab.count === 'number' && (
-                      <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
-                          isActive
-                            ? 'bg-primary/15 text-primary'
-                            : 'bg-surface-container-highest text-secondary'
-                        }`}
-                      >
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap overflow-x-auto scrollbar-none max-w-full -mb-[1px]">
+            {superAdminTabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                    isActive
+                      ? 'border-primary text-primary font-bold'
+                      : 'border-transparent text-secondary hover:text-on-surface hover:border-outline-variant/60 font-medium'
+                  }`}
+                >
+                  <Icon className="material-symbols-outlined text-[16px] shrink-0">{tab.icon}</Icon>
+                  <span className="tracking-tight">{tab.label}</span>
+                  {typeof tab.count === 'number' && (
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                        isActive
+                          ? 'bg-primary/15 text-primary'
+                          : 'bg-surface-container-highest text-secondary'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
           
           {activeTab === 'maintenance' && (
             <div className="flex items-center gap-2">
@@ -762,74 +783,62 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         {/* Body Container holding page content */}
         <div className="p-4 sm:p-5">
 
-      {/* ================= TAB 1: USERS & RBAC GOVERNANCE ================= */}
+      {/* ================= TAB 1: STANDALONE SYSTEM USER MANAGEMENT ================= */}
       {activeTab === 'users' && (
         <div className="space-y-4">
-          {userViewMode === 'matrix' ? (
-            <RolePermissionManagement
-              currentLang={currentLang}
-              currentUserBadgeId={currentUserBadgeId}
-              users={users}
-              settings={settings}
-              onToggleClerkSetting={handleToggleClerkSetting}
-              onShowToast={onShowToast}
-              onOpenUsersTable={() => setUserViewMode('table')}
-            />
-          ) : (
-            <div className="space-y-4">
-              {/* Controls & Search Bar */}
-              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pb-2">
-                <div className="flex-1 flex flex-col sm:flex-row items-center gap-2.5">
-                  <div className="relative w-full sm:w-80">
-                    <input
-                      type="text"
-                      value={userSearch}
-                      onChange={(e) => setUserSearch(e.target.value)}
-                      placeholder={
-                        isAmharic
-                          ? 'በስም፣ መታወቂያ ወይም ኢሜይል ፈልግ...'
-                          : 'Search by name, badge ID, or email...'
-                      }
-                      className="w-full bg-surface-container border border-outline-variant rounded-md pl-9 pr-4 py-2 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
-                    />
-                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
-                      <Icon className="material-symbols-outlined text-[18px]">
-                        search
-                      </Icon>
-                    </div>
-                  </div>
-
-                  <select
-                    value={roleFilter}
-                    onChange={(e) => setRoleFilter(e.target.value)}
-                    className="w-full sm:w-48 bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-[#1e293b]"
-                  >
-                    <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
-                    <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
-                    <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin/Manager)' : 'Admin / Manager'}</option>
-                    <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
-                    <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Traffic Officer)' : 'Traffic Officer'}</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <button
-                    onClick={() => setUserViewMode('matrix')}
-                    className="w-full sm:w-auto px-3.5 py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <Icon className="material-symbols-outlined text-[18px]">shield_person</Icon>
-                    <span>{isAmharic ? 'ወደ ፈቃድ ማዋቀር' : 'Permissions Matrix'}</span>
-                  </button>
-
-                  <button
-                    onClick={() => setShowAddUserModal(true)}
-                    className="w-full sm:w-auto px-4 py-2 bg-[#1e293b] hover:bg-[#162B5B] text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 shrink-0 cursor-pointer"
-                  >
-                    <Icon className="material-symbols-outlined text-[18px]">person_add</Icon>
-                    <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
-                  </button>
+          {/* Controls & Search Bar */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pb-2">
+            <div className="flex-1 flex flex-col sm:flex-row items-center gap-2.5">
+              <div className="relative w-full sm:w-80">
+                <input
+                  type="text"
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  placeholder={
+                    isAmharic
+                      ? 'በስም፣ መታወቂያ ወይም ስልክ ቁጥር ፈልግ...'
+                      : 'Search by name, badge ID, or phone...'
+                  }
+                  className="w-full bg-surface-container border border-outline-variant rounded-md pl-9 pr-4 py-2 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
+                />
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                  <Icon className="material-symbols-outlined text-[18px]">
+                    search
+                  </Icon>
                 </div>
               </div>
+
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="w-full sm:w-48 bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-[#1e293b]"
+              >
+                <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
+                <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
+                <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin/Manager)' : 'Admin / Manager'}</option>
+                <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
+                <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Traffic Officer)' : 'Traffic Officer'}</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <button
+                onClick={() => setActiveTab('roles')}
+                className="w-full sm:w-auto px-3.5 py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">shield_person</Icon>
+                <span>{isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}</span>
+              </button>
+
+              <button
+                onClick={() => setShowAddUserModal(true)}
+                className="w-full sm:w-auto px-4 py-2 bg-[#1e293b] hover:bg-[#162B5B] text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95 shrink-0 cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">person_add</Icon>
+                <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
+              </button>
+            </div>
+          </div>
 
               {/* Users Responsive Table & Mobile Cards (TailAdmin Design) */}
               <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden">
@@ -839,10 +848,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     <thead>
                       <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                         <th className="py-4 px-4 font-medium">{isAmharic ? 'ተጠቃሚ' : 'User'}</th>
-                        <th className="py-4 px-4 font-medium">{isAmharic ? 'የኢሜል አድራሻ' : 'Email Address'}</th>
+                        <th className="py-4 px-4 font-medium">{isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}</th>
                         <th className="py-4 px-3 font-medium">{isAmharic ? 'የመታወቂያ ቁጥር' : 'Badge ID'}</th>
                         <th className="py-4 px-3 font-medium">{isAmharic ? 'ሚና' : 'Role'}</th>
-                        <th className="py-4 px-3 font-medium">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
                         <th className="py-4 px-3 font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
                         <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'ተግባራት' : 'Actions'}</th>
                       </tr>
@@ -850,7 +858,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs font-medium">
                       {filteredUsers.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="text-center py-12 px-4 text-[#64748B] dark:text-[#8A99AD]">
+                          <td colSpan={6} className="text-center py-12 px-4 text-[#64748B] dark:text-[#8A99AD]">
                             <Icon className="material-symbols-outlined text-4xl block mb-2 opacity-40">person_off</Icon>
                             {isAmharic ? 'ምንም ተጠቃሚ አልተገኘም' : 'No users matching criteria'}
                           </td>
@@ -878,9 +886,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               </div>
                             </td>
 
-                            {/* Standalone Email Address */}
+                            {/* Standalone Mobile Number */}
                             <td className="py-4 px-4 font-mono text-xs text-[#64748B] dark:text-[#8A99AD]">
-                              {user.email}
+                              {user.phone || '0918123456'}
                             </td>
 
                             {/* Standalone Badge ID */}
@@ -911,9 +919,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                 {user.role}
                               </span>
                             </td>
-
-                            {/* Standalone Sub-City */}
-                            <td className="py-4 px-3 text-[#64748B] dark:text-[#8A99AD]">{user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ'}</td>
 
                             {/* Standalone Status */}
                             <td className="py-4 px-3 whitespace-nowrap">
@@ -1076,7 +1081,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                 isAmharic={isAmharic}
                                 fields={[
                                   { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: user.uid },
-                                  { label: isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:', value: user.subCity || 'በላይ ዘለቀ ክፍለ ከተማ' },
+                                  { label: isAmharic ? 'ስልክ ቁጥር:' : 'Mobile Number:', value: user.phone || '0918123456' },
                                   { label: isAmharic ? 'የስራ ድርሻ:' : 'Role:', value: user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1).toLowerCase()) : 'Clerk' },
                                 ]}
                               />
@@ -1134,12 +1139,25 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   )}
                 </div>
               </div>
-            </div>
-          )}
         </div>
       )}
 
-      {/* ================= TAB 2: SUBCITY GOVERNANCE ================= */}
+      {/* ================= TAB 2: STANDALONE ROLE PERMISSIONS GOVERNANCE ================= */}
+      {activeTab === 'roles' && (
+        <div className="space-y-4">
+          <RolePermissionManagement
+            currentLang={currentLang}
+            currentUserBadgeId={currentUserBadgeId}
+            users={users}
+            settings={settings}
+            onToggleClerkSetting={handleToggleClerkSetting}
+            onShowToast={onShowToast}
+            onOpenUsersTable={() => setActiveTab('users')}
+          />
+        </div>
+      )}
+
+      {/* ================= TAB 3: SUBCITY GOVERNANCE ================= */}
       {activeTab === 'subcities' && (
         <div className="space-y-5">
           <div className="pb-4 border-b border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -2054,32 +2072,16 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
               <div>
                 <label className="block text-xs font-bold text-on-surface mb-1">
-                  {isAmharic ? 'ኢሜይል አድራሻ' : 'Email Address'}
+                  {isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}
                 </label>
                 <input
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="e.g. yohannes@permit.gov.et"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
+                  type="tel"
+                  required
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  placeholder="e.g. 0918123456"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b]"
                 />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">
-                  {isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}
-                </label>
-                <select
-                  value={newSubCity}
-                  onChange={(e) => setNewSubCity(e.target.value)}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
-                >
-                  {subCitiesList.map((sc) => (
-                    <option key={sc.en} value={sc.en}>
-                      {isAmharic ? `${sc.am} (${sc.en})` : `${sc.en} (${sc.am})`}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-2">
@@ -2156,28 +2158,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">{isAmharic ? 'ኢሜይል' : 'Email'}</label>
+                <label className="block text-xs font-bold text-on-surface mb-1">{isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}</label>
                 <input
-                  type="email"
-                  value={editingUser.email}
-                  onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
+                  type="tel"
+                  value={editingUser.phone || ''}
+                  onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
+                  placeholder="e.g. 0918123456"
+                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b]"
                 />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</label>
-                <select
-                  value={editingUser.subCity || BAHIR_DAR_SUBCITIES[0].en}
-                  onChange={(e) => setEditingUser({ ...editingUser, subCity: e.target.value })}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
-                >
-                  {subCitiesList.map((sc) => (
-                    <option key={sc.en} value={sc.en}>
-                      {isAmharic ? `${sc.am} (${sc.en})` : `${sc.en} (${sc.am})`}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-2">

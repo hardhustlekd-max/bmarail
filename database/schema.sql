@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS system_users (
     id VARCHAR(128) PRIMARY KEY,
     uid VARCHAR(128) UNIQUE NOT NULL,
     badge_id VARCHAR(100) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(50),
+    email VARCHAR(255),
     password_hash VARCHAR(255),
     role VARCHAR(50) NOT NULL CHECK (role IN ('clerk', 'admin', 'officer', 'superadmin')),
     full_name VARCHAR(255) NOT NULL,
@@ -56,12 +57,20 @@ CREATE TABLE IF NOT EXISTS motorcycle_registrations (
     qr_code_data TEXT NOT NULL,
     registered_by VARCHAR(100) NOT NULL,
     rejection_reason TEXT,
+    last_rejection_reason TEXT,
+    is_correction BOOLEAN DEFAULT FALSE,
     sub_city VARCHAR(100),
+    email VARCHAR(255),
     blood_group VARCHAR(20),
     hide_from_other_users BOOLEAN DEFAULT FALSE,
     receipt_number VARCHAR(100),
     payment_amount VARCHAR(50),
     receipt_screenshot TEXT,
+    term_status VARCHAR(50) DEFAULT 'CURRENT',
+    active_term_expiration_date VARCHAR(50),
+    last_payment_date VARCHAR(50),
+    last_receipt_number VARCHAR(100),
+    last_payment_amount VARCHAR(50),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -198,6 +207,9 @@ CREATE TABLE IF NOT EXISTS payment_receipts (
     notes TEXT,
     entered_by VARCHAR(100) NOT NULL,
     status VARCHAR(50) DEFAULT 'valid',
+    verified_by_cheki BOOLEAN DEFAULT FALSE,
+    cheki_bank VARCHAR(100),
+    entered_at VARCHAR(50),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
@@ -319,6 +331,20 @@ ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS receipt_number VAR
 ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS payment_amount VARCHAR(50);
 ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS receipt_screenshot TEXT;
 ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS hide_from_other_users BOOLEAN DEFAULT FALSE;
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_rejection_reason TEXT;
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS is_correction BOOLEAN DEFAULT FALSE;
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS term_status VARCHAR(50) DEFAULT 'CURRENT';
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS active_term_expiration_date VARCHAR(50);
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_payment_date VARCHAR(50);
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_receipt_number VARCHAR(100);
+ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_payment_amount VARCHAR(50);
+
+ALTER TABLE system_users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
+
+ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS verified_by_cheki BOOLEAN DEFAULT FALSE;
+ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS cheki_bank VARCHAR(100);
+ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS entered_at VARCHAR(50);
 
 ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS cleared_ids JSONB DEFAULT '[]'::jsonb;
 

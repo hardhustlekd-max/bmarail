@@ -9,12 +9,13 @@
 -- Bcrypt Hash for "AdminPassword123!": $2a$10$wQ9KkJW3k3oH3mN2s4gTeuX3I8z8lqX5M3s9q2j1V4z7y0n2p5r7u
 -- Bcrypt Hash for "SuperAdminPassword123!": $2a$10$wQ9KkJW3k3oH3mN2s4gTeuX3I8z8lqX5M3s9q2j1V4z7y0n2p5r7u
 
-INSERT INTO system_users (id, uid, badge_id, email, password_hash, role, full_name, sub_city, status, created_at)
+INSERT INTO system_users (id, uid, badge_id, phone, email, password_hash, role, full_name, sub_city, status, created_at)
 VALUES 
   (
     'user-clerk-CLERK-001',
     'user-clerk-CLERK-001',
     'CLERK-001',
+    '0918123456',
     'clerk@permit.gov.et',
     '$2a$10$K7L1RKqK36zW7hM4iC.Eke9G.LqV8x3u8aH8Vb1vF5rN7x7Y2wQ8y',
     'clerk',
@@ -27,6 +28,7 @@ VALUES
     'user-officer-OFFICER-8842',
     'user-officer-OFFICER-8842',
     'OFFICER-8842',
+    '0918654321',
     'officer@permit.gov.et',
     '$2a$10$K7L1RKqK36zW7hM4iC.Eke9G.LqV8x3u8aH8Vb1vF5rN7x7Y2wQ8y',
     'officer',
@@ -39,6 +41,7 @@ VALUES
     'user-admin-ADMIN-PRO-1',
     'user-admin-ADMIN-PRO-1',
     'ADMIN-PRO-1',
+    '0911223344',
     'admin@permit.gov.et',
     '$2a$10$K7L1RKqK36zW7hM4iC.Eke9G.LqV8x3u8aH8Vb1vF5rN7x7Y2wQ8y',
     'admin',
@@ -51,6 +54,7 @@ VALUES
     'user-superadmin-SUPER-ADMIN-01',
     'user-superadmin-SUPER-ADMIN-01',
     'SUPER-ADMIN-01',
+    '0911000001',
     'superadmin@permit.gov.et',
     '$2a$10$K7L1RKqK36zW7hM4iC.Eke9G.LqV8x3u8aH8Vb1vF5rN7x7Y2wQ8y',
     'superadmin',

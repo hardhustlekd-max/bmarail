@@ -93,6 +93,7 @@ export type ActiveHomePage =
   | 'unregistered_list'
   | 'payment_receipts'
   | 'superadmin_users'
+  | 'superadmin_roles'
   | 'superadmin_subcities'
   | 'superadmin_security'
   | 'superadmin_permits'
@@ -444,7 +445,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
         return 'ኮውአር ኮድ ፈትሽ';
       case 'superadmin_users':
       case 'superadmin':
-        return 'ሚና እና ፈቃድ';
+        return 'የተጠቃሚዎች ዝርዝር';
+      case 'superadmin_roles':
+        return 'የሚና ፈቃዶች አስተዳደር';
       case 'superadmin_subcities':
         return 'የክፍለ ከተማ ቁጥጥር';
       case 'superadmin_security':
@@ -578,12 +581,18 @@ const HomePageShell: React.FC<HomePageProps> = ({
         icon: 'admin_panel_settings',
       };
       let current = {
-        label: isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions',
+        label: isAmharic ? 'የተጠቃሚዎች ዝርዝር' : 'System Users',
         page: activePage,
-        icon: 'manage_accounts',
+        icon: 'group',
       };
 
-      if (activePage === 'superadmin_subcities') {
+      if (activePage === 'superadmin_roles') {
+        current = {
+          label: isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance',
+          page: activePage,
+          icon: 'shield_person',
+        };
+      } else if (activePage === 'superadmin_subcities') {
         current = {
           label: isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance',
           page: activePage,
@@ -2499,8 +2508,27 @@ const HomePageShell: React.FC<HomePageProps> = ({
                             }`}
                           >
                             <div className="flex items-center gap-2">
-                              <Icon className="material-symbols-outlined text-[18px] text-amber-300">manage_accounts</Icon>
-                              <span>{isAmharic ? 'ሚና እና ፈቃድ' : 'Roles & Permissions'}</span>
+                              <Icon className="material-symbols-outlined text-[18px] text-amber-300">group</Icon>
+                              <span>{isAmharic ? 'የተጠቃሚዎች ዝርዝር' : 'System Users'}</span>
+                            </div>
+                            <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActivePage('superadmin_roles');
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                              activePage === 'superadmin_roles'
+                                ? 'bg-amber-400 text-[#1e293b] font-black shadow-2xs'
+                                : 'text-purple-100 hover:bg-purple-900/30'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <Icon className="material-symbols-outlined text-[18px] text-amber-300">shield_person</Icon>
+                              <span>{isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}</span>
                             </div>
                             <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
                           </button>
