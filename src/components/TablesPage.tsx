@@ -1491,30 +1491,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 </div>
                               )}
 
-                              {/* 2. Main Inspection & Edit Row */}
-                              <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedRegForDetails(reg)}
-                                  className="flex-1 py-2 px-3 rounded-lg bg-primary hover:bg-opacity-90 text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-[0.98]"
-                                >
-                                  <Icon className="material-symbols-outlined text-[16px]">assignment_ind</Icon>
-                                  <span>{isAmharic ? 'ሙሉ መረጃ በጎን መስኮት ክፈት' : 'Full Details in Drawer'}</span>
-                                </button>
-
-                                {canEditRegistration && (
+                              {/* 2. Edit Information Row */}
+                              {canEditRegistration && (
+                                <div className="flex items-center gap-2">
                                   <button
                                     id={`mobile-edit-reg-btn-${reg.id}`}
                                     type="button"
                                     onClick={() => setEditingRegistration(reg)}
-                                    className="py-2 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold text-xs inline-flex items-center justify-center gap-1 shadow-2xs transition-colors cursor-pointer"
+                                    className="w-full py-2 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
                                     title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
                                   >
-                                    <Icon className="material-symbols-outlined text-[15px] text-amber-500">edit</Icon>
-                                    <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
+                                    <Icon className="material-symbols-outlined text-[16px] text-amber-500">edit</Icon>
+                                    <span>{isAmharic ? 'መረጃ አሻሽል' : 'Edit Information'}</span>
                                   </button>
-                                )}
-                              </div>
+                                </div>
+                              )}
 
                               {/* 3. Printing & Credentials Row */}
                               <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
