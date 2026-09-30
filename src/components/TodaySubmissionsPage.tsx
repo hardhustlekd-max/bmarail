@@ -1434,7 +1434,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             <form onSubmit={handleSaveEdit} className="p-4 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {isReadOnly && (
                 <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px]">warning</Icon>
+                  <Icon className="material-symbols-outlined text-[18px]">lock</Icon>
                   <span>
                     {isAmharic ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ ማስተካከል እና ማስቀመጥ አይፈቀድም።' : 'Read-Only Mode Active: Form editing and saving is disabled.'}
                   </span>
