@@ -603,6 +603,114 @@ export const KpiGrid: React.FC<{ children: ReactNode; className?: string }> = ({
   </div>
 );
 
+export interface MetricStatCardProps {
+  label: string;
+  value: ReactNode | string | number;
+  subtext?: ReactNode | string;
+  unit?: string;
+  statusVariant?: 'paid' | 'due' | 'overdue' | 'neutral' | 'active' | 'success' | 'warning' | 'danger';
+  statusDotColor?: string;
+  icon?: string;
+  progress?: number;
+  onClick?: () => void;
+  className?: string;
+  isActive?: boolean;
+}
+
+export const MetricStatCard: React.FC<MetricStatCardProps> = ({
+  label,
+  value,
+  subtext,
+  unit,
+  statusVariant,
+  statusDotColor,
+  icon,
+  progress,
+  onClick,
+  className = '',
+  isActive = false,
+}) => {
+  const dotColorMap: Record<string, string> = {
+    paid: 'bg-emerald-500',
+    active: 'bg-emerald-500',
+    success: 'bg-emerald-500',
+    due: 'bg-amber-500',
+    warning: 'bg-amber-500',
+    overdue: 'bg-rose-500',
+    danger: 'bg-rose-500',
+    neutral: 'bg-slate-400',
+  };
+
+  const resolvedDotColor = statusDotColor || (statusVariant ? dotColorMap[statusVariant] : undefined);
+
+  return (
+    <div
+      onClick={onClick}
+      className={`p-3.5 rounded-xl bg-white dark:bg-slate-900 border ${
+        isActive
+          ? 'border-primary dark:border-primary ring-1 ring-primary/20'
+          : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+      } shadow-xs hover:shadow-sm active:scale-98 transition-all duration-200 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
+        onClick ? 'cursor-pointer group' : ''
+      } ${className}`}
+    >
+      <div className="flex items-center justify-between gap-1 mb-1">
+        <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 truncate block">
+          {label}
+        </span>
+        {resolvedDotColor && (
+          <span className={`w-2 h-2 rounded-full shrink-0 ${resolvedDotColor}`} />
+        )}
+        {icon && !resolvedDotColor && (
+          <Icon name={icon} size={16} className="text-slate-400 dark:text-slate-500 shrink-0" />
+        )}
+      </div>
+      <div>
+        <p className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight flex items-baseline">
+          {value}
+          {unit && (
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-1">
+              {unit}
+            </span>
+          )}
+        </p>
+        {subtext && (
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 truncate font-medium">
+            {subtext}
+          </p>
+        )}
+        {typeof progress === 'number' && (
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1.5">
+            <div
+              className="bg-primary h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const MetricGrid: React.FC<{
+  children: ReactNode;
+  columns?: 2 | 3 | 4 | 5;
+  className?: string;
+}> = ({ children, columns = 5, className = '' }) => {
+  const colClasses = {
+    2: 'grid-cols-1 sm:grid-cols-2',
+    3: 'grid-cols-1 sm:grid-cols-3',
+    4: 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4',
+    5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
+  };
+
+  return (
+    <div className={`grid ${colClasses[columns]} gap-2 sm:gap-3 ${className}`}>
+      {children}
+    </div>
+  );
+};
+
 export const TableContainer: React.FC<{
   title?: string;
   action?: ReactNode;

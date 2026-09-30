@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Icon } from './ui/Icon';
-import { KpiCard, MonthlyMatrixLedger, StatusDot, StatusBadge, MatrixRowItem } from './ui/AssocDesignSystem';
+import { KpiCard, MonthlyMatrixLedger, StatusDot, StatusBadge, MatrixRowItem, MetricStatCard, MetricGrid } from './ui/AssocDesignSystem';
 import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
@@ -1094,124 +1094,70 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </div>
             </div>
 
-            {/* 5-Column Responsive Metric Statistics Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {/* 5-Column Responsive Metric Statistics Cards (Clean Design System) */}
+            <MetricGrid columns={5}>
               {/* 1. Paid Members */}
-              <div
+              <MetricStatCard
+                label={isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
+                value={ethiopianMonthlyMetrics.paidMembersCount}
+                subtext={isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
+                statusVariant="paid"
                 onClick={() => {
                   setStatusFilter('active');
                   setActiveMainTab('table');
                 }}
-                className="p-3.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-500/20 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-extrabold text-emerald-800 dark:text-emerald-300 truncate block">
-                    {isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[18px] text-emerald-600 dark:text-emerald-400 shrink-0">check_circle</Icon>
-                </div>
-                <p className="text-xl sm:text-2xl font-black text-emerald-700 dark:text-emerald-300 tracking-tight leading-tight">
-                  {ethiopianMonthlyMetrics.paidMembersCount}
-                </p>
-                <p className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 mt-1 truncate">
-                  {isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
-                </p>
-              </div>
+              />
 
               {/* 2. Payment Due Soon */}
-              <div
+              <MetricStatCard
+                label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon'}
+                value={ethiopianMonthlyMetrics.dueSoonMembersCount}
+                subtext={isAmharic ? 'በ 5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
+                statusVariant="due"
                 onClick={() => {
                   setStatusFilter('expiring_soon');
                   setActiveMainTab('table');
                 }}
-                className="p-3.5 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-500/20 hover:bg-amber-100/70 dark:hover:bg-amber-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-extrabold text-amber-800 dark:text-amber-300 truncate block">
-                    {isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0">schedule</Icon>
-                </div>
-                <p className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400 tracking-tight leading-tight">
-                  {ethiopianMonthlyMetrics.dueSoonMembersCount}
-                </p>
-                <p className="text-[10px] text-amber-600/80 dark:text-amber-400/80 mt-1 truncate">
-                  {isAmharic ? 'በ 5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
-                </p>
-              </div>
+              />
 
               {/* 3. Unpaid / Overdue */}
-              <div
+              <MetricStatCard
+                label={isAmharic ? 'ያልተከፈለባቸው' : 'Unpaid / Overdue'}
+                value={ethiopianMonthlyMetrics.unpaidMembersCount}
+                subtext={isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
+                statusVariant="overdue"
                 onClick={() => {
                   setStatusFilter('expired');
                   setActiveMainTab('table');
                 }}
-                className="p-3.5 rounded-xl bg-rose-50/80 dark:bg-rose-950/30 border border-rose-500/20 hover:bg-rose-100/70 dark:hover:bg-rose-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-extrabold text-rose-800 dark:text-rose-300 truncate block">
-                    {isAmharic ? 'ያልተከፈለባቸው' : 'Unpaid / Overdue'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0">warning</Icon>
-                </div>
-                <p className="text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight">
-                  {ethiopianMonthlyMetrics.unpaidMembersCount}
-                </p>
-                <p className="text-[10px] text-rose-600/80 dark:text-rose-400/80 mt-1 truncate">
-                  {isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
-                </p>
-              </div>
+              />
 
               {/* 4. Month Revenue */}
-              <div
+              <MetricStatCard
+                label={isAmharic ? 'የወሩ ገቢ' : 'Month Revenue'}
+                value={ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
+                unit={isAmharic ? 'ብር' : 'ETB'}
+                subtext={`${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
+                icon="account_balance_wallet"
                 onClick={() => {
                   setStatusFilter('all');
                   setActiveMainTab('table');
                 }}
-                className="p-3.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/30 border border-blue-500/20 hover:bg-blue-100/70 dark:hover:bg-blue-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-extrabold text-blue-800 dark:text-blue-300 truncate block">
-                    {isAmharic ? 'የወሩ ገቢ' : 'Month Revenue'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[18px] text-blue-600 dark:text-blue-400 shrink-0">account_balance_wallet</Icon>
-                </div>
-                <p className="text-xl sm:text-2xl font-black text-blue-700 dark:text-blue-300 tracking-tight leading-tight">
-                  {ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
-                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400 ml-1">
-                    {isAmharic ? 'ብር' : 'ETB'}
-                  </span>
-                </p>
-                <p className="text-[10px] text-blue-600/80 dark:text-blue-400/80 mt-1 truncate">
-                  {ethiopianMonthlyMetrics.totalReceiptsCount} {isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}
-                </p>
-              </div>
+              />
 
               {/* 5. Compliance Rate */}
-              <div
+              <MetricStatCard
+                label={isAmharic ? 'የክፍያ ምጣኔ' : 'Compliance Rate'}
+                value={`${ethiopianMonthlyMetrics.complianceRate}%`}
+                icon="pie_chart"
+                progress={ethiopianMonthlyMetrics.complianceRate}
+                className="col-span-2 sm:col-span-1"
                 onClick={() => {
                   setStatusFilter('all');
                   setActiveMainTab('table');
                 }}
-                className="p-3.5 rounded-xl bg-purple-50/80 dark:bg-purple-950/30 border border-purple-500/20 hover:bg-purple-100/70 dark:hover:bg-purple-900/40 hover:shadow-xs active:scale-102 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none col-span-2 sm:col-span-1"
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[11px] font-extrabold text-purple-800 dark:text-purple-300 truncate block">
-                    {isAmharic ? 'የክፍያ ምጣኔ' : 'Compliance Rate'}
-                  </span>
-                  <Icon className="material-symbols-outlined text-[18px] text-purple-600 dark:text-purple-400 shrink-0">pie_chart</Icon>
-                </div>
-                <p className="text-xl sm:text-2xl font-black text-purple-700 dark:text-purple-300 tracking-tight leading-tight">
-                  {ethiopianMonthlyMetrics.complianceRate}%
-                </p>
-                <div className="w-full bg-purple-200/60 dark:bg-purple-900/50 h-1.5 rounded-full overflow-hidden mt-1.5">
-                  <div
-                    className="bg-purple-600 dark:bg-purple-400 h-full rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min(100, Math.max(0, ethiopianMonthlyMetrics.complianceRate))}%` }}
-                  />
-                </div>
-              </div>
-            </div>
+              />
+            </MetricGrid>
 
             {/* Additional Status Distribution & Quick Actions Card */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
