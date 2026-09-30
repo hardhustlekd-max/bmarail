@@ -864,7 +864,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                         })}
                       </div>
 
-                      {/* Explicit Action to Open Verification Drawer */}
+                      {/* Explicit Action to Open Member Full Information Drawer */}
                       {onRowClick && (
                         <div className="pt-2 flex items-center justify-end border-t border-slate-200 dark:border-slate-700/60">
                           <button
@@ -875,8 +875,8 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                             }}
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-primary hover:bg-primary-hover active:scale-98 text-white shadow-xs transition-all cursor-pointer"
                           >
-                            <Icon name="verified" size={16} />
-                            <span>{isAmharic ? 'ደረሰኝ አረጋግጥ / ዝርዝር ክፈት' : 'Open Verification Drawer'}</span>
+                            <Icon name="badge" size={16} />
+                            <span>{isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Full Information'}</span>
                           </button>
                         </div>
                       )}

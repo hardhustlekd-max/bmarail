@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Icon } from './ui/Icon';
-import { KpiCard, MonthlyMatrixLedger, StatusDot } from './ui/AssocDesignSystem';
+import { KpiCard, MonthlyMatrixLedger, StatusDot, MatrixRowItem } from './ui/AssocDesignSystem';
 import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
@@ -79,8 +79,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [isReceiptChekiVerified, setIsReceiptChekiVerified] = useState(false);
   const [chekiVerifiedBankName, setChekiVerifiedBankName] = useState('');
 
-  // Reconciliation Drawer State (Replaces modal-heavy flows with inline right slide-over side-sheet)
-  const [reconcileReceipt, setReconcileReceipt] = useState<PaymentReceipt | null>(null);
+  // Member Full Information Drawer State
+  const [selectedMemberDetail, setSelectedMemberDetail] = useState<{
+    row: MatrixRowItem;
+    member: MotorcycleRegistration | null;
+    receipts: PaymentReceipt[];
+  } | null>(null);
+  const [previewDocPhoto, setPreviewDocPhoto] = useState<{ url: string; title: string } | null>(null);
   const [reconcileVerifyInput, setReconcileVerifyInput] = useState('');
   const [reconcileVerifyStatus, setReconcileVerifyStatus] = useState<'idle' | 'matched' | 'mismatch'>('idle');
   const [reconcileCopiedField, setReconcileCopiedField] = useState<string | null>(null);
@@ -566,8 +571,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         }
       }
 
-      if (reconcileReceipt && reconcileReceipt.id === deleteConfirmId) {
-        setReconcileReceipt(null);
+      if (deleteConfirmId) {
+        setSelectedMemberDetail((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            receipts: prev.receipts.filter((r) => r.id !== deleteConfirmId),
+          };
+        });
       }
     } catch (err) {
       console.error('Error deleting receipt:', err);
@@ -1865,31 +1876,43 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               expandableMobile={true}
               emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
               onRowClick={(row) => {
-                const memberReg = registrations.find((r) => String(r.id) === String(row.id));
-                const matchedRc = combinedReceipts.find(
+                const memberReg =
+                  registrations.find((r) => String(r.id) === String(row.id)) ||
+                  registrations.find(
+                    (r) =>
+                      r.plateNumber &&
+                      row.plateNumber &&
+                      r.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()
+                  ) ||
+                  null;
+
+                const memberReceipts = combinedReceipts.filter(
                   (rc) =>
                     (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                    (memberReg && rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(memberReg.id)) ||
                     (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
                     (rc.plateNumber && memberReg?.plateNumber && rc.plateNumber.toLowerCase() === memberReg.plateNumber.toLowerCase())
                 );
-                if (matchedRc) {
-                  setReconcileReceipt(matchedRc);
-                } else if (memberReg || row.plateNumber) {
-                  handleRegNumberChange(row.plateNumber || memberReg?.plateNumber || String(row.id));
-                  setIsFormOpen(true);
-                }
+
+                setSelectedMemberDetail({
+                  row,
+                  member: memberReg,
+                  receipts: memberReceipts,
+                });
+                setReconcileVerifyInput('');
+                setReconcileVerifyStatus('idle');
               }}
             />
           </div>
         </div>
       )}
 
-      {/* RECONCILIATION DRAWER (Inline Side-Sheet sliding in from the right) */}
-      {reconcileReceipt && (
+      {/* MEMBER FULL INFORMATION DRAWER (Slide-Over Side-Sheet) */}
+      {selectedMemberDetail && (
         <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
-          {/* Subtle semi-transparent backdrop allowing parent records to remain visible in background */}
+          {/* Subtle semi-transparent backdrop */}
           <div
-            onClick={() => setReconcileReceipt(null)}
+            onClick={() => setSelectedMemberDetail(null)}
             className="fixed inset-0 bg-slate-950/40 dark:bg-black/60 transition-opacity"
           />
 
@@ -1897,230 +1920,443 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-300 dark:border-slate-800 shadow-2xl z-10 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
             {/* Drawer Header */}
             <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-slate-300 text-[16px] sm:text-[18px] shrink-0">
-                    compare_arrows
-                  </Icon>
-                  <h3 className="text-sm sm:text-base font-black  tracking-wide">
-                    {isAmharic ? 'የባንክ ማስታረቂያ & ደረሰኝ ማጣሪያ' : 'Bank Reconciliation & Audit Drawer'}
-                  </h3>
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
+                  <Icon name="assignment_ind" size={24} />
                 </div>
-                <p className="text-xs text-slate-300 font-mono">
-                  Receipt: #{reconcileReceipt.receiptNumber} — {reconcileReceipt.ownerName}
-                </p>
+                <div className="space-y-0.5 min-w-0">
+                  <h3 className="text-sm sm:text-base font-black tracking-wide truncate flex items-center gap-2">
+                    <span>{isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Full Information'}</span>
+                  </h3>
+                  <p className="text-xs text-slate-300 font-medium truncate">
+                    {selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title}
+                  </p>
+                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setReconcileReceipt(null)}
-                className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-2">
+                {(selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber) && (
+                  <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-amber-400">
+                    {selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedMemberDetail(null)}
+                  className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-sm font-bold shrink-0"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             {/* Drawer Body: Scrollable */}
             <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs">
-              {/* CBE / Telebirr Reference Comparator Strip */}
-              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
-                  <div className="flex items-center gap-1.5">
-                    <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400 shrink-0">
-                      account_balance
-                    </Icon>
-                    <span className="font-black text-slate-950 dark:text-white ">
-                      {isAmharic ? 'የባንክ ማጣቀሻ ማረጋገጫ' : 'Bank Reference Verification'}
-                    </span>
-                  </div>
-                  {reconcileReceipt.verifiedByCheki && (
-                    <span className="px-2 py-0.5 rounded text-[10px] font-black  bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-400 flex items-center gap-1">
-                      <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
-                      <span>Cheki Verified ({reconcileReceipt.chekiBank || 'Bank'})</span>
-                    </span>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Bank Reference ID with Quick Copy */}
-                  <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                    <div>
-                      <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
-                        {isAmharic ? 'የማጣቀሻ ቁጥር' : 'Reference # (FT / Ref)'}
-                      </span>
-                      <span className="font-mono font-black text-slate-950 dark:text-white text-xs sm:text-sm">
-                        {reconcileReceipt.receiptNumber}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(reconcileReceipt.receiptNumber, 'Reference #')}
-                      className="px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <Icon className="material-symbols-outlined text-[14px]">
-                        {reconcileCopiedField === 'Reference #' ? 'check' : 'content_copy'}
-                      </Icon>
-                      <span>{reconcileCopiedField === 'Reference #' ? (isAmharic ? 'ተቀድቷል' : 'Copied') : (isAmharic ? 'ቅዳ' : 'Copy')}</span>
-                    </button>
-                  </div>
-
-                  {/* Amount with Quick Copy */}
-                  <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                    <div>
-                      <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
-                        {isAmharic ? 'የተረጋገጠ መጠን' : 'Amount'}
-                      </span>
-                      <span className="font-mono font-black text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm">
-                        {reconcileReceipt.amount || '500 ETB'}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(String(reconcileReceipt.amount || '500 ETB'), 'Amount')}
-                      className="px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors"
-                    >
-                      <Icon className="material-symbols-outlined text-[14px]">
-                        {reconcileCopiedField === 'Amount' ? 'check' : 'content_copy'}
-                      </Icon>
-                      <span>{reconcileCopiedField === 'Amount' ? (isAmharic ? 'ተቀድቷል' : 'Copied') : (isAmharic ? 'ቅዳ' : 'Copy')}</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Instant Verification Comparator Tool */}
-                <div className="space-y-1.5 pt-1">
-                  <label className="block text-[11px] font-bold text-slate-900 dark:text-slate-100">
-                    {isAmharic
-                      ? 'ከባንክ ኤስኤምኤስ ወይም ከመተግበሪያ የተገኘ የማጣቀሻ ቁጥር እዚህ አጣራ፦'
-                      : 'Compare Bank Statement SMS / Web Reference against Ledger:'}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={reconcileVerifyInput}
-                      onChange={(e) => handleRunReconcileComparison(reconcileReceipt.receiptNumber, e.target.value)}
-                      placeholder={
-                        isAmharic
-                          ? 'የባንክ ኤስኤምኤስ ወይም ማጣቀሻ ቁጥር ለጥፍ...'
-                          : 'Paste CBE / Telebirr SMS string or reference here to test match...'
+              {/* Profile Hero Card */}
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                {selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail ? (
+                  <div
+                    onClick={() => {
+                      const photoUrl = selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail;
+                      if (photoUrl) {
+                        setPreviewDocPhoto({
+                          url: photoUrl,
+                          title: isAmharic ? 'የአባል ፎቶ' : 'Member Portrait Photo',
+                        });
                       }
-                      className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    }}
+                    className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-xl overflow-hidden border-2 border-primary shadow-xs shrink-0 cursor-pointer group bg-slate-200 dark:bg-slate-700"
+                  >
+                    <SmartImage
+                      src={selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail || ''}
+                      alt={selectedMemberDetail.member?.fullName || 'Member Photo'}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                      <Icon name="zoom_in" size={20} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-xl bg-primary/10 border-2 border-primary/30 flex items-center justify-center text-primary text-2xl font-black shrink-0">
+                    {(selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title || 'M').charAt(0).toUpperCase()}
+                  </div>
+                )}
+
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-base font-black text-slate-900 dark:text-white truncate">
+                      {selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title}
+                    </h4>
+                    {selectedMemberDetail.member?.status && (
+                      <span
+                        className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                          selectedMemberDetail.member.status === 'approved'
+                            ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-300'
+                            : selectedMemberDetail.member.status === 'pending_approval'
+                            ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-300'
+                            : selectedMemberDetail.member.status === 'printed' || selectedMemberDetail.member.status === 'ordered_print'
+                            ? 'bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-blue-200 border border-blue-300'
+                            : 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-200 border border-rose-300'
+                        }`}
+                      >
+                        {selectedMemberDetail.member.status}
+                      </span>
+                    )}
                   </div>
 
-                  {reconcileVerifyStatus === 'matched' && (
-                    <div className="p-2.5 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-400 text-emerald-950 dark:text-emerald-100 rounded-lg font-bold flex items-center gap-2">
-                      <Icon className="material-symbols-outlined text-emerald-700 text-[18px]">check_circle</Icon>
-                      <span>
-                        {isAmharic
-                          ? 'ትክክለኛ ማረጋገጫ ተገኝቷል! የማጣቀሻ ቁጥሩ ከባንክ መዝገብ ጋር ይዛመዳል።'
-                          : 'Reference match verified! Transaction successfully reconciled with bank ledger.'}
-                      </span>
+                  {selectedMemberDetail.member?.phone && (
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                      <Icon name="phone" size={14} className="text-primary shrink-0" />
+                      <a
+                        href={`tel:${selectedMemberDetail.member.phone}`}
+                        className="font-mono font-bold hover:text-primary transition-colors"
+                      >
+                        {selectedMemberDetail.member.phone}
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => copyToClipboard(selectedMemberDetail.member?.phone || '', 'Phone')}
+                        className="text-[10px] text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
+                        title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
+                      >
+                        <Icon name="content_copy" size={13} />
+                      </button>
                     </div>
                   )}
 
-                  {reconcileVerifyStatus === 'mismatch' && (
-                    <div className="p-2.5 bg-amber-100 dark:bg-amber-950/60 border border-amber-400 text-amber-950 dark:text-amber-100 rounded-lg font-bold flex items-center gap-2">
-                      <Icon className="material-symbols-outlined text-amber-700 text-[18px]">warning</Icon>
-                      <span>
-                        {isAmharic
-                          ? 'የማጣቀሻ ቁጥሩ ከደረሰኙ ጋር አልተዛመደም። እባክዎን የቁምፊዎችን ትክክለኛነት ያረጋግጡ።'
-                          : 'Reference string does not match receipt ID. Please check character accuracy.'}
+                  <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-600 dark:text-slate-400 font-medium">
+                    {selectedMemberDetail.member?.subCity && (
+                      <span className="flex items-center gap-1 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                        <Icon name="location_on" size={13} className="text-slate-500" />
+                        <span>{selectedMemberDetail.member.subCity}</span>
                       </span>
-                    </div>
-                  )}
+                    )}
+                    <span className="font-mono font-bold bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                      ID: #{selectedMemberDetail.member?.id || selectedMemberDetail.row.id}
+                    </span>
+                    {selectedMemberDetail.member?.registrationDate && (
+                      <span className="bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                        {isAmharic ? 'የተመዘገበበት:' : 'Reg:'}{' '}
+                        {formatEthiopianDate(selectedMemberDetail.member.registrationDate, isAmharic ? 'am' : 'en')}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* DUAL-CALENDAR TIMELINE CARD */}
+              {/* Vehicle & Technical Specifications Card */}
               <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-                <div className="flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-700 pb-2">
-                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400 shrink-0">
-                    calendar_month
-                  </Icon>
-                  <span className="font-black text-slate-950 dark:text-white ">
-                    {isAmharic ? 'የቀን አቆጣጠር ማጠቃለያ' : 'Dual-Calendar Timeline & Term Status'}
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                  <div className="flex items-center gap-1.5 font-black text-slate-950 dark:text-white">
+                    <Icon name="two_wheeler" size={18} className="text-primary" />
+                    <span>{isAmharic ? 'የተሽከርካሪ እና የሞተር መረጃ' : 'Vehicle & Motor Specifications'}</span>
+                  </div>
+                  <span className="font-mono font-bold text-xs bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-800 dark:text-slate-200">
+                    {selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber || '—'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
-                      {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date (Ethiopian)'}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      {isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
                     </span>
-                    <span className="font-black text-slate-950 dark:text-white text-xs sm:text-sm block mt-0.5">
-                      {formatEthiopianDate(reconcileReceipt.paymentDate, isAmharic ? 'am' : 'en')}
+                    <span className="font-mono font-black text-slate-900 dark:text-white text-xs block mt-0.5">
+                      {selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber || '—'}
                     </span>
-                    {!isAmharic && (
-                      <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 block">
-                        Audit GC: {reconcileReceipt.paymentDate}
-                      </span>
-                    )}
                   </div>
 
-                  <div className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <span className="block text-[10px]  font-bold text-slate-700 dark:text-slate-300">
-                      {isAmharic ? 'የ1 ወር ማብቂያ ቀን' : 'Expiration Date (Ethiopian)'}
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      {isAmharic ? 'የተሽከርካሪ ምድብ' : 'Vehicle Category'}
                     </span>
-                    <span className="font-black text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm block mt-0.5">
-                      {formatEthiopianDate(reconcileReceipt.expirationDate, isAmharic ? 'am' : 'en')}
+                    <span className="font-bold text-slate-900 dark:text-white text-xs block mt-0.5">
+                      {selectedMemberDetail.member?.vehicleCategory === 'electric'
+                        ? isAmharic ? 'የኤሌክትሪክ ሞተር' : 'Electric'
+                        : isAmharic ? 'ከ110cc በታች ቤንዚን' : 'Gas under 110cc'}
                     </span>
-                    {!isAmharic && (
-                      <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300 block">
-                        Audit GC: {reconcileReceipt.expirationDate}
-                      </span>
-                    )}
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      {isAmharic ? 'የሞተር / ሴሪያል ቁጥር' : 'Engine / Serial #'}
+                    </span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white text-xs block mt-0.5 truncate">
+                      {selectedMemberDetail.member?.engineOrSerialNo || selectedMemberDetail.member?.engineNumber || '—'}
+                    </span>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      {isAmharic ? 'የሻሲ ቁጥር' : 'Chassis #'}
+                    </span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white text-xs block mt-0.5 truncate">
+                      {selectedMemberDetail.member?.chassisNumber || '—'}
+                    </span>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      {isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}
+                    </span>
+                    <span className="font-bold text-slate-900 dark:text-white text-xs block mt-0.5 truncate">
+                      {[selectedMemberDetail.member?.motorBrand, selectedMemberDetail.member?.motorModel].filter(Boolean).join(' ') || '—'}
+                    </span>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                      {isAmharic ? 'የአገልግሎት ዘርፍ' : 'Service Category'}
+                    </span>
+                    <span className="font-bold text-slate-900 dark:text-white text-xs block mt-0.5 truncate">
+                      {selectedMemberDetail.member?.serviceCategory || (isAmharic ? 'መደበኛ' : 'Standard')}
+                    </span>
                   </div>
                 </div>
-
-                {(reconcileReceipt.enteredAt || reconcileReceipt.createdAt) && (
-                  <div className="text-[11px] font-mono text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <strong>{isAmharic ? 'የተመዘገበበት ሰዓት:' : 'Audit Timestamp:'}</strong>{' '}
-                    {formatEthiopianDateTime(reconcileReceipt.enteredAt || reconcileReceipt.createdAt, isAmharic ? 'am' : 'en')}
-                  </div>
-                )}
               </div>
 
-              {/* HIGH-RES PROOF SCREENSHOT VIEWER */}
-              <div className="space-y-2">
-                <span className="block text-xs font-black text-slate-950 dark:text-white ">
-                  {isAmharic ? 'የተያያዘ የክፍያ ማረጋገጫ ፎቶ' : 'Attached Receipt Proof Image'}
-                </span>
-
-                <div className="rounded-xl bg-black border border-slate-800 p-2 flex items-center justify-center min-h-[220px] max-h-[360px] overflow-auto">
-                  {reconcileReceipt.receiptScreenshot ? (
-                    <img
-                      src={reconcileReceipt.receiptScreenshot}
-                      alt="Receipt Proof Screenshot"
-                      className="max-h-[340px] w-auto object-contain rounded-lg shadow-md"
-                    />
-                  ) : (
-                    <div className="p-8 text-center text-slate-400 space-y-1">
-                      <Icon className="material-symbols-outlined text-[32px]">image_not_supported</Icon>
-                      <p className="font-bold text-xs">{isAmharic ? 'ምንም ስክሪንሾት አልተያያዘም።' : 'No screenshot attached.'}</p>
-                    </div>
-                  )}
+              {/* Official Member Documents & Photos */}
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                  <div className="flex items-center gap-1.5 font-black text-slate-950 dark:text-white">
+                    <Icon name="photo_library" size={18} className="text-primary" />
+                    <span>{isAmharic ? 'የአባሉ ሰነዶች እና ፎቶዎች' : 'Member Documents & Photos'}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                    {isAmharic ? 'ትልቅ ለማየት ፎቶውን ይንኩ' : 'Click thumbnail to zoom'}
+                  </span>
                 </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {[
+                    {
+                      label: isAmharic ? 'የአባል ፎቶ' : 'Member Photo',
+                      url: selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail,
+                    },
+                    {
+                      label: isAmharic ? 'የታደሰ መታወቂያ' : 'National ID Front',
+                      url: selectedMemberDetail.member?.nationalIdPhoto,
+                    },
+                    {
+                      label: isAmharic ? 'የመንጃ ፈቃድ' : 'Driving License',
+                      url: selectedMemberDetail.member?.drivingLicensePhoto,
+                    },
+                    {
+                      label: isAmharic ? 'የማሽከርከር ፈቃድ' : 'Driving Permit',
+                      url: selectedMemberDetail.member?.drivingPermitPhoto,
+                    },
+                  ].map((doc, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        if (doc.url) {
+                          setPreviewDocPhoto({ url: doc.url, title: doc.label });
+                        }
+                      }}
+                      className={`relative p-2 rounded-lg border text-center transition-all ${
+                        doc.url
+                          ? 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-primary cursor-pointer group shadow-2xs'
+                          : 'bg-slate-100/50 dark:bg-slate-900/40 border-dashed border-slate-200 dark:border-slate-800 cursor-default'
+                      }`}
+                    >
+                      <span className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 truncate mb-1.5">
+                        {doc.label}
+                      </span>
+                      {doc.url ? (
+                        <div className="w-full h-20 rounded-md overflow-hidden bg-black/10 relative">
+                          <SmartImage
+                            src={doc.url}
+                            alt={doc.label}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                            <Icon name="zoom_in" size={18} />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-20 rounded-md flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 bg-slate-100 dark:bg-slate-800">
+                          <Icon name="image_not_supported" size={20} />
+                          <span className="text-[9px] mt-1 font-medium">{isAmharic ? 'አልተያያዘም' : 'Not attached'}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Membership Fee & Payment Receipts History */}
+              <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                  <div className="flex items-center gap-1.5 font-black text-slate-950 dark:text-white">
+                    <Icon name="receipt_long" size={18} className="text-primary" />
+                    <span>{isAmharic ? 'የተመዘገቡ የክፍያ ደረሰኞች ታሪክ' : 'Payment Receipts & Dues History'}</span>
+                  </div>
+                  <span className="font-mono font-bold text-xs bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-800">
+                    {selectedMemberDetail.receipts.length} {isAmharic ? 'ደረሰኞች' : 'Receipts'}
+                  </span>
+                </div>
+
+                {selectedMemberDetail.receipts.length > 0 ? (
+                  <div className="space-y-2.5">
+                    {selectedMemberDetail.receipts.map((rc) => (
+                      <div
+                        key={rc.id}
+                        className="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2"
+                      >
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-black text-slate-900 dark:text-white text-xs">
+                              #{rc.receiptNumber}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => copyToClipboard(rc.receiptNumber, 'Receipt #')}
+                              className="text-slate-400 hover:text-slate-700 dark:hover:text-white cursor-pointer"
+                              title={isAmharic ? 'ቅዳ' : 'Copy'}
+                            >
+                              <Icon name={reconcileCopiedField === 'Receipt #' ? 'check' : 'content_copy'} size={13} />
+                            </button>
+                            {rc.verifiedByCheki && (
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-300 flex items-center gap-0.5">
+                                <Icon name="verified" size={11} />
+                                <span>{rc.chekiBank ? rc.chekiBank.toUpperCase() : 'Bank'} Verified</span>
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-black text-emerald-700 dark:text-emerald-400 text-xs">
+                              {rc.amount ? `${rc.amount} ETB` : '500 ETB'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteConfirmId(rc.id)}
+                              className="p-1 rounded text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer"
+                              title={isAmharic ? 'ደረሰኝ ሰርዝ' : 'Delete Receipt'}
+                            >
+                              <Icon name="delete" size={14} />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] text-slate-600 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
+                          <div>
+                            <span className="text-[10px] block text-slate-400 font-bold">
+                              {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}
+                            </span>
+                            <span className="font-bold text-slate-800 dark:text-slate-200">
+                              {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] block text-slate-400 font-bold">
+                              {isAmharic ? 'የማብቂያ ቀን' : 'Expiration Date'}
+                            </span>
+                            <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                              {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
+                            </span>
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] block text-slate-400 font-bold">
+                              {isAmharic ? 'የመዘገበው ሰራተኛ' : 'Entered By'}
+                            </span>
+                            <span className="font-mono font-bold text-slate-800 dark:text-slate-200">
+                              {rc.enteredBy || 'System'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {rc.receiptScreenshot && (
+                          <div className="pt-1.5 flex items-center justify-between">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPreviewDocPhoto({
+                                  url: rc.receiptScreenshot || '',
+                                  title: `${isAmharic ? 'የደረሰኝ ፎቶ' : 'Receipt Proof'} #${rc.receiptNumber}`,
+                                })
+                              }
+                              className="text-xs text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                            >
+                              <Icon name="receipt" size={14} />
+                              <span>{isAmharic ? 'የተያያዘውን የክፍያ ደረሰኝ ፎቶ ይመልከቱ' : 'View Attached Receipt Screenshot'}</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-center text-slate-500 dark:text-slate-400 space-y-1">
+                    <Icon name="receipt" size={24} className="mx-auto text-slate-400" />
+                    <p className="font-bold text-xs">
+                      {isAmharic ? 'ምንም የተመዘገበ የወርሃዊ ክፍያ ደረሰኝ የለም።' : 'No payment receipts recorded yet for this member.'}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Drawer Footer Actions */}
-            <div className="p-4 bg-slate-100 dark:bg-slate-800/90 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between shrink-0">
-              <button
-                type="button"
-                onClick={() => setDeleteConfirmId(reconcileReceipt.id)}
-                className="px-3 py-2 rounded-lg bg-rose-100 hover:bg-rose-200 dark:bg-rose-950/60 text-rose-800 dark:text-rose-200 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
-                <span>{isAmharic ? 'ደረሰኝ ሰርዝ' : 'Delete Receipt'}</span>
-              </button>
+            <div className="p-4 bg-slate-100 dark:bg-slate-800/90 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3 shrink-0">
+              {canAddReceipt && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const plate = selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber || String(selectedMemberDetail.row.id);
+                    handleRegNumberChange(plate);
+                    setSelectedMemberDetail(null);
+                    setIsFormOpen(true);
+                  }}
+                  className="py-2 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+                >
+                  <Icon name="add_card" size={16} />
+                  <span>{isAmharic ? 'አዲስ ክፍያ መዝግብ' : 'Record New Payment'}</span>
+                </button>
+              )}
 
               <button
                 type="button"
-                onClick={() => setReconcileReceipt(null)}
-                className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-black transition-all cursor-pointer shadow-xs"
+                onClick={() => setSelectedMemberDetail(null)}
+                className="px-5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-black transition-all cursor-pointer shadow-xs ml-auto"
               >
                 {isAmharic ? 'ዝጋ' : 'Close Drawer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DOCUMENT & PHOTO LIGHTBOX MODAL */}
+      {previewDocPhoto && (
+        <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fade-in">
+          <div className="relative max-w-3xl w-full bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-700 animate-in zoom-in-95 duration-150">
+            <div className="p-3.5 bg-slate-900 text-white flex items-center justify-between">
+              <span className="font-bold text-sm">{previewDocPhoto.title}</span>
+              <button
+                type="button"
+                onClick={() => setPreviewDocPhoto(null)}
+                className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-2 bg-black flex items-center justify-center max-h-[75vh] overflow-auto">
+              <img
+                src={previewDocPhoto.url}
+                alt={previewDocPhoto.title}
+                className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg"
+              />
+            </div>
+            <div className="p-3 bg-slate-50 dark:bg-slate-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setPreviewDocPhoto(null)}
+                className="px-4 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 cursor-pointer"
+              >
+                {isAmharic ? 'ዝጋ' : 'Close'}
               </button>
             </div>
           </div>
