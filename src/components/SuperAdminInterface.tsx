@@ -104,6 +104,31 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordMismatchError, setPasswordMismatchError] = useState('');
 
+  // Form State for Edit User Password
+  const [editPassword, setEditPassword] = useState('');
+  const [editConfirmPassword, setEditConfirmPassword] = useState('');
+  const [showEditPassword, setShowEditPassword] = useState(false);
+  const [showEditConfirmPassword, setShowEditConfirmPassword] = useState(false);
+  const [editPasswordMismatchError, setEditPasswordMismatchError] = useState('');
+
+  const handleOpenEditUserModal = (user: SystemUser) => {
+    setEditingUser(user);
+    setEditPassword('');
+    setEditConfirmPassword('');
+    setShowEditPassword(false);
+    setShowEditConfirmPassword(false);
+    setEditPasswordMismatchError('');
+  };
+
+  const handleCloseEditUserModal = () => {
+    setEditingUser(null);
+    setEditPassword('');
+    setEditConfirmPassword('');
+    setShowEditPassword(false);
+    setShowEditConfirmPassword(false);
+    setEditPasswordMismatchError('');
+  };
+
   // Security Toggles State
   const [enforce2FA, setEnforce2FA] = useState(true);
   const [highRiskDetection, setHighRiskDetection] = useState(true);
@@ -269,12 +294,34 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     e.preventDefault();
     if (!editingUser) return;
 
-    await updateSystemUserInDb(editingUser.uid, editingUser);
+    if (editPassword || editConfirmPassword) {
+      if (editPassword !== editConfirmPassword) {
+        const err = isAmharic ? 'የይለፍ ቃሎች አይዛመዱም' : 'Passwords do not match';
+        setEditPasswordMismatchError(err);
+        if (onShowToast) onShowToast(err, 'warning');
+        return;
+      }
+      if (editPassword.length < 6) {
+        const err = isAmharic ? 'የይለፍ ቃል ቢያንስ 6 ፊደላት/ቁጥሮች መሆን አለበት' : 'Password must be at least 6 characters';
+        setEditPasswordMismatchError(err);
+        if (onShowToast) onShowToast(err, 'warning');
+        return;
+      }
+    }
+
+    const payload: Partial<SystemUser> & { password?: string } = {
+      ...editingUser,
+    };
+    if (editPassword) {
+      payload.password = editPassword;
+    }
+
+    await updateSystemUserInDb(editingUser.uid, payload);
     await addAuditLogToDb({
       actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
       actorRole: 'superadmin',
       action: 'USER_UPDATED',
-      details: `Updated user profile for ${editingUser.fullName} (${editingUser.badgeId})`,
+      details: `Updated user profile for ${editingUser.fullName} (${editingUser.badgeId})${editPassword ? ' (password updated)' : ''}`,
       severity: 'info',
     });
 
@@ -286,7 +333,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         'success'
       );
     }
-    setEditingUser(null);
+    handleCloseEditUserModal();
   };
 
   const handleToggleSubCityFreeze = async (subCityEn: string) => {
@@ -968,7 +1015,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             <td className="py-4 px-4 text-right whitespace-nowrap">
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
-                                  onClick={() => setEditingUser(user)}
+                                  onClick={() => handleOpenEditUserModal(user)}
                                   title={isAmharic ? 'አስተካክል' : 'Edit User'}
                                   className="p-1.5 hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] rounded-sm text-[#64748B] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer"
                                 >
@@ -1114,7 +1161,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               <div className="pt-2 border-t border-outline-variant flex items-center justify-end gap-2">
                                 <button
                                   type="button"
-                                  onClick={() => setEditingUser(user)}
+                                  onClick={() => handleOpenEditUserModal(user)}
                                   className="px-3 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center gap-1 transition-all cursor-pointer"
                                 >
                                   <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
@@ -2096,7 +2143,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
                     <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin)' : 'Admin'}</option>
                     <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Officer)' : 'Officer'}</option>
-                    <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
                   </select>
                 </div>
               </div>
@@ -2222,7 +2268,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 <Icon className="material-symbols-outlined text-slate-700 text-[20px]">edit</Icon>
                 {isAmharic ? 'የተጠቃሚ መረጃ ማስተካከያ' : 'Edit System User Profile'}
               </h3>
-              <button onClick={() => setEditingUser(null)} className="text-outline hover:text-on-surface p-1 rounded-lg">
+              <button onClick={handleCloseEditUserModal} className="text-outline hover:text-on-surface p-1 rounded-lg">
                 <Icon className="material-symbols-outlined text-[20px]">close</Icon>
               </button>
             </div>
@@ -2260,7 +2306,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     <option value="clerk">Clerk</option>
                     <option value="admin">Admin</option>
                     <option value="officer">Officer</option>
-                    <option value="superadmin">Super Admin</option>
+                    {editingUser.role === 'superadmin' && (
+                      <option value="superadmin">Super Admin</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -2276,10 +2324,78 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 />
               </div>
 
+              {/* Password: and Confirm password: fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-on-surface mb-1">
+                    {isAmharic ? 'የይለፍ ቃል:' : 'Password:'}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showEditPassword ? 'text' : 'password'}
+                      value={editPassword}
+                      onChange={(e) => {
+                        setEditPassword(e.target.value);
+                        if (editPasswordMismatchError) setEditPasswordMismatchError('');
+                      }}
+                      placeholder={isAmharic ? 'አዲስ የይለፍ ቃል ያስገቡ (ለመቀየር)' : 'Enter new password'}
+                      className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b] pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditPassword(!showEditPassword)}
+                      aria-label={showEditPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
+                    >
+                      <Icon className="material-symbols-outlined text-[18px]">
+                        {showEditPassword ? 'visibility_off' : 'visibility'}
+                      </Icon>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-on-surface mb-1">
+                    {isAmharic ? 'የይለፍ ቃል አረጋግጥ:' : 'Confirm password:'}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showEditConfirmPassword ? 'text' : 'password'}
+                      value={editConfirmPassword}
+                      onChange={(e) => {
+                        setEditConfirmPassword(e.target.value);
+                        if (editPasswordMismatchError) setEditPasswordMismatchError('');
+                      }}
+                      placeholder={isAmharic ? 'የይለፍ ቃል በድጋሚ ያስገቡ' : 'Confirm new password'}
+                      className={`w-full bg-surface-container border rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden pr-10 ${
+                        editPasswordMismatchError ? 'border-red-500 focus:border-red-500' : 'border-outline-variant focus:border-[#1e293b]'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditConfirmPassword(!showEditConfirmPassword)}
+                      aria-label={showEditConfirmPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
+                    >
+                      <Icon className="material-symbols-outlined text-[18px]">
+                        {showEditConfirmPassword ? 'visibility_off' : 'visibility'}
+                      </Icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {editPasswordMismatchError && (
+                <div className="text-[11px] font-bold text-red-600 flex items-center gap-1.5 animate-in fade-in">
+                  <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                  <span>{editPasswordMismatchError}</span>
+                </div>
+              )}
+
               <div className="pt-3 flex items-center justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => setEditingUser(null)}
+                  onClick={handleCloseEditUserModal}
                   className="px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface"
                 >
                   {isAmharic ? 'ሰርዝ' : 'Cancel'}

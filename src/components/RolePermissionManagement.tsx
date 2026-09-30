@@ -943,11 +943,13 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                   onChange={(e) => setNewRoleTemplate(e.target.value)}
                   className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold cursor-pointer focus:outline-hidden focus:border-blue-600"
                 >
-                  {roles.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.titleAm} — {r.titleEn}
-                    </option>
-                  ))}
+                  {roles
+                    .filter((r) => r.roleKey !== 'superadmin' && r.id !== 'role-superadmin')
+                    .map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.titleAm} — {r.titleEn}
+                      </option>
+                    ))}
                 </select>
               </div>
 
