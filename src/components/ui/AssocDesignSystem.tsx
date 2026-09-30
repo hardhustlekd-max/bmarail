@@ -101,35 +101,35 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const variantStyles: Record<StatusBadgeVariant, { bg: string; dot: string }> = {
     active: {
-      bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300/40',
+      bg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
       dot: 'bg-emerald-500',
     },
     success: {
-      bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300/40',
+      bg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
       dot: 'bg-emerald-500',
     },
     overdue: {
-      bg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300/40',
+      bg: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20',
       dot: 'bg-rose-500',
     },
     danger: {
-      bg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300/40',
+      bg: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20',
       dot: 'bg-rose-500',
     },
     pending: {
-      bg: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300/40',
+      bg: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
       dot: 'bg-amber-500',
     },
     warning: {
-      bg: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300/40',
+      bg: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
       dot: 'bg-amber-500',
     },
     info: {
-      bg: 'bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border-sky-300/40',
+      bg: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20',
       dot: 'bg-sky-500',
     },
     neutral: {
-      bg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300/40',
+      bg: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20',
       dot: 'bg-slate-400',
     },
   };

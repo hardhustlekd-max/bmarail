@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Icon } from './ui/Icon';
-import { KpiCard, MonthlyMatrixLedger, StatusDot, MatrixRowItem } from './ui/AssocDesignSystem';
+import { KpiCard, MonthlyMatrixLedger, StatusDot, StatusBadge, MatrixRowItem } from './ui/AssocDesignSystem';
 import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
@@ -2020,19 +2020,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         <span>{isAmharic ? 'የአባል ዝርዝር መረጃ' : 'Member Details'}</span>
                       </span>
                       {selectedMemberDetail.member?.status && (
-                        <span
-                          className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                        <StatusBadge
+                          label={selectedMemberDetail.member.status.replace('_', ' ').toUpperCase()}
+                          variant={
                             selectedMemberDetail.member.status === 'approved'
-                              ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-300'
+                              ? 'success'
                               : selectedMemberDetail.member.status === 'pending_approval'
-                              ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-300'
+                              ? 'pending'
                               : selectedMemberDetail.member.status === 'printed' || selectedMemberDetail.member.status === 'ordered_print'
-                              ? 'bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-blue-200 border border-blue-300'
-                              : 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-200 border border-rose-300'
-                          }`}
-                        >
-                          {selectedMemberDetail.member.status}
-                        </span>
+                              ? 'info'
+                              : 'danger'
+                          }
+                        />
                       )}
                     </div>
 

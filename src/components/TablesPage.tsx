@@ -2130,12 +2130,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   </div>
 
                                   <div className="flex items-center gap-2.5 shrink-0">
-                                    <span className={`px-1.5 py-0.2 text-[10px] font-bold rounded ${
+                                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
                                       rcStatus.status === 'active'
-                                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
                                         : rcStatus.status === 'expiring_soon'
-                                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                                        : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                                        ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
+                                        : 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20'
                                     }`}>
                                       {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
                                     </span>
