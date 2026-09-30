@@ -722,7 +722,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
             <th
               key={col.key}
               title={col.title}
-              className="py-3 px-2 sm:px-3.5 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[38px] sm:min-w-[46px]"
+              className="hidden md:table-cell py-3 px-2 sm:px-3.5 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[38px] sm:min-w-[46px]"
             >
               {col.label}
             </th>
@@ -782,7 +782,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                 {columns.map((col) => {
                   const status = row.periods[col.key] || 'muted';
                   return (
-                    <td key={col.key} className="py-3.5 px-2 sm:px-3.5 text-center">
+                    <td key={col.key} className="hidden md:table-cell py-3.5 px-2 sm:px-3.5 text-center">
                       <StatusDot
                         status={status}
                         size={12}
