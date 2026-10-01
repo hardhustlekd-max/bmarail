@@ -639,7 +639,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
       </div>
 
-      {/* FIXED BOTTOM COUNTER & STEP DOTS INDICATOR (Fixed position, replaces bottom thumbnail strip) */}
+      {/* FIXED BOTTOM COUNTER & NAVIGATION (Fixed position without dot indicator) */}
       {validItems.length > 1 && (
         <div
           className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white select-none transition-all"
@@ -657,25 +657,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           <span className="text-[11px] sm:text-xs font-mono font-bold text-white px-1 tracking-wider">
             {currentIndex + 1} / {validItems.length}
           </span>
-
-          {validItems.length <= 10 && (
-            <div className="flex items-center gap-1.5 px-1">
-              {validItems.map((item, idx) => (
-                <button
-                  key={`${item.url}-${idx}`}
-                  type="button"
-                  onClick={() => goToIndex(idx)}
-                  title={item.title}
-                  aria-label={`Document ${idx + 1}: ${item.title}`}
-                  className={`transition-all rounded-full cursor-pointer ${
-                    idx === currentIndex
-                      ? 'w-4.5 h-1.5 bg-primary shadow-xs'
-                      : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
 
           <button
             type="button"
