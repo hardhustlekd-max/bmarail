@@ -729,7 +729,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   setRegPage(1);
                 }}
                 placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
-                className="w-full rounded-sm border border-primary bg-[#F7F9FC] dark:bg-[#24303F] py-1.5 pl-8 pr-7 text-xs text-[#1C2434] dark:text-white outline-none"
+                className="w-full rounded-sm border border-primary bg-[#F7F9FC] dark:bg-[#24303F] py-1.5 pl-8 pr-7 text-xs text-[#1C2434] dark:text-white outline-none input-focus-feedback"
               />
               {regSearchQuery && (
                 <button

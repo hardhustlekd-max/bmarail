@@ -29,6 +29,7 @@ import {
   syncAllCollectionsWithDb,
   syncCriticalStartup,
   DEFAULT_SETTINGS,
+  getInMemoryState,
 } from '../services/dbService';
 import { useToast } from './ToastContext';
 
@@ -63,14 +64,14 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   const { addToast } = useToast();
   const isAmharic = lang === 'am';
 
-  const [registrations, setRegistrations] = useState<MotorcycleRegistration[]>([]);
-  const [officers, setOfficers] = useState<OfficerAssignment[]>([]);
-  const [printOrders, setPrintOrders] = useState<PrintBatchOrder[]>([]);
-  const [verificationLogs, setVerificationLogs] = useState<VerificationLog[]>([]);
-  const [unregisteredReports, setUnregisteredReports] = useState<UnregisteredVehicleReport[]>([]);
-  const [paymentReceipts, setPaymentReceipts] = useState<PaymentReceipt[]>([]);
-  const [settings, setSettings] = useState<SystemSettings>(DEFAULT_SETTINGS);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [registrations, setRegistrations] = useState<MotorcycleRegistration[]>(() => getInMemoryState().registrations);
+  const [officers, setOfficers] = useState<OfficerAssignment[]>(() => getInMemoryState().officers);
+  const [printOrders, setPrintOrders] = useState<PrintBatchOrder[]>(() => getInMemoryState().printOrders);
+  const [verificationLogs, setVerificationLogs] = useState<VerificationLog[]>(() => getInMemoryState().verifications);
+  const [unregisteredReports, setUnregisteredReports] = useState<UnregisteredVehicleReport[]>(() => getInMemoryState().unregisteredReports);
+  const [paymentReceipts, setPaymentReceipts] = useState<PaymentReceipt[]>(() => getInMemoryState().paymentReceipts);
+  const [settings, setSettings] = useState<SystemSettings>(() => getInMemoryState().settings);
+  const [isLoading, setIsLoading] = useState<boolean>(() => getInMemoryState().registrations.length === 0);
 
   // Real-time subscriptions
   useEffect(() => {

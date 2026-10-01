@@ -163,17 +163,51 @@ interface InMemoryState {
   auditLogs: SystemAuditLog[];
 }
 
-const inMemory: InMemoryState = {
-  registrations: [],
-  officers: [],
-  printOrders: [],
-  verifications: [],
-  unregisteredReports: [],
-  paymentReceipts: [],
-  settings: { ...DEFAULT_SETTINGS },
-  users: [],
-  auditLogs: [],
-};
+// Local storage key for fallback & instant boot
+const STATE_CACHE_KEY = 'bma_system_state_v3';
+
+function getInitialBootState(): InMemoryState {
+  const defaultState: InMemoryState = {
+    registrations: [],
+    officers: [],
+    printOrders: [],
+    verifications: [],
+    unregisteredReports: [],
+    paymentReceipts: [],
+    settings: { ...DEFAULT_SETTINGS },
+    users: [],
+    auditLogs: [],
+  };
+
+  if (typeof window === 'undefined') return defaultState;
+
+  try {
+    const raw = localStorage.getItem(STATE_CACHE_KEY);
+    if (!raw) return defaultState;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return defaultState;
+
+    return {
+      registrations: Array.isArray(parsed.registrations) ? parsed.registrations : [],
+      officers: Array.isArray(parsed.officers) ? parsed.officers : [],
+      printOrders: Array.isArray(parsed.printOrders) ? parsed.printOrders : [],
+      verifications: Array.isArray(parsed.verifications) ? parsed.verifications : [],
+      unregisteredReports: Array.isArray(parsed.unregisteredReports) ? parsed.unregisteredReports : [],
+      paymentReceipts: Array.isArray(parsed.paymentReceipts) ? parsed.paymentReceipts : [],
+      settings: parsed.settings ? mapSettingsFromDb(parsed.settings, DEFAULT_SETTINGS) : { ...DEFAULT_SETTINGS },
+      users: Array.isArray(parsed.users) ? parsed.users : [],
+      auditLogs: Array.isArray(parsed.auditLogs) ? parsed.auditLogs : [],
+    };
+  } catch (e) {
+    return defaultState;
+  }
+}
+
+const inMemory: InMemoryState = getInitialBootState();
+
+export function getInMemoryState(): InMemoryState {
+  return inMemory;
+}
 
 // Listeners registry for reactive UI updates
 const listeners = {
@@ -187,9 +221,6 @@ const listeners = {
   users: new Set<(data: SystemUser[]) => void>(),
   auditLogs: new Set<(data: SystemAuditLog[]) => void>(),
 };
-
-// Local storage key for fallback & instant boot
-const STATE_CACHE_KEY = 'bma_system_state_v3';
 
 function stripImagesFromVerificationLog(v: VerificationLog): VerificationLog {
   return {
