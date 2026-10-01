@@ -821,13 +821,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
         );
 
-        // B. Check if any receipt term covers this Ethiopian month (validity duration spans across this month)
+        // B. Check if any receipt term covers this Ethiopian month (validity duration spans across multiple months)
+        // A standard 1-month payment made in Month X expires in Month X+1, but only covers Month X (targetPeriodIndex < expIndex)
         const targetPeriodIndex = targetYear * 13 + targetMonth;
         const coveringMatches = parsedReceipts.filter((item) => {
           if (!item.payEth) return false;
           const payIndex = item.payEth.year * 13 + item.payEth.month;
           const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
-          return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
+          return targetPeriodIndex >= payIndex && targetPeriodIndex < expIndex;
         });
 
         const activeReceipt = parsedReceipts.find((r) => r.status === 'active');

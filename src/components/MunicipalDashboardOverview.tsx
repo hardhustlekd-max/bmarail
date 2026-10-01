@@ -286,12 +286,12 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
       );
 
-      // B. Check coverage across this Ethiopian month
+      // B. Check coverage across this Ethiopian month (validity duration spans across multiple months)
       const coveringMatch = memberReceipts.find((item) => {
         if (!item.payEth) return false;
         const payIndex = item.payEth.year * 13 + item.payEth.month;
         const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
-        return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
+        return targetPeriodIndex >= payIndex && targetPeriodIndex < expIndex;
       });
 
       const matchingItem = directMatch || coveringMatch;
