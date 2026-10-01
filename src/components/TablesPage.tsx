@@ -305,6 +305,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const [selectedRegForA4, setSelectedRegForA4] = useState<MotorcycleRegistration | null>(null);
   const [selectedRegForSticker, setSelectedRegForSticker] = useState<MotorcycleRegistration | null>(null);
   const [selectedRegForDetails, setSelectedRegForDetails] = useState<MotorcycleRegistration | null>(null);
+  const [drawerActiveTab, setDrawerActiveTab] = useState<'info' | 'payments' | 'documents'>('info');
   const [carouselModal, setCarouselModal] = useState<{
     items: DocumentViewerItem[];
     initialIndex: number;
@@ -1500,42 +1501,20 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             className="fixed inset-0 bg-slate-950/65 backdrop-blur-md transition-opacity cursor-pointer"
           />
 
-          {/* Side-Sheet Drawer Content Container (Increased Width: w-[95vw] sm:w-[580px] md:w-[720px] lg:w-[860px] xl:w-[960px] max-w-[98vw]) */}
-          <div className="relative w-[95vw] sm:w-[580px] md:w-[720px] lg:w-[860px] xl:w-[960px] max-w-[98vw] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
+          {/* Side-Sheet Drawer Content Container (Adjusted Width: w-[92vw] sm:w-[520px] md:w-[640px] lg:w-[740px] xl:w-[820px] max-w-[95vw]) */}
+          <div className="relative w-[92vw] sm:w-[520px] md:w-[640px] lg:w-[740px] xl:w-[820px] max-w-[95vw] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
             {/* Drawer Header */}
-            <div className="p-3.5 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
-              <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-                {/* Member Portrait Photo */}
-                <div
-                  onClick={() => {
-                    const portrait = selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail;
-                    if (portrait) openDocumentCarousel(portrait, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
-                  }}
-                  className="w-10 h-13 sm:w-12 sm:h-15 rounded-md border border-slate-700 bg-slate-800 shrink-0 overflow-hidden flex items-center justify-center shadow-sm relative group cursor-pointer"
-                  title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
-                >
-                  {(selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto) ? (
-                    <>
-                      <img
-                        src={selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto}
-                        alt={selectedRegForDetails.fullName}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                        <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                      </div>
-                    </>
-                  ) : (
-                    <Icon className="material-symbols-outlined text-[24px] sm:text-[28px] text-slate-400">person</Icon>
-                  )}
+            <div className="p-3 sm:p-4 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
+                  <Icon className="material-symbols-outlined text-[18px] sm:text-[22px]">assignment_ind</Icon>
                 </div>
 
                 <div className="space-y-0.5 min-w-0">
-                  <h3 className="text-xs sm:text-base font-black tracking-wide truncate flex items-center gap-1.5">
+                  <h3 className="text-xs sm:text-sm font-black tracking-wide truncate flex items-center gap-1.5">
                     <span>{isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Details'}</span>
                   </h3>
-                  <p className="text-[11px] sm:text-xs text-slate-300 font-medium truncate">
+                  <p className="text-[10px] sm:text-xs text-slate-300 font-medium truncate">
                     {selectedRegForDetails.fullName || '—'}
                   </p>
                 </div>
@@ -1543,14 +1522,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 {selectedRegForDetails.plateNumber && (
-                  <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-amber-400">
+                  <span className="hidden sm:inline-block px-2 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-amber-400">
                     {selectedRegForDetails.plateNumber}
                   </span>
                 )}
                 <button
                   type="button"
                   onClick={() => setSelectedRegForDetails(null)}
-                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-xs sm:text-sm font-bold shrink-0"
+                  className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-xs font-bold shrink-0"
                   title={isAmharic ? 'ዝጋ' : 'Close Drawer'}
                 >
                   ✕
@@ -1558,617 +1537,688 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               </div>
             </div>
 
-            {/* Drawer Body: Scrollable */}
-            <div className="p-3.5 sm:p-5 space-y-4 overflow-y-auto flex-1 text-xs">
-
-            {/* Status Banner */}
-            <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-[#F7F9FC] dark:bg-[#24303F]/60 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'የምዝገባ ሁኔታ:' : 'Permit Status:'}</span>
-                {renderStatusBadge(selectedRegForDetails.status)}
-              </div>
-              {selectedRegForDetails.registeredBy && (
-                <div className="text-xs font-mono text-[#64748B] dark:text-[#8A99AD]">
-                  {isAmharic ? 'የመዘገበው ባጅ:' : 'Registered By:'} <span className="font-bold text-[#1C2434] dark:text-white">{selectedRegForDetails.registeredBy}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Rejection notice if rejected */}
-            {selectedRegForDetails.status === 'rejected' && selectedRegForDetails.rejectionReason && (
-              <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-md text-xs text-rose-900 dark:text-rose-200">
-                <span className="font-bold block mb-0.5">{isAmharic ? 'የመሰረዣ ምክንያት:' : 'Rejection Reason:'}</span>
-                <p>{selectedRegForDetails.rejectionReason}</p>
-              </div>
-            )}
-
-            {/* Core Data Grids - Proportional & Compact Refinement */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              {/* Member / Owner Information with Portrait Photo */}
-              <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-2">
-                <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white tracking-wider border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Icon className="material-symbols-outlined text-[15px] text-primary">person</Icon>
-                    <span>{isAmharic ? 'የባለቤት መረጃ' : 'Owner Information'}</span>
-                  </span>
-                  <span className="font-mono text-[10px] text-[#64748B] dark:text-[#8A99AD]">ID: {selectedRegForDetails.id}</span>
-                </h4>
-                <div className="flex items-center gap-3">
-                  <div
-                    onClick={() => {
-                      const photo = selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail;
-                      if (photo) openDocumentCarousel(photo, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
-                    }}
-                    className="w-13 h-17 sm:w-15 sm:h-19 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0 overflow-hidden flex items-center justify-center shadow-2xs relative group cursor-pointer"
-                    title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
-                  >
-                    {(selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto) ? (
-                      <>
-                        <img
-                          src={selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto}
-                          alt={selectedRegForDetails.fullName}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                          <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
-                        </div>
-                      </>
-                    ) : (
-                      <Icon className="material-symbols-outlined text-[24px] text-slate-400">person</Icon>
-                    )}
-                  </div>
-                  <dl className="grid grid-cols-2 gap-x-2.5 gap-y-2 text-xs flex-1 min-w-0">
-                    <div>
-                      <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ሙሉ ስም' : 'Full Name'}</dt>
-                      <dd className="font-bold text-[#1C2434] dark:text-white truncate" title={selectedRegForDetails.fullName}>
-                        {selectedRegForDetails.fullName || '—'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</dt>
-                      <dd className="font-mono font-bold text-[#1C2434] dark:text-white truncate">
-                        {selectedRegForDetails.phone ? (
-                          <a href={`tel:${selectedRegForDetails.phone}`} className="text-primary hover:underline flex items-center gap-1">
-                            <Icon className="material-symbols-outlined text-[12px]">call</Icon>
-                            <span>{getDisplayPhone(selectedRegForDetails)}</span>
-                          </a>
-                        ) : '—'}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</dt>
-                      <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate">{selectedRegForDetails.subCity || '—'}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'የተመዘገበበት' : 'Reg Date'}</dt>
-                      <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate">
-                        {selectedRegForDetails.registrationDate ? formatEthiopianDate(selectedRegForDetails.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              </div>
-
-              {/* Vehicle Specifications */}
-              <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-2">
-                <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white tracking-wider border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Icon className="material-symbols-outlined text-[15px] text-primary">electric_moped</Icon>
-                    <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Specs'}</span>
-                  </span>
-                  <span className="font-mono text-[10px] font-bold text-[#64748B] dark:text-[#8A99AD]">{selectedRegForDetails.plateNumber || '—'}</span>
-                </h4>
-                <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
-                  <div>
-                    <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ዓይነት' : 'Category'}</dt>
-                    <dd className="font-bold">
-                      {selectedRegForDetails.vehicleCategory === 'electric' ? (
-                        <span className="inline-flex items-center gap-0.5 text-[#10B981] font-bold text-[11px]">
-                          <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
-                          <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-0.5 text-primary font-bold text-[11px]">
-                          <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
-                          <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
-                        </span>
-                      )}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</dt>
-                    <dd className="font-mono font-bold text-[#1C2434] dark:text-white truncate">{selectedRegForDetails.plateNumber || '—'}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis'}</dt>
-                    <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate" title={getChassisDisplay(selectedRegForDetails)}>
-                      {getChassisDisplay(selectedRegForDetails)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ብራንድ/ሞዴል' : 'Brand/Model'}</dt>
-                    <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
-                      {`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`.trim()}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-
-            {/* Well-Organized Action Buttons (Old Minimized Text, In-Flow Position - Not Sticking to Bottom) */}
-            <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2">
-              <div className="flex items-center justify-between pb-1.5 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                <span className="font-bold text-[11px] text-[#1C2434] dark:text-white flex items-center gap-1.5">
-                  <Icon className="material-symbols-outlined text-[15px] text-primary">bolt</Icon>
-                  <span>{isAmharic ? 'ፈጣን ተግባራት' : 'Actions'}</span>
-                </span>
-              </div>
-
-              {/* Approval decision row if pending */}
-              {(userRole === 'admin' || isSuperAdmin) && selectedRegForDetails.status === 'pending_approval' && (
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onApproveRegistration(selectedRegForDetails.id)}
-                    className="py-1.5 px-3 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer"
-                  >
-                    <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
-                    <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setRejectingId(selectedRegForDetails.id)}
-                    className="py-1.5 px-3 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer hover:bg-rose-100"
-                  >
-                    <Icon className="material-symbols-outlined text-[15px]">cancel</Icon>
-                    <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
-                  </button>
-                </div>
-              )}
-
-              {/* Standard Operational Actions with Old Minimized Text */}
-              <div className="flex flex-wrap items-center gap-2">
-                {canEditRegistration && (
-                  <button
-                    id="details-modal-edit-reg-btn"
-                    type="button"
-                    onClick={() => {
-                      const reg = selectedRegForDetails;
-                      setSelectedRegForDetails(null);
-                      setEditingRegistration(reg);
-                    }}
-                    className="py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                  >
-                    <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
-                    <span>{isAmharic ? 'መረጃ አሻሽል' : 'Edit'}</span>
-                  </button>
-                )}
-
-                {(userRole === 'admin' || isSuperAdmin) && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const reg = selectedRegForDetails;
-                      setSelectedRegForDetails(null);
-                      setSelectedRegForQR(reg);
-                    }}
-                    className="py-1.5 px-3 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                  >
-                    <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
-                    <span>{isAmharic ? 'መታወቂያ' : 'ID Card'}</span>
-                  </button>
-                )}
-
-                {(selectedRegForDetails.status === 'approved' || selectedRegForDetails.status === 'printed' || selectedRegForDetails.status === 'ordered_print') && (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const reg = selectedRegForDetails;
-                        setSelectedRegForDetails(null);
-                        setSelectedRegForA4(reg);
-                      }}
-                      className="py-1.5 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
-                    >
-                      <Icon className="material-symbols-outlined text-[15px]">print</Icon>
-                      <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const reg = selectedRegForDetails;
-                        setSelectedRegForDetails(null);
-                        setSelectedRegForSticker(reg);
-                      }}
-                      className="py-1.5 px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                    >
-                      <Icon className="material-symbols-outlined text-[15px]">qr_code_scanner</Icon>
-                      <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
-                    </button>
-                  </>
-                )}
-
-                {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
-                  <button
-                    type="button"
-                    onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
-                    className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                  >
-                    <Icon className="material-symbols-outlined text-[15px]">add_card</Icon>
-                    <span>{isAmharic ? '+ ደረሰኝ' : '+ Receipt'}</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Payment Status & Current Receipt Standing */}
+            {/* Drawer Underline Navigation Tabs (Design System Standard - Compact) */}
             {(() => {
               const matchedReceipts = getReceiptsForRegistration(selectedRegForDetails, paymentReceipts);
               const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
-              const compliance = getUnifiedPaymentCompliance(selectedRegForDetails, paymentReceipts);
+              const docCount = [
+                selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail,
+                selectedRegForDetails.nationalIdPhoto,
+                selectedRegForDetails.drivingLicensePhoto,
+                selectedRegForDetails.drivingPermitPhoto,
+                latestRc?.receiptScreenshot || selectedRegForDetails.receiptScreenshot,
+              ].filter(Boolean).length;
+
+              const tabs = [
+                {
+                  id: 'info',
+                  label: isAmharic ? 'የባለቤት እና ተሽከርካሪ መረጃ' : 'Owner & Vehicle Info',
+                  icon: 'badge',
+                },
+                {
+                  id: 'payments',
+                  label: isAmharic ? 'የክፍያ ሁኔታ እና ታሪክ' : 'Payments & Ledger',
+                  icon: 'receipt_long',
+                  badge: matchedReceipts.length,
+                },
+                {
+                  id: 'documents',
+                  label: isAmharic ? 'የተያያዙ ሰነዶች' : 'Uploaded Documents',
+                  icon: 'photo_library',
+                  badge: `${docCount}/5`,
+                },
+              ];
 
               return (
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2.5">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-2">
-                    <h4 className="font-extrabold text-xs text-slate-700 dark:text-slate-300  tracking-wider flex items-center gap-1.5">
-                      <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">receipt_long</Icon>
-                      <span>{isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}</span>
-                    </h4>
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-bold ${compliance.badgeClass}`}>
-                        <Icon className="material-symbols-outlined text-[13px]">
-                          {compliance.status === 'active' ? 'check_circle' : compliance.status === 'expiring_soon' ? 'alarm' : 'cancel'}
-                        </Icon>
-                        <span>{isAmharic ? compliance.labelAm : compliance.labelEn}</span>
-                      </span>
-
-                      {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
+                <div className="px-3 sm:px-4 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
+                  <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none -mb-[1px]">
+                    {tabs.map((tab) => {
+                      const isActive = drawerActiveTab === tab.id;
+                      return (
                         <button
+                          key={tab.id}
                           type="button"
-                          onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
-                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
-                          title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
+                          onClick={() => setDrawerActiveTab(tab.id as 'info' | 'payments' | 'documents')}
+                          className={`group relative flex items-center gap-1.5 py-2 sm:py-2.5 px-2.5 sm:px-3 text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap select-none shrink-0 ${
+                            isActive
+                              ? 'border-primary text-primary dark:text-white dark:border-primary font-bold'
+                              : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155] font-semibold'
+                          }`}
                         >
-                          <Icon className="material-symbols-outlined text-[14px]">add_card</Icon>
-                          <span>{isAmharic ? '+ ደረሰኝ መዝግብ' : '+ Log Receipt'}</span>
+                          <Icon className={`material-symbols-outlined text-[15px] ${isActive ? 'text-primary' : 'text-[#64748B] dark:text-[#8A99AD]'}`}>
+                            {tab.icon}
+                          </Icon>
+                          <span>{tab.label}</span>
+                          {tab.badge !== undefined && (
+                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                              isActive
+                                ? 'bg-primary/15 text-primary dark:bg-primary/30 dark:text-blue-300'
+                                : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
+                            }`}>
+                              {tab.badge}
+                            </span>
+                          )}
                         </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                    <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የደረሰኝ ቁጥር:' : 'Receipt No:'}</span>
-                      <span className="font-mono font-bold text-slate-900 dark:text-white block truncate">
-                        {latestRc?.receiptNumber || selectedRegForDetails.receiptNumber || '—'}
-                      </span>
-                    </div>
-
-                    <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የክፍያ መጠን:' : 'Amount (ETB):'}</span>
-                      <span className="font-bold text-slate-900 dark:text-white block">
-                        {latestRc?.amount ? `${latestRc.amount} ETB` : selectedRegForDetails.paymentAmount ? `${selectedRegForDetails.paymentAmount} ETB` : '—'}
-                      </span>
-                    </div>
-
-                    <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የተከፈለበት ቀን:' : 'Payment Date:'}</span>
-                      <span className="font-mono text-slate-800 dark:text-slate-200 block">
-                        {latestRc?.paymentDate ? formatEthiopianDate(latestRc.paymentDate, isAmharic ? 'am' : 'en') : '—'}
-                      </span>
-                    </div>
-
-                    <div className="space-y-0.5">
-                      <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የሚያበቃበት ቀን:' : 'Expiration Date:'}</span>
-                      <span className="font-mono font-bold text-slate-900 dark:text-white block">
-                        {latestRc?.expirationDate ? formatEthiopianDate(latestRc.expirationDate, isAmharic ? 'am' : 'en') : '—'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Chronological Payment Receipts Ledger */}
-                  <div className="pt-2 border-t border-slate-200 dark:border-slate-700/80">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
-                        {isAmharic ? `የተመዘገቡ ደረሰኞች ታሪክ (${matchedReceipts.length})` : `Payment Receipts Ledger (${matchedReceipts.length})`}
-                      </span>
-                    </div>
-
-                    {matchedReceipts.length === 0 ? (
-                      <div className="text-[11px] text-slate-500 italic py-1.5 bg-white dark:bg-slate-900/60 rounded px-2.5 border border-slate-200/60 dark:border-slate-700/50">
-                        {isAmharic ? 'ምንም የተመዘገበ ተከታታይ የክፍያ ደረሰኝ የለም።' : 'No periodic payment receipts recorded yet for this member.'}
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {/* Desktop & Tablet Table (TailAdmin Design) */}
-                        <div className="hidden sm:block overflow-x-auto rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434]">
-                          <table className="w-full text-left text-xs">
-                            <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-xs font-semibold text-[#1C2434] dark:text-white  border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                              <tr>
-                                <th className="px-3 py-2.5">#</th>
-                                <th className="px-3 py-2.5 font-medium">{isAmharic ? 'ደረሰኝ ቁጥር' : 'Receipt No'}</th>
-                                <th className="px-3 py-2.5 font-medium">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
-                                <th className="px-3 py-2.5 font-medium">{isAmharic ? 'የሚያበቃበት' : 'Valid Until'}</th>
-                                <th className="px-3 py-2.5 font-medium">{isAmharic ? 'መጠን' : 'Amount'}</th>
-                                <th className="px-3 py-2.5 font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                                <th className="px-3 py-2.5 font-medium">{isAmharic ? 'ሰነድ' : 'Slip'}</th>
-                                {isSuperAdmin && <th className="px-3 py-2.5 text-center font-medium">{isAmharic ? 'አማራጮች' : 'Actions'}</th>}
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] font-medium text-xs">
-                              {matchedReceipts.map((rc, idx) => {
-                                const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
-                                return (
-                                  <tr key={rc.id || idx} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors">
-                                    <td className="px-3 py-2.5 font-mono text-[#64748B] dark:text-[#8A99AD]">{idx + 1}</td>
-                                    <td className="px-3 py-2.5 font-mono font-medium text-primary">{rc.receiptNumber}</td>
-                                    <td className="px-3 py-2.5 font-mono text-[#1C2434] dark:text-white">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</td>
-                                    <td className="px-3 py-2.5 font-mono text-[#1C2434] dark:text-white">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</td>
-                                    <td className="px-3 py-2.5 font-bold text-[#1C2434] dark:text-white">{rc.amount ? `${rc.amount} ETB` : '—'}</td>
-                                    <td className="px-3 py-2.5">
-                                      <span className={`px-2 py-0.5 text-xs font-medium rounded-sm ${
-                                        rcStatus.status === 'active'
-                                          ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
-                                          : rcStatus.status === 'expiring_soon'
-                                          ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
-                                          : 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
-                                      }`}>
-                                        {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
-                                      </span>
-                                    </td>
-                                    <td className="px-3 py-2.5">
-                                      {rc.receiptScreenshot ? (
-                                        <button
-                                          type="button"
-                                          onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
-                                          className="text-primary hover:underline font-medium cursor-pointer flex items-center gap-0.5"
-                                        >
-                                          <Icon className="material-symbols-outlined text-[15px]">image</Icon>
-                                          <span>{isAmharic ? 'እይ' : 'View'}</span>
-                                        </button>
-                                      ) : (
-                                        <span className="text-[#64748B] dark:text-[#8A99AD] italic">—</span>
-                                      )}
-                                    </td>
-                                    {isSuperAdmin && (
-                                      <td className="px-3 py-2.5 text-center">
-                                        <button
-                                          type="button"
-                                          onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
-                                          className="text-[#FB5454] hover:bg-[#FB5454]/10 font-medium cursor-pointer inline-flex items-center gap-0.5 p-1 rounded-sm transition-colors"
-                                          title={isAmharic ? 'ደረሰኝ ሰርዝ' : 'Delete Receipt'}
-                                        >
-                                          <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
-                                        </button>
-                                      </td>
-                                    )}
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-
-                        {/* Mobile Expandable Receipts View (Visible on mobile screens only) */}
-                        <div className="sm:hidden space-y-2">
-                          {matchedReceipts.map((rc, idx) => {
-                            const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
-                            const isExpanded = !!expandedReceipts[rc.id || ''];
-                            return (
-                              <div
-                                key={rc.id || idx}
-                                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md overflow-hidden transition-all duration-150 shadow-2xs"
-                              >
-                                {/* Header (Always Visible, Clickable to Expand) */}
-                                <div
-                                  onClick={() => rc.id && toggleReceiptExpand(rc.id)}
-                                  className="p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/20 select-none"
-                                >
-                                  <div className="space-y-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-[10px] font-mono text-slate-400">#{idx + 1}</span>
-                                      <span className="text-xs font-black text-slate-900 dark:text-white font-mono truncate">
-                                        {rc.receiptNumber}
-                                      </span>
-                                    </div>
-                                    <div className="text-[11px] font-bold text-slate-800 dark:text-slate-300">
-                                      {rc.amount ? `${rc.amount} ETB` : '—'}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex items-center gap-2.5 shrink-0">
-                                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
-                                      rcStatus.status === 'active'
-                                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
-                                        : rcStatus.status === 'expiring_soon'
-                                        ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
-                                        : 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20'
-                                    }`}>
-                                      {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
-                                    </span>
-                                    <Icon className={`material-symbols-outlined text-slate-500 transition-transform duration-200 text-[18px] ${isExpanded ? 'rotate-180' : ''}`}>
-                                      keyboard_arrow_down
-                                    </Icon>
-                                  </div>
-                                </div>
-
-                                {/* Expandable Details */}
-                                <div className={`collapsible-grid ${isExpanded ? 'expanded' : ''}`}>
-                                  <div className="collapsible-grid-inner">
-                                    <div className="p-3 pt-0 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] space-y-2.5">
-                                      <div className="grid grid-cols-2 gap-2 pt-2.5">
-                                        <div>
-                                          <span className="text-[9px] text-slate-400 font-extrabold  block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
-                                          <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
-                                        </div>
-                                        <div>
-                                          <span className="text-[9px] text-slate-400 font-extrabold  block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
-                                          <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
-                                        </div>
-                                      </div>
-
-                                      <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
-                                        {rc.receiptScreenshot ? (
-                                          <button
-                                            type="button"
-                                            onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
-                                            className="text-slate-700 hover:text-blue-800 dark:text-blue-400 font-black underline cursor-pointer flex items-center gap-1 py-1"
-                                          >
-                                            <Icon className="material-symbols-outlined text-[14px]">image</Icon>
-                                            <span>{isAmharic ? 'ሰነድ እይ' : 'View Slip'}</span>
-                                          </button>
-                                        ) : (
-                                          <span className="text-slate-400 italic">{isAmharic ? 'ምስል አልተያያዘም' : 'No Slip Screenshot'}</span>
-                                        )}
-
-                                        {isSuperAdmin && (
-                                          <button
-                                            type="button"
-                                            onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
-                                            className="text-rose-600 hover:text-rose-800 dark:text-rose-400 font-black cursor-pointer flex items-center gap-1 bg-rose-50 dark:bg-rose-950/20 px-2.5 py-1 rounded border border-rose-200/50 dark:border-rose-900/50 hover:bg-rose-100 transition-colors"
-                                          >
-                                            <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
-                                            <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
-                                          </button>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
               );
             })()}
 
-            {/* Document Photos */}
-            <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800">
-              <h4 className="font-extrabold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">photo_library</Icon>
-                <span>{isAmharic ? 'የተያያዙ ፎቶዎች እና ሰነዶች (Click to Zoom)' : 'Uploaded Document Photos (Click to Zoom)'}</span>
-              </h4>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 font-bold block truncate">
-                    {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
-                  </span>
-                  <div
-                    onClick={() => selectedRegForDetails.userPortraitPhoto && openDocumentCarousel(selectedRegForDetails.userPortraitPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — Portrait`)}
-                    className="h-28 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                  >
-                    {selectedRegForDetails.userPortraitPhoto ? (
-                      <>
-                        <SmartImage src={selectedRegForDetails.userPortraitPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                          <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-[10px] text-slate-400 italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                    )}
-                  </div>
-                </div>
+            {/* Drawer Body: Fit to Screen Height as much as possible */}
+            <div className="p-3 sm:p-4 space-y-3 overflow-y-auto flex-1 text-xs">
 
-                <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 font-bold block truncate">
-                    {isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}
-                  </span>
-                  <div
-                    onClick={() => selectedRegForDetails.nationalIdPhoto && openDocumentCarousel(selectedRegForDetails.nationalIdPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — National ID`)}
-                    className="h-28 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                  >
-                    {selectedRegForDetails.nationalIdPhoto ? (
-                      <>
-                        <SmartImage src={selectedRegForDetails.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                          <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-[10px] text-slate-400 italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                    )}
+            {/* TAB 1: OWNER & VEHICLE INFO */}
+            {drawerActiveTab === 'info' && (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                {/* Rejection notice if rejected */}
+                {selectedRegForDetails.status === 'rejected' && selectedRegForDetails.rejectionReason && (
+                  <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-md text-xs text-rose-900 dark:text-rose-200">
+                    <span className="font-bold block mb-0.5">{isAmharic ? 'የመሰረዣ ምክንያት:' : 'Rejection Reason:'}</span>
+                    <p className="leading-snug">{selectedRegForDetails.rejectionReason}</p>
                   </div>
-                </div>
+                )}
 
-                <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 font-bold block truncate">
-                    {isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
-                  </span>
-                  <div
-                    onClick={() => selectedRegForDetails.drivingLicensePhoto && openDocumentCarousel(selectedRegForDetails.drivingLicensePhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — License`)}
-                    className="h-28 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                  >
-                    {selectedRegForDetails.drivingLicensePhoto ? (
-                      <>
-                        <SmartImage src={selectedRegForDetails.drivingLicensePhoto} alt="Driving License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                          <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-[10px] text-slate-400 italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 font-bold block truncate">
-                    {isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}
-                  </span>
-                  <div
-                    onClick={() => selectedRegForDetails.drivingPermitPhoto && openDocumentCarousel(selectedRegForDetails.drivingPermitPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — Permit`)}
-                    className="h-28 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                  >
-                    {selectedRegForDetails.drivingPermitPhoto ? (
-                      <>
-                        <SmartImage src={selectedRegForDetails.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                          <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                        </div>
-                      </>
-                    ) : (
-                      <span className="text-[10px] text-slate-400 italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* 5. Bank Receipt Slip */}
-                {(() => {
-                  const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
-                  const slipPhoto = latestRc?.receiptScreenshot || selectedRegForDetails.receiptScreenshot;
-                  return (
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-slate-500 font-bold block truncate">
-                        {isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip'}
+                {/* Core Data Grids - Compact Fit */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  {/* Member / Owner Information */}
+                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-2">
+                    <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white tracking-wider border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5 flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5 min-w-0">
+                        <Icon className="material-symbols-outlined text-[15px] text-primary shrink-0">person</Icon>
+                        <span className="truncate">{isAmharic ? 'የባለቤት መረጃ' : 'Owner Information'}</span>
                       </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {renderStatusBadge(selectedRegForDetails.status)}
+                        <span className="font-mono text-[10px] font-bold text-[#64748B] dark:text-[#8A99AD]">ID: {selectedRegForDetails.id}</span>
+                      </div>
+                    </h4>
+                    <div className="flex items-center gap-3">
                       <div
-                        onClick={() => slipPhoto && openDocumentCarousel(slipPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip'}`)}
-                        className="h-28 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer group relative shadow-2xs"
+                        onClick={() => {
+                          const photo = selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail;
+                          if (photo) openDocumentCarousel(photo, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
+                        }}
+                        className="w-14 h-18 sm:w-16 sm:h-20 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0 overflow-hidden flex items-center justify-center shadow-2xs relative group cursor-pointer"
+                        title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
                       >
-                        {slipPhoto ? (
+                        {(selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto) ? (
                           <>
-                            <SmartImage src={slipPhoto} alt="Receipt Slip" fallbackIcon="receipt_long" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <img
+                              src={selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto}
+                              alt={selectedRegForDetails.fullName}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                            />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                              <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                             </div>
                           </>
                         ) : (
-                          <span className="text-[10px] text-slate-400 italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
+                          <Icon className="material-symbols-outlined text-[24px] text-slate-400">person</Icon>
+                        )}
+                      </div>
+                      <dl className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 text-xs flex-1 min-w-0">
+                        <div>
+                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ሙሉ ስም' : 'Full Name'}</dt>
+                          <dd className="font-bold text-[#1C2434] dark:text-white truncate text-xs" title={selectedRegForDetails.fullName}>
+                            {selectedRegForDetails.fullName || '—'}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</dt>
+                          <dd className="font-mono font-bold text-[#1C2434] dark:text-white truncate text-xs">
+                            {selectedRegForDetails.phone ? (
+                              <a href={`tel:${selectedRegForDetails.phone}`} className="text-primary hover:underline flex items-center gap-1">
+                                <Icon className="material-symbols-outlined text-[12px]">call</Icon>
+                                <span>{getDisplayPhone(selectedRegForDetails)}</span>
+                              </a>
+                            ) : '—'}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</dt>
+                          <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs">{selectedRegForDetails.subCity || '—'}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'የተመዘገበበት' : 'Reg Date'}</dt>
+                          <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs">
+                            {selectedRegForDetails.registrationDate ? formatEthiopianDate(selectedRegForDetails.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                          </dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </div>
+
+                  {/* Vehicle Specifications */}
+                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-2">
+                    <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white tracking-wider border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Icon className="material-symbols-outlined text-[15px] text-primary">electric_moped</Icon>
+                        <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Specs'}</span>
+                      </span>
+                      <span className="font-mono text-[10px] font-bold text-[#64748B] dark:text-[#8A99AD]">{selectedRegForDetails.plateNumber || '—'}</span>
+                    </h4>
+                    <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                      <div>
+                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ዓይነት' : 'Category'}</dt>
+                        <dd className="font-bold">
+                          {selectedRegForDetails.vehicleCategory === 'electric' ? (
+                            <span className="inline-flex items-center gap-0.5 text-[#10B981] font-bold text-[11px]">
+                              <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
+                              <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-0.5 text-primary font-bold text-[11px]">
+                              <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
+                              <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
+                            </span>
+                          )}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</dt>
+                        <dd className="font-mono font-bold text-[#1C2434] dark:text-white truncate text-xs">{selectedRegForDetails.plateNumber || '—'}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis'}</dt>
+                        <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs" title={getChassisDisplay(selectedRegForDetails)}>
+                          {getChassisDisplay(selectedRegForDetails)}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ብራንድ/ሞዴል' : 'Brand/Model'}</dt>
+                        <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
+                          {`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`.trim()}
+                        </dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+
+                {/* Well-Organized Action Buttons */}
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2">
+                  <div className="flex items-center justify-between pb-1 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <span className="font-bold text-[11px] text-[#1C2434] dark:text-white flex items-center gap-1.5">
+                      <Icon className="material-symbols-outlined text-[15px] text-primary">bolt</Icon>
+                      <span>{isAmharic ? 'ፈጣን ተግባራት' : 'Actions'}</span>
+                    </span>
+                  </div>
+
+                  {/* Approval decision row if pending */}
+                  {(userRole === 'admin' || isSuperAdmin) && selectedRegForDetails.status === 'pending_approval' && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onApproveRegistration(selectedRegForDetails.id)}
+                        className="py-1.5 px-3 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
+                        <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRejectingId(selectedRegForDetails.id)}
+                        className="py-1.5 px-3 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer hover:bg-rose-100"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">cancel</Icon>
+                        <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Standard Operational Actions with Old Minimized Text */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {canEditRegistration && (
+                      <button
+                        id="details-modal-edit-reg-btn"
+                        type="button"
+                        onClick={() => {
+                          const reg = selectedRegForDetails;
+                          setSelectedRegForDetails(null);
+                          setEditingRegistration(reg);
+                        }}
+                        className="py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
+                        <span>{isAmharic ? 'መረጃ አሻሽል' : 'Edit'}</span>
+                      </button>
+                    )}
+
+                    {(userRole === 'admin' || isSuperAdmin) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const reg = selectedRegForDetails;
+                          setSelectedRegForDetails(null);
+                          setSelectedRegForQR(reg);
+                        }}
+                        className="py-1.5 px-3 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
+                        <span>{isAmharic ? 'መታወቂያ' : 'ID Card'}</span>
+                      </button>
+                    )}
+
+                    {(selectedRegForDetails.status === 'approved' || selectedRegForDetails.status === 'printed' || selectedRegForDetails.status === 'ordered_print') && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const reg = selectedRegForDetails;
+                            setSelectedRegForDetails(null);
+                            setSelectedRegForA4(reg);
+                          }}
+                          className="py-1.5 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                        >
+                          <Icon className="material-symbols-outlined text-[15px]">print</Icon>
+                          <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const reg = selectedRegForDetails;
+                            setSelectedRegForDetails(null);
+                            setSelectedRegForSticker(reg);
+                          }}
+                          className="py-1.5 px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                        >
+                          <Icon className="material-symbols-outlined text-[15px]">qr_code_scanner</Icon>
+                          <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
+                        </button>
+                      </>
+                    )}
+
+                    {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
+                        className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">add_card</Icon>
+                        <span>{isAmharic ? '+ ደረሰኝ' : '+ Receipt'}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: PAYMENT STATUS & LEDGER */}
+            {drawerActiveTab === 'payments' && (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                {(() => {
+                  const matchedReceipts = getReceiptsForRegistration(selectedRegForDetails, paymentReceipts);
+                  const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
+                  const compliance = getUnifiedPaymentCompliance(selectedRegForDetails, paymentReceipts);
+
+                  return (
+                    <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-1.5">
+                        <h4 className="font-extrabold text-xs text-slate-700 dark:text-slate-300 tracking-wider flex items-center gap-1.5">
+                          <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">receipt_long</Icon>
+                          <span>{isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}</span>
+                        </h4>
+                        <div className="flex items-center gap-2">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-bold ${compliance.badgeClass}`}>
+                            <Icon className="material-symbols-outlined text-[13px]">
+                              {compliance.status === 'active' ? 'check_circle' : compliance.status === 'expiring_soon' ? 'alarm' : 'cancel'}
+                            </Icon>
+                            <span>{isAmharic ? compliance.labelAm : compliance.labelEn}</span>
+                          </span>
+
+                          {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
+                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                              title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
+                            >
+                              <Icon className="material-symbols-outlined text-[14px]">add_card</Icon>
+                              <span>{isAmharic ? '+ ደረሰኝ መዝግብ' : '+ Log Receipt'}</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የደረሰኝ ቁጥር:' : 'Receipt No:'}</span>
+                          <span className="font-mono font-bold text-slate-900 dark:text-white block truncate">
+                            {latestRc?.receiptNumber || selectedRegForDetails.receiptNumber || '—'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የክፍያ መጠን:' : 'Amount (ETB):'}</span>
+                          <span className="font-bold text-slate-900 dark:text-white block">
+                            {latestRc?.amount ? `${latestRc.amount} ETB` : selectedRegForDetails.paymentAmount ? `${selectedRegForDetails.paymentAmount} ETB` : '—'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የተከፈለበት ቀን:' : 'Payment Date:'}</span>
+                          <span className="font-mono text-slate-800 dark:text-slate-200 block">
+                            {latestRc?.paymentDate ? formatEthiopianDate(latestRc.paymentDate, isAmharic ? 'am' : 'en') : '—'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የሚያበቃበት ቀን:' : 'Expiration Date:'}</span>
+                          <span className="font-mono font-bold text-slate-900 dark:text-white block">
+                            {latestRc?.expirationDate ? formatEthiopianDate(latestRc.expirationDate, isAmharic ? 'am' : 'en') : '—'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Chronological Payment Receipts Ledger */}
+                      <div className="pt-2 border-t border-slate-200 dark:border-slate-700/80">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                            {isAmharic ? `የተመዘገቡ ደረሰኞች ታሪክ (${matchedReceipts.length})` : `Payment Receipts Ledger (${matchedReceipts.length})`}
+                          </span>
+                        </div>
+
+                        {matchedReceipts.length === 0 ? (
+                          <div className="text-[11px] text-slate-500 italic py-1.5 bg-white dark:bg-slate-900/60 rounded px-2.5 border border-slate-200/60 dark:border-slate-700/50">
+                            {isAmharic ? 'ምንም የተመዘገበ ተከታታይ የክፍያ ደረሰኝ የለም።' : 'No periodic payment receipts recorded yet for this member.'}
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {/* Desktop & Tablet Table */}
+                            <div className="hidden sm:block overflow-x-auto rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] max-h-[220px]">
+                              <table className="w-full text-left text-xs">
+                                <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-xs font-semibold text-[#1C2434] dark:text-white border-b border-[#E2E8F0] dark:border-[#2E3A47] sticky top-0">
+                                  <tr>
+                                    <th className="px-2.5 py-2">#</th>
+                                    <th className="px-2.5 py-2 font-medium">{isAmharic ? 'ደረሰኝ ቁጥር' : 'Receipt No'}</th>
+                                    <th className="px-2.5 py-2 font-medium">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
+                                    <th className="px-2.5 py-2 font-medium">{isAmharic ? 'የሚያበቃበት' : 'Valid Until'}</th>
+                                    <th className="px-2.5 py-2 font-medium">{isAmharic ? 'መጠን' : 'Amount'}</th>
+                                    <th className="px-2.5 py-2 font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                                    <th className="px-2.5 py-2 font-medium">{isAmharic ? 'ሰነድ' : 'Slip'}</th>
+                                    {isSuperAdmin && <th className="px-2.5 py-2 text-center font-medium">{isAmharic ? 'አማራጮች' : 'Actions'}</th>}
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] font-medium text-xs">
+                                  {matchedReceipts.map((rc, idx) => {
+                                    const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
+                                    return (
+                                      <tr key={rc.id || idx} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors">
+                                        <td className="px-2.5 py-1.5 font-mono text-[#64748B] dark:text-[#8A99AD]">{idx + 1}</td>
+                                        <td className="px-2.5 py-1.5 font-mono font-medium text-primary">{rc.receiptNumber}</td>
+                                        <td className="px-2.5 py-1.5 font-mono text-[#1C2434] dark:text-white">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</td>
+                                        <td className="px-2.5 py-1.5 font-mono text-[#1C2434] dark:text-white">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</td>
+                                        <td className="px-2.5 py-1.5 font-bold text-[#1C2434] dark:text-white">{rc.amount ? `${rc.amount} ETB` : '—'}</td>
+                                        <td className="px-2.5 py-1.5">
+                                          <span className={`px-2 py-0.5 text-xs font-medium rounded-sm ${
+                                            rcStatus.status === 'active'
+                                              ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
+                                              : rcStatus.status === 'expiring_soon'
+                                              ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
+                                              : 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
+                                          }`}>
+                                            {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
+                                          </span>
+                                        </td>
+                                        <td className="px-2.5 py-1.5">
+                                          {rc.receiptScreenshot ? (
+                                            <button
+                                              type="button"
+                                              onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
+                                              className="text-primary hover:underline font-medium cursor-pointer flex items-center gap-0.5"
+                                            >
+                                              <Icon className="material-symbols-outlined text-[15px]">image</Icon>
+                                              <span>{isAmharic ? 'እይ' : 'View'}</span>
+                                            </button>
+                                          ) : (
+                                            <span className="text-[#64748B] dark:text-[#8A99AD] italic">—</span>
+                                          )}
+                                        </td>
+                                        {isSuperAdmin && (
+                                          <td className="px-2.5 py-1.5 text-center">
+                                            <button
+                                              type="button"
+                                              onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
+                                              className="text-[#FB5454] hover:bg-[#FB5454]/10 font-medium cursor-pointer inline-flex items-center gap-0.5 p-1 rounded-sm transition-colors"
+                                              title={isAmharic ? 'ደረሰኝ ሰርዝ' : 'Delete Receipt'}
+                                            >
+                                              <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
+                                            </button>
+                                          </td>
+                                        )}
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+
+                            {/* Mobile Expandable Receipts View */}
+                            <div className="sm:hidden space-y-2">
+                              {matchedReceipts.map((rc, idx) => {
+                                const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
+                                const isExpanded = !!expandedReceipts[rc.id || ''];
+                                return (
+                                  <div
+                                    key={rc.id || idx}
+                                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md overflow-hidden transition-all duration-150 shadow-2xs"
+                                  >
+                                    <div
+                                      onClick={() => rc.id && toggleReceiptExpand(rc.id)}
+                                      className="p-2.5 flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/20 select-none"
+                                    >
+                                      <div className="space-y-0.5 min-w-0">
+                                        <div className="flex items-center gap-1.5">
+                                          <span className="text-[10px] font-mono text-slate-400">#{idx + 1}</span>
+                                          <span className="text-xs font-black text-slate-900 dark:text-white font-mono truncate">
+                                            {rc.receiptNumber}
+                                          </span>
+                                        </div>
+                                        <div className="text-[11px] font-bold text-slate-800 dark:text-slate-300">
+                                          {rc.amount ? `${rc.amount} ETB` : '—'}
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                                          rcStatus.status === 'active'
+                                            ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
+                                            : rcStatus.status === 'expiring_soon'
+                                            ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
+                                            : 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20'
+                                        }`}>
+                                          {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
+                                        </span>
+                                        <Icon className={`material-symbols-outlined text-slate-500 transition-transform duration-200 text-[18px] ${isExpanded ? 'rotate-180' : ''}`}>
+                                          keyboard_arrow_down
+                                        </Icon>
+                                      </div>
+                                    </div>
+
+                                    <div className={`collapsible-grid ${isExpanded ? 'expanded' : ''}`}>
+                                      <div className="collapsible-grid-inner">
+                                        <div className="p-2.5 pt-0 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 text-[11px] space-y-2">
+                                          <div className="grid grid-cols-2 gap-2 pt-2">
+                                            <div>
+                                              <span className="text-[9px] text-slate-400 font-extrabold block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
+                                              <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
+                                            </div>
+                                            <div>
+                                              <span className="text-[9px] text-slate-400 font-extrabold block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
+                                              <span className="font-mono text-slate-800 dark:text-slate-200">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
+                                            </div>
+                                          </div>
+
+                                          <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60">
+                                            {rc.receiptScreenshot ? (
+                                              <button
+                                                type="button"
+                                                onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
+                                                className="text-slate-700 hover:text-blue-800 dark:text-blue-400 font-black underline cursor-pointer flex items-center gap-1 py-0.5"
+                                              >
+                                                <Icon className="material-symbols-outlined text-[14px]">image</Icon>
+                                                <span>{isAmharic ? 'ሰነድ እይ' : 'View Slip'}</span>
+                                              </button>
+                                            ) : (
+                                              <span className="text-slate-400 italic">{isAmharic ? 'ምስል አልተያያዘም' : 'No Slip Screenshot'}</span>
+                                            )}
+
+                                            {isSuperAdmin && (
+                                              <button
+                                                type="button"
+                                                onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
+                                                className="text-rose-600 hover:text-rose-800 dark:text-rose-400 font-black cursor-pointer flex items-center gap-1 bg-rose-50 dark:bg-rose-950/20 px-2 py-0.5 rounded border border-rose-200/50 dark:border-rose-900/50 hover:bg-rose-100 transition-colors"
+                                              >
+                                                <Icon className="material-symbols-outlined text-[14px]">delete</Icon>
+                                                <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
+                                              </button>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
                   );
                 })()}
               </div>
+            )}
+
+            {/* TAB 3: UPLOADED DOCUMENTS (Fits in Screen Height without Scrolling) */}
+            {drawerActiveTab === 'documents' && (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5">
+                  <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white flex items-center gap-1.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5">
+                    <Icon className="material-symbols-outlined text-[15px] text-primary">photo_library</Icon>
+                    <span>{isAmharic ? 'የተያያዙ ፎቶዎች እና ሰነዶች (ለማጉላት ይጫኑ)' : 'Uploaded Document Photos (Click to Zoom)'}</span>
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
+                        {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
+                      </span>
+                      <div
+                        onClick={() => selectedRegForDetails.userPortraitPhoto && openDocumentCarousel(selectedRegForDetails.userPortraitPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — Portrait`)}
+                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
+                      >
+                        {selectedRegForDetails.userPortraitPhoto ? (
+                          <>
+                            <SmartImage src={selectedRegForDetails.userPortraitPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
+                        {isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}
+                      </span>
+                      <div
+                        onClick={() => selectedRegForDetails.nationalIdPhoto && openDocumentCarousel(selectedRegForDetails.nationalIdPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — National ID`)}
+                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
+                      >
+                        {selectedRegForDetails.nationalIdPhoto ? (
+                          <>
+                            <SmartImage src={selectedRegForDetails.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
+                        {isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
+                      </span>
+                      <div
+                        onClick={() => selectedRegForDetails.drivingLicensePhoto && openDocumentCarousel(selectedRegForDetails.drivingLicensePhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — License`)}
+                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
+                      >
+                        {selectedRegForDetails.drivingLicensePhoto ? (
+                          <>
+                            <SmartImage src={selectedRegForDetails.drivingLicensePhoto} alt="Driving License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
+                        {isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}
+                      </span>
+                      <div
+                        onClick={() => selectedRegForDetails.drivingPermitPhoto && openDocumentCarousel(selectedRegForDetails.drivingPermitPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — Permit`)}
+                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
+                      >
+                        {selectedRegForDetails.drivingPermitPhoto ? (
+                          <>
+                            <SmartImage src={selectedRegForDetails.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 5. Bank Receipt Slip */}
+                    {(() => {
+                      const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
+                      const slipPhoto = latestRc?.receiptScreenshot || selectedRegForDetails.receiptScreenshot;
+                      return (
+                        <div className="space-y-1">
+                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
+                            {isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip'}
+                          </span>
+                          <div
+                            onClick={() => slipPhoto && openDocumentCarousel(slipPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip'}`)}
+                            className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
+                          >
+                            {slipPhoto ? (
+                              <>
+                                <SmartImage src={slipPhoto} alt="Receipt Slip" fallbackIcon="receipt_long" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                  <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                                </div>
+                              </>
+                            ) : (
+                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </div>
+            )}
+
             </div>
-          </div>
         </div>
       </div>
       )}
