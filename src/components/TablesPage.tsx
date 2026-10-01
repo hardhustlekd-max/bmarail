@@ -1501,8 +1501,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             className="fixed inset-0 bg-slate-950/65 backdrop-blur-md transition-opacity cursor-pointer"
           />
 
-          {/* Side-Sheet Drawer Content Container (Adjusted Width: w-[92vw] sm:w-[520px] md:w-[640px] lg:w-[740px] xl:w-[820px] max-w-[95vw]) */}
-          <div className="relative w-[92vw] sm:w-[520px] md:w-[640px] lg:w-[740px] xl:w-[820px] max-w-[95vw] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
+          {/* Side-Sheet Drawer Content Container (Leaves space on left for touch-outside to close) */}
+          <div className="relative w-[80vw] sm:w-[480px] md:w-[520px] lg:w-[560px] max-w-[80vw] sm:max-w-[560px] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
             {/* Drawer Header */}
             <div className="p-3 sm:p-4 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
@@ -1607,11 +1607,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             })()}
 
             {/* Drawer Body: Fit to Screen Height as much as possible */}
-            <div className="p-3 sm:p-4 space-y-3 overflow-y-auto flex-1 text-xs">
+            <div className="p-3 sm:p-4 space-y-3.5 overflow-y-auto flex-1 text-xs">
 
             {/* TAB 1: OWNER & VEHICLE INFO */}
             {drawerActiveTab === 'info' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <div className="space-y-3.5 animate-in fade-in duration-200">
                 {/* Rejection notice if rejected */}
                 {selectedRegForDetails.status === 'rejected' && selectedRegForDetails.rejectionReason && (
                   <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-md text-xs text-rose-900 dark:text-rose-200">
@@ -1620,27 +1620,28 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   </div>
                 )}
 
-                {/* Core Data Grids - Compact Fit */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  {/* Member / Owner Information */}
-                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-2">
-                    <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white tracking-wider border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5 flex items-center justify-between gap-2">
-                      <span className="flex items-center gap-1.5 min-w-0">
-                        <Icon className="material-symbols-outlined text-[15px] text-primary shrink-0">person</Icon>
-                        <span className="truncate">{isAmharic ? 'የባለቤት መረጃ' : 'Owner Information'}</span>
+                {/* Core Data Cards - Owner Information & Vehicle Specs */}
+                <div className="flex flex-col space-y-3.5 text-xs">
+                  {/* Member / Owner Information Card */}
+                  <div className="p-3.5 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5">
+                      <h4 className="font-bold text-xs text-[#1C2434] dark:text-white tracking-wider flex items-center gap-1.5">
+                        <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">person</Icon>
+                        <span>{isAmharic ? 'የባለቤት መረጃ' : 'Owner Information'}</span>
+                      </h4>
+                      <span className="text-[11px] font-mono font-bold text-primary dark:text-blue-300 bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded">
+                        #{selectedRegForDetails.id}
                       </span>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {renderStatusBadge(selectedRegForDetails.status)}
-                        <span className="font-mono text-[10px] font-bold text-[#64748B] dark:text-[#8A99AD]">ID: {selectedRegForDetails.id}</span>
-                      </div>
-                    </h4>
-                    <div className="flex items-center gap-3">
+                    </div>
+
+                    <div className="flex items-start gap-3.5">
+                      {/* Portrait Photo */}
                       <div
                         onClick={() => {
                           const photo = selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail;
                           if (photo) openDocumentCarousel(photo, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
                         }}
-                        className="w-14 h-18 sm:w-16 sm:h-20 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0 overflow-hidden flex items-center justify-center shadow-2xs relative group cursor-pointer"
+                        className="w-16 h-20 sm:w-18 sm:h-22 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0 overflow-hidden flex items-center justify-center shadow-2xs relative group cursor-pointer"
                         title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
                       >
                         {(selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto) ? (
@@ -1652,39 +1653,53 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
                             />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                              <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                              <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
                             </div>
                           </>
                         ) : (
-                          <Icon className="material-symbols-outlined text-[24px] text-slate-400">person</Icon>
+                          <Icon className="material-symbols-outlined text-[28px] text-slate-400">person</Icon>
                         )}
                       </div>
-                      <dl className="grid grid-cols-2 gap-x-2.5 gap-y-1.5 text-xs flex-1 min-w-0">
+
+                      {/* 2 Column Grid for Details */}
+                      <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs flex-1 min-w-0">
                         <div>
-                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ሙሉ ስም' : 'Full Name'}</dt>
-                          <dd className="font-bold text-[#1C2434] dark:text-white truncate text-xs" title={selectedRegForDetails.fullName}>
+                          <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ሙሉ ስም' : 'Full Name'}</dt>
+                          <dd className="font-bold text-[#1C2434] dark:text-white text-xs leading-snug break-words" title={selectedRegForDetails.fullName}>
                             {selectedRegForDetails.fullName || '—'}
                           </dd>
                         </div>
                         <div>
-                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</dt>
-                          <dd className="font-mono font-bold text-[#1C2434] dark:text-white truncate text-xs">
+                          <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</dt>
+                          <dd className="font-mono font-bold text-[#1C2434] dark:text-white text-xs leading-snug">
                             {selectedRegForDetails.phone ? (
                               <a href={`tel:${selectedRegForDetails.phone}`} className="text-primary hover:underline flex items-center gap-1">
-                                <Icon className="material-symbols-outlined text-[12px]">call</Icon>
+                                <Icon className="material-symbols-outlined text-[13px]">call</Icon>
                                 <span>{getDisplayPhone(selectedRegForDetails)}</span>
                               </a>
                             ) : '—'}
                           </dd>
                         </div>
                         <div>
-                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</dt>
-                          <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs">{selectedRegForDetails.subCity || '—'}</dd>
+                          <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</dt>
+                          <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug">{selectedRegForDetails.subCity || '—'}</dd>
                         </div>
                         <div>
-                          <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'የተመዘገበበት' : 'Reg Date'}</dt>
-                          <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs">
+                          <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'የተመዘገበበት' : 'Reg Date'}</dt>
+                          <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug">
                             {selectedRegForDetails.registrationDate ? formatEthiopianDate(selectedRegForDetails.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'የመታወቂያ ID' : 'Member ID'}</dt>
+                          <dd className="font-mono font-bold text-xs text-[#1C2434] dark:text-white leading-snug">
+                            #{selectedRegForDetails.id}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'የፍቃድ ሁኔታ' : 'Permit Status'}</dt>
+                          <dd className="font-semibold text-xs leading-snug">
+                            {renderStatusBadge(selectedRegForDetails.status)}
                           </dd>
                         </div>
                       </dl>
@@ -1692,44 +1707,41 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   </div>
 
                   {/* Vehicle Specifications */}
-                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-2">
-                    <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white tracking-wider border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5 flex items-center justify-between">
-                      <span className="flex items-center gap-1.5">
-                        <Icon className="material-symbols-outlined text-[15px] text-primary">electric_moped</Icon>
-                        <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Specs'}</span>
-                      </span>
-                      <span className="font-mono text-[10px] font-bold text-[#64748B] dark:text-[#8A99AD]">{selectedRegForDetails.plateNumber || '—'}</span>
+                  <div className="p-3.5 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5">
+                    <h4 className="font-bold text-xs text-[#1C2434] dark:text-white tracking-wider border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5 flex items-center gap-1.5">
+                      <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">electric_moped</Icon>
+                      <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Specs'}</span>
                     </h4>
-                    <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs">
                       <div>
-                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ዓይነት' : 'Category'}</dt>
+                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ዓይነት' : 'Category'}</dt>
                         <dd className="font-bold">
                           {selectedRegForDetails.vehicleCategory === 'electric' ? (
-                            <span className="inline-flex items-center gap-0.5 text-[#10B981] font-bold text-[11px]">
-                              <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
+                            <span className="inline-flex items-center gap-0.5 text-[#10B981] font-bold text-xs">
+                              <Icon className="material-symbols-outlined text-[14px]">electric_bolt</Icon>
                               <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-0.5 text-primary font-bold text-[11px]">
-                              <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
+                            <span className="inline-flex items-center gap-0.5 text-primary font-bold text-xs">
+                              <Icon className="material-symbols-outlined text-[14px]">local_gas_station</Icon>
                               <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
                             </span>
                           )}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</dt>
-                        <dd className="font-mono font-bold text-[#1C2434] dark:text-white truncate text-xs">{selectedRegForDetails.plateNumber || '—'}</dd>
+                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</dt>
+                        <dd className="font-mono font-bold text-[#1C2434] dark:text-white text-xs leading-snug">{selectedRegForDetails.plateNumber || '—'}</dd>
                       </div>
                       <div>
-                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis'}</dt>
-                        <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs" title={getChassisDisplay(selectedRegForDetails)}>
+                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis'}</dt>
+                        <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug break-all" title={getChassisDisplay(selectedRegForDetails)}>
                           {getChassisDisplay(selectedRegForDetails)}
                         </dd>
                       </div>
                       <div>
-                        <dt className="text-[10px] font-medium text-[#64748B] dark:text-[#8A99AD]">{isAmharic ? 'ብራንድ/ሞዴል' : 'Brand/Model'}</dt>
-                        <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate text-xs" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
+                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ብራንድ/ሞዴል' : 'Brand/Model'}</dt>
+                        <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug break-words" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
                           {`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`.trim()}
                         </dd>
                       </div>
@@ -1855,33 +1867,67 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   const compliance = getUnifiedPaymentCompliance(selectedRegForDetails, paymentReceipts);
 
                   return (
-                    <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2">
-                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-1.5">
-                        <h4 className="font-extrabold text-xs text-slate-700 dark:text-slate-300 tracking-wider flex items-center gap-1.5">
-                          <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">receipt_long</Icon>
-                          <span>{isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}</span>
-                        </h4>
-                        <div className="flex items-center gap-2">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-bold ${compliance.badgeClass}`}>
-                            <Icon className="material-symbols-outlined text-[13px]">
+                    <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-md border border-slate-200 dark:border-slate-700 space-y-2.5">
+                      <h4 className="font-extrabold text-xs text-slate-700 dark:text-slate-300 tracking-wider flex items-center gap-1.5 border-b border-slate-200 dark:border-slate-700 pb-1.5">
+                        <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">receipt_long</Icon>
+                        <span>{isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}</span>
+                      </h4>
+
+                      {/* Content Grid with Standing Status & Receipt Details */}
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs items-center">
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የክፍያ ሁኔታ:' : 'Standing Status:'}</span>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[11px] font-bold ${compliance.badgeClass}`}>
+                            <Icon className="material-symbols-outlined text-[12px]">
                               {compliance.status === 'active' ? 'check_circle' : compliance.status === 'expiring_soon' ? 'alarm' : 'cancel'}
                             </Icon>
                             <span>{isAmharic ? compliance.labelAm : compliance.labelEn}</span>
                           </span>
+                        </div>
 
-                          {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
-                            <button
-                              type="button"
-                              onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
-                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
-                              title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
-                            >
-                              <Icon className="material-symbols-outlined text-[14px]">add_card</Icon>
-                              <span>{isAmharic ? '+ ደረሰኝ መዝግብ' : '+ Log Receipt'}</span>
-                            </button>
-                          )}
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የደረሰኝ ቁጥር:' : 'Receipt No:'}</span>
+                          <span className="font-mono font-bold text-slate-900 dark:text-white block truncate">
+                            {latestRc?.receiptNumber || selectedRegForDetails.receiptNumber || '—'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የክፍያ መጠን:' : 'Amount (ETB):'}</span>
+                          <span className="font-bold text-slate-900 dark:text-white block">
+                            {latestRc?.amount ? `${latestRc.amount} ETB` : selectedRegForDetails.paymentAmount ? `${selectedRegForDetails.paymentAmount} ETB` : '—'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የተከፈለበት ቀን:' : 'Payment Date:'}</span>
+                          <span className="font-mono text-slate-800 dark:text-slate-200 block">
+                            {latestRc?.paymentDate ? formatEthiopianDate(latestRc.paymentDate, isAmharic ? 'am' : 'en') : '—'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የሚያበቃበት ቀን:' : 'Expiration Date:'}</span>
+                          <span className="font-mono font-bold text-slate-900 dark:text-white block">
+                            {latestRc?.expirationDate ? formatEthiopianDate(latestRc.expirationDate, isAmharic ? 'am' : 'en') : '—'}
+                          </span>
                         </div>
                       </div>
+
+                      {/* Log Receipt Action Row inside Section Content */}
+                      {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
+                        <div className="pt-1 flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                            title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
+                          >
+                            <Icon className="material-symbols-outlined text-[14px]">add_card</Icon>
+                            <span>{isAmharic ? '+ ደረሰኝ መዝግብ' : '+ Log Receipt'}</span>
+                          </button>
+                        </div>
+                      )}
 
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                         <div className="space-y-0.5">
