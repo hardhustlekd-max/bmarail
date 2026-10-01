@@ -483,27 +483,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
       </header>
 
-      {/* 2. MAIN CAROUSEL STAGE: 3-COLUMN STRUCTURE OPTIMIZED FOR MOBILE */}
-      <div className="flex-1 min-h-0 w-full flex items-center justify-between relative overflow-hidden">
-        {/* Left Arrow Column - Guaranteed dedicated space so it never overlaps the image */}
-        <div className="w-7 sm:w-16 md:w-20 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
-          {validItems.length > 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handlePrev();
-              }}
-              title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
-              aria-label="Previous Document"
-              className="w-7.5 h-7.5 sm:w-11 sm:h-11 rounded-full bg-slate-900/85 hover:bg-slate-800 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
-            >
-              <Icon className="material-symbols-outlined text-[18px] sm:text-[26px]">chevron_left</Icon>
-            </button>
-          )}
-        </div>
-
-        {/* Center Document Stage - 100% Symmetrically Centered */}
+      {/* 2. MAIN CAROUSEL STAGE */}
+      <div className="flex-1 min-h-0 w-full flex items-center justify-center relative overflow-hidden">
+        {/* Center Document Stage - 100% Symmetrically Centered Full Width */}
         <div
           ref={containerRef}
           onMouseDown={handleMouseDown}
@@ -511,7 +493,7 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onDoubleClick={handleDoubleClick}
-          className={`flex-1 h-full min-w-0 relative flex items-center justify-center p-1.5 sm:p-4 overflow-hidden select-none ${
+          className={`w-full h-full relative flex items-center justify-center p-1.5 sm:p-4 overflow-hidden select-none ${
             scale > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'
           }`}
         >
@@ -619,28 +601,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             </div>
           </div>
         </div>
-
-        {/* Right Arrow Column - Guaranteed dedicated space so it never overlaps the image */}
-        <div className="w-7 sm:w-16 md:w-20 shrink-0 h-full flex items-center justify-center z-20 pointer-events-auto">
-          {validItems.length > 1 && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleNext();
-              }}
-              title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
-              aria-label="Next Document"
-              className="w-7.5 h-7.5 sm:w-11 sm:h-11 rounded-full bg-slate-900/85 hover:bg-slate-800 hover:scale-110 active:scale-95 text-white flex items-center justify-center border border-white/25 shadow-2xl transition-all cursor-pointer backdrop-blur-md hover:border-primary/60"
-            >
-              <Icon className="material-symbols-outlined text-[18px] sm:text-[26px]">chevron_right</Icon>
-            </button>
-          )}
-        </div>
       </div>
 
-      {/* FLOATING ZOOM PILL WITH UNMERGED PREV AND NEXT FLANKING BUTTONS */}
-      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-auto flex items-center gap-2 sm:gap-2.5 transition-all select-none">
+      {/* FLOATING ENLARGED ZOOM PILL WITH UNMERGED PREV AND NEXT FLANKING BUTTONS */}
+      <div className="fixed bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-40 pointer-events-auto flex items-center gap-2.5 sm:gap-3.5 transition-all select-none">
         {/* Standalone Previous Button (Left of Zoom Pill) */}
         {validItems.length > 1 && (
           <button
@@ -648,23 +612,23 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             onClick={handlePrev}
             title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
             aria-label="Previous Document"
-            className="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60 shrink-0"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60 shrink-0"
           >
-            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">chevron_left</Icon>
+            <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">chevron_left</Icon>
           </button>
         )}
 
-        {/* Zoom Pill Container */}
-        <div className="h-8.5 sm:h-9 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-2.5 sm:px-3 flex items-center gap-1 sm:gap-1.5 shadow-2xl shrink-0">
+        {/* Enlarged Zoom Pill Container */}
+        <div className="h-11 sm:h-12 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 shadow-2xl shrink-0">
           {/* Zoom Out */}
           <button
             type="button"
             onClick={handleZoomOut}
             title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out'}
             aria-label="Zoom Out"
-            className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
+            className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
           >
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[17px]">zoom_out</Icon>
+            <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">zoom_out</Icon>
           </button>
 
           {/* Zoom Scale & Reset */}
@@ -673,10 +637,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             onClick={resetTransform}
             title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset Scale'}
             aria-label="Reset Scale"
-            className="px-2 h-6 sm:h-6.5 rounded-full bg-white/15 text-white text-[10px] sm:text-[11px] font-mono font-bold flex items-center gap-0.5 hover:bg-white/25 active:scale-95 cursor-pointer"
+            className="px-2.5 sm:px-3 h-7.5 sm:h-8.5 rounded-full bg-white/15 text-white text-[12px] sm:text-[13px] font-mono font-bold flex items-center gap-1 hover:bg-white/25 active:scale-95 cursor-pointer"
           >
             <span>{Math.round(scale * 100)}%</span>
-            {scale !== 1 && <Icon className="material-symbols-outlined text-[11px] sm:text-[12px]">restart_alt</Icon>}
+            {scale !== 1 && <Icon className="material-symbols-outlined text-[13px] sm:text-[14px]">restart_alt</Icon>}
           </button>
 
           {/* Zoom In */}
@@ -685,12 +649,12 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             onClick={handleZoomIn}
             title={isAmharic ? 'አጉላ (+)' : 'Zoom In'}
             aria-label="Zoom In"
-            className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
+            className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
           >
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[17px]">zoom_in</Icon>
+            <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">zoom_in</Icon>
           </button>
 
-          <div className="w-px h-3.5 bg-white/20 mx-0.5" />
+          <div className="w-px h-5 sm:h-6 bg-white/20 mx-1" />
 
           {/* Rotate */}
           <button
@@ -698,9 +662,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             onClick={handleRotate}
             title={isAmharic ? 'አሽከርክር (90°)' : 'Rotate (90°)'}
             aria-label="Rotate Document"
-            className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
+            className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
           >
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[17px]">rotate_right</Icon>
+            <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">rotate_right</Icon>
           </button>
         </div>
 
@@ -711,9 +675,9 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
             onClick={handleNext}
             title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
             aria-label="Next Document"
-            className="w-8.5 h-8.5 sm:w-9 sm:h-9 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60 shrink-0"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60 shrink-0"
           >
-            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">chevron_right</Icon>
+            <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">chevron_right</Icon>
           </button>
         )}
       </div>

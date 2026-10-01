@@ -3077,37 +3077,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
             )}
           </div>
 
-          {/* Modern, elegant system footer containing language and theme selectors */}
+          {/* Modern, elegant system footer */}
           {activePage !== 'scan' && (
-            <footer className="app-grounded-footer w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 rounded-lg">
-              <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center sm:text-left">
+            <footer className="app-grounded-footer w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex items-center justify-center mt-8 rounded-lg">
+              <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center">
                 {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahirdar Motorist Association Permit Governance System. All rights reserved.'}
-              </div>
-              
-              <div className="flex items-center gap-3">
-                {/* Language Selector */}
-                <button
-                  type="button"
-                  onClick={onToggleLang}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
-                >
-                  <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">translate</Icon>
-                  <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
-                </button>
-
-                {/* Theme Selector */}
-                {onToggleTheme && (
-                  <button
-                    type="button"
-                    onClick={onToggleTheme}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 transition-all cursor-pointer shadow-2xs"
-                  >
-                    <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">
-                      {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
-                    </Icon>
-                    <span>{currentTheme === 'dark' ? (isAmharic ? 'ብርሃን (Light)' : 'Light Mode') : (isAmharic ? 'ጨለማ (Dark)' : 'Dark Mode')}</span>
-                  </button>
-                )}
               </div>
             </footer>
           )}
