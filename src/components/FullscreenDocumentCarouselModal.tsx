@@ -639,37 +639,6 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
       </div>
 
-      {/* FIXED BOTTOM COUNTER & NAVIGATION (Fixed position without dot indicator) */}
-      {validItems.length > 1 && (
-        <div
-          className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white select-none transition-all"
-        >
-          <button
-            type="button"
-            onClick={handlePrev}
-            title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
-            aria-label="Previous Document"
-            className="w-5 h-5 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all cursor-pointer"
-          >
-            <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
-          </button>
-
-          <span className="text-[11px] sm:text-xs font-mono font-bold text-white px-1 tracking-wider">
-            {currentIndex + 1} / {validItems.length}
-          </span>
-
-          <button
-            type="button"
-            onClick={handleNext}
-            title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
-            aria-label="Next Document"
-            className="w-5 h-5 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/15 transition-all cursor-pointer"
-          >
-            <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
-          </button>
-        </div>
-      )}
-
       {/* MOBILE-OPTIMIZED FLOATING TOOL DOCK: Ergonomically placed at bottom within thumb reach */}
       <div
         className="sm:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-2xl pointer-events-auto"
