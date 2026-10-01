@@ -639,6 +639,40 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         </div>
       </div>
 
+      {/* FIXED BOTTOM COUNTER & UNMERGED FLANKING PREV/NEXT BUTTONS */}
+      {validItems.length > 1 && (
+        <div className="fixed bottom-16 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex items-center gap-2 sm:gap-2.5 transition-all select-none">
+          {/* Standalone Previous Button */}
+          <button
+            type="button"
+            onClick={handlePrev}
+            title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
+            aria-label="Previous Document"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60"
+          >
+            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">chevron_left</Icon>
+          </button>
+
+          {/* Standalone Counter Container */}
+          <div className="h-8 sm:h-9 px-3.5 sm:px-4 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center text-[11px] sm:text-xs font-mono font-bold tracking-wider">
+            <span>{currentIndex + 1}</span>
+            <span className="text-white/40 mx-1.5">/</span>
+            <span>{validItems.length}</span>
+          </div>
+
+          {/* Standalone Next Button */}
+          <button
+            type="button"
+            onClick={handleNext}
+            title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
+            aria-label="Next Document"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60"
+          >
+            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">chevron_right</Icon>
+          </button>
+        </div>
+      )}
+
       {/* MOBILE-OPTIMIZED FLOATING TOOL DOCK: Ergonomically placed at bottom within thumb reach */}
       <div
         className="sm:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-2xl pointer-events-auto"
