@@ -763,7 +763,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         reg.paymentAmount ||
         reg.lastPaymentAmount ||
         reg.lastPaymentDate ||
-        reg.activeTermExpirationDate
+        reg.activeTermExpirationDate ||
+        reg.termStatus === 'CURRENT' ||
+        reg.status === 'approved' ||
+        reg.status === 'printed' ||
+        reg.status === 'ordered_print'
       );
 
       if (hasRegReceipt) {
@@ -838,13 +842,12 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         );
 
         // B. Check if any receipt term covers this Ethiopian month (validity duration spans across multiple months)
-        // A standard 1-month payment made in Month X expires in Month X+1, but only covers Month X (targetPeriodIndex < expIndex)
         const targetPeriodIndex = targetYear * 13 + targetMonth;
         const coveringMatches = parsedReceipts.filter((item) => {
           if (!item.payEth) return false;
           const payIndex = item.payEth.year * 13 + item.payEth.month;
           const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
-          return targetPeriodIndex >= payIndex && targetPeriodIndex < expIndex;
+          return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
         });
 
         const activeReceipt = parsedReceipts.find((r) => r.status === 'active');
@@ -852,18 +855,19 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
         if (isCurrentMonth) {
           // For current month: evaluate live active status
-          if (reg.termStatus === 'CURRENT' || activeReceipt) {
+          const hasPaidCoverage =
+            reg.termStatus === 'CURRENT' ||
+            Boolean(activeReceipt) ||
+            directMonthMatches.length > 0 ||
+            coveringMatches.length > 0;
+
+          if (hasPaidCoverage) {
             periods[col.key] = 'paid';
           } else if (reg.termStatus === 'DUE' || expiringReceipt) {
             periods[col.key] = 'pending';
-          } else if (coveringMatches.length > 0 || directMonthMatches.length > 0) {
-            const hasActiveCover = coveringMatches.some((m) => m.status === 'active');
-            const hasExpiringCover = coveringMatches.some((m) => m.status === 'expiring_soon');
-            if (hasActiveCover) periods[col.key] = 'paid';
-            else if (hasExpiringCover) periods[col.key] = 'pending';
-            else periods[col.key] = 'paid';
+          } else if (parsedReceipts.some((r) => r.status === 'expired')) {
+            periods[col.key] = 'unpaid';
           } else {
-            // No payment data for current month
             periods[col.key] = 'muted';
           }
         } else {

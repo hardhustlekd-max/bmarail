@@ -304,13 +304,13 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         if (!item.payEth) return false;
         const payIndex = item.payEth.year * 13 + item.payEth.month;
         const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
-        return targetPeriodIndex >= payIndex && targetPeriodIndex < expIndex;
+        return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
       });
 
       const matchingItem = directMatch || coveringMatch;
 
-      if (matchingItem) {
-        if (isCurrentMonth && matchingItem.status === 'expiring_soon') {
+      if (matchingItem || reg.termStatus === 'CURRENT') {
+        if (isCurrentMonth && matchingItem?.status === 'expiring_soon' && reg.termStatus !== 'CURRENT') {
           dueSoonMembersCount++;
         } else {
           paidMembersCount++;
