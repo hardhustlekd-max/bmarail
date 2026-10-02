@@ -214,7 +214,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               phone: reg.phone,
               paymentDate: payDate,
               expirationDate: expDate,
-              amount: reg.lastPaymentAmount || reg.paymentAmount || 500,
+              amount: reg.lastPaymentAmount || reg.paymentAmount || (reg.vehicleCategory === 'electric' ? 50 : 100),
+              vehicleCategory: reg.vehicleCategory,
               enteredBy: reg.registeredBy || 'SYSTEM',
               createdAt: payDate,
             });

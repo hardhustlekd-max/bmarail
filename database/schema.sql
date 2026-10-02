@@ -204,6 +204,7 @@ CREATE TABLE IF NOT EXISTS payment_receipts (
     payment_date VARCHAR(50) NOT NULL,
     expiration_date VARCHAR(50) NOT NULL,
     amount NUMERIC(12, 2) DEFAULT 0,
+    vehicle_category VARCHAR(50) DEFAULT 'electric',
     receipt_screenshot TEXT,
     notes TEXT,
     entered_by VARCHAR(100) NOT NULL,
@@ -347,6 +348,7 @@ ALTER TABLE system_users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);
 ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS verified_by_cheki BOOLEAN DEFAULT FALSE;
 ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS cheki_bank VARCHAR(100);
 ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS entered_at VARCHAR(50);
+ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS vehicle_category VARCHAR(50) DEFAULT 'electric';
 
 ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS id VARCHAR(128);
 UPDATE notification_states SET id = user_scope_id WHERE id IS NULL OR id = '';

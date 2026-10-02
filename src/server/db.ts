@@ -1266,6 +1266,7 @@ const TABLE_COLUMNS: Record<string, Set<string>> = {
     'payment_date',
     'expiration_date',
     'amount',
+    'vehicle_category',
     'receipt_screenshot',
     'notes',
     'entered_by',

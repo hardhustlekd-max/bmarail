@@ -14,6 +14,10 @@ export interface PaymentReceipt {
   notes?: string;
   enteredBy: string; // clerk badgeId or name
   createdAt: string;
+  vehicleCategory?: string;
+  status?: string;
+  verifiedByCheki?: boolean;
+  chekiBank?: string;
 }
 
 export type PaymentStatusType = 'active' | 'expiring_soon' | 'expired';

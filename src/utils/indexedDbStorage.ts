@@ -10,6 +10,7 @@ import {
   SystemUser,
   SystemAuditLog,
 } from '../types';
+import { sanitizeTextOnlyStorage } from './storage';
 
 const DB_NAME = 'permit_offline_store_v1';
 const DB_VERSION = 1;
@@ -52,12 +53,12 @@ export function getIndexedDb(): Promise<IDBPDatabase | null> {
 }
 
 // Write debounce timers to prevent disk thrashing
-let saveRegTimer: any = null;
-const saveKeyValTimers = new Map<string, any>();
+export let saveRegTimer: any = null;
+export const saveKeyValTimers = new Map<string, any>();
 
 /**
  * Persists all registrations asynchronously to IndexedDB in a single transaction.
- * Completely non-blocking — does not freeze the UI thread.
+ * Strictly text-only: all photos, scans, and base64 strings are stripped before write.
  */
 export async function asyncSaveRegistrations(registrations: MotorcycleRegistration[]): Promise<void> {
   if (saveRegTimer) clearTimeout(saveRegTimer);
@@ -73,8 +74,9 @@ export async function asyncSaveRegistrations(registrations: MotorcycleRegistrati
 
         await store.clear();
         for (const reg of registrations) {
-           if (reg && reg.id) {
-            await store.put(reg);
+          if (reg && reg.id) {
+            const textOnly = sanitizeTextOnlyStorage(reg);
+            await store.put(textOnly);
           }
         }
         await tx.done;
@@ -88,23 +90,13 @@ export async function asyncSaveRegistrations(registrations: MotorcycleRegistrati
 }
 
 /**
- * Saves or updates a single registration directly to IndexedDB.
+ * Saves or updates a single registration directly to IndexedDB (strictly text-only).
  */
 export async function asyncUpsertSingleRegistration(reg: MotorcycleRegistration): Promise<void> {
   try {
     const db = await getIndexedDb();
     if (!db || !reg?.id) return;
-    const textOnlyReg = {
-      ...reg,
-      userPortraitPhoto: '',
-      userPortraitThumbnail: undefined,
-      ownerPhoto: '',
-      nationalIdPhoto: '',
-      nationalIdBackPhoto: '',
-      drivingLicensePhoto: '',
-      drivingPermitPhoto: '',
-      receiptScreenshot: '',
-    };
+    const textOnlyReg = sanitizeTextOnlyStorage(reg);
     await db.put('registrations', textOnlyReg);
   } catch (err) {
     console.warn('Async IndexedDB upsert warning:', err);
@@ -125,13 +117,14 @@ export async function asyncDeleteRegistration(id: string): Promise<void> {
 }
 
 /**
- * Loads all registrations directly from IndexedDB.
+ * Loads all registrations directly from IndexedDB (sanitizes text-only on load).
  */
 export async function asyncLoadRegistrations(): Promise<MotorcycleRegistration[]> {
   try {
     const db = await getIndexedDb();
     if (!db) return [];
-    return await db.getAll('registrations');
+    const all = await db.getAll('registrations');
+    return Array.isArray(all) ? all.map((r) => sanitizeTextOnlyStorage(r)) : [];
   } catch (err) {
     console.warn('Async IndexedDB load registrations failed:', err);
     return [];
@@ -139,7 +132,7 @@ export async function asyncLoadRegistrations(): Promise<MotorcycleRegistration[]
 }
 
 /**
- * Saves a key-value pair asynchronously to the keyval store.
+ * Saves a key-value pair asynchronously to the keyval store (strictly text-only).
  */
 export async function asyncSaveKeyVal<T>(key: string, value: T): Promise<void> {
   if (saveKeyValTimers.has(key)) {
@@ -151,7 +144,8 @@ export async function asyncSaveKeyVal<T>(key: string, value: T): Promise<void> {
       try {
         const db = await getIndexedDb();
         if (db) {
-          await db.put('keyval', value, key);
+          const textOnlyValue = sanitizeTextOnlyStorage(value);
+          await db.put('keyval', textOnlyValue, key);
         }
       } catch (err) {
         console.warn(`Async IndexedDB keyval save warning for ${key}:`, err);
@@ -165,14 +159,14 @@ export async function asyncSaveKeyVal<T>(key: string, value: T): Promise<void> {
 }
 
 /**
- * Loads a value by key from the keyval store.
+ * Loads a value by key from the keyval store (sanitizes text-only on load).
  */
 export async function asyncLoadKeyVal<T>(key: string): Promise<T | null> {
   try {
     const db = await getIndexedDb();
     if (!db) return null;
     const res = await db.get('keyval', key);
-    return (res as T) ?? null;
+    return res ? sanitizeTextOnlyStorage(res as T) : null;
   } catch (err) {
     console.warn(`Async IndexedDB keyval load failed for ${key}:`, err);
     return null;
@@ -180,8 +174,49 @@ export async function asyncLoadKeyVal<T>(key: string): Promise<T | null> {
 }
 
 /**
+ * Performs a deep scrub of any legacy photo binaries or base64 documents inside IndexedDB,
+ * converting all stored records into clean, lightweight text-only documents.
+ */
+export async function scrubIndexedDbMedia(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  try {
+    const db = await getIndexedDb();
+    if (!db) return;
+
+    if (db.objectStoreNames.contains('registrations')) {
+      const tx = db.transaction('registrations', 'readwrite');
+      const store = tx.objectStore('registrations');
+      const allRegs = await store.getAll();
+      for (const r of allRegs) {
+        if (r && r.id) {
+          const cleaned = sanitizeTextOnlyStorage(r);
+          await store.put(cleaned);
+        }
+      }
+      await tx.done;
+    }
+
+    if (db.objectStoreNames.contains('keyval')) {
+      const tx = db.transaction('keyval', 'readwrite');
+      const store = tx.objectStore('keyval');
+      const keys = await store.getAllKeys();
+      for (const k of keys) {
+        const val = await store.get(k);
+        if (val) {
+          const cleaned = sanitizeTextOnlyStorage(val);
+          await store.put(cleaned, k);
+        }
+      }
+      await tx.done;
+    }
+  } catch (err) {
+    console.warn('[Storage] Notice during IndexedDB media scrub:', err);
+  }
+}
+
+/**
  * Migrates existing data from LocalStorage to IndexedDB on first run.
- * Ensures zero data loss for existing users.
+ * Ensures zero data loss for existing users while strictly enforcing text-only storage.
  */
 export async function migrateLocalStorageToIndexedDb(): Promise<{
   registrations?: MotorcycleRegistration[];
@@ -200,7 +235,7 @@ export async function migrateLocalStorageToIndexedDb(): Promise<{
     const raw = localStorage.getItem('bd_motor_app_state_cache');
     if (!raw) return null;
 
-    const parsed = JSON.parse(raw);
+    const parsed = sanitizeTextOnlyStorage(JSON.parse(raw));
     const db = await getIndexedDb();
     if (!db) return parsed;
 
@@ -210,7 +245,7 @@ export async function migrateLocalStorageToIndexedDb(): Promise<{
       // Migrate registrations into IndexedDB
       const tx = db.transaction('registrations', 'readwrite');
       for (const reg of parsed.registrations) {
-        if (reg?.id) await tx.objectStore('registrations').put(reg);
+        if (reg?.id) await tx.objectStore('registrations').put(sanitizeTextOnlyStorage(reg));
       }
       await tx.done;
     }

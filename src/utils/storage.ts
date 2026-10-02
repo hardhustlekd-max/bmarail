@@ -11,6 +11,72 @@ export const KEYS = {
   SESSION_EXPIRED_REASON: 'bd_motor_session_expired_reason',
 };
 
+/**
+ * Media and document photo field identifiers.
+ * In a system-wide text-only local cache, these fields are sanitized so heavy image
+ * binaries/base64 strings are never stored in localStorage or IndexedDB.
+ */
+const MEDIA_FIELD_NAMES = new Set([
+  'userportraitphoto',
+  'userportraitthumbnail',
+  'ownerphoto',
+  'nationalidphoto',
+  'nationalidbackphoto',
+  'drivinglicensephoto',
+  'drivingpermitphoto',
+  'receiptscreenshot',
+  'evidencephoto',
+  'portraitphoto',
+  'licensephoto',
+  'permitphoto',
+  'idphoto',
+  'idbackphoto',
+]);
+
+/**
+ * Recursively strips any photos, document scans, base64 data URLs, or media payloads
+ * from any object, array, or string before it is written to local storage or IndexedDB.
+ * Enforces strictly text-only local caching: NO photos or documents are ever cached locally.
+ */
+export function sanitizeTextOnlyStorage<T>(data: T): T {
+  if (data === null || data === undefined) return data;
+
+  if (typeof data === 'string') {
+    const trimmed = data.trim();
+    if (
+      trimmed.startsWith('data:image/') ||
+      trimmed.startsWith('data:application/') ||
+      trimmed.startsWith('data:video/') ||
+      trimmed.startsWith('data:audio/') ||
+      trimmed.startsWith('blob:') ||
+      (trimmed.length > 300 && /^[A-Za-z0-9+/=]{100,}$/.test(trimmed))
+    ) {
+      return '' as unknown as T;
+    }
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map((item) => sanitizeTextOnlyStorage(item)) as unknown as T;
+  }
+
+  if (typeof data === 'object') {
+    const result: Record<string, any> = {};
+    for (const [key, val] of Object.entries(data as Record<string, any>)) {
+      const lowerKey = key.toLowerCase().replace(/[^a-z]/g, '');
+      if (MEDIA_FIELD_NAMES.has(lowerKey)) {
+        // Stop caching photos and documents locally: only text from DB is cached locally
+        result[key] = '';
+      } else {
+        result[key] = sanitizeTextOnlyStorage(val);
+      }
+    }
+    return result as T;
+  }
+
+  return data;
+}
+
 export interface AuthSession {
   isLoggedIn: boolean;
   userBadgeId: string;
@@ -22,7 +88,7 @@ export function getStoredItem<T>(key: string, defaultValue: T): T {
   if (typeof window === 'undefined') return defaultValue;
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
+    return item ? sanitizeTextOnlyStorage(JSON.parse(item)) : defaultValue;
   } catch (e) {
     console.warn(`Error reading localStorage key "${key}":`, e);
     return defaultValue;
@@ -32,7 +98,8 @@ export function getStoredItem<T>(key: string, defaultValue: T): T {
 export function setStoredItem<T>(key: string, value: T): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    const sanitized = sanitizeTextOnlyStorage(value);
+    localStorage.setItem(key, JSON.stringify(sanitized));
   } catch (e) {
     console.warn(`Error writing localStorage key "${key}":`, e);
   }

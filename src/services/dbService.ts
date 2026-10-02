@@ -18,6 +18,7 @@ import {
   getStoredLastAckResetEpoch,
   saveStoredLastAckResetEpoch,
   clearAllLocalStoredData,
+  sanitizeTextOnlyStorage,
 } from '../utils/storage';
 import {
   asyncSaveRegistrations,
@@ -28,6 +29,7 @@ import {
   asyncLoadKeyVal,
   migrateLocalStorageToIndexedDb,
   getIndexedDb,
+  scrubIndexedDbMedia,
 } from '../utils/indexedDbStorage';
 import { generateThumbnailBase64 } from '../utils/imageCompressor';
 
@@ -184,7 +186,7 @@ function getInitialBootState(): InMemoryState {
   try {
     const raw = localStorage.getItem(STATE_CACHE_KEY);
     if (!raw) return defaultState;
-    const parsed = JSON.parse(raw);
+    const parsed = sanitizeTextOnlyStorage(JSON.parse(raw));
     if (!parsed || typeof parsed !== 'object') return defaultState;
 
     return {
@@ -200,6 +202,42 @@ function getInitialBootState(): InMemoryState {
     };
   } catch (e) {
     return defaultState;
+  }
+}
+
+/**
+ * System-wide cleanup: Scans and purges any locally cached photo binaries,
+ * base64 image strings, and document scans from localStorage and IndexedDB.
+ * Guarantees zero photo consumption in local browser storage.
+ */
+export function scrubSystemWideLocalCache(): void {
+  if (typeof window === 'undefined') return;
+
+  try {
+    // 1. Scan and scrub localStorage keys
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+
+      if (raw.includes('data:image/') || raw.includes('data:application/') || raw.length > 20000) {
+        try {
+          const parsed = JSON.parse(raw);
+          const sanitized = sanitizeTextOnlyStorage(parsed);
+          localStorage.setItem(key, JSON.stringify(sanitized));
+        } catch {
+          if (raw.startsWith('data:image/')) {
+            localStorage.removeItem(key);
+          }
+        }
+      }
+    }
+
+    // 2. Scrub IndexedDB stores asynchronously
+    scrubIndexedDbMedia().catch(() => {});
+  } catch (err) {
+    console.warn('[Storage] Notice during system-wide local cache scrub:', err);
   }
 }
 
@@ -225,25 +263,25 @@ const listeners = {
 function stripImagesFromVerificationLog(v: VerificationLog): VerificationLog {
   return {
     ...v,
-    userPortraitPhoto: v.userPortraitPhoto && !v.userPortraitPhoto.startsWith('data:image/') ? v.userPortraitPhoto : '',
-    nationalIdPhoto: v.nationalIdPhoto && !v.nationalIdPhoto.startsWith('data:image/') ? v.nationalIdPhoto : '',
-    nationalIdBackPhoto: v.nationalIdBackPhoto && !v.nationalIdBackPhoto.startsWith('data:image/') ? v.nationalIdBackPhoto : '',
-    drivingLicensePhoto: v.drivingLicensePhoto && !v.drivingLicensePhoto.startsWith('data:image/') ? v.drivingLicensePhoto : '',
-    drivingPermitPhoto: v.drivingPermitPhoto && !v.drivingPermitPhoto.startsWith('data:image/') ? v.drivingPermitPhoto : '',
+    userPortraitPhoto: '',
+    nationalIdPhoto: '',
+    nationalIdBackPhoto: '',
+    drivingLicensePhoto: '',
+    drivingPermitPhoto: '',
   };
 }
 
 function stripImagesFromUnregisteredReport(r: UnregisteredVehicleReport): UnregisteredVehicleReport {
   return {
     ...r,
-    evidencePhoto: r.evidencePhoto && !r.evidencePhoto.startsWith('data:image/') ? r.evidencePhoto : undefined,
+    evidencePhoto: undefined,
   };
 }
 
 function stripImagesFromPaymentReceipt(p: PaymentReceipt): PaymentReceipt {
   return {
     ...p,
-    receiptScreenshot: p.receiptScreenshot && !p.receiptScreenshot.startsWith('data:image/') ? p.receiptScreenshot : undefined,
+    receiptScreenshot: undefined,
   };
 }
 
@@ -480,7 +518,7 @@ export function loadStateFromLocalStorage(): boolean {
     const raw = localStorage.getItem(STATE_CACHE_KEY);
     if (!raw) return false;
 
-    const parsed = JSON.parse(raw);
+    const parsed = sanitizeTextOnlyStorage(JSON.parse(raw));
     if (!parsed || typeof parsed !== 'object') return false;
 
     let loaded = false;
@@ -817,10 +855,13 @@ export function broadcastCrossTabSync(collection: string, action: string, id?: s
 }
 
 export function initLiveDbListeners(): () => void {
-  // 1. Immediate render from fast LocalStorage cache
+  // 0. Ensure system-wide scrub of any legacy media from local storage & IndexedDB
+  scrubSystemWideLocalCache();
+
+  // 1. Immediate render from fast LocalStorage cache (strictly text metadata)
   loadStateFromLocalStorage();
 
-  // 2. Asynchronous hydration of rich images and full dataset from IndexedDB
+  // 2. Asynchronous hydration of text-only dataset from IndexedDB
   hydrateFromIndexedDb();
 
   if (typeof window === 'undefined' || areLiveListenersActive) {
@@ -1009,7 +1050,7 @@ export async function saveRegistrationToDb(
         inMemory.registrations.unshift(reg);
       }
       notifyRegistrations();
-      asyncUpsertSingleRegistration(reg);
+      asyncUpsertSingleRegistration(optimizeRegistrationForStorage(reg));
       saveStateToLocalStorage();
       lastSyncTime = new Date();
       isCloudConnected = true;
@@ -1132,7 +1173,7 @@ export async function updateRegistrationInDb(
       }
 
       notifyRegistrations();
-      asyncUpsertSingleRegistration(updatedRecord);
+      asyncUpsertSingleRegistration(optimizeRegistrationForStorage(updatedRecord));
       saveStateToLocalStorage();
       broadcastCrossTabSync('motorcycle_registrations', 'upsert', id, updatedRecord);
       lastSyncTime = new Date();

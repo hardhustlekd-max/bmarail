@@ -220,6 +220,7 @@ export interface PaymentReceipt {
   enteredAt?: string;
   updatedAt?: string;
   status?: string;
+  vehicleCategory?: string;
   verifiedByCheki?: boolean;
   chekiBank?: string;
 }
