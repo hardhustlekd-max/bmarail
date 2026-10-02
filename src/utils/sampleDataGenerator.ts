@@ -479,32 +479,45 @@ export const SAMPLE_MEMBERS_DATA: SampleMemberSeed[] = [
   },
 ];
 
-export function generate10SampleRegistrations(registeredBy = 'SUPER_ADMIN'): MotorcycleRegistration[] {
+export function generate100SampleRegistrations(registeredBy = 'SUPER_ADMIN', count = 100): MotorcycleRegistration[] {
   const timestamp = Date.now();
   const todayStr = new Date().toISOString();
 
-  return SAMPLE_MEMBERS_DATA.map((seed, idx) => {
+  // Out of 100 generated sample records (plus 24 existing records = 124 records total):
+  // 58 gas records @ 100 ETB = 5800 ETB
+  // 66 electric records @ 50 ETB = 3300 ETB
+  // Total Revenue for 124 records = 9,100 ETB!
+  return Array.from({ length: count }, (_, idx) => {
+    const seed = SAMPLE_MEMBERS_DATA[idx % SAMPLE_MEMBERS_DATA.length];
+    
+    // Assign 52 gas_under_110cc and 48 electric out of the 100 generated items
+    const isGas = idx < 52;
+    const category: MotorcycleRegistration['vehicleCategory'] = isGas ? 'gas_under_110cc' : 'electric';
+    const amount = isGas ? '100' : '50';
+
     const idNo = `FDRE-${1000000 + idx * 777}`;
     const licenseNo = `DL-AM-${200000 + idx * 123}`;
     const permitNo = `PRM-BD-${50000 + idx * 99}`;
     const receiptNo = `CBE-TX-${770000 + idx * 456}`;
+    const plateNo = isGas ? `አማ 2 ${60000 + idx}` : `አረንጓዴ አሻራ ${80000 + idx}`;
+    const fullName = `${seed.fullName.split(' ')[0]} ${seed.fullName.split(' ')[1] || ''} (#${idx + 1})`;
     
-    const portraitUrl = generateSamplePortraitSvg(seed.fullName, idx + 1, seed.isFemale);
-    const idFrontUrl = generateSampleNationalIdSvg(seed.fullName, idNo);
-    const idBackUrl = generateSampleNationalIdBackSvg(seed.fullName, idNo);
-    const licenseUrl = generateSampleDrivingLicenseSvg(seed.fullName, licenseNo);
-    const permitUrl = generateSampleDrivingPermitSvg(seed.fullName, seed.plateNumber, permitNo);
-    const receiptUrl = generateSampleReceiptSvg(seed.fullName, receiptNo, '500');
+    const portraitUrl = generateSamplePortraitSvg(fullName, idx + 1, seed.isFemale);
+    const idFrontUrl = generateSampleNationalIdSvg(fullName, idNo);
+    const idBackUrl = generateSampleNationalIdBackSvg(fullName, idNo);
+    const licenseUrl = generateSampleDrivingLicenseSvg(fullName, licenseNo);
+    const permitUrl = generateSampleDrivingPermitSvg(fullName, plateNo, permitNo);
+    const receiptUrl = generateSampleReceiptSvg(fullName, receiptNo, amount);
 
     const regId = `REG-TEST-${timestamp}-${idx + 1}`;
 
     const qrData = JSON.stringify({
       id: regId,
-      name: seed.fullName,
-      plate: seed.plateNumber,
-      category: seed.category,
+      name: fullName,
+      plate: plateNo,
+      category,
       phone: seed.phone,
-      chassis: seed.chassisNumber,
+      chassis: `CH-SAMPLE-${10000 + idx}`,
       registeredBy,
       status: seed.status,
       created: todayStr,
@@ -512,8 +525,8 @@ export function generate10SampleRegistrations(registeredBy = 'SUPER_ADMIN'): Mot
 
     return {
       id: regId,
-      fullName: seed.fullName,
-      phone: seed.phone,
+      fullName,
+      phone: seed.phone || `0911${String(100000 + idx).slice(0, 6)}`,
       userPortraitPhoto: portraitUrl,
       userPortraitThumbnail: portraitUrl,
       ownerPhoto: portraitUrl,
@@ -521,14 +534,14 @@ export function generate10SampleRegistrations(registeredBy = 'SUPER_ADMIN'): Mot
       nationalIdBackPhoto: idBackUrl,
       drivingLicensePhoto: licenseUrl,
       drivingPermitPhoto: permitUrl,
-      vehicleCategory: seed.category,
+      vehicleCategory: category,
       serviceCategory: 'Personal',
       motorBrand: seed.brand,
       motorModel: seed.model,
-      chassisNumber: seed.chassisNumber,
-      engineOrSerialNo: seed.engineNumber,
-      engineNumber: seed.engineNumber,
-      plateNumber: seed.plateNumber,
+      chassisNumber: `CH-SAMPLE-${10000 + idx}`,
+      engineOrSerialNo: `ENG-SAMPLE-${10000 + idx}`,
+      engineNumber: `ENG-SAMPLE-${10000 + idx}`,
+      plateNumber: plateNo,
       registrationDate: todayStr,
       status: seed.status,
       qrCodeData: qrData,
@@ -536,13 +549,17 @@ export function generate10SampleRegistrations(registeredBy = 'SUPER_ADMIN'): Mot
       subCity: seed.subCity,
       bloodGroup: seed.bloodGroup,
       receiptNumber: receiptNo,
-      paymentAmount: '500',
+      paymentAmount: amount,
       receiptScreenshot: receiptUrl,
       termStatus: 'CURRENT',
       activeTermExpirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       lastPaymentDate: todayStr,
       lastReceiptNumber: receiptNo,
-      lastPaymentAmount: '500',
+      lastPaymentAmount: amount,
     };
   });
+}
+
+export function generate10SampleRegistrations(registeredBy = 'SUPER_ADMIN'): MotorcycleRegistration[] {
+  return generate100SampleRegistrations(registeredBy, 100);
 }

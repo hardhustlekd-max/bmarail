@@ -206,7 +206,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           phone: reg.phone,
           paymentDate: payDate,
           expirationDate: expDate,
-          amount: reg.lastPaymentAmount || reg.paymentAmount || '500 ETB',
+          amount: reg.lastPaymentAmount || reg.paymentAmount || (reg.vehicleCategory === 'electric' ? '50 ETB' : '100 ETB'),
           receiptScreenshot: reg.receiptScreenshot,
           enteredBy: reg.registeredBy || 'SYSTEM',
           createdAt: (reg as any).createdAt || `${payDate}T08:00:00Z`,
@@ -656,7 +656,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       else if (status === 'expiring_soon') expiringCount++;
       else if (status === 'expired') expiredCount++;
 
-      const numAmount = parseFloat(String(rc.amount || '500').replace(/[^0-9.]/g, '')) || 500;
+      const numAmount = parseFloat(String(rc.amount || '50').replace(/[^0-9.]/g, '')) || 50;
       totalRevenue += numAmount;
     });
 

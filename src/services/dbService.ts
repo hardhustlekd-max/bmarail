@@ -248,55 +248,55 @@ function stripImagesFromPaymentReceipt(p: PaymentReceipt): PaymentReceipt {
 }
 
 /**
- * Optimizes registrations for local fast-paint storage
+ * Optimizes registrations for local fast-paint storage by stripping all image/photo binaries.
+ * Only text attributes are cached locally in IndexedDB and LocalStorage.
  */
 export function optimizeRegistrationForStorage(reg: MotorcycleRegistration): MotorcycleRegistration {
-  const optimized = { ...reg };
-
-  if (optimized.userPortraitPhoto && !optimized.userPortraitThumbnail) {
-    if (!optimized.userPortraitPhoto.startsWith('data:image/')) {
-      optimized.userPortraitThumbnail = optimized.userPortraitPhoto;
-    }
-  }
-
   return {
-    ...optimized,
-    userPortraitPhoto: optimized.userPortraitPhoto && !optimized.userPortraitPhoto.startsWith('data:image/') ? optimized.userPortraitPhoto : '',
-    userPortraitThumbnail: optimized.userPortraitThumbnail || undefined,
-    nationalIdPhoto: optimized.nationalIdPhoto && !optimized.nationalIdPhoto.startsWith('data:image/') ? optimized.nationalIdPhoto : '',
-    nationalIdBackPhoto: optimized.nationalIdBackPhoto && !optimized.nationalIdBackPhoto.startsWith('data:image/') ? optimized.nationalIdBackPhoto : '',
-    drivingLicensePhoto: optimized.drivingLicensePhoto && !optimized.drivingLicensePhoto.startsWith('data:image/') ? optimized.drivingLicensePhoto : '',
-    drivingPermitPhoto: optimized.drivingPermitPhoto && !optimized.drivingPermitPhoto.startsWith('data:image/') ? optimized.drivingPermitPhoto : '',
-    receiptScreenshot: optimized.receiptScreenshot && !optimized.receiptScreenshot.startsWith('data:image/') ? optimized.receiptScreenshot : '',
+    ...reg,
+    userPortraitPhoto: '',
+    userPortraitThumbnail: undefined,
+    ownerPhoto: '',
+    nationalIdPhoto: '',
+    nationalIdBackPhoto: '',
+    drivingLicensePhoto: '',
+    drivingPermitPhoto: '',
+    receiptScreenshot: '',
   };
 }
 
 /**
  * Save current state to IndexedDB (as primary large data store) and localStorage (as cache)
+ * Only text fields are cached locally; photos and document scans are kept on DB/S3 server.
  */
 export function saveStateToLocalStorage() {
   if (typeof window === 'undefined') return;
 
-  // 1. Asynchronous full persistence to IndexedDB (unlimited quota, non-blocking)
-  asyncSaveRegistrations(inMemory.registrations);
+  const textOnlyRegistrations = inMemory.registrations.map(optimizeRegistrationForStorage);
+  const textOnlyVerifications = inMemory.verifications.map(stripImagesFromVerificationLog);
+  const textOnlyReports = inMemory.unregisteredReports.map(stripImagesFromUnregisteredReport);
+  const textOnlyReceipts = inMemory.paymentReceipts.map(stripImagesFromPaymentReceipt);
+
+  // 1. Asynchronous full persistence to IndexedDB (text metadata only)
+  asyncSaveRegistrations(textOnlyRegistrations);
   asyncSaveKeyVal('officers', inMemory.officers);
   asyncSaveKeyVal('printOrders', inMemory.printOrders);
-  asyncSaveKeyVal('verifications', inMemory.verifications);
-  asyncSaveKeyVal('unregisteredReports', inMemory.unregisteredReports);
-  asyncSaveKeyVal('paymentReceipts', inMemory.paymentReceipts);
+  asyncSaveKeyVal('verifications', textOnlyVerifications);
+  asyncSaveKeyVal('unregisteredReports', textOnlyReports);
+  asyncSaveKeyVal('paymentReceipts', textOnlyReceipts);
   asyncSaveKeyVal('settings', inMemory.settings);
   asyncSaveKeyVal('users', inMemory.users);
   asyncSaveKeyVal('auditLogs', inMemory.auditLogs);
 
-  // 2. LocalStorage cache for fast initial paint
+  // 2. LocalStorage cache for fast initial paint (text metadata only)
   try {
     const payload = {
-      registrations: inMemory.registrations.map(optimizeRegistrationForStorage),
+      registrations: textOnlyRegistrations,
       officers: inMemory.officers,
       printOrders: inMemory.printOrders,
-      verifications: inMemory.verifications.map(stripImagesFromVerificationLog),
-      unregisteredReports: inMemory.unregisteredReports.map(stripImagesFromUnregisteredReport),
-      paymentReceipts: inMemory.paymentReceipts.map(stripImagesFromPaymentReceipt),
+      verifications: textOnlyVerifications,
+      unregisteredReports: textOnlyReports,
+      paymentReceipts: textOnlyReceipts,
       settings: inMemory.settings,
       savedAt: new Date().toISOString(),
     };
@@ -304,12 +304,12 @@ export function saveStateToLocalStorage() {
   } catch (err) {
     try {
       const payload = {
-        registrations: inMemory.registrations.slice(0, 100).map(optimizeRegistrationForStorage),
+        registrations: textOnlyRegistrations.slice(0, 100),
         officers: inMemory.officers,
         printOrders: inMemory.printOrders,
-        verifications: inMemory.verifications.map(stripImagesFromVerificationLog),
-        unregisteredReports: inMemory.unregisteredReports.map(stripImagesFromUnregisteredReport),
-        paymentReceipts: inMemory.paymentReceipts.map(stripImagesFromPaymentReceipt),
+        verifications: textOnlyVerifications,
+        unregisteredReports: textOnlyReports,
+        paymentReceipts: textOnlyReceipts,
         settings: inMemory.settings,
         savedAt: new Date().toISOString(),
       };

@@ -24,7 +24,7 @@ import {
   validateRequiredText,
   checkDuplicateRegistration,
 } from '../utils/validation';
-import { generate10SampleRegistrations } from '../utils/sampleDataGenerator';
+import { generate10SampleRegistrations, generate100SampleRegistrations } from '../utils/sampleDataGenerator';
 
 export interface BrandOption {
   brand: string;
@@ -288,8 +288,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
     }
 
     const confirmMsg = isAmharic
-      ? 'ለስርዓቱ እና ዳታቤዝ ፍተሻ 10 ሙሉ የአባል መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) በራስ-ሰር መመዝገብ ይፈልጋሉ?'
-      : 'Do you want to auto-record 10 complete member records with sample image uploads (Portrait, National ID front/back, License, Permit, Receipt) for system and DB testing purposes?';
+      ? 'ለስርዓቱ እና ዳታቤዝ ፍተሻ 100 ሙሉ የአባል መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) በራስ-ሰር መመዝገብ ይፈልጋሉ?'
+      : 'Do you want to auto-record 100 complete member records with sample image uploads (Portrait, National ID front/back, License, Permit, Receipt) for system and DB testing purposes?';
 
     if (!window.confirm(confirmMsg)) return;
 
@@ -297,7 +297,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
     setSampleGenResult(null);
 
     try {
-      const samples = generate10SampleRegistrations(userBadgeId || 'SUPER_ADMIN');
+      const samples = generate100SampleRegistrations(userBadgeId || 'SUPER_ADMIN', 100);
       const createdIds: string[] = [];
 
       for (let i = 0; i < samples.length; i++) {
@@ -308,7 +308,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         if (res && res.success !== false) {
           createdIds.push(item.id);
         }
-        await new Promise((resolve) => setTimeout(resolve, 180));
+        await new Promise((resolve) => setTimeout(resolve, 60));
       }
 
       setSampleGenResult({ count: createdIds.length, ids: createdIds });
@@ -1272,10 +1272,10 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 onClick={handleAutoRecord10Members}
                 disabled={isGeneratingSamples}
                 className="px-3 py-1.5 bg-purple-700 hover:bg-purple-800 active:scale-95 text-white font-extrabold text-xs rounded-md shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 touch-manipulation"
-                title={isAmharic ? '10 ናሙና መዝገቦችን ከነምስሎቻቸው በራስ-ሰር መዝግብ (ሱፐር አድሚን ብቻ)' : 'Auto record 10 sample member records with images (Super Admin Only)'}
+                title={isAmharic ? '100 ናሙና መዝገቦችን ከነምስሎቻቸው በራስ-ሰር መዝግብ (ሱፐር አድሚን ብቻ)' : 'Auto record 100 sample member records with images (Super Admin Only)'}
               >
                 <Icon className="material-symbols-outlined text-[17px] text-purple-200 animate-pulse">bolt</Icon>
-                <span className="whitespace-nowrap">{isAmharic ? '⚡ 10 መዝገቦችን በራስ-ሰር መዝግብ' : '⚡ Auto Record 10 Members'}</span>
+                <span className="whitespace-nowrap">{isAmharic ? '⚡ 100 መዝገቦችን በራስ-ሰር መዝግብ' : '⚡ Auto Record 100 Members'}</span>
               </button>
             )}
 
@@ -1294,7 +1294,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
         <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4">
 
-        {/* SUPER ADMIN: AUTO RECORD 10 MEMBERS TEST WIDGET BANNER */}
+        {/* SUPER ADMIN: AUTO RECORD 100 MEMBERS TEST WIDGET BANNER */}
         {isSuperAdmin && (
           <div className="bg-purple-50/90 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-800/80 rounded-xl p-3.5 sm:p-4 text-purple-950 dark:text-purple-100 shadow-2xs space-y-3 animate-fadeIn">
             <div className="flex flex-wrap items-center justify-between gap-2.5">
@@ -1305,7 +1305,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <h4 className="font-extrabold text-xs sm:text-sm text-purple-950 dark:text-purple-100 truncate">
-                      {isAmharic ? 'ሱፐር አድሚን፡ 10 ናሙና መዝገቦችን በራስ-ሰር የመመዝገቢያ ባህሪ' : 'Super Admin: Auto-Record 10 Sample Members'}
+                      {isAmharic ? 'ሱፐር አድሚን፡ 100 ናሙና መዝገቦችን በራስ-ሰር የመመዝገቢያ ባህሪ' : 'Super Admin: Auto-Record 100 Sample Members'}
                     </h4>
                     <span className="text-[10px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-200 px-2 py-0.5 rounded-full shrink-0">
                       {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'SUPER ADMIN ONLY'}
@@ -1313,8 +1313,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                   </div>
                   <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed truncate">
                     {isAmharic
-                      ? 'ለዳታቤዝ እና ለስርዓት ፍተሻ 10 ሙሉ የአባልነት መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) ጋር ያስገባል።'
-                      : 'Auto-generates 10 complete member registrations with sample image uploads (Portrait, ID Front/Back, Driving License, Permit, Bank Receipt) for system and DB testing.'}
+                      ? 'ለዳታቤዝ እና ለስርዓት ፍተሻ 100 ሙሉ የአባልነት መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) ጋር ያስገባል።'
+                      : 'Auto-generates 100 complete member registrations with sample image uploads (Portrait, ID Front/Back, Driving License, Permit, Bank Receipt) for system and DB testing.'}
                   </p>
                 </div>
               </div>
@@ -1330,8 +1330,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 </Icon>
                 <span>
                   {isGeneratingSamples
-                    ? (isAmharic ? 'በመመዝገብ ላይ...' : 'Generating 10 Records...')
-                    : (isAmharic ? '10 ናሙና መዝገቦችን አስገባ' : 'Generate 10 Test Records')}
+                    ? (isAmharic ? 'በመመዝገብ ላይ...' : 'Generating 100 Records...')
+                    : (isAmharic ? '100 ናሙና መዝገቦችን አስገባ' : 'Generate 100 Test Records')}
                 </span>
               </button>
             </div>

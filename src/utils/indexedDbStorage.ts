@@ -94,7 +94,18 @@ export async function asyncUpsertSingleRegistration(reg: MotorcycleRegistration)
   try {
     const db = await getIndexedDb();
     if (!db || !reg?.id) return;
-    await db.put('registrations', reg);
+    const textOnlyReg = {
+      ...reg,
+      userPortraitPhoto: '',
+      userPortraitThumbnail: undefined,
+      ownerPhoto: '',
+      nationalIdPhoto: '',
+      nationalIdBackPhoto: '',
+      drivingLicensePhoto: '',
+      drivingPermitPhoto: '',
+      receiptScreenshot: '',
+    };
+    await db.put('registrations', textOnlyReg);
   } catch (err) {
     console.warn('Async IndexedDB upsert warning:', err);
   }

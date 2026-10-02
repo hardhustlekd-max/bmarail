@@ -237,7 +237,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       } catch {}
 
       const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
-      const amountNum = parseFloat(String(rc.amount || '500').replace(/[^0-9.]/g, '')) || 500;
+      const amountNum = parseFloat(String(rc.amount || ((rc as any).vehicleCategory === 'electric' ? '50' : '100')).replace(/[^0-9.]/g, '')) || ((rc as any).vehicleCategory === 'electric' ? 50 : 100);
 
       return {
         receipt: rc,
