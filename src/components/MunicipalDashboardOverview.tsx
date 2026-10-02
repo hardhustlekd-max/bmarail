@@ -606,7 +606,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">admin_panel_settings</Icon>
+              <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
               <div>
                 <h3 className="text-sm sm:text-base font-black text-on-surface  tracking-wider">
                   {isAmharic ? 'የሲስተሙ ተጠቃሚዎች ስታቲስቲክስ' : 'System Users Statistics'}
@@ -641,7 +641,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-purple-700 dark:text-purple-400 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">
                 {users.length > 0
                   ? users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length
                   : (preAggregatedKpis ? preAggregatedKpis.users.admins : (isLoading ? '—' : 0))}
@@ -651,14 +651,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Blocked Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-rose-600">
+                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'የታገዱ' : 'Blocked'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">
                 {users.length > 0
                   ? users.filter((u) => u.status === 'disabled').length
                   : (preAggregatedKpis ? preAggregatedKpis.users.disabled : (isLoading ? '—' : 0))}
@@ -706,9 +706,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/60 pb-3">
             {/* Title */}
             <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                <Icon className="material-symbols-outlined text-[19px] sm:text-[20px]">payments</Icon>
-              </div>
+              <Icon className="material-symbols-outlined text-[20px] sm:text-[22px] text-slate-600 dark:text-slate-400 shrink-0">payments</Icon>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white tracking-wide truncate">
                 {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
               </h3>

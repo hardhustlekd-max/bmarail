@@ -996,11 +996,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-4 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs">
         <div>
           <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
-            <span className="p-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Icon className="material-symbols-outlined text-[18px] shrink-0">
-                payments
-              </Icon>
-            </span>
+            <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">
+              payments
+            </Icon>
             <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
           </h2>
         </div>

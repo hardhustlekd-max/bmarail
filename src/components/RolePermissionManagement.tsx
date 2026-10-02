@@ -703,9 +703,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
       {/* Header & Role Bar */}
       <div className="rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#0f172a] text-white flex items-center justify-center font-bold shrink-0">
-            <Icon className="material-symbols-outlined text-[18px]">admin_panel_settings</Icon>
-          </div>
+          <Icon className="material-symbols-outlined text-[22px] text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
           <div>
             <span className="text-[11px] font-bold text-secondary block">
               {isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance'}

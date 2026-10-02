@@ -41,11 +41,11 @@ export const Button: React.FC<ButtonProps> = ({
     primary:
       'bg-primary hover:bg-primary-hover text-white dark:text-slate-900 font-semibold shadow-xs hover:shadow-sm focus:ring-2 focus:ring-slate-900/30 dark:focus:ring-slate-100/30',
     secondary:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-slate-400/30',
+      'bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-slate-400/30',
     danger:
       'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold shadow-xs focus:ring-2 focus:ring-rose-500/40',
     ghost:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus:ring-2 focus:ring-slate-300',
+      'bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus:ring-2 focus:ring-slate-300',
   };
 
   return (
