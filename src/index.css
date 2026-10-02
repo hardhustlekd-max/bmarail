@@ -293,7 +293,6 @@ body.lang-am,
 .amharic,
 [data-lang="am"] {
   font-family: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 0.5em; /* Strategy A: Drastically reduced scale for Amharic */
 }
 
 /* Inside Amharic mode, buttons and inputs use the Amharic font stack */
