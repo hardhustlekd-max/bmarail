@@ -304,57 +304,65 @@ export function optimizeRegistrationForStorage(reg: MotorcycleRegistration): Mot
   };
 }
 
+let saveStateDebounceTimer: any = null;
+
 /**
  * Save current state to IndexedDB (as primary large data store) and localStorage (as cache)
  * Only text fields are cached locally; photos and document scans are kept on DB/S3 server.
+ * Non-blocking, debounced execution prevents UI thread stutter during rapid state updates.
  */
-export function saveStateToLocalStorage() {
+export function saveStateToLocalStorage(immediate = false) {
   if (typeof window === 'undefined') return;
 
-  const textOnlyRegistrations = inMemory.registrations.map(optimizeRegistrationForStorage);
-  const textOnlyVerifications = inMemory.verifications.map(stripImagesFromVerificationLog);
-  const textOnlyReports = inMemory.unregisteredReports.map(stripImagesFromUnregisteredReport);
-  const textOnlyReceipts = inMemory.paymentReceipts.map(stripImagesFromPaymentReceipt);
+  if (saveStateDebounceTimer) {
+    clearTimeout(saveStateDebounceTimer);
+    saveStateDebounceTimer = null;
+  }
 
-  // 1. Asynchronous full persistence to IndexedDB (text metadata only)
-  asyncSaveRegistrations(textOnlyRegistrations);
-  asyncSaveKeyVal('officers', inMemory.officers);
-  asyncSaveKeyVal('printOrders', inMemory.printOrders);
-  asyncSaveKeyVal('verifications', textOnlyVerifications);
-  asyncSaveKeyVal('unregisteredReports', textOnlyReports);
-  asyncSaveKeyVal('paymentReceipts', textOnlyReceipts);
-  asyncSaveKeyVal('settings', inMemory.settings);
-  asyncSaveKeyVal('users', inMemory.users);
-  asyncSaveKeyVal('auditLogs', inMemory.auditLogs);
-
-  // 2. LocalStorage cache for fast initial paint (text metadata only)
-  try {
-    const payload = {
-      registrations: textOnlyRegistrations,
-      officers: inMemory.officers,
-      printOrders: inMemory.printOrders,
-      verifications: textOnlyVerifications,
-      unregisteredReports: textOnlyReports,
-      paymentReceipts: textOnlyReceipts,
-      settings: inMemory.settings,
-      savedAt: new Date().toISOString(),
-    };
-    localStorage.setItem(STATE_CACHE_KEY, JSON.stringify(payload));
-  } catch (err) {
+  const executeSave = () => {
     try {
+      const textOnlyRegistrations = inMemory.registrations.map(optimizeRegistrationForStorage);
+      const textOnlyVerifications = inMemory.verifications.map(stripImagesFromVerificationLog);
+      const textOnlyReports = inMemory.unregisteredReports.map(stripImagesFromUnregisteredReport);
+      const textOnlyReceipts = inMemory.paymentReceipts.map(stripImagesFromPaymentReceipt);
+
+      // 1. Asynchronous full persistence to IndexedDB (off main thread)
+      asyncSaveRegistrations(textOnlyRegistrations);
+      asyncSaveKeyVal('officers', inMemory.officers);
+      asyncSaveKeyVal('printOrders', inMemory.printOrders);
+      asyncSaveKeyVal('verifications', textOnlyVerifications);
+      asyncSaveKeyVal('unregisteredReports', textOnlyReports);
+      asyncSaveKeyVal('paymentReceipts', textOnlyReceipts);
+      asyncSaveKeyVal('settings', inMemory.settings);
+      asyncSaveKeyVal('users', inMemory.users);
+      asyncSaveKeyVal('auditLogs', inMemory.auditLogs);
+
+      // 2. Ultra-lightweight LocalStorage cache for instant first paint
       const payload = {
-        registrations: textOnlyRegistrations.slice(0, 100),
+        registrations: textOnlyRegistrations.slice(0, 50),
         officers: inMemory.officers,
         printOrders: inMemory.printOrders,
-        verifications: textOnlyVerifications,
-        unregisteredReports: textOnlyReports,
-        paymentReceipts: textOnlyReceipts,
+        verifications: textOnlyVerifications.slice(0, 50),
+        unregisteredReports: textOnlyReports.slice(0, 50),
+        paymentReceipts: textOnlyReceipts.slice(0, 50),
         settings: inMemory.settings,
         savedAt: new Date().toISOString(),
       };
       localStorage.setItem(STATE_CACHE_KEY, JSON.stringify(payload));
-    } catch (fallbackErr) {
-      console.warn('LocalStorage fallback save warning (IndexedDB is primary store):', fallbackErr);
+    } catch (err) {
+      console.warn('Background cache save notice:', err);
+    }
+  };
+
+  if (immediate) {
+    executeSave();
+  } else {
+    if ('requestIdleCallback' in window) {
+      saveStateDebounceTimer = setTimeout(() => {
+        (window as any).requestIdleCallback(executeSave, { timeout: 2000 });
+      }, 600);
+    } else {
+      saveStateDebounceTimer = setTimeout(executeSave, 600);
     }
   }
 }

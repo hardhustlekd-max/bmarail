@@ -687,9 +687,12 @@ const HomePageShell: React.FC<HomePageProps> = ({
     };
     window.addEventListener('focus', handleFocus);
 
+    // Lightweight 60s fallback sync for active page
     const interval = setInterval(() => {
-      syncActivePageCollection(activePage).catch(() => {});
-    }, 8000);
+      if (document.visibilityState === 'visible') {
+        syncActivePageCollection(activePage).catch(() => {});
+      }
+    }, 60000);
 
     return () => {
       window.removeEventListener('focus', handleFocus);
