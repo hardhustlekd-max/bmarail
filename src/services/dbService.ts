@@ -19,6 +19,7 @@ import {
   saveStoredLastAckResetEpoch,
   clearAllLocalStoredData,
   sanitizeTextOnlyStorage,
+  getStoredActivePage,
 } from '../utils/storage';
 import {
   asyncSaveRegistrations,
@@ -991,11 +992,12 @@ export function initLiveDbListeners(): () => void {
 
   connectSSE();
 
-  // 5. Periodic background synchronization interval
+  // 5. Periodic background synchronization interval (lightweight active-page sync only)
   const syncInterval = setInterval(() => {
     if (typeof navigator !== 'undefined' && !navigator.onLine) return;
-    syncAllCollectionsWithDb(false).catch(() => {});
-  }, 12000);
+    const activePage = getStoredActivePage();
+    syncActivePageCollection(activePage, false).catch(() => {});
+  }, 15000);
 
   return () => {
     areLiveListenersActive = false;
@@ -1993,25 +1995,12 @@ export async function syncCriticalStartup(activePage: string = 'dashboard'): Pro
   setGlobalDbError(null);
 
   try {
-    // 2. High Priority: Fetch critical settings + active page data
+    // 2. High Priority: Fetch critical settings + active page data on-demand
     await Promise.allSettled([
       syncSettings(),
       syncOfficers(),
       syncActivePageCollection(activePage),
     ]);
-
-    // 3. Low Priority Background Sync
-    const lazySync = () => {
-      syncAllCollectionsWithDb(false).catch(() => {});
-    };
-
-    if (typeof window !== 'undefined') {
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(lazySync, { timeout: 4000 });
-      } else {
-        setTimeout(lazySync, 2000);
-      }
-    }
   } catch (err: any) {
     console.warn('[Sync] Startup sync fallback notice:', err?.message);
   }

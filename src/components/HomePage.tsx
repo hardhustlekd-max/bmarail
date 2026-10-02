@@ -685,7 +685,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
   useEffect(() => {
     const handleFocus = () => {
       syncActivePageCollection(activePage).catch(() => {});
-      syncAllCollectionsWithDb().catch(() => {});
     };
     window.addEventListener('focus', handleFocus);
 

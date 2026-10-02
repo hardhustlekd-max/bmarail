@@ -26,11 +26,12 @@ import {
   updateUnregisteredReportStatusInDb,
   savePaymentReceiptToDb,
   deletePaymentReceiptFromDb,
-  syncAllCollectionsWithDb,
+  syncActivePageCollection,
   syncCriticalStartup,
   DEFAULT_SETTINGS,
   getInMemoryState,
 } from '../services/dbService';
+import { getStoredActivePage } from '../utils/storage';
 import { useToast } from './ToastContext';
 
 interface DataContextType {
@@ -73,10 +74,9 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   const [settings, setSettings] = useState<SystemSettings>(() => getInMemoryState().settings);
   const [isLoading, setIsLoading] = useState<boolean>(() => getInMemoryState().registrations.length === 0);
 
-  // Real-time subscriptions
+  // Real-time subscriptions with on-demand active page sync
   useEffect(() => {
     syncCriticalStartup().catch(() => {});
-    syncAllCollectionsWithDb(true).catch(() => {});
 
     const unsubRegs = subscribeRegistrations(setRegistrations);
     const unsubOffs = subscribeOfficers(setOfficers);
@@ -107,7 +107,8 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   const refreshData = useCallback(async () => {
     setIsLoading(true);
     try {
-      await syncAllCollectionsWithDb();
+      const activePage = getStoredActivePage();
+      await syncActivePageCollection(activePage, true);
     } finally {
       setIsLoading(false);
     }
