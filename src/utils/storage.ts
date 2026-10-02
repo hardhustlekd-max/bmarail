@@ -43,13 +43,11 @@ export function sanitizeTextOnlyStorage<T>(data: T): T {
 
   if (typeof data === 'string') {
     const trimmed = data.trim();
+    // Aggressive strip of ANY data URL or long base64 string
     if (
-      trimmed.startsWith('data:image/') ||
-      trimmed.startsWith('data:application/') ||
-      trimmed.startsWith('data:video/') ||
-      trimmed.startsWith('data:audio/') ||
+      trimmed.startsWith('data:') ||
       trimmed.startsWith('blob:') ||
-      (trimmed.length > 300 && /^[A-Za-z0-9+/=]{100,}$/.test(trimmed))
+      (trimmed.length > 500 && /^[A-Za-z0-9+/=]{200,}$/.test(trimmed))
     ) {
       return '' as unknown as T;
     }

@@ -941,6 +941,14 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         receiptScreenshot ? uploadDocumentPhoto(receiptScreenshot, 'permits/receipts') : Promise.resolve(''),
       ]);
 
+      // Clear local base64 cache immediately after upload
+      if (userPortraitPhoto) setUserPortraitPhoto('');
+      if (nationalIdPhoto) setNationalIdPhoto('');
+      if (nationalIdBackPhoto) setNationalIdBackPhoto('');
+      if (drivingLicensePhoto) setDrivingLicensePhoto('');
+      if (drivingPermitPhoto) setDrivingPermitPhoto('');
+      if (receiptScreenshot) setReceiptScreenshot('');
+
       // Save payment receipt to DB
       const todayStr = getDefaultEthiopianRegistrationDate();
       const expDateStr = calculateOneMonthExpiration(todayStr);
