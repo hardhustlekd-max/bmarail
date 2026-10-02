@@ -24,6 +24,7 @@ import {
   validateRequiredText,
   checkDuplicateRegistration,
 } from '../utils/validation';
+import { generate10SampleRegistrations } from '../utils/sampleDataGenerator';
 
 export interface BrandOption {
   brand: string;
@@ -274,6 +275,55 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
   const isAmharic = lang === 'am';
   const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const [hideFromOtherUsers, setHideFromOtherUsers] = useState<boolean>(false);
+
+  // Super Admin Test Auto-Record 10 Members state
+  const [isGeneratingSamples, setIsGeneratingSamples] = useState<boolean>(false);
+  const [sampleGenProgress, setSampleGenProgress] = useState<{ current: number; total: number; name: string } | null>(null);
+  const [sampleGenResult, setSampleGenResult] = useState<{ count: number; ids: string[] } | null>(null);
+
+  const handleAutoRecord10Members = async () => {
+    if (!isSuperAdmin) {
+      alert(isAmharic ? 'ይህ ባህሪ ለሱፐር አድሚን ብቻ የተፈቀደ ነው!' : 'This feature is super admin only!');
+      return;
+    }
+
+    const confirmMsg = isAmharic
+      ? 'ለስርዓቱ እና ዳታቤዝ ፍተሻ 10 ሙሉ የአባል መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) በራስ-ሰር መመዝገብ ይፈልጋሉ?'
+      : 'Do you want to auto-record 10 complete member records with sample image uploads (Portrait, National ID front/back, License, Permit, Receipt) for system and DB testing purposes?';
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setIsGeneratingSamples(true);
+    setSampleGenResult(null);
+
+    try {
+      const samples = generate10SampleRegistrations(userBadgeId || 'SUPER_ADMIN');
+      const createdIds: string[] = [];
+
+      for (let i = 0; i < samples.length; i++) {
+        const item = samples[i];
+        setSampleGenProgress({ current: i + 1, total: samples.length, name: item.fullName });
+
+        const res = await onAddRegistration(item, { forceLocalOnly: false });
+        if (res && res.success !== false) {
+          createdIds.push(item.id);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 180));
+      }
+
+      setSampleGenResult({ count: createdIds.length, ids: createdIds });
+      if (validationError) setValidationError('');
+    } catch (err: any) {
+      alert(
+        isAmharic
+          ? `አውቶ መዝገብ ማስገባት አልተሳካም: ${err?.message || 'ያልታወቀ ስህተት'}`
+          : `Auto record generation failed: ${err?.message || 'Unknown error'}`
+      );
+    } finally {
+      setIsGeneratingSamples(false);
+      setSampleGenProgress(null);
+    }
+  };
 
   // 5-Step state matching the verification workflow:
   // 1 = Owner, 2 = Motor (Specs), 3 = Documents (Scans), 4 = Payment (Receipt), 5 = Confirm (Review & Submit)
@@ -1215,19 +1265,129 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
             </div>
           </div>
 
-          {onViewRegistered && (
-            <button
-              type="button"
-              onClick={onViewRegistered}
-              className="hidden sm:flex px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
-            >
-              <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
-              <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {isSuperAdmin && (
+              <button
+                type="button"
+                onClick={handleAutoRecord10Members}
+                disabled={isGeneratingSamples}
+                className="px-3 py-1.5 bg-purple-700 hover:bg-purple-800 active:scale-95 text-white font-extrabold text-xs rounded-md shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 touch-manipulation"
+                title={isAmharic ? '10 ናሙና መዝገቦችን ከነምስሎቻቸው በራስ-ሰር መዝግብ (ሱፐር አድሚን ብቻ)' : 'Auto record 10 sample member records with images (Super Admin Only)'}
+              >
+                <Icon className="material-symbols-outlined text-[17px] text-purple-200 animate-pulse">bolt</Icon>
+                <span className="whitespace-nowrap">{isAmharic ? '⚡ 10 መዝገቦችን በራስ-ሰር መዝግብ' : '⚡ Auto Record 10 Members'}</span>
+              </button>
+            )}
+
+            {onViewRegistered && (
+              <button
+                type="button"
+                onClick={onViewRegistered}
+                className="hidden sm:flex px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
+                <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4">
+
+        {/* SUPER ADMIN: AUTO RECORD 10 MEMBERS TEST WIDGET BANNER */}
+        {isSuperAdmin && (
+          <div className="bg-purple-50/90 dark:bg-purple-950/50 border border-purple-300 dark:border-purple-800/80 rounded-xl p-3.5 sm:p-4 text-purple-950 dark:text-purple-100 shadow-2xs space-y-3 animate-fadeIn">
+            <div className="flex flex-wrap items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-purple-700 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Icon className="material-symbols-outlined text-[20px]">labs</Icon>
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-xs sm:text-sm text-purple-950 dark:text-purple-100 truncate">
+                      {isAmharic ? 'ሱፐር አድሚን፡ 10 ናሙና መዝገቦችን በራስ-ሰር የመመዝገቢያ ባህሪ' : 'Super Admin: Auto-Record 10 Sample Members'}
+                    </h4>
+                    <span className="text-[10px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-200 px-2 py-0.5 rounded-full shrink-0">
+                      {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'SUPER ADMIN ONLY'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed truncate">
+                    {isAmharic
+                      ? 'ለዳታቤዝ እና ለስርዓት ፍተሻ 10 ሙሉ የአባልነት መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) ጋር ያስገባል።'
+                      : 'Auto-generates 10 complete member registrations with sample image uploads (Portrait, ID Front/Back, Driving License, Permit, Bank Receipt) for system and DB testing.'}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleAutoRecord10Members}
+                disabled={isGeneratingSamples}
+                className="w-full sm:w-auto bg-purple-700 hover:bg-purple-800 active:scale-98 text-white font-black text-xs px-4 py-2 rounded-lg transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 touch-manipulation"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">
+                  {isGeneratingSamples ? 'hourglass_top' : 'add_task'}
+                </Icon>
+                <span>
+                  {isGeneratingSamples
+                    ? (isAmharic ? 'በመመዝገብ ላይ...' : 'Generating 10 Records...')
+                    : (isAmharic ? '10 ናሙና መዝገቦችን አስገባ' : 'Generate 10 Test Records')}
+                </span>
+              </button>
+            </div>
+
+            {/* LIVE PROGRESS INDICATOR BAR WHEN GENERATING */}
+            {isGeneratingSamples && sampleGenProgress && (
+              <div className="space-y-1.5 pt-2 border-t border-purple-200 dark:border-purple-800/80 animate-fadeIn">
+                <div className="flex items-center justify-between text-xs font-bold text-purple-900 dark:text-purple-200">
+                  <span className="flex items-center gap-1.5">
+                    <Icon className="material-symbols-outlined text-[16px] animate-spin">sync</Icon>
+                    <span>
+                      {isAmharic
+                        ? `መዝገብ ${sampleGenProgress.current} ከ ${sampleGenProgress.total}: ${sampleGenProgress.name}`
+                        : `Recording ${sampleGenProgress.current} of ${sampleGenProgress.total}: ${sampleGenProgress.name}`}
+                    </span>
+                  </span>
+                  <span className="font-mono">
+                    {Math.round((sampleGenProgress.current / sampleGenProgress.total) * 100)}%
+                  </span>
+                </div>
+                <div className="w-full h-2.5 bg-purple-200 dark:bg-purple-900 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-purple-600 transition-all duration-200"
+                    style={{ width: `${(sampleGenProgress.current / sampleGenProgress.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* COMPLETION NOTIFICATION BANNER */}
+            {sampleGenResult && (
+              <div className="bg-emerald-500/10 border border-emerald-500/40 p-3 rounded-lg flex flex-wrap items-center justify-between gap-2 text-emerald-950 dark:text-emerald-100 animate-fadeIn">
+                <div className="flex items-center gap-2 text-xs font-black">
+                  <Icon className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[20px]">
+                    check_circle
+                  </Icon>
+                  <span>
+                    {isAmharic
+                      ? `ተሳክቷል! ${sampleGenResult.count} የአባልነት መዝገቦች ከነምስሎቻቸው በዳታቤዝ ተመዝግበዋል።`
+                      : `Success! ${sampleGenResult.count} complete member records with images were registered into the database.`}
+                  </span>
+                </div>
+                {onViewRegistered && (
+                  <button
+                    type="button"
+                    onClick={onViewRegistered}
+                    className="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1 shadow-2xs transition-all cursor-pointer"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
+                    <span>{isAmharic ? 'የቀረቡ ማመልከቻዎችን እይ' : 'View Registered Table'}</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* SUCCESS NOTIFICATION BANNER INSIDE FORM (Matching warning alert style) */}
         {isSubmittedSuccessfully && lastSubmittedReg && (
