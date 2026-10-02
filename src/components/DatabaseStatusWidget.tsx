@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   subscribeFirestoreError,
   subscribeSyncStatus,
-  syncAllCollectionsWithDb,
+  syncActivePageCollection,
 } from '../services/dbService';
+import { getStoredActivePage } from '../utils/storage';
 import { Icon } from './ui/Icon';
 import { formatEthiopianTime } from '../utils/ethiopianCalendar';
 
@@ -32,7 +33,8 @@ export const DatabaseStatusWidget: React.FC<DatabaseStatusWidgetProps> = ({ isAm
     if (isSyncing) return;
     setIsSyncing(true);
     try {
-      await syncAllCollectionsWithDb();
+      const activePage = getStoredActivePage();
+      await syncActivePageCollection(activePage, true);
     } finally {
       setTimeout(() => {
         setIsSyncing(false);

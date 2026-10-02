@@ -341,6 +341,165 @@ app.get('/api/auth/users', async (req, res) => {
   }
 });
 
+// GET /api/users/paginated (Cursor / Skip-Limit Optimized Paginated Users)
+app.get('/api/users/paginated', async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(String(req.query.page), 10) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit), 10) || 20));
+    const search = String(req.query.search || '').trim().toLowerCase();
+    const role = String(req.query.role || '');
+    const status = String(req.query.status || '');
+
+    const allUsers = await dbGetAll('system_users');
+    let filtered = (allUsers || []).map((u: any) => {
+      const copy = { ...u };
+      delete copy.passwordHash;
+      return copy;
+    });
+
+    if (role && role !== 'all') {
+      filtered = filtered.filter((u: any) => u.role === role);
+    }
+    if (status && status !== 'all') {
+      filtered = filtered.filter((u: any) => u.status === status);
+    }
+    if (search) {
+      filtered = filtered.filter((u: any) =>
+        (u.fullName && u.fullName.toLowerCase().includes(search)) ||
+        (u.badgeId && u.badgeId.toLowerCase().includes(search)) ||
+        (u.phone && u.phone.toLowerCase().includes(search)) ||
+        (u.email && u.email.toLowerCase().includes(search))
+      );
+    }
+
+    const totalCount = filtered.length;
+    const totalPages = Math.ceil(totalCount / limit) || 1;
+    const startIndex = (page - 1) * limit;
+    const paginatedUsers = filtered.slice(startIndex, startIndex + limit);
+
+    res.json({
+      success: true,
+      users: paginatedUsers,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
+// ============================================================================
+// 3.5. PRE-AGGREGATED DASHBOARD KPI ENGINE & CACHE
+// ============================================================================
+interface DashboardKPICache {
+  users: { total: number; admins: number; disabled: number; active: number };
+  permits: { pending: number; approved: number; rejected: number; total: number; printed: number };
+  revenue: { totalRevenue: number; totalReceipts: number; currency: string };
+  verifications: { total: number; warnings: number; illegal: number };
+  unregisteredReports: { total: number; pending: number };
+  calculatedAt: string;
+}
+
+let cachedDashboardKPIs: DashboardKPICache | null = null;
+let lastKpiCalculationTime = 0;
+
+export async function computeAndCacheDashboardKPIs(): Promise<DashboardKPICache> {
+  try {
+    const [users, registrations, receipts, verifications, unregistered] = await Promise.all([
+      dbGetAll('system_users').catch(() => []),
+      dbGetAll('motorcycle_registrations').catch(() => []),
+      dbGetAll('payment_receipts').catch(() => []),
+      dbGetAll('verification_logs').catch(() => []),
+      dbGetAll('unregistered_vehicle_reports').catch(() => []),
+    ]);
+
+    const totalUsers = users.length;
+    const admins = users.filter((u: any) => u.role === 'admin' || u.role === 'superadmin').length;
+    const disabled = users.filter((u: any) => u.status === 'disabled').length;
+
+    const pendingPermits = registrations.filter((r: any) => r.status === 'pending_approval').length;
+    const approvedPermits = registrations.filter((r: any) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print').length;
+    const printedPermits = registrations.filter((r: any) => r.status === 'printed').length;
+    const rejectedPermits = registrations.filter((r: any) => r.status === 'rejected').length;
+
+    let totalRevenue = 0;
+    receipts.forEach((r: any) => {
+      const amount = Number(r.amountPaid ?? r.amount ?? 0);
+      if (!isNaN(amount) && amount > 0) totalRevenue += amount;
+    });
+
+    const totalVerifications = verifications.length;
+    const warnings = verifications.filter((v: any) => v.verificationStatus === 'warning' || v.status === 'warning').length;
+    const illegal = verifications.filter((v: any) => v.verificationStatus === 'flagged' || v.verificationStatus === 'unregistered' || v.status === 'illegal').length;
+
+    const totalUnregistered = unregistered.length;
+    const pendingUnregistered = unregistered.filter((u: any) => u.status === 'pending' || !u.status).length;
+
+    const kpis: DashboardKPICache = {
+      users: {
+        total: totalUsers,
+        admins,
+        disabled,
+        active: totalUsers - disabled,
+      },
+      permits: {
+        pending: pendingPermits,
+        approved: approvedPermits,
+        printed: printedPermits,
+        rejected: rejectedPermits,
+        total: registrations.length,
+      },
+      revenue: {
+        totalRevenue,
+        totalReceipts: receipts.length,
+        currency: 'ETB',
+      },
+      verifications: {
+        total: totalVerifications,
+        warnings,
+        illegal,
+      },
+      unregisteredReports: {
+        total: totalUnregistered,
+        pending: pendingUnregistered,
+      },
+      calculatedAt: new Date().toISOString(),
+    };
+
+    cachedDashboardKPIs = kpis;
+    lastKpiCalculationTime = Date.now();
+    return kpis;
+  } catch (err: any) {
+    console.error('[KPI Aggregation Error]:', err);
+    if (cachedDashboardKPIs) return cachedDashboardKPIs;
+    throw err;
+  }
+}
+
+// Scheduled Background Pre-Aggregation (Every 3 minutes)
+setInterval(() => {
+  computeAndCacheDashboardKPIs().catch(() => {});
+}, 180000);
+
+// GET /api/dashboard/kpis (Pre-Aggregated High-Speed KPI endpoint)
+app.get('/api/dashboard/kpis', async (req, res) => {
+  try {
+    if (!cachedDashboardKPIs || Date.now() - lastKpiCalculationTime > 300000) {
+      await computeAndCacheDashboardKPIs();
+    }
+    res.setHeader('X-Cache-Status', 'HIT');
+    res.json({ success: true, data: cachedDashboardKPIs });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
 // POST /api/auth/users (Create or register user)
 app.post('/api/auth/users', async (req, res) => {
   try {

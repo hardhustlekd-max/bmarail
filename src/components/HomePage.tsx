@@ -32,7 +32,6 @@ import {
   updateUnregisteredReportStatusInDb,
   savePaymentReceiptToDb,
   deletePaymentReceiptFromDb,
-  syncAllCollectionsWithDb,
   syncCriticalStartup,
   syncActivePageCollection,
   subscribeSettings,

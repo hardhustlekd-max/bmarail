@@ -2659,3 +2659,67 @@ export async function loadUserNotificationStateFromDb(
   }
   return null;
 }
+
+export interface PreAggregatedKPIData {
+  users: { total: number; admins: number; disabled: number; active: number };
+  permits: { pending: number; approved: number; rejected: number; total: number; printed: number };
+  revenue: { totalRevenue: number; totalReceipts: number; currency: string };
+  verifications: { total: number; warnings: number; illegal: number };
+  unregisteredReports: { total: number; pending: number };
+  calculatedAt: string;
+}
+
+export async function fetchPreAggregatedKPIs(): Promise<PreAggregatedKPIData | null> {
+  try {
+    const res = await safeJsonFetch<{ success: boolean; data?: PreAggregatedKPIData }>('/api/dashboard/kpis');
+    if (res && res.success && res.data) {
+      return res.data;
+    }
+  } catch (err) {
+    console.warn('[KPI Service] Pre-aggregated KPI fetch notice:', err);
+  }
+  return null;
+}
+
+export interface PaginatedUsersResult {
+  users: SystemUser[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    limit: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export async function fetchPaginatedUsers(
+  page = 1,
+  limit = 20,
+  search = '',
+  role = '',
+  status = ''
+): Promise<PaginatedUsersResult | null> {
+  try {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+      search,
+      role,
+      status,
+    });
+    const res = await safeJsonFetch<{ success: boolean; users?: SystemUser[]; pagination?: any }>(
+      `/api/users/paginated?${params.toString()}`
+    );
+    if (res && res.success && res.users) {
+      return {
+        users: res.users,
+        pagination: res.pagination,
+      };
+    }
+  } catch (err) {
+    console.warn('[User Service] Paginated users fetch notice:', err);
+  }
+  return null;
+}
+

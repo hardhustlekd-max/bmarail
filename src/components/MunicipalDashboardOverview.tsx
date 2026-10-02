@@ -19,6 +19,8 @@ import {
   getPermissionState,
   isTaskAllowed,
   isTaskViewable,
+  fetchPreAggregatedKPIs,
+  PreAggregatedKPIData,
 } from '../services/dbService';
 import { getPaymentReceiptStatus } from '../utils/paymentUtils';
 import { QRCodeCard } from './QRCodeCard';
@@ -79,6 +81,20 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       if (data) setSettings(data);
     });
     return () => unsub();
+  }, []);
+
+  // Pre-aggregated Dashboard KPIs from background worker for zero-lag instant rendering
+  const [preAggregatedKpis, setPreAggregatedKpis] = useState<PreAggregatedKPIData | null>(null);
+  useEffect(() => {
+    let active = true;
+    fetchPreAggregatedKPIs().then((data) => {
+      if (active && data) {
+        setPreAggregatedKpis(data);
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   // State for Instant Plate / QR Inspector Search on Dashboard
@@ -610,7 +626,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{isLoading ? '—' : users.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">
+                {users.length > 0 ? users.length : (preAggregatedKpis ? preAggregatedKpis.users.total : (isLoading ? '—' : 0))}
+              </p>
             </div>
 
             {/* Super Admins & Admins */}
@@ -624,7 +642,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
               </div>
               <p className="text-base sm:text-xl lg:text-2xl font-black text-purple-700 dark:text-purple-400 tracking-tight leading-tight text-center">
-                {isLoading ? '—' : users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length}
+                {users.length > 0
+                  ? users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length
+                  : (preAggregatedKpis ? preAggregatedKpis.users.admins : (isLoading ? '—' : 0))}
               </p>
             </div>
 
@@ -639,7 +659,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
               </div>
               <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
-                {isLoading ? '—' : users.filter((u) => u.status === 'disabled').length}
+                {users.length > 0
+                  ? users.filter((u) => u.status === 'disabled').length
+                  : (preAggregatedKpis ? preAggregatedKpis.users.disabled : (isLoading ? '—' : 0))}
               </p>
             </div>
           </div>
@@ -794,7 +816,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : totalLogsCount}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                    {scopedVerificationLogs.length > 0
+                      ? totalLogsCount
+                      : (preAggregatedKpis ? preAggregatedKpis.verifications.total : (isLoading ? '—' : 0))}
+                  </p>
                 </button>
 
                 <button
@@ -807,7 +833,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : warningLogsCount}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                    {scopedVerificationLogs.length > 0
+                      ? warningLogsCount
+                      : (preAggregatedKpis ? preAggregatedKpis.verifications.warnings : (isLoading ? '—' : 0))}
+                  </p>
                 </button>
 
                 <button
@@ -820,7 +850,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : illegalVehiclesCount}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                    {scopedVerificationLogs.length > 0
+                      ? illegalVehiclesCount
+                      : (preAggregatedKpis ? preAggregatedKpis.verifications.illegal : (isLoading ? '—' : 0))}
+                  </p>
                 </button>
               </div>
             </div>
@@ -852,7 +886,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : totalLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                {scopedVerificationLogs.length > 0
+                  ? totalLogsCount
+                  : (preAggregatedKpis ? preAggregatedKpis.verifications.total : (isLoading ? '—' : 0))}
+              </p>
             </button>
 
             <button
@@ -865,7 +903,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የፀደቁ' : 'Valid'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : approvedCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                {registrations.length > 0
+                  ? approvedCount
+                  : (preAggregatedKpis ? preAggregatedKpis.permits.approved : (isLoading ? '—' : 0))}
+              </p>
             </button>
 
             <button
@@ -878,7 +920,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : warningLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                {scopedVerificationLogs.length > 0
+                  ? warningLogsCount
+                  : (preAggregatedKpis ? preAggregatedKpis.verifications.warnings : (isLoading ? '—' : 0))}
+              </p>
             </button>
 
             <button
@@ -891,7 +937,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : illegalVehiclesCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                {scopedVerificationLogs.length > 0
+                  ? illegalVehiclesCount
+                  : (preAggregatedKpis ? preAggregatedKpis.verifications.illegal : (isLoading ? '—' : 0))}
+              </p>
             </button>
           </div>
         </div>

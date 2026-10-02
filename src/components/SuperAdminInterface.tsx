@@ -20,7 +20,7 @@ import {
   addAuditLogToDb,
   subscribeRegistrations,
   subscribeOfficers,
-  syncAllCollectionsWithDb,
+  syncActivePageCollection,
   updateRegistrationStatusInDb,
   updateRegistrationInDb,
   subscribeSettings,
@@ -717,12 +717,12 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const handleForceSyncDatabase = async () => {
     try {
       setIsSyncingLiveDb(true);
-      await syncAllCollectionsWithDb();
+      await syncActivePageCollection('superadmin', true);
       if (onShowToast) {
         onShowToast(
           isAmharic
-            ? 'ከፋየርቤዝ ዳታቤዝ ጋር ሙሉ በሙሉ ተመሳስሏል'
-            : 'Database forcefully synchronized with Cloud Firestore',
+            ? 'ከዳታቤዝ ጋር በተሳካ ሁኔታ ተመሳስሏል'
+            : 'Database synchronized with Cloud',
           'success'
         );
       }
