@@ -1826,7 +1826,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* MONTHLY MATRIX LEDGER TABLE (RESPONSIVE HORIZONTAL SCROLL & COLLAPSIBLE ROWS) */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default">
             <MonthlyMatrixLedger
               columns={matrixColumns}
               rows={filteredMatrixRows}

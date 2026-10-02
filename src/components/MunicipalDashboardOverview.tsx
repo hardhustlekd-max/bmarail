@@ -716,7 +716,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           </div>
 
           {/* 5-Column Responsive Metric Statistics Cards (Clean Design System) */}
-          <MetricGrid columns={5}>
+          <MetricGrid columns={4}>
             {/* 1. Paid Members */}
             <MetricStatCard
               label={isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
@@ -751,16 +751,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               unit={isAmharic ? 'ብር' : 'ETB'}
               subtext={isLoading ? (isAmharic ? 'በመጫን ላይ...' : 'Loading...') : `${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
               icon="account_balance_wallet"
-              onClick={() => onQuickAction && onQuickAction('payment_receipts')}
-            />
-
-            {/* 5. Compliance Rate */}
-            <MetricStatCard
-              label={isAmharic ? 'የክፍያ ምጣኔ' : 'Compliance Rate'}
-              value={isLoading ? '—' : `${ethiopianMonthlyMetrics.complianceRate}%`}
-              icon="pie_chart"
-              progress={isLoading ? 0 : ethiopianMonthlyMetrics.complianceRate}
-              className="col-span-2 sm:col-span-1"
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
             />
           </MetricGrid>

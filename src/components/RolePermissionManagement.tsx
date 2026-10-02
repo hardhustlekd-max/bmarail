@@ -753,7 +753,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
           return (
             <div
               key={moduleObj.id}
-              className="rounded-xl border border-outline-variant/60 bg-surface-container-lowest overflow-hidden transition-all duration-150"
+              className="bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default overflow-hidden transition-all duration-150"
             >
               {/* Module Header Bar */}
               <div className="p-3.5 px-4 border-b border-outline-variant/40 bg-surface-container/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

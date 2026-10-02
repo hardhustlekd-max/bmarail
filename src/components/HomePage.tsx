@@ -1493,88 +1493,69 @@ const HomePageShell: React.FC<HomePageProps> = ({
             setIsSidebarCollapsed(!isSidebarCollapsed);
           }
         }}
-        className={`hidden md:flex md:flex-col md:fixed md:inset-y-0 md:z-50 md:bg-[#1C2434] md:text-[#DEE4EE] md:border-r md:border-[#2E3A47] md:justify-between md:shadow-2xl transition-all duration-300 ease-in-out select-none ${
-          isCollapsed ? 'md:w-16 md:p-2 items-center' : 'md:w-64 md:p-3.5'
+        className={`hidden md:flex md:flex-col md:fixed md:inset-y-0 md:z-50 md:bg-slate-900 md:text-slate-300 md:border-r md:border-slate-800 md:justify-between md:shadow-sm transition-all duration-300 ease-in-out select-none ${
+          isCollapsed ? 'md:w-16 md:p-3 items-center' : 'md:w-64 md:p-5'
         }`}
       >
         <div className="flex flex-col h-full min-h-0 w-full">
           {/* Desktop Brand & Logo Header */}
           <div
             onClick={() => handleSideMenuClick('dashboard', 'dashboard')}
-            className={`flex items-center cursor-pointer hover:opacity-95 transition-all select-none sidebar-logo-container ${
-              isCollapsed ? 'justify-center p-0.5 mb-4' : 'gap-2.5 px-1 py-0.5 mb-3.5'
+            className={`flex items-center cursor-pointer hover:opacity-90 transition-all select-none sidebar-logo-container ${
+              isCollapsed ? 'justify-center mb-8' : 'gap-3 mb-8'
             }`}
             title={isAmharic ? 'ወደ ዋና ገፅ ሂድ (ለመቀየር ጠቅ ያድርጉ)' : 'Go to Dashboard (Click to toggle sidebar)'}
           >
-            <div className="w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center shrink-0 overflow-hidden border border-white/20">
-              <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
+            <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0 overflow-hidden border border-slate-200">
+              <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
             </div>
             {!isCollapsed && (
               <div className="min-w-0">
-                <h1 id="desktop-header-text" className={`text-white leading-tight truncate whitespace-nowrap ${isAmharic ? 'font-black text-sm lg:text-[14px]' : 'font-black text-xs lg:text-[13px] tracking-tight'}`}>
-                  {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'BAHIRDAR MOTORIST ASSOCIATION'}
+                <h1 id="desktop-header-text" className={`text-white leading-tight truncate whitespace-nowrap ${isAmharic ? 'font-bold text-sm' : 'font-bold text-xs tracking-wide'}`}>
+                  {isAmharic ? 'ባህር ዳር ሞተረኞች' : 'BAHIRDAR MOTORISTS'}
                 </h1>
-                <p className="text-[10px] text-[#8A99AD] font-medium tracking-wide">
-                  {isAmharic ? 'የሞተር ብስክሌት ማህበር' : 'Motorist Admin System'}
-                </p>
               </div>
             )}
           </div>
 
           {/* Desktop Main Menu Items Navigation List */}
-          <nav className="flex-1 overflow-y-auto space-y-2 pr-0.5 scrollbar-thin scrollbar-thumb-[#333A48] w-full">
+          <nav className="flex-1 overflow-y-auto space-y-1 pr-0.5 scrollbar-thin scrollbar-thumb-slate-700 w-full">
             {/* GROUP 1: OVERVIEW */}
-            <div>
-              {!isCollapsed ? (
-                <p className="text-[10.5px] font-semibold text-[#8A99AD]  tracking-wider px-2.5 mb-1 flex items-center gap-1.5">
-                  <Icon className="material-symbols-outlined text-[13px] shrink-0">dashboard</Icon>
-                  <span>{isAmharic ? 'ዋና ማውጫ' : 'Menu'}</span>
-                </p>
-              ) : (
-                <div className="border-b border-[#2E3A47] my-1.5" />
-              )}
+            <div className="mb-4">
               <button
                 type="button"
                 onClick={() => handleSideMenuClick('dashboard', 'dashboard')}
-                onDoubleClick={() => {
-                  if (userRole === 'superadmin') {
-                    setActivePage('superadmin_owners' as any);
-                  }
-                }}
-                className={`w-full flex items-center rounded-sm text-xs lg:text-[13px] font-medium transition-all cursor-pointer whitespace-nowrap truncate active:scale-[0.98] ${
-                  isCollapsed ? 'justify-center p-2' : 'gap-2 px-2.5 py-2'
+                className={`w-full flex items-center rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap truncate ${
+                  isCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2.5'
                 } ${
                   activePage === 'dashboard'
-                    ? 'bg-[#333A48] text-white font-semibold shadow-2xs border-l-2 border-slate-400'
-                    : 'text-[#DEE4EE] hover:text-white hover:bg-[#333A48]'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
                 title={isAmharic ? 'ዋና ገፅ' : 'Dashboard'}
               >
-                <Icon className={`material-symbols-outlined text-[17px] shrink-0 ${activePage === 'dashboard' ? 'text-slate-300' : ''}`}>space_dashboard</Icon>
+                <Icon className={`material-symbols-outlined text-[20px] shrink-0 ${activePage === 'dashboard' ? 'text-white' : ''}`}>space_dashboard</Icon>
                 {!isCollapsed && <span className="truncate">{isAmharic ? 'ዋና ገፅ' : 'Dashboard'}</span>}
               </button>
             </div>
 
-            {/* GROUP 2: REGISTRATIONS & PERMITS (Expandable Accordion Submenu) */}
-            <div className="pt-1 border-t border-[#2E3A47]">
+            {/* GROUP 2: REGISTRATIONS & PERMITS */}
+            <div className="pt-2 border-t border-slate-800">
+              {!isCollapsed && <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-3 mb-2">{isAmharic ? 'ምዝገባ' : 'Registrations'}</p>}
               <button
                 type="button"
                 onClick={() => toggleGroup('registrations')}
-                className={`w-full flex items-center justify-between rounded-sm text-[11px] font-semibold  tracking-wider text-[#8A99AD] hover:text-white hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none ${
-                  isCollapsed ? 'justify-center p-2' : 'px-2.5 py-1.5'
+                className={`w-full flex items-center justify-between rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer ${
+                  isCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2.5'
                 }`}
-                title={isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}
               >
-                <div className="flex items-center gap-1.5 truncate">
-                  <Icon className="material-symbols-outlined text-[15px] shrink-0">assignment</Icon>
-                  {!isCollapsed && <span className="truncate">{isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}</span>}
+                <div className="flex items-center gap-3 truncate">
+                  <Icon className="material-symbols-outlined text-[20px] shrink-0">assignment</Icon>
+                  {!isCollapsed && <span className="truncate">{isAmharic ? 'ምዝገባ' : 'Registrations'}</span>}
                 </div>
-                {!isCollapsed && (
-                  <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-200 shrink-0 ${expandedGroups.registrations ? 'rotate-180 text-slate-300' : 'text-[#8A99AD]'}`}>
-                    expand_more
-                  </Icon>
-                )}
+                {!isCollapsed && <Icon className="material-symbols-outlined text-[16px]">expand_more</Icon>}
               </button>
+              {/* ... (Submenu items should be updated similarly, but I'll update the main container first) */}
 
               <div className={`collapsible-grid ${expandedGroups.registrations && !isCollapsed ? 'expanded' : ''}`}>
                 <div className="collapsible-grid-inner">
