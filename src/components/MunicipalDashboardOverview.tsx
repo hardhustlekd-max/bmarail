@@ -534,10 +534,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     }
   };
 
-  if (isLoading) {
-    return <DashboardOverviewSkeleton userRole={userRole} isAmharic={isAmharic} />;
-  }
-
   return (
     <div className="space-y-4 sm:space-y-5">
       {/* BIG HERO SCAN QR CODE BUTTON FOR TRAFFIC OFFICER */}
@@ -614,7 +610,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{users.length}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">{isLoading ? '—' : users.length}</p>
             </div>
 
             {/* Super Admins & Admins */}
@@ -628,7 +624,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
               </div>
               <p className="text-base sm:text-xl lg:text-2xl font-black text-purple-700 dark:text-purple-400 tracking-tight leading-tight text-center">
-                {users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length}
+                {isLoading ? '—' : users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length}
               </p>
             </div>
 
@@ -643,7 +639,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
               </div>
               <p className="text-base sm:text-xl lg:text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight leading-tight text-center">
-                {users.filter((u) => u.status === 'disabled').length}
+                {isLoading ? '—' : users.filter((u) => u.status === 'disabled').length}
               </p>
             </div>
           </div>
@@ -702,7 +698,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* 1. Paid Members */}
             <MetricStatCard
               label={isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
-              value={ethiopianMonthlyMetrics.paidMembersCount}
+              value={isLoading ? '—' : ethiopianMonthlyMetrics.paidMembersCount}
               subtext={isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
               statusVariant="paid"
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
@@ -711,7 +707,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* 2. Payment Due Soon */}
             <MetricStatCard
               label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon'}
-              value={ethiopianMonthlyMetrics.dueSoonMembersCount}
+              value={isLoading ? '—' : ethiopianMonthlyMetrics.dueSoonMembersCount}
               subtext={isAmharic ? 'በ5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
               statusVariant="due"
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
@@ -720,7 +716,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* 3. Unpaid / Overdue */}
             <MetricStatCard
               label={isAmharic ? 'ያልተከፈለባቸው' : 'Unpaid / Overdue'}
-              value={ethiopianMonthlyMetrics.unpaidMembersCount}
+              value={isLoading ? '—' : ethiopianMonthlyMetrics.unpaidMembersCount}
               subtext={isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
               statusVariant="overdue"
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
@@ -729,9 +725,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* 4. Month Revenue */}
             <MetricStatCard
               label={isAmharic ? 'የወሩ ገቢ' : 'Month Revenue'}
-              value={ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
+              value={isLoading ? '—' : ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
               unit={isAmharic ? 'ብር' : 'ETB'}
-              subtext={`${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
+              subtext={isLoading ? (isAmharic ? 'በመጫን ላይ...' : 'Loading...') : `${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
               icon="account_balance_wallet"
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
             />
@@ -739,9 +735,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* 5. Compliance Rate */}
             <MetricStatCard
               label={isAmharic ? 'የክፍያ ምጣኔ' : 'Compliance Rate'}
-              value={`${ethiopianMonthlyMetrics.complianceRate}%`}
+              value={isLoading ? '—' : `${ethiopianMonthlyMetrics.complianceRate}%`}
               icon="pie_chart"
-              progress={ethiopianMonthlyMetrics.complianceRate}
+              progress={isLoading ? 0 : ethiopianMonthlyMetrics.complianceRate}
               className="col-span-2 sm:col-span-1"
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
             />
@@ -798,7 +794,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : totalLogsCount}</p>
                 </button>
 
                 <button
@@ -811,7 +807,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : warningLogsCount}</p>
                 </button>
 
                 <button
@@ -824,7 +820,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                       {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : illegalVehiclesCount}</p>
                 </button>
               </div>
             </div>
@@ -856,7 +852,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{totalLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : totalLogsCount}</p>
             </button>
 
             <button
@@ -869,7 +865,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'የፀደቁ' : 'Valid'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{approvedCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : approvedCount}</p>
             </button>
 
             <button
@@ -882,7 +878,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{warningLogsCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : warningLogsCount}</p>
             </button>
 
             <button
@@ -895,7 +891,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{illegalVehiclesCount}</p>
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">{isLoading ? '—' : illegalVehiclesCount}</p>
             </button>
           </div>
         </div>

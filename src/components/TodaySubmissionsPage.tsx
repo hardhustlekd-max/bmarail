@@ -570,10 +570,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     }
   };
 
-  if (isLoading) {
-    return <TableSkeleton rows={6} columnsCount={7} />;
-  }
-
   return (
     <div className="space-y-4">
       {/* SINGLE UNIFIED TABLE CONTAINER (TAILADMIN DESIGN) */}

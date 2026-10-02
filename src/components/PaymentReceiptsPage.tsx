@@ -990,10 +990,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     );
   };
 
-  if (isLoading) {
-    return <TableSkeleton rows={6} columnsCount={7} />;
-  }
-
   return (
     <div className="space-y-4 pb-12">
       {/* HEADER SECTION: Minimized, sleek, matching other tables in the app */}
@@ -1078,7 +1074,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
                 }`}
               >
-                {ethiopianMonthlyMetrics.totalRevenue.toLocaleString()} ETB
+                {isLoading ? '—' : `${ethiopianMonthlyMetrics.totalRevenue.toLocaleString()} ETB`}
               </span>
             </button>
           </div>
@@ -1120,7 +1116,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* 1. Paid Members */}
               <MetricStatCard
                 label={isAmharic ? 'የተከፈሉ አባላት' : 'Paid Members'}
-                value={ethiopianMonthlyMetrics.paidMembersCount}
+                value={isLoading ? '—' : ethiopianMonthlyMetrics.paidMembersCount}
                 subtext={isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
                 statusVariant="paid"
                 onClick={() => {
@@ -1132,7 +1128,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* 2. Payment Due Soon */}
               <MetricStatCard
                 label={isAmharic ? 'ሊያልቅ የደረሰ' : 'Due Soon'}
-                value={ethiopianMonthlyMetrics.dueSoonMembersCount}
+                value={isLoading ? '—' : ethiopianMonthlyMetrics.dueSoonMembersCount}
                 subtext={isAmharic ? 'በ 5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
                 statusVariant="due"
                 onClick={() => {
@@ -1144,7 +1140,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* 3. Unpaid / Overdue */}
               <MetricStatCard
                 label={isAmharic ? 'ያልተከፈለባቸው' : 'Unpaid / Overdue'}
-                value={ethiopianMonthlyMetrics.unpaidMembersCount}
+                value={isLoading ? '—' : ethiopianMonthlyMetrics.unpaidMembersCount}
                 subtext={isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
                 statusVariant="overdue"
                 onClick={() => {
@@ -1156,9 +1152,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* 4. Month Revenue */}
               <MetricStatCard
                 label={isAmharic ? 'የወሩ ገቢ' : 'Month Revenue'}
-                value={ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
+                value={isLoading ? '—' : ethiopianMonthlyMetrics.totalRevenue.toLocaleString()}
                 unit={isAmharic ? 'ብር' : 'ETB'}
-                subtext={`${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
+                subtext={isLoading ? (isAmharic ? 'በመጫን ላይ...' : 'Loading...') : `${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
                 icon="account_balance_wallet"
                 onClick={() => {
                   setStatusFilter('all');
@@ -1169,9 +1165,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* 5. Compliance Rate */}
               <MetricStatCard
                 label={isAmharic ? 'የክፍያ ምጣኔ' : 'Compliance Rate'}
-                value={`${ethiopianMonthlyMetrics.complianceRate}%`}
+                value={isLoading ? '—' : `${ethiopianMonthlyMetrics.complianceRate}%`}
                 icon="pie_chart"
-                progress={ethiopianMonthlyMetrics.complianceRate}
+                progress={isLoading ? 0 : ethiopianMonthlyMetrics.complianceRate}
                 className="col-span-2 sm:col-span-1"
                 onClick={() => {
                   setStatusFilter('all');

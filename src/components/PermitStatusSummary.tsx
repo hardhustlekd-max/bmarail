@@ -18,10 +18,6 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
   borderless = false,
   isLoading = false,
 }) => {
-  if (isLoading) {
-    return <PermitStatusSummarySkeleton />;
-  }
-
   const isAmharic = lang === 'am';
 
   // Calculate counts for each permit status
@@ -35,7 +31,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
     {
       key: 'pending_approval',
       label: isAmharic ? 'በመጠባበቅ' : 'Pending',
-      count: pendingCount,
+      count: isLoading ? '—' : pendingCount,
       percentage: Math.round((pendingCount / totalCount) * 100),
       icon: 'pending_actions',
       badgeBg: 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700',
@@ -46,7 +42,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
     {
       key: 'approved',
       label: isAmharic ? 'የጸደቁ' : 'Approved',
-      count: approvedCount,
+      count: isLoading ? '—' : approvedCount,
       percentage: Math.round((approvedCount / totalCount) * 100),
       icon: 'verified',
       badgeBg: 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700',
@@ -57,7 +53,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
     {
       key: 'rejected',
       label: isAmharic ? 'ውድቅ' : 'Rejected',
-      count: rejectedCount,
+      count: isLoading ? '—' : rejectedCount,
       percentage: Math.round((rejectedCount / totalCount) * 100),
       icon: 'cancel',
       badgeBg: 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-700',
@@ -68,7 +64,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
     {
       key: 'all',
       label: isAmharic ? 'ጠቅላላ' : 'Total',
-      count: registrations.length,
+      count: isLoading ? '—' : registrations.length,
       percentage: 100,
       icon: 'assessment',
       badgeBg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-slate-800',

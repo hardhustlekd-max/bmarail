@@ -134,10 +134,6 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
     }
   };
 
-  if (isLoading) {
-    return <TableSkeleton rows={5} columnsCount={6} />;
-  }
-
   return (
     <div className="space-y-4">
       {/* SINGLE UNIFIED CONTAINER (TAILADMIN DESIGN) */}

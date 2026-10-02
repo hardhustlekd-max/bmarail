@@ -653,10 +653,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     }
   };
 
-  if (isLoading) {
-    return <TableSkeleton rows={8} columnsCount={8} />;
-  }
-
   return (
     <div className="space-y-4">
       {/* SINGLE UNIFIED TABLE CONTAINER (TAILADMIN DATATABLE DESIGN) */}
