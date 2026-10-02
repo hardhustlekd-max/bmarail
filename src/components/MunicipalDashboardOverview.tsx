@@ -26,7 +26,7 @@ import { SharedScannerModal } from './SharedScannerModal';
 import { PermitStatusSummary } from './PermitStatusSummary';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { SmartImage } from './SmartImage';
-import { LoadingSpinner } from './ui/Skeleton';
+import { LoadingSpinner, DashboardOverviewSkeleton } from './ui/Skeleton';
 import {
   FullscreenDocumentCarouselModal,
   buildRegistrationDocumentList,
@@ -535,7 +535,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   };
 
   if (isLoading) {
-    return null;
+    return <DashboardOverviewSkeleton userRole={userRole} isAmharic={isAmharic} />;
   }
 
   return (

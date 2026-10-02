@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Icon } from './ui/Icon';
 import { motion } from 'motion/react';
 import { formatEthiopianDate, toEthiopianDate, getDefaultEthiopianRegistrationDate } from '../utils/ethiopianCalendar';
+import { TableSkeleton } from './ui/Skeleton';
 import {
   Language,
   UserRole,
@@ -570,7 +571,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   };
 
   if (isLoading) {
-    return null;
+    return <TableSkeleton rows={6} columnsCount={7} />;
   }
 
   return (

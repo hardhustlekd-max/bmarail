@@ -10,7 +10,7 @@ import {
 import { SmartImage } from './SmartImage';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { DataField } from './ui/StreamlinedUI';
-import { LoadingSpinner } from './ui/Skeleton';
+import { LoadingSpinner, TableSkeleton } from './ui/Skeleton';
 
 interface UnregisteredReportsListProps {
   lang: Language;
@@ -135,7 +135,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
   };
 
   if (isLoading) {
-    return null;
+    return <TableSkeleton rows={5} columnsCount={6} />;
   }
 
   return (

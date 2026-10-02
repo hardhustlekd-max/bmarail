@@ -6,7 +6,7 @@ import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStat
 import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
 import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian, ETHIOPIAN_MONTHS, EthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, normalizeToEthiopianDateStr } from '../utils/ethiopianCalendar';
-import { LoadingSpinner } from './ui/Skeleton';
+import { LoadingSpinner, TableSkeleton } from './ui/Skeleton';
 import { EthiopianDateRangePicker, DateRangePreset, computeEthiopianPresetRange } from './EthiopianDateRangePicker';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
 
@@ -991,7 +991,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   };
 
   if (isLoading) {
-    return null;
+    return <TableSkeleton rows={6} columnsCount={7} />;
   }
 
   return (

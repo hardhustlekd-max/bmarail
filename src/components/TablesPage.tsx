@@ -2,6 +2,7 @@ import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { formatEthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
+import { TableSkeleton } from './ui/Skeleton';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
 import {
   updateRegistrationInDb,
@@ -653,7 +654,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   };
 
   if (isLoading) {
-    return null;
+    return <TableSkeleton rows={8} columnsCount={8} />;
   }
 
   return (
