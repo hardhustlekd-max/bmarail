@@ -281,7 +281,8 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON system_audit_logs(create
 -- 10. NOTIFICATION STATES
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS notification_states (
-    user_scope_id VARCHAR(128) PRIMARY KEY,
+    id VARCHAR(128) PRIMARY KEY,
+    user_scope_id VARCHAR(128),
     read_ids JSONB DEFAULT '[]'::jsonb,
     cleared_ids JSONB DEFAULT '[]'::jsonb,
     last_read_at VARCHAR(50),
@@ -347,6 +348,8 @@ ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS verified_by_cheki BOOLEAN 
 ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS cheki_bank VARCHAR(100);
 ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS entered_at VARCHAR(50);
 
+ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS id VARCHAR(128);
+UPDATE notification_states SET id = user_scope_id WHERE id IS NULL OR id = '';
 ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS cleared_ids JSONB DEFAULT '[]'::jsonb;
 
 

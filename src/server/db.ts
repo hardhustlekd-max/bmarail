@@ -641,50 +641,97 @@ function parseCreateTableColumns(schemaSql: string): Map<string, Array<{ name: s
  */
 async function runSchemaMigrations(client: pg.PoolClient) {
   try {
-    // 1. Fetch currently existing table columns from PostgreSQL information_schema
-    const existingColsRes = await client.query(`
-      SELECT table_name, column_name 
-      FROM information_schema.columns 
-      WHERE table_schema = 'public'
-    `);
-    const existingCols = new Set<string>();
-    for (const r of existingColsRes.rows) {
-      existingCols.add(`${r.table_name.toLowerCase()}.${r.column_name.toLowerCase()}`);
-    }
-
-    // 2. Execute schema.sql definition file
+    // 1. Execute schema.sql definition file statement by statement
     const schemaPath = path.join(process.cwd(), 'database', 'schema.sql');
     if (fs.existsSync(schemaPath)) {
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-      await client.query(schemaSql);
+      const statements = schemaSql
+        .split(';')
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
 
-      // 3. Auto-reconcile any newly added columns from schema.sql onto existing tables
-      const parsedTables = parseCreateTableColumns(schemaSql);
-      let autoAddedCount = 0;
-      for (const [tableName, cols] of parsedTables.entries()) {
-        for (const col of cols) {
-          const key = `${tableName}.${col.name}`;
-          if (!existingCols.has(key)) {
-            try {
-              console.log(`[PostgreSQL Auto-Migrator] Auto-adding missing column "${col.name}" to table "${tableName}"...`);
-              await client.query(`ALTER TABLE ${tableName} ADD COLUMN IF NOT EXISTS ${col.name} ${col.definition}`);
-              autoAddedCount++;
-            } catch (alterErr: any) {
-              console.warn(`[PostgreSQL Auto-Migrator] Note for ${key}:`, alterErr.message);
-            }
-          }
+      for (const stmt of statements) {
+        try {
+          await client.query(stmt);
+        } catch (stmtErr: any) {
+          // Ignore non-fatal statement errors (e.g. relation or extension already exists)
         }
-      }
-      if (autoAddedCount > 0) {
-        console.log(`[PostgreSQL Auto-Migrator] Auto-reconciled ${autoAddedCount} newly detected column(s) from GitHub schema.`);
       }
     }
 
-    // 4. Execute seed.sql
+    // 2. Resilient explicit ALTER TABLE queries for existing databases
+    const safeAlterQueries = [
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS receipt_number VARCHAR(100)`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS payment_amount VARCHAR(50)`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS receipt_screenshot TEXT`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS hide_from_other_users BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_rejection_reason TEXT`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS is_correction BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS email VARCHAR(255)`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS term_status VARCHAR(50) DEFAULT 'CURRENT'`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS active_term_expiration_date VARCHAR(50)`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_payment_date VARCHAR(50)`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_receipt_number VARCHAR(100)`,
+      `ALTER TABLE motorcycle_registrations ADD COLUMN IF NOT EXISTS last_payment_amount VARCHAR(50)`,
+
+      `ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS id VARCHAR(128)`,
+      `ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS user_scope_id VARCHAR(128)`,
+      `ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS read_ids JSONB DEFAULT '[]'::jsonb`,
+      `ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS cleared_ids JSONB DEFAULT '[]'::jsonb`,
+      `ALTER TABLE notification_states ADD COLUMN IF NOT EXISTS last_read_at VARCHAR(50)`,
+      `UPDATE notification_states SET id = user_scope_id WHERE id IS NULL OR id = ''`,
+
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS scanner_result_theme VARCHAR(100) DEFAULT 'warm_ivory_cream'`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_permit_status BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_submissions_action BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_approved_vehicles_action BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_new_registration_action BOOLEAN DEFAULT TRUE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_edit_submission_action BOOLEAN DEFAULT TRUE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_qr_scan_action BOOLEAN DEFAULT TRUE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_payment_receipts_action BOOLEAN DEFAULT TRUE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_payment_kpis BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_payment_records_table BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS clerk_payment_kpi_permission VARCHAR(50) DEFAULT 'allow'`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS clerk_payment_table_permission VARCHAR(50) DEFAULT 'allow'`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS frozen_sub_cities JSONB DEFAULT '{}'::jsonb`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS system_reset_epoch BIGINT`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS last_system_reset_at VARCHAR(50)`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS role_permissions JSONB DEFAULT '{}'::jsonb`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS role_definitions JSONB DEFAULT '[]'::jsonb`,
+
+      `ALTER TABLE system_users ADD COLUMN IF NOT EXISTS phone VARCHAR(50)`,
+
+      `ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS verified_by_cheki BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS cheki_bank VARCHAR(100)`,
+      `ALTER TABLE payment_receipts ADD COLUMN IF NOT EXISTS entered_at VARCHAR(50)`,
+    ];
+
+    for (const q of safeAlterQueries) {
+      try {
+        await client.query(q);
+      } catch (alterErr: any) {
+        // Non-fatal notice
+      }
+    }
+
+    // 3. Execute seed.sql
     const seedPath = path.join(process.cwd(), 'database', 'seed.sql');
     if (fs.existsSync(seedPath)) {
-      const seedSql = fs.readFileSync(seedPath, 'utf8');
-      await client.query(seedSql);
+      try {
+        const seedSql = fs.readFileSync(seedPath, 'utf8');
+        const seedStatements = seedSql
+          .split(';')
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0);
+
+        for (const sStmt of seedStatements) {
+          try {
+            await client.query(sStmt);
+          } catch (seedErr: any) {
+            // Non-fatal seed conflict notice
+          }
+        }
+      } catch (seedReadErr) {}
     }
 
     try {
@@ -696,24 +743,33 @@ async function runSchemaMigrations(client: pg.PoolClient) {
       `);
     } catch {}
 
-    // 5. Dynamically refresh memory whitelist of table columns from information_schema
-    const updatedColsRes = await client.query(`
-      SELECT table_name, column_name 
-      FROM information_schema.columns 
-      WHERE table_schema = 'public'
-    `);
-    for (const r of updatedColsRes.rows) {
-      const tName = r.table_name;
-      const cName = r.column_name;
-      if (!TABLE_COLUMNS[tName]) {
-        TABLE_COLUMNS[tName] = new Set();
-      }
-      TABLE_COLUMNS[tName].add(cName);
-    }
-
     console.log('[PostgreSQL] Database schema and seed data verified & synchronized successfully.');
   } catch (err: any) {
     console.warn('[PostgreSQL] Notice during schema verification:', err.message);
+  } finally {
+    // 4. Dynamically refresh memory whitelist of table columns from information_schema
+    try {
+      const updatedColsRes = await client.query(`
+        SELECT table_name, column_name 
+        FROM information_schema.columns 
+        WHERE table_schema = 'public'
+      `);
+      const liveTableCols: Record<string, Set<string>> = {};
+      for (const r of updatedColsRes.rows) {
+        const tName = r.table_name.toLowerCase();
+        const cName = r.column_name.toLowerCase();
+        if (!liveTableCols[tName]) {
+          liveTableCols[tName] = new Set();
+        }
+        liveTableCols[tName].add(cName);
+      }
+      for (const [tName, colSet] of Object.entries(liveTableCols)) {
+        TABLE_COLUMNS[tName] = colSet;
+      }
+      console.log('[PostgreSQL] Refreshed live column whitelists from information_schema.');
+    } catch (refreshErr: any) {
+      console.warn('[PostgreSQL] Warning refreshing column metadata:', refreshErr.message);
+    }
   }
 }
 

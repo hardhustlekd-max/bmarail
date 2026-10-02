@@ -1115,6 +1115,7 @@ app.post('/api/notifications/state', async (req, res) => {
       return res.status(400).json({ error: 'Missing userScopeId' });
     }
     const data = {
+      id: userScopeId,
       userScopeId,
       readIds: readIds || [],
       clearedIds: clearedIds || [],
