@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from './ui/Icon';
-import { formatEthiopianDateTime } from '../utils/ethiopianCalendar';
+import { formatEthiopianDateTime, getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
 import jsQR from 'jsqr';
 import { Language, MotorcycleRegistration, UserRole, VerificationLog } from '../types';
 import { QRCodeCard } from './QRCodeCard';
@@ -224,7 +224,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
     const newLog: VerificationLog = {
       id: `LOG-${Math.floor(1000 + Math.random() * 9000)}`,
-      scannedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      scannedAt: getTodayEthiopianDateTimeIso(),
       plateNumber: scannedRegResult.plateNumber,
       fullName: scannedRegResult.fullName,
       phone: scannedRegResult.phone,
@@ -618,7 +618,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                 <div className="space-y-0.5">
                   <p className="font-extrabold text-on-surface">{selectedLogForDetails.locationName || 'Checkpoint Scan'}</p>
                   <p className="text-secondary text-[11px]">
-                    Scanned At: <span className="font-mono font-bold">{selectedLogForDetails.scannedAt}</span>
+                    Scanned At: <span className="font-mono font-bold">{formatEthiopianDateTime(selectedLogForDetails.scannedAt, isAmharic ? 'am' : 'en')}</span>
                   </p>
                 </div>
                 <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold  ${

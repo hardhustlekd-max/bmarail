@@ -1,4 +1,4 @@
-import { toEthiopianDate, ethiopianToGregorian } from './ethiopianCalendar';
+import { toEthiopianDate, ethiopianToGregorian, normalizeToGregorianDateStr } from './ethiopianCalendar';
 
 export interface PaymentReceipt {
   id: string;
@@ -50,7 +50,7 @@ export function calculateTermStatus(expirationDateStr?: string): TermStatus {
 }
 
 /**
- * Calculates expiration date 1 Ethiopian month (30 days) from payment date.
+ * Calculates expiration date 1 Ethiopian month (30 days) from payment date in standard Ethiopian calendar (YYYY-MM-DD).
  */
 export function calculateOneMonthExpiration(paymentDateStr: string): string {
   if (!paymentDateStr) return '';
@@ -70,16 +70,14 @@ export function calculateOneMonthExpiration(paymentDateStr: string): string {
         nextYear += 1;
       }
       const nextDay = Math.min(eth.day, 30);
-      const greg = ethiopianToGregorian(nextYear, nextMonth, nextDay);
-      if (greg && greg.dateStr) {
-        return greg.dateStr;
-      }
+      const pad = (n: number) => String(n).padStart(2, '0');
+      return `${nextYear}-${pad(nextMonth)}-${pad(nextDay)}`;
     }
   } catch (err) {
     // Fallback below
   }
 
-  // 2. Gregorian fallback
+  // 2. Gregorian fallback if parsing failed
   const dateObj = new Date(paymentDateStr);
   if (isNaN(dateObj.getTime())) return paymentDateStr;
 
@@ -94,17 +92,20 @@ export function calculateOneMonthExpiration(paymentDateStr: string): string {
 }
 
 /**
- * Derives payment status and days remaining relative to today.
+ * Derives payment status and days remaining relative to today, robust to both Ethiopian and Gregorian date strings.
  */
 export function getPaymentReceiptStatus(expirationDateStr: string): PaymentStatusInfo {
   if (!expirationDateStr) {
     return { status: 'expired', daysRemaining: 0 };
   }
 
+  // Ensure date string is converted to Gregorian for accurate epoch comparison against today
+  const gregExpStr = normalizeToGregorianDateStr(expirationDateStr);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const expDate = new Date(expirationDateStr);
+  const expDate = new Date(gregExpStr);
   expDate.setHours(23, 59, 59, 999);
 
   if (isNaN(expDate.getTime())) {

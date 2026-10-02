@@ -2,7 +2,7 @@ import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState } from 'react';
 import { Icon } from './ui/Icon';
 import { motion } from 'motion/react';
-import { formatEthiopianDate } from '../utils/ethiopianCalendar';
+import { formatEthiopianDate, toEthiopianDate, getDefaultEthiopianRegistrationDate } from '../utils/ethiopianCalendar';
 import {
   Language,
   UserRole,
@@ -100,7 +100,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   const [editDrivingPermitPhoto, setEditDrivingPermitPhoto] = useState('');
 
   // Today's date string (YYYY-MM-DD)
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getDefaultEthiopianRegistrationDate();
 
   // Open Edit Modal with selected registration values
   const handleOpenEdit = (reg: MotorcycleRegistration) => {
@@ -482,11 +482,18 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     return true;
   });
 
-  // 2. Filter by Date (Today vs All)
+  // 2. Filter by Date (Today vs All) - seamlessly matches Ethiopian today and Gregorian today
   const dateFilteredRegs = roleFilteredRegs.filter((reg) => {
     if (dateFilter === 'today') {
       const regDate = (reg.registrationDate || '').split(' ')[0];
-      return !regDate || regDate === todayStr;
+      if (!regDate || regDate === todayStr) return true;
+      try {
+        const ethReg = toEthiopianDate(regDate);
+        const ethNow = toEthiopianDate(new Date());
+        return ethReg.year === ethNow.year && ethReg.month === ethNow.month && ethReg.day === ethNow.day;
+      } catch {
+        return false;
+      }
     }
     return true;
   });

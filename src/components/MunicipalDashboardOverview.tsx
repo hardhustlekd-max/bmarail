@@ -32,7 +32,7 @@ import {
   buildRegistrationDocumentList,
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
-import { toEthiopianDate, ETHIOPIAN_MONTHS, EthiopianDate } from '../utils/ethiopianCalendar';
+import { toEthiopianDate, formatEthiopianDateTime, ETHIOPIAN_MONTHS, EthiopianDate, getDefaultEthiopianRegistrationDate, normalizeToEthiopianDateStr } from '../utils/ethiopianCalendar';
 import { calculateOneMonthExpiration } from '../utils/paymentUtils';
 import { MetricStatCard, MetricGrid } from './ui/AssocDesignSystem';
 
@@ -189,38 +189,47 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
     // Combine scoped payment receipts with registration records that have payment data
     const allReceipts = [...scopedPaymentReceipts];
+    const existingRegIds = new Set(
+      allReceipts.map((r) => cleanStr(r.ownerRegistrationId)).filter(Boolean)
+    );
+
     scopedRegs.forEach((reg) => {
+      if (!reg || !reg.id) return;
+      const regIdClean = cleanStr(reg.id);
+      if (existingRegIds.has(regIdClean)) return;
+
       const hasRegReceipt = Boolean(
         reg.receiptNumber ||
         reg.lastReceiptNumber ||
         reg.paymentAmount ||
         reg.lastPaymentAmount ||
         reg.lastPaymentDate ||
-        reg.activeTermExpirationDate
+        reg.activeTermExpirationDate ||
+        reg.termStatus === 'CURRENT' ||
+        reg.status === 'approved' ||
+        reg.status === 'printed' ||
+        reg.status === 'ordered_print'
       );
       if (hasRegReceipt) {
-        const regReceiptNo = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
-        const alreadyInList = regReceiptNo && allReceipts.some((r) => cleanStr(r.receiptNumber) === regReceiptNo);
-        if (!alreadyInList) {
-          const payDate = reg.lastPaymentDate || reg.registrationDate || '';
-          const expDate = reg.activeTermExpirationDate || (payDate ? calculateOneMonthExpiration(payDate) : '');
-          if (payDate) {
-            allReceipts.push({
-              id: `reg-init-${reg.id}`,
-              receiptNumber: reg.lastReceiptNumber || reg.receiptNumber || 'INITIAL',
-              ownerRegistrationId: reg.id,
-              ownerName: reg.fullName || '',
-              plateNumber: reg.plateNumber,
-              phone: reg.phone,
-              paymentDate: payDate,
-              expirationDate: expDate,
-              amount: reg.lastPaymentAmount || reg.paymentAmount || (reg.vehicleCategory === 'electric' ? 50 : 100),
-              vehicleCategory: reg.vehicleCategory,
-              enteredBy: reg.registeredBy || 'SYSTEM',
-              createdAt: payDate,
-            });
-          }
-        }
+        const rawPayDate = reg.lastPaymentDate || reg.registrationDate || getDefaultEthiopianRegistrationDate();
+        const payDate = normalizeToEthiopianDateStr(rawPayDate);
+        const expDate = reg.activeTermExpirationDate
+          ? normalizeToEthiopianDateStr(reg.activeTermExpirationDate)
+          : calculateOneMonthExpiration(payDate);
+        allReceipts.push({
+          id: `reg-init-${reg.id}`,
+          receiptNumber: reg.lastReceiptNumber || reg.receiptNumber || `REC-${reg.id}`,
+          ownerRegistrationId: reg.id,
+          ownerName: reg.fullName || '',
+          plateNumber: reg.plateNumber,
+          phone: reg.phone,
+          paymentDate: payDate,
+          expirationDate: expDate,
+          amount: reg.lastPaymentAmount || reg.paymentAmount || (reg.vehicleCategory === 'electric' ? 50 : 100),
+          vehicleCategory: reg.vehicleCategory,
+          enteredBy: reg.registeredBy || 'SYSTEM',
+          createdAt: payDate,
+        });
       }
     });
 
@@ -250,10 +259,13 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       };
     });
 
-    // 1. Receipts collected in this specific Ethiopian month & year
-    const receiptsInSelectedMonth = parsedReceipts.filter(
-      (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
-    );
+    // 1. Receipts collected in this specific Ethiopian month & year or actively covering it
+    const receiptsInSelectedMonth = parsedReceipts.filter((item) => {
+      if (item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth) {
+        return true;
+      }
+      return item.status === 'active' || item.status === 'expiring_soon';
+    });
     const totalMonthRevenue = receiptsInSelectedMonth.reduce((acc, curr) => acc + curr.amountNum, 0);
     const totalReceiptsCount = receiptsInSelectedMonth.length;
 
@@ -366,9 +378,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   const illegalVehiclesCount = scopedRegs.filter((r) => r.status === 'rejected').length;
   const activeOfficersCount = officers.filter((o) => o.status === 'active').length;
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayEthStr = getDefaultEthiopianRegistrationDate();
   const todaySubmissionsCount = scopedRegs.filter(
-    (r) => (r.registrationDate || '').split(' ')[0] === todayStr
+    (r) => normalizeToEthiopianDateStr(r.registrationDate) === todayEthStr
   ).length;
 
   const totalLogsCount = scopedVerificationLogs.length;
@@ -986,7 +998,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                         <span className="font-medium text-xs text-on-surface">{log.fullName}</span>
                       </div>
                       <p className="text-[10px] text-secondary">
-                        {log.officerNotes} • <span className="font-mono">{log.scannedAt}</span>
+                        {log.officerNotes} • <span className="font-mono">{formatEthiopianDateTime(log.scannedAt, isAmharic ? 'am' : 'en')}</span>
                       </p>
                     </div>
                   </div>

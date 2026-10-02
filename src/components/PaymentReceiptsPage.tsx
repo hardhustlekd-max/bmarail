@@ -5,7 +5,7 @@ import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus 
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
 import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
-import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian, ETHIOPIAN_MONTHS, EthiopianDate } from '../utils/ethiopianCalendar';
+import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian, ETHIOPIAN_MONTHS, EthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, normalizeToEthiopianDateStr } from '../utils/ethiopianCalendar';
 import { LoadingSpinner } from './ui/Skeleton';
 import { EthiopianDateRangePicker, DateRangePreset, computeEthiopianPresetRange } from './EthiopianDateRangePicker';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
@@ -65,7 +65,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [phone, setPhone] = useState('');
   const [isAutoFilled, setIsAutoFilled] = useState(false);
   const [paymentDate, setPaymentDate] = useState<string>(
-    () => new Date().toISOString().split('T')[0]
+    () => getDefaultEthiopianRegistrationDate()
   );
   const [amount, setAmount] = useState<string>('500');
   const [receiptScreenshot, setReceiptScreenshot] = useState<string>('');
@@ -174,11 +174,19 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const combinedReceipts = useMemo<PaymentReceipt[]>(() => {
     const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
     const list: PaymentReceipt[] = [...(paymentReceipts || [])];
-    const existingKeys = new Set(list.map((r) => cleanStr(r.receiptNumber)));
+    const explicitRegIds = new Set(
+      list.map((r) => cleanStr(r.ownerRegistrationId)).filter(Boolean)
+    );
+    const existingReceiptNos = new Set(
+      list.map((r) => cleanStr(r.receiptNumber)).filter(Boolean)
+    );
 
     if (Array.isArray(registrations)) {
       registrations.forEach((reg) => {
-        if (!reg) return;
+        if (!reg || !reg.id) return;
+        const regIdClean = cleanStr(reg.id);
+        if (explicitRegIds.has(regIdClean)) return;
+
         const hasPayment = Boolean(
           reg.receiptNumber ||
           reg.lastReceiptNumber ||
@@ -186,16 +194,25 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           reg.paymentAmount ||
           reg.lastPaymentAmount ||
           reg.receiptScreenshot ||
-          reg.activeTermExpirationDate
+          reg.activeTermExpirationDate ||
+          reg.termStatus === 'CURRENT' ||
+          reg.status === 'approved' ||
+          reg.status === 'printed' ||
+          reg.status === 'ordered_print'
         );
         if (!hasPayment) return;
 
-        const rcNum = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
-        if (rcNum && existingKeys.has(rcNum)) return;
-        if (rcNum) existingKeys.add(rcNum);
+        let rcNum = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
+        if (!rcNum || existingReceiptNos.has(rcNum)) {
+          rcNum = `REC-${reg.id}`;
+        }
+        existingReceiptNos.add(rcNum);
 
-        const payDate = reg.lastPaymentDate || reg.registrationDate || new Date().toISOString().split('T')[0];
-        const expDate = reg.activeTermExpirationDate || (payDate ? calculateOneMonthExpiration(payDate) : '');
+        const rawPayDate = reg.lastPaymentDate || reg.registrationDate || getDefaultEthiopianRegistrationDate();
+        const payDate = normalizeToEthiopianDateStr(rawPayDate);
+        const expDate = reg.activeTermExpirationDate
+          ? normalizeToEthiopianDateStr(reg.activeTermExpirationDate)
+          : calculateOneMonthExpiration(payDate);
 
         list.push({
           id: `reg-receipt-${reg.id}`,
@@ -210,7 +227,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           vehicleCategory: reg.vehicleCategory,
           receiptScreenshot: reg.receiptScreenshot,
           enteredBy: reg.registeredBy || 'SYSTEM',
-          createdAt: (reg as any).createdAt || `${payDate}T08:00:00Z`,
+          createdAt: (reg as any).createdAt || `${payDate} 08:00:00`,
           status: 'valid',
           verifiedByCheki: true,
           chekiBank: 'CBE',
@@ -320,54 +337,47 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
     const rawPayDate = rc.paymentDate || rc.createdAt || '';
     if (!rawPayDate) return true;
-    const payDateStr = rawPayDate.split('T')[0].split(' ')[0].trim();
-    if (!payDateStr) return true;
+    const ethPayDateStr = normalizeToEthiopianDateStr(rawPayDate);
+    if (!ethPayDateStr) return true;
 
-    // 1. Direct match with selected date range
+    // 1. Direct match with selected date range (both in Ethiopian YYYY-MM-DD)
     if (startDate && endDate) {
-      if (payDateStr >= startDate && payDateStr <= endDate) return true;
+      const normStart = normalizeToEthiopianDateStr(startDate);
+      const normEnd = normalizeToEthiopianDateStr(endDate);
+      if (ethPayDateStr >= normStart && ethPayDateStr <= normEnd) return true;
     } else if (startDate && !endDate) {
-      if (payDateStr >= startDate) return true;
+      const normStart = normalizeToEthiopianDateStr(startDate);
+      if (ethPayDateStr >= normStart) return true;
     } else if (!startDate && endDate) {
-      if (payDateStr <= endDate) return true;
+      const normEnd = normalizeToEthiopianDateStr(endDate);
+      if (ethPayDateStr <= normEnd) return true;
     }
 
-    // 2. Preset 'this_month': Ensure payments in current Ethiopian month OR current calendar month OR active term covering this month match
+    // 2. Preset 'this_month': Ensure payments in current Ethiopian month OR active term covering this month match
     if (dateRangePreset === 'this_month') {
-      const today = new Date();
-      const currentGregMonth = today.toISOString().slice(0, 7); // e.g. "2026-09"
-      if (payDateStr.startsWith(currentGregMonth)) {
+      const ethNow = toEthiopianDate(new Date());
+      const [pYear, pMonth] = ethPayDateStr.split('-').map(Number);
+      if (pYear === ethNow.year && pMonth === ethNow.month) {
         return true;
       }
 
-      try {
-        const ethPay = toEthiopianDate(payDateStr);
-        const ethNow = toEthiopianDate(today);
-        if (ethPay.year === ethNow.year && ethPay.month === ethNow.month) {
+      // Active term coverage: if payment actively covers this Ethiopian month
+      const expDateStr = (rc.expirationDate || '').split('T')[0].split(' ')[0].trim();
+      if (expDateStr) {
+        const { status } = getPaymentReceiptStatus(expDateStr);
+        if (status === 'active' || status === 'expiring_soon') {
           return true;
         }
-      } catch {}
-
-      // Active term coverage: if payment was made for this month
-      const expDateStr = (rc.expirationDate || '').split('T')[0].split(' ')[0].trim();
-      if (expDateStr && startDate && expDateStr >= startDate && payDateStr <= (endDate || startDate)) {
-        return true;
       }
     }
 
-    // 3. Preset 'this_year': Ensure payments in current Ethiopian year OR current calendar year match
+    // 3. Preset 'this_year': Ensure payments in current Ethiopian year match
     if (dateRangePreset === 'this_year') {
-      const currentGregYear = new Date().toISOString().slice(0, 4);
-      if (payDateStr.startsWith(currentGregYear)) {
+      const ethNow = toEthiopianDate(new Date());
+      const pYear = Number(ethPayDateStr.split('-')[0]);
+      if (pYear === ethNow.year) {
         return true;
       }
-      try {
-        const ethPay = toEthiopianDate(payDateStr);
-        const ethNow = toEthiopianDate(new Date());
-        if (ethPay.year === ethNow.year) {
-          return true;
-        }
-      } catch {}
     }
 
     return false;
@@ -487,8 +497,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         amount: amount.trim() ? `${amount.trim()} ETB` : '500 ETB',
         receiptScreenshot: receiptScreenshot || undefined,
         enteredBy: userBadgeId,
-        createdAt: new Date().toISOString(),
-        enteredAt: new Date().toISOString(),
+        createdAt: getTodayEthiopianDateTimeIso(),
+        enteredAt: getTodayEthiopianDateTimeIso(),
         verifiedByCheki: isReceiptChekiVerified,
         chekiBank: isReceiptChekiVerified ? (chekiVerifiedBankName || formChekiBank || 'Bank') : undefined,
         notes: notes.trim() || undefined,
@@ -760,8 +770,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         const regReceiptNo = cleanStr(reg.lastReceiptNumber || reg.receiptNumber);
         const alreadyInList = allReceipts.some((r) => r.receiptNumber && cleanStr(r.receiptNumber) === regReceiptNo);
         if (!alreadyInList) {
-          const payDate = reg.lastPaymentDate || reg.registrationDate || new Date().toISOString().split('T')[0];
-          const expDate = reg.activeTermExpirationDate || calculateOneMonthExpiration(payDate);
+          const rawPayDate = reg.lastPaymentDate || reg.registrationDate || getDefaultEthiopianRegistrationDate();
+          const payDate = normalizeToEthiopianDateStr(rawPayDate);
+          const expDate = reg.activeTermExpirationDate
+            ? normalizeToEthiopianDateStr(reg.activeTermExpirationDate)
+            : calculateOneMonthExpiration(payDate);
           allReceipts.push({
             id: `reg-init-${reg.id}`,
             receiptNumber: reg.lastReceiptNumber || reg.receiptNumber || 'INITIAL',
@@ -771,7 +784,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             phone: reg.phone,
             paymentDate: payDate,
             expirationDate: expDate,
-            amount: reg.lastPaymentAmount || reg.paymentAmount || '500 ETB',
+            amount: reg.lastPaymentAmount || reg.paymentAmount || (reg.vehicleCategory === 'electric' ? '50 ETB' : '100 ETB'),
+            vehicleCategory: reg.vehicleCategory,
             enteredBy: reg.registeredBy || 'SYSTEM',
             createdAt: payDate,
           });

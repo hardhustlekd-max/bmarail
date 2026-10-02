@@ -12,6 +12,7 @@ import { SmartImage } from './SmartImage';
 import { uploadDocumentPhoto } from '../services/storageService';
 import { savePaymentReceiptToDb } from '../services/dbService';
 import { calculateOneMonthExpiration } from '../utils/paymentUtils';
+import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
 import { SectionCard, DataField } from './ui/StreamlinedUI';
 import { Icon } from './ui/Icon';
 
@@ -910,7 +911,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
       chassisNumber: chassisNumber.trim().toUpperCase(),
       engineOrSerialNo: chassisNumber.trim().toUpperCase() || (engineOrSerialNo && engineOrSerialNo !== 'N/A' ? engineOrSerialNo.trim() : '') || 'N/A',
       plateNumber: plateNumber.trim().toUpperCase(),
-      registrationDate: new Date().toISOString().split('T')[0],
+      registrationDate: getDefaultEthiopianRegistrationDate(),
       status: 'pending_approval',
       qrCodeData: `https://enforcement.gov.et/verify/${newId}`,
       registeredBy: userBadgeId || 'CLERK-001',
@@ -940,6 +941,13 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         receiptScreenshot ? uploadDocumentPhoto(receiptScreenshot, 'permits/receipts') : Promise.resolve(''),
       ]);
 
+      // Save payment receipt to DB
+      const todayStr = getDefaultEthiopianRegistrationDate();
+      const expDateStr = calculateOneMonthExpiration(todayStr);
+      const autoReceiptNo = receiptNumber.trim() || `REC-${newId}`;
+      const defaultAmount = vehicleCategory === 'electric' ? '50' : '100';
+      const actualAmount = paymentAmount.trim() || defaultAmount;
+
       newRegistration = {
         ...newRegistration,
         userPortraitPhoto: upPortrait || userPortraitPhoto,
@@ -947,28 +955,31 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         nationalIdBackPhoto: upNatIdBack || nationalIdBackPhoto,
         drivingLicensePhoto: upLicense || drivingLicensePhoto,
         drivingPermitPhoto: upPermit || drivingPermitPhoto,
-        receiptNumber: receiptNumber.trim() || undefined,
-        paymentAmount: paymentAmount.trim() || undefined,
+        receiptNumber: autoReceiptNo,
+        paymentAmount: actualAmount,
         receiptScreenshot: upReceipt || receiptScreenshot || undefined,
+        termStatus: 'CURRENT',
+        activeTermExpirationDate: expDateStr,
+        lastPaymentDate: todayStr,
+        lastReceiptNumber: autoReceiptNo,
+        lastPaymentAmount: actualAmount,
         hideFromOtherUsers: isSuperAdmin ? hideFromOtherUsers : undefined,
       };
 
-      // Save payment receipt to DB
-      const todayStr = new Date().toISOString().split('T')[0];
-      const expDateStr = calculateOneMonthExpiration(todayStr);
       const newPaymentReceipt: PaymentReceipt = {
         id: `PAY-${Date.now().toString().slice(-6)}`,
-        receiptNumber: receiptNumber.trim(),
+        receiptNumber: autoReceiptNo,
         ownerRegistrationId: newId,
         ownerName: fullName.trim(),
         plateNumber: plateNumber.trim().toUpperCase() || undefined,
         phone: phone.trim() || undefined,
         paymentDate: todayStr,
         expirationDate: expDateStr,
-        amount: paymentAmount.trim() ? `${paymentAmount.trim()} ETB` : undefined,
+        amount: `${actualAmount} ETB`,
+        vehicleCategory,
         receiptScreenshot: upReceipt || receiptScreenshot || undefined,
         enteredBy: userBadgeId || 'CLERK-001',
-        createdAt: new Date().toISOString(),
+        createdAt: getTodayEthiopianDateTimeIso(),
       };
       try {
         await savePaymentReceiptToDb(newPaymentReceipt);

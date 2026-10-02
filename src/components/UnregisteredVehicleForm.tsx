@@ -3,6 +3,7 @@ import { Icon } from './ui/Icon';
 import { Language, UserRole, UnregisteredVehicleReport, BAHIR_DAR_SUBCITIES } from '../types';
 import { compressImageToBlob } from '../utils/imageCompressor';
 import { uploadDocumentPhoto } from '../services/storageService';
+import { getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
 
 interface UnregisteredVehicleFormProps {
   lang: Language;
@@ -67,7 +68,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
 
       const newReport: UnregisteredVehicleReport = {
         id: `UNREG-${Date.now().toString().slice(-6)}`,
-        reportedAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        reportedAt: getTodayEthiopianDateTimeIso(),
         plateNumber: plateNumber.trim() || undefined,
         driverName: driverName.trim() || undefined,
         driverPhone: driverPhone.trim() || undefined,

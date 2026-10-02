@@ -87,6 +87,40 @@ function getEATDateComponents(input?: Date | string | number | null) {
  * Accurate Gregorian to Ethiopian Date algorithm (strictly bound to GMT+3)
  */
 export function toEthiopianDate(gregorianDateInput?: Date | string | number | null): EthiopianDate {
+  // If the input is already formatted as an Ethiopian calendar date string (e.g., year 1970-2035),
+  // parse it directly to avoid double-converting or shifting it 8 years back into the past.
+  if (typeof gregorianDateInput === 'string') {
+    const trimmed = gregorianDateInput.trim();
+    const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+    if (ethMatch) {
+      const parsedYear = parseInt(ethMatch[1], 10);
+      const parsedMonth = parseInt(ethMatch[2], 10);
+      const parsedDay = parseInt(ethMatch[3], 10);
+      if (parsedYear >= 1970 && parsedYear <= 2035 && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
+        const monthObj = ETHIOPIAN_MONTHS[parsedMonth - 1] || ETHIOPIAN_MONTHS[0];
+        const gEquiv = ethiopianToGregorian(parsedYear, parsedMonth, parsedDay);
+        const dayOfWeek = new Date(gEquiv.dateStr + 'T12:00:00Z').getUTCDay();
+        const weekdayObj = ETHIOPIAN_WEEKDAYS[dayOfWeek] || ETHIOPIAN_WEEKDAYS[0];
+        return {
+          year: parsedYear,
+          month: parsedMonth,
+          day: parsedDay,
+          monthNameAm: monthObj.am,
+          monthNameEn: monthObj.en,
+          weekdayAm: weekdayObj.am,
+          weekdayEn: weekdayObj.en,
+          formattedAm: `${monthObj.am} ${parsedDay}, ${parsedYear} ዓ.ም`,
+          formattedEn: `${monthObj.en} ${parsedDay}, ${parsedYear} E.C.`,
+          timeAm: '12:00:00 ጠዋት',
+          timeEn: '12:00:00 Morning',
+          traditionalTimeAm: '12:00 ጠዋት',
+          traditionalTimeEn: '12:00 Morning',
+          isPagume: parsedMonth === 13,
+        };
+      }
+    }
+  }
+
   const { gYear, gMonth, gDay, dayOfWeek, hours, minutes, seconds } = getEATDateComponents(gregorianDateInput);
 
   // JDN (Julian Day Number)
@@ -257,3 +291,88 @@ export function formatEthiopianDateTime(dateInput?: Date | string | number | nul
   }
   return `${eth.formattedEn} (${eth.traditionalTimeEn})`;
 }
+
+/**
+ * Returns today's date formatted as Ethiopian calendar date string 'YYYY-MM-DD' (e.g. '2019-01-22')
+ */
+export function getTodayEthiopianDateIso(): string {
+  const eth = toEthiopianDate(new Date());
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${eth.year}-${pad(eth.month)}-${pad(eth.day)}`;
+}
+
+/**
+ * Returns today's date and time formatted in Ethiopian calendar 'YYYY-MM-DD HH:mm:ss'
+ */
+export function getTodayEthiopianDateTimeIso(): string {
+  const eth = toEthiopianDate(new Date());
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const now = new Date();
+  const eatHours = (now.getUTCHours() + 3) % 24;
+  const minutes = now.getUTCMinutes();
+  const seconds = now.getUTCSeconds();
+  return `${eth.year}-${pad(eth.month)}-${pad(eth.day)} ${pad(eatHours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+/**
+ * Returns standard registration/payment date default adhering to Ethiopian calendar representation (YYYY-MM-DD)
+ */
+export function getDefaultEthiopianRegistrationDate(): string {
+  return getTodayEthiopianDateIso();
+}
+
+/**
+ * Normalizes any date input to an Ethiopian calendar date string 'YYYY-MM-DD'
+ */
+export function normalizeToEthiopianDateStr(dateInput?: Date | string | number | null): string {
+  if (!dateInput) return getTodayEthiopianDateIso();
+  if (typeof dateInput === 'string') {
+    const trimmed = dateInput.trim();
+    const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+    if (ethMatch) {
+      const parsedYear = parseInt(ethMatch[1], 10);
+      const parsedMonth = parseInt(ethMatch[2], 10);
+      const parsedDay = parseInt(ethMatch[3], 10);
+      if (parsedYear >= 1970 && parsedYear <= 2035 && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `${parsedYear}-${pad(parsedMonth)}-${pad(parsedDay)}`;
+      }
+    }
+  }
+  const eth = toEthiopianDate(dateInput);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${eth.year}-${pad(eth.month)}-${pad(eth.day)}`;
+}
+
+/**
+ * Normalizes an Ethiopian or Gregorian date string to Gregorian ISO date 'YYYY-MM-DD'
+ */
+export function normalizeToGregorianDateStr(dateInput?: string | null): string {
+  if (!dateInput) return new Date().toISOString().split('T')[0];
+  const trimmed = dateInput.trim();
+  const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  if (ethMatch) {
+    const y = parseInt(ethMatch[1], 10);
+    const m = parseInt(ethMatch[2], 10);
+    const d = parseInt(ethMatch[3], 10);
+    if (y >= 1970 && y <= 2035 && m >= 1 && m <= 13 && d >= 1 && d <= 30) {
+      const g = ethiopianToGregorian(y, m, d);
+      return g.dateStr;
+    }
+  }
+  const cleanStr = trimmed.split('T')[0].split(' ')[0];
+  const d = new Date(cleanStr);
+  if (!isNaN(d.getTime())) {
+    return cleanStr;
+  }
+  return new Date().toISOString().split('T')[0];
+}
+
+/**
+ * Formats a scan/audit timestamp in standard Ethiopian datetime notation
+ */
+export function formatEthiopianTimestamp(date: Date = new Date()): string {
+  const eth = toEthiopianDate(date);
+  return `${eth.formattedAm} ${eth.traditionalTimeAm}`;
+}
+

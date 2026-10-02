@@ -33,6 +33,8 @@ CREATE INDEX IF NOT EXISTS idx_system_users_role ON system_users(role);
 
 -- ----------------------------------------------------------------------------
 -- 2. MOTORCYCLE PERMIT REGISTRATIONS
+-- All registration_date, last_payment_date, and active_term_expiration_date fields
+-- default strictly to the Ethiopian Calendar (YYYY-MM-DD, e.g., 2019-01-22).
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS motorcycle_registrations (
     id VARCHAR(128) PRIMARY KEY,
@@ -53,7 +55,7 @@ CREATE TABLE IF NOT EXISTS motorcycle_registrations (
     engine_or_serial_no VARCHAR(100) NOT NULL,
     engine_number VARCHAR(100),
     plate_number VARCHAR(50) NOT NULL,
-    registration_date VARCHAR(50) NOT NULL,
+    registration_date VARCHAR(50) NOT NULL, -- Ethiopian Calendar Date (YYYY-MM-DD)
     status VARCHAR(50) NOT NULL DEFAULT 'pending_approval' CHECK (status IN ('pending_approval', 'approved', 'rejected', 'ordered_print', 'printed')),
     qr_code_data TEXT NOT NULL,
     registered_by VARCHAR(100) NOT NULL,
@@ -68,8 +70,8 @@ CREATE TABLE IF NOT EXISTS motorcycle_registrations (
     payment_amount VARCHAR(50),
     receipt_screenshot TEXT,
     term_status VARCHAR(50) DEFAULT 'CURRENT',
-    active_term_expiration_date VARCHAR(50),
-    last_payment_date VARCHAR(50),
+    active_term_expiration_date VARCHAR(50), -- Ethiopian Calendar Date (YYYY-MM-DD)
+    last_payment_date VARCHAR(50), -- Ethiopian Calendar Date (YYYY-MM-DD)
     last_receipt_number VARCHAR(100),
     last_payment_amount VARCHAR(50),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -128,12 +130,13 @@ CREATE INDEX IF NOT EXISTS idx_print_batch_orders_status ON print_batch_orders(s
 CREATE INDEX IF NOT EXISTS idx_print_batch_orders_order_date ON print_batch_orders(order_date);
 
 -- ----------------------------------------------------------------------------
--- 5. VERIFICATION LOGS
+-- 5. VERIFICATION LOGS (scanned_at and timestamp default to Ethiopian datetime)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS verification_logs (
     id VARCHAR(128) PRIMARY KEY,
-    scanned_at VARCHAR(50) NOT NULL,
-    timestamp VARCHAR(50),
+    scanned_at VARCHAR(50) NOT NULL, -- Ethiopian Datetime (YYYY-MM-DD HH:mm:ss)
+    timestamp VARCHAR(50), -- Ethiopian Datetime (YYYY-MM-DD HH:mm:ss)
+    plateNumber VARCHAR(50),
     plate_number VARCHAR(50) NOT NULL,
     full_name VARCHAR(255) NOT NULL,
     driver_name VARCHAR(255),
@@ -163,11 +166,11 @@ CREATE INDEX IF NOT EXISTS idx_verification_logs_status ON verification_logs(ver
 CREATE INDEX IF NOT EXISTS idx_verification_logs_registration_id ON verification_logs(registration_id);
 
 -- ----------------------------------------------------------------------------
--- 6. UNREGISTERED VEHICLE REPORTS
+-- 6. UNREGISTERED VEHICLE REPORTS (reported_at defaults to Ethiopian datetime)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS unregistered_vehicle_reports (
     id VARCHAR(128) PRIMARY KEY,
-    reported_at VARCHAR(50) NOT NULL,
+    reported_at VARCHAR(50) NOT NULL, -- Ethiopian Datetime (YYYY-MM-DD HH:mm:ss)
     plate_number VARCHAR(50),
     driver_name VARCHAR(255),
     driver_phone VARCHAR(50),
@@ -192,7 +195,7 @@ CREATE INDEX IF NOT EXISTS idx_unreg_reports_status ON unregistered_vehicle_repo
 CREATE INDEX IF NOT EXISTS idx_unreg_reports_officer ON unregistered_vehicle_reports(officer_badge_id);
 
 -- ----------------------------------------------------------------------------
--- 7. PAYMENT RECEIPTS
+-- 7. PAYMENT RECEIPTS (payment_date & expiration_date default to Ethiopian calendar)
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS payment_receipts (
     id VARCHAR(128) PRIMARY KEY,
@@ -201,8 +204,8 @@ CREATE TABLE IF NOT EXISTS payment_receipts (
     owner_name VARCHAR(255) NOT NULL,
     plate_number VARCHAR(50),
     phone VARCHAR(50),
-    payment_date VARCHAR(50) NOT NULL,
-    expiration_date VARCHAR(50) NOT NULL,
+    payment_date VARCHAR(50) NOT NULL, -- Ethiopian Calendar Date (YYYY-MM-DD)
+    expiration_date VARCHAR(50) NOT NULL, -- Ethiopian Calendar Date (YYYY-MM-DD)
     amount NUMERIC(12, 2) DEFAULT 0,
     vehicle_category VARCHAR(50) DEFAULT 'electric',
     receipt_screenshot TEXT,
@@ -211,7 +214,7 @@ CREATE TABLE IF NOT EXISTS payment_receipts (
     status VARCHAR(50) DEFAULT 'valid',
     verified_by_cheki BOOLEAN DEFAULT FALSE,
     cheki_bank VARCHAR(100),
-    entered_at VARCHAR(50),
+    entered_at VARCHAR(50), -- Ethiopian Datetime (YYYY-MM-DD HH:mm:ss)
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );

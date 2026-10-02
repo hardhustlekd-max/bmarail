@@ -1,7 +1,7 @@
 import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { formatEthiopianDate } from '../utils/ethiopianCalendar';
+import { formatEthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
 import {
   updateRegistrationInDb,
@@ -559,7 +559,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const [renewalModalReg, setRenewalModalReg] = useState<MotorcycleRegistration | null>(null);
   const [renewalReceiptNumber, setRenewalReceiptNumber] = useState('');
   const [renewalAmount, setRenewalAmount] = useState('500');
-  const [renewalPaymentDate, setRenewalPaymentDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [renewalPaymentDate, setRenewalPaymentDate] = useState(() => getDefaultEthiopianRegistrationDate());
   const [renewalScreenshot, setRenewalScreenshot] = useState('');
   const [renewalNotes, setRenewalNotes] = useState('');
   const [isSubmittingRenewal, setIsSubmittingRenewal] = useState(false);
@@ -570,7 +570,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     setRenewalModalReg(reg);
     setRenewalReceiptNumber('');
     setRenewalAmount(reg.paymentAmount ? String(reg.paymentAmount) : '500');
-    setRenewalPaymentDate(new Date().toISOString().split('T')[0]);
+    setRenewalPaymentDate(getDefaultEthiopianRegistrationDate());
     setRenewalScreenshot('');
     setRenewalNotes('');
     setRenewalError('');
@@ -613,7 +613,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         receiptScreenshot: finalScreenshot || undefined,
         notes: renewalNotes.trim() || undefined,
         enteredBy: userBadgeId || 'CLERK',
-        createdAt: new Date().toISOString(),
+        createdAt: getTodayEthiopianDateTimeIso(),
       };
 
       await savePaymentReceiptToDb(newReceipt);

@@ -7,6 +7,7 @@ import {
   ethiopianToGregorian,
   getEthiopianMonthDetails,
   formatEthiopianDate,
+  isEthiopianLeapYear,
 } from '../utils/ethiopianCalendar';
 
 export type DateRangePreset = 'this_month' | 'all' | 'this_year' | 'custom';
@@ -26,23 +27,20 @@ export function computeEthiopianPresetRange(preset: DateRangePreset): { start: s
   const now = new Date();
   if (preset === 'all') return { start: '', end: '' };
   const ethNow = toEthiopianDate(now);
+  const pad = (n: number) => String(n).padStart(2, '0');
 
   if (preset === 'this_month') {
-    const ethStart = ethiopianToGregorian(ethNow.year, ethNow.month, 1);
-    const lastEthDay = ethNow.isPagume ? 6 : 30;
-    const ethEnd = ethiopianToGregorian(ethNow.year, ethNow.month, lastEthDay);
+    const lastEthDay = ethNow.isPagume ? (isEthiopianLeapYear(ethNow.year) ? 6 : 5) : 30;
     return {
-      start: ethStart.dateStr,
-      end: ethEnd.dateStr,
+      start: `${ethNow.year}-${pad(ethNow.month)}-01`,
+      end: `${ethNow.year}-${pad(ethNow.month)}-${pad(lastEthDay)}`,
     };
   }
 
   if (preset === 'this_year') {
-    const ethStart = ethiopianToGregorian(ethNow.year, 1, 1);
-    const ethEnd = ethiopianToGregorian(ethNow.year, 13, 6);
     return {
-      start: ethStart.dateStr,
-      end: ethEnd.dateStr,
+      start: `${ethNow.year}-01-01`,
+      end: `${ethNow.year}-13-06`,
     };
   }
 

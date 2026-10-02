@@ -9,6 +9,7 @@ import {
   SystemAuditLog,
   SystemSettings,
 } from '../types';
+import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, normalizeToEthiopianDateStr } from '../utils/ethiopianCalendar';
 
 export const TABLES = {
   REGISTRATIONS: 'motorcycle_registrations',
@@ -42,7 +43,7 @@ export function mapRegistrationToDb(reg: MotorcycleRegistration) {
     engineOrSerialNo: reg.engineOrSerialNo || reg.chassisNumber || 'N/A',
     engineNumber: reg.engineNumber || null,
     plateNumber: reg.plateNumber,
-    registrationDate: reg.registrationDate,
+    registrationDate: reg.registrationDate ? normalizeToEthiopianDateStr(reg.registrationDate) : getDefaultEthiopianRegistrationDate(),
     status: reg.status || 'pending_approval',
     qrCodeData: reg.qrCodeData,
     registeredBy: reg.registeredBy,
@@ -57,8 +58,8 @@ export function mapRegistrationToDb(reg: MotorcycleRegistration) {
     paymentAmount: reg.paymentAmount || null,
     receiptScreenshot: reg.receiptScreenshot || null,
     termStatus: reg.termStatus || null,
-    activeTermExpirationDate: reg.activeTermExpirationDate || null,
-    lastPaymentDate: reg.lastPaymentDate || null,
+    activeTermExpirationDate: reg.activeTermExpirationDate ? normalizeToEthiopianDateStr(reg.activeTermExpirationDate) : null,
+    lastPaymentDate: reg.lastPaymentDate ? normalizeToEthiopianDateStr(reg.lastPaymentDate) : null,
     lastReceiptNumber: reg.lastReceiptNumber || null,
     lastPaymentAmount: reg.lastPaymentAmount !== undefined ? String(reg.lastPaymentAmount) : null,
   };
@@ -177,8 +178,8 @@ export function mapPrintOrderFromDb(row: any): PrintBatchOrder {
 export function mapVerificationToDb(log: VerificationLog) {
   return {
     id: log.id,
-    scannedAt: log.scannedAt,
-    timestamp: log.timestamp || log.scannedAt,
+    scannedAt: log.scannedAt || getTodayEthiopianDateTimeIso(),
+    timestamp: log.timestamp || log.scannedAt || getTodayEthiopianDateTimeIso(),
     plateNumber: log.plateNumber,
     fullName: log.fullName,
     driverName: log.driverName || log.fullName,
@@ -231,7 +232,7 @@ export function mapVerificationFromDb(row: any): VerificationLog {
 export function mapUnregisteredReportToDb(report: UnregisteredVehicleReport) {
   return {
     id: report.id,
-    reportedAt: report.reportedAt,
+    reportedAt: report.reportedAt || getTodayEthiopianDateTimeIso(),
     plateNumber: report.plateNumber || null,
     driverName: report.driverName || null,
     driverPhone: report.driverPhone || null,
@@ -280,8 +281,8 @@ export function mapPaymentReceiptToDb(receipt: PaymentReceipt) {
     ownerName: receipt.ownerName,
     plateNumber: receipt.plateNumber || null,
     phone: receipt.phone || null,
-    paymentDate: receipt.paymentDate,
-    expirationDate: receipt.expirationDate,
+    paymentDate: receipt.paymentDate ? normalizeToEthiopianDateStr(receipt.paymentDate) : getDefaultEthiopianRegistrationDate(),
+    expirationDate: receipt.expirationDate ? normalizeToEthiopianDateStr(receipt.expirationDate) : getDefaultEthiopianRegistrationDate(),
     amount: receipt.amount || 0,
     vehicleCategory: receipt.vehicleCategory || null,
     receiptScreenshot: receipt.receiptScreenshot || null,
@@ -290,9 +291,9 @@ export function mapPaymentReceiptToDb(receipt: PaymentReceipt) {
     status: receipt.status || 'valid',
     verifiedByCheki: Boolean(receipt.verifiedByCheki),
     chekiBank: receipt.chekiBank || null,
-    enteredAt: receipt.enteredAt || null,
-    createdAt: receipt.createdAt || new Date().toISOString(),
-    updatedAt: receipt.updatedAt || new Date().toISOString(),
+    enteredAt: receipt.enteredAt || getTodayEthiopianDateTimeIso(),
+    createdAt: receipt.createdAt || getTodayEthiopianDateTimeIso(),
+    updatedAt: receipt.updatedAt || getTodayEthiopianDateTimeIso(),
   };
 }
 

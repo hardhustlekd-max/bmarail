@@ -17,6 +17,7 @@ import {
   buildRegistrationDocumentList,
   DocumentViewerItem,
 } from './FullscreenDocumentCarouselModal';
+import { getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
 
 const getStoredLastScanResult = (): MotorcycleRegistration | null => {
   // LocalStorage data loading disabled
@@ -462,7 +463,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
     const newLog: VerificationLog = {
       id: logId,
-      scannedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      scannedAt: getTodayEthiopianDateTimeIso(),
       plateNumber: foundReg.plateNumber,
       fullName: foundReg.fullName,
       phone: foundReg.phone,
@@ -505,7 +506,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       const updatedLog: VerificationLog = {
         ...currentLog,
         officerNotes: newNotes,
-        scannedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        scannedAt: getTodayEthiopianDateTimeIso(),
       };
       setCurrentLog(updatedLog);
       onAddVerificationLog(updatedLog, true);
@@ -1763,7 +1764,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                   const finalLog: VerificationLog = {
                                     ...currentLog,
                                     officerNotes: verificationNotes || currentLog.officerNotes,
-                                    scannedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                                    scannedAt: getTodayEthiopianDateTimeIso(),
                                   };
                                   onAddVerificationLog(finalLog, true);
                                 }

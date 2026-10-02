@@ -1,4 +1,6 @@
 import { MotorcycleRegistration, VehicleCategory } from '../types';
+import { calculateOneMonthExpiration } from './paymentUtils';
+import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso } from './ethiopianCalendar';
 
 function svgToDataUrl(svgStr: string): string {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
@@ -481,7 +483,8 @@ export const SAMPLE_MEMBERS_DATA: SampleMemberSeed[] = [
 
 export function generate100SampleRegistrations(registeredBy = 'SUPER_ADMIN', count = 100): MotorcycleRegistration[] {
   const timestamp = Date.now();
-  const todayStr = new Date().toISOString();
+  const todayEthStr = getDefaultEthiopianRegistrationDate();
+  const todayEthDateTime = getTodayEthiopianDateTimeIso();
 
   // Out of 100 generated sample records (plus 24 existing records = 124 records total):
   // 58 gas records @ 100 ETB = 5800 ETB
@@ -498,7 +501,7 @@ export function generate100SampleRegistrations(registeredBy = 'SUPER_ADMIN', cou
     const idNo = `FDRE-${1000000 + idx * 777}`;
     const licenseNo = `DL-AM-${200000 + idx * 123}`;
     const permitNo = `PRM-BD-${50000 + idx * 99}`;
-    const receiptNo = `CBE-TX-${770000 + idx * 456}`;
+    const receiptNo = `CBE-TX-${((timestamp + idx * 456) % 900000) + 100000}`;
     const plateNo = isGas ? `አማ 2 ${60000 + idx}` : `አረንጓዴ አሻራ ${80000 + idx}`;
     const fullName = `${seed.fullName.split(' ')[0]} ${seed.fullName.split(' ')[1] || ''} (#${idx + 1})`;
     
@@ -520,7 +523,7 @@ export function generate100SampleRegistrations(registeredBy = 'SUPER_ADMIN', cou
       chassis: `CH-SAMPLE-${10000 + idx}`,
       registeredBy,
       status: seed.status,
-      created: todayStr,
+      created: todayEthDateTime,
     });
 
     return {
@@ -542,7 +545,7 @@ export function generate100SampleRegistrations(registeredBy = 'SUPER_ADMIN', cou
       engineOrSerialNo: `ENG-SAMPLE-${10000 + idx}`,
       engineNumber: `ENG-SAMPLE-${10000 + idx}`,
       plateNumber: plateNo,
-      registrationDate: todayStr,
+      registrationDate: todayEthStr,
       status: seed.status,
       qrCodeData: qrData,
       registeredBy,
@@ -552,8 +555,8 @@ export function generate100SampleRegistrations(registeredBy = 'SUPER_ADMIN', cou
       paymentAmount: amount,
       receiptScreenshot: receiptUrl,
       termStatus: 'CURRENT',
-      activeTermExpirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      lastPaymentDate: todayStr,
+      activeTermExpirationDate: calculateOneMonthExpiration(todayEthStr),
+      lastPaymentDate: todayEthStr,
       lastReceiptNumber: receiptNo,
       lastPaymentAmount: amount,
     };
