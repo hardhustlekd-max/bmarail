@@ -87,7 +87,9 @@ export function mapRegistrationFromDb(row: any): MotorcycleRegistration {
     plateNumber: row.plateNumber || row.plate_number || '',
     registrationDate: row.registrationDate || row.registration_date || '',
     status: row.status || 'pending_approval',
-    qrCodeData: row.qrCodeData || row.qr_code_data || '',
+    qrCodeData: typeof (row.qrCodeData || row.qr_code_data) === 'string'
+      ? (row.qrCodeData || row.qr_code_data || '')
+      : (row.qrCodeData || row.qr_code_data ? JSON.stringify(row.qrCodeData || row.qr_code_data) : ''),
     registeredBy: row.registeredBy || row.registered_by || '',
     rejectionReason: row.rejectionReason || row.rejection_reason,
     lastRejectionReason: row.lastRejectionReason || row.last_rejection_reason,

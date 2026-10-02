@@ -123,12 +123,13 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
     // Smart matching across qrCodeData, plateNumber, id, engineOrSerialNo, fullName, phone
     const match = registrations.find((r) => {
-      const q = (r.qrCodeData || '').toLowerCase();
-      const p = (r.plateNumber || '').toLowerCase();
-      const id = (r.id || '').toLowerCase();
-      const e = (r.engineOrSerialNo || '').toLowerCase();
-      const name = (r.fullName || '').toLowerCase();
-      const phoneDigits = (r.phone || '').replace(/\D/g, '');
+      if (!r) return false;
+      const q = typeof r.qrCodeData === 'string' ? r.qrCodeData.toLowerCase() : String(r.qrCodeData || '').toLowerCase();
+      const p = String(r.plateNumber || '').toLowerCase();
+      const id = String(r.id || '').toLowerCase();
+      const e = String(r.engineOrSerialNo || '').toLowerCase();
+      const name = String(r.fullName || '').toLowerCase();
+      const phoneDigits = String(r.phone || '').replace(/\D/g, '');
       const inputDigits = cleanLower.replace(/\D/g, '');
 
       return (

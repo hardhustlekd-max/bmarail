@@ -1269,15 +1269,23 @@ export async function lookupRegistrationInDb(
 
   // 1. Search local memory
   const match = list.find((r) => {
-    if (r.id && (r.id === candidateId || r.id.toLowerCase() === cleanLower)) return true;
-    if (r.qrCodeData && (r.qrCodeData === cleanInput || r.qrCodeData.toLowerCase() === cleanLower)) return true;
-    if (r.plateNumber) {
-      const regCleanPlate = r.plateNumber.replace(/[\s\-_]/g, '').toLowerCase();
+    if (!r) return false;
+    const idStr = String(r.id || '');
+    const qrStr = typeof r.qrCodeData === 'string' ? r.qrCodeData : String(r.qrCodeData || '');
+    const plateStr = String(r.plateNumber || '');
+    const engineStr = String(r.engineOrSerialNo || '');
+    const chassisStr = String(r.chassisNumber || '');
+    const phoneStr = String(r.phone || '');
+
+    if (idStr && (idStr === candidateId || idStr.toLowerCase() === cleanLower)) return true;
+    if (qrStr && (qrStr === cleanInput || qrStr.toLowerCase() === cleanLower)) return true;
+    if (plateStr) {
+      const regCleanPlate = plateStr.replace(/[\s\-_]/g, '').toLowerCase();
       if (regCleanPlate === cleanPlateInput) return true;
     }
-    if (r.engineOrSerialNo && r.engineOrSerialNo.toLowerCase() === cleanLower) return true;
-    if (r.chassisNumber && r.chassisNumber.toLowerCase() === cleanLower) return true;
-    if (r.phone && r.phone.replace(/[\s\-]/g, '') === cleanInput.replace(/[\s\-]/g, '')) return true;
+    if (engineStr && engineStr.toLowerCase() === cleanLower) return true;
+    if (chassisStr && chassisStr.toLowerCase() === cleanLower) return true;
+    if (phoneStr && phoneStr.replace(/[\s\-]/g, '') === cleanInput.replace(/[\s\-]/g, '')) return true;
     return false;
   });
 
