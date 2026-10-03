@@ -100,7 +100,7 @@ export const RegistryRouter: React.FC<RegistryRouterProps> = ({
         onRejectRegistration={rejectRegistration}
         onAddVerificationLog={addVerificationLog}
         initialTableTab={tableInitialTab}
-        onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
+        onShowToast={(msg, type) => addToast(msg, type as any)}
         isLoading={isLoading}
       />
     );

@@ -1,59 +1,134 @@
-import React, { createContext, useContext, useState, useCallback, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
 import { Icon } from '../components/ui/Icon';
+
+export type ToastType = 'success' | 'warning' | 'error' | 'info';
+
+export interface ToastOptions {
+  title?: string;
+  tag?: string;
+  durationMs?: number;
+}
 
 export interface ToastItem {
   id: string;
   message: string;
-  type: 'success' | 'error' | 'info' | 'warning';
+  type: ToastType;
+  title?: string;
+  tag?: string;
   timestamp: number;
-  durationMs?: number;
+  durationMs: number;
 }
 
 interface ToastContextType {
   toasts: ToastItem[];
-  addToast: (message: string, type?: 'success' | 'error' | 'info' | 'warning', durationMs?: number) => void;
-  removeToast: (id: string) => void;
+  activeToast: ToastItem | null;
+  queueCount: number;
+  addToast: (
+    message: string,
+    type?: ToastType,
+    optionsOrDuration?: number | ToastOptions
+  ) => void;
+  removeToast: (id?: string) => void;
   clearToasts: () => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+// Short default display duration so notifications don't stay for a long time
+const DEFAULT_DURATION_MS = 2600;
+// Accelerated duration when subsequent notifications are waiting in the queue
+const QUEUED_DURATION_MS = 2000;
+
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [activeToast, setActiveToast] = useState<ToastItem | null>(null);
+  const [queue, setQueue] = useState<ToastItem[]>([]);
+
   // Deduplication cache: tracks recent message timestamps to prevent rapid duplicates
   const recentToastsRef = useRef<Map<string, number>>(new Map());
-  const timersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const activeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const removeToast = useCallback((id: string) => {
-    // Clear any pending timer
-    const existingTimer = timersRef.current.get(id);
-    if (existingTimer) {
-      clearTimeout(existingTimer);
-      timersRef.current.delete(id);
+  // Advance to next toast in queue
+  const nextToast = useCallback(() => {
+    if (activeTimerRef.current) {
+      clearTimeout(activeTimerRef.current);
+      activeTimerRef.current = null;
     }
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+
+    setQueue((prevQueue) => {
+      if (prevQueue.length === 0) {
+        setActiveToast(null);
+        return [];
+      }
+      const [nextItem, ...remainingQueue] = prevQueue;
+      setActiveToast(nextItem);
+      return remainingQueue;
+    });
   }, []);
 
+  const removeToast = useCallback(
+    (id?: string) => {
+      if (!id || (activeToast && activeToast.id === id)) {
+        nextToast();
+      } else {
+        setQueue((prev) => prev.filter((t) => t.id !== id));
+      }
+    },
+    [activeToast, nextToast]
+  );
+
+  // Set auto-dismiss timer whenever activeToast changes
+  useEffect(() => {
+    if (!activeToast) return;
+
+    const duration =
+      queue.length > 0 && activeToast.durationMs === DEFAULT_DURATION_MS
+        ? QUEUED_DURATION_MS
+        : activeToast.durationMs;
+
+    if (activeTimerRef.current) {
+      clearTimeout(activeTimerRef.current);
+    }
+
+    activeTimerRef.current = setTimeout(() => {
+      nextToast();
+    }, duration);
+
+    return () => {
+      if (activeTimerRef.current) {
+        clearTimeout(activeTimerRef.current);
+        activeTimerRef.current = null;
+      }
+    };
+  }, [activeToast, queue.length, nextToast]);
+
   const addToast = useCallback(
-    (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', durationMs = 4000) => {
+    (
+      message: string,
+      type: ToastType = 'info',
+      optionsOrDuration?: number | ToastOptions
+    ) => {
       if (!message || !message.trim()) return;
 
       const trimmedMsg = message.trim();
-      const normalizedType = (type as string) === 'warning' ? 'error' : type;
-      const dedupeKey = `${normalizedType}::${trimmedMsg}`;
+      const options: ToastOptions =
+        typeof optionsOrDuration === 'number'
+          ? { durationMs: optionsOrDuration }
+          : optionsOrDuration || {};
+
+      const durationMs = options.durationMs && options.durationMs > 0 ? options.durationMs : DEFAULT_DURATION_MS;
+      const dedupeKey = `${type}::${trimmedMsg}`;
       const now = Date.now();
 
-      // Check if the exact same message was emitted in the last 2000ms
+      // Check if the exact same message was emitted in the last 1500ms
       const lastEmittedAt = recentToastsRef.current.get(dedupeKey);
-      if (lastEmittedAt && now - lastEmittedAt < 2000) {
-        // Prevent duplicate toaster
+      if (lastEmittedAt && now - lastEmittedAt < 1500) {
         return;
       }
       recentToastsRef.current.set(dedupeKey, now);
 
-      // Clean up stale cache keys older than 10s
+      // Clean up stale cache keys older than 8s
       for (const [key, ts] of recentToastsRef.current.entries()) {
-        if (now - ts > 10000) {
+        if (now - ts > 8000) {
           recentToastsRef.current.delete(key);
         }
       }
@@ -62,93 +137,154 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       const newToast: ToastItem = {
         id,
         message: trimmedMsg,
-        type: normalizedType,
+        type,
+        title: options.title,
+        tag: options.tag,
         timestamp: now,
         durationMs,
       };
 
-      setToasts((prev) => {
-        // Double check: if an identical message is already in visible toasts, don't duplicate
-        const alreadyVisible = prev.some(
-          (t) => t.type === normalizedType && t.message === trimmedMsg
-        );
-        if (alreadyVisible) {
-          return prev;
+      // If no active toast, show immediately; otherwise queue to show one after the other
+      setActiveToast((current) => {
+        if (!current) {
+          return newToast;
+        } else {
+          // If identical message is already active, don't re-queue
+          if (current.type === type && current.message === trimmedMsg) {
+            return current;
+          }
+          setQueue((prev) => {
+            // Prevent duplicate in queue
+            const alreadyInQueue = prev.some((t) => t.type === type && t.message === trimmedMsg);
+            if (alreadyInQueue) return prev;
+            return [...prev, newToast];
+          });
+          return current;
         }
-        return [...prev.slice(-3), newToast];
       });
-
-      if (durationMs > 0) {
-        const timer = setTimeout(() => {
-          removeToast(id);
-        }, durationMs);
-        timersRef.current.set(id, timer);
-      }
     },
-    [removeToast]
+    []
   );
 
   const clearToasts = useCallback(() => {
-    for (const timer of timersRef.current.values()) {
-      clearTimeout(timer);
+    if (activeTimerRef.current) {
+      clearTimeout(activeTimerRef.current);
+      activeTimerRef.current = null;
     }
-    timersRef.current.clear();
     recentToastsRef.current.clear();
-    setToasts([]);
+    setActiveToast(null);
+    setQueue([]);
   }, []);
 
+  // For backward compatibility, toasts array returns [activeToast] if present
+  const toasts = activeToast ? [activeToast] : [];
+
   return (
-    <ToastContext.Provider value={{ toasts, addToast, removeToast, clearToasts }}>
+    <ToastContext.Provider
+      value={{
+        toasts,
+        activeToast,
+        queueCount: queue.length,
+        addToast,
+        removeToast,
+        clearToasts,
+      }}
+    >
       {children}
-      {/* Universal Floating Toast Container */}
+
+      {/* 
+        UNIVERSAL FLOATING TOASTER
+        - Position: Under top navigation bar (top-right on desktop & tablet, center-top on mobile)
+        - Sequential Queue: Shows 1 notification at a time, one after the other for a short duration
+      */}
       <div
-        className="fixed bottom-4 right-4 z-[99999] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-3 sm:px-0"
-        aria-live="assertive"
+        id="toast-notifications-container"
+        className="fixed top-[62px] sm:top-[68px] left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-auto sm:right-6 z-[99999] pointer-events-none flex flex-col items-center sm:items-end w-[92vw] max-w-sm sm:max-w-md sm:w-auto"
+        aria-live="polite"
+        aria-atomic="true"
       >
-        {toasts.map((toast) => {
-          const isSuccess = toast.type === 'success';
-          const isError = toast.type === 'error';
+        {activeToast && (
+          <div
+            key={activeToast.id}
+            className={`pointer-events-auto relative overflow-hidden w-full rounded-xl p-3 sm:p-3.5 shadow-xl text-white transition-all duration-200 animate-in fade-in slide-in-from-top-2 ${
+              activeToast.type === 'success'
+                ? 'bg-[#10B981] border border-emerald-400/60 shadow-emerald-950/25'
+                : activeToast.type === 'warning'
+                ? 'bg-[#F59E0B] border border-amber-400/60 shadow-amber-950/25'
+                : activeToast.type === 'error'
+                ? 'bg-[#EF4444] border border-rose-400/60 shadow-rose-950/25'
+                : 'bg-slate-900 border border-slate-700 shadow-black/30'
+            }`}
+          >
+            {/* Top highlight line */}
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-white/30 pointer-events-none" />
 
-          const bgClass = isSuccess
-            ? 'bg-slate-900 border-emerald-500/80 text-white shadow-emerald-950/40'
-            : isError
-            ? 'bg-slate-900 border-rose-500/80 text-white shadow-rose-950/40'
-            : 'bg-slate-900 border-blue-500/80 text-white shadow-blue-950/40';
-
-          const iconName = isSuccess
-            ? 'check_circle'
-            : isError
-            ? 'error'
-            : 'info';
-
-          const iconColor = isSuccess
-            ? 'text-emerald-400'
-            : isError
-            ? 'text-rose-400'
-            : 'text-blue-400';
-
-          return (
-            <div
-              key={toast.id}
-              className={`pointer-events-auto flex items-center justify-between gap-3 p-3.5 rounded-lg border shadow-xl backdrop-blur-md transition-all duration-200 ${bgClass}`}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <Icon className={`material-symbols-outlined text-[20px] shrink-0 ${iconColor}`}>
-                  {iconName}
+            <div className="flex items-start gap-2.5 relative z-10">
+              {/* Icon badge with crisp contrasting container */}
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0 mt-0.5 shadow-xs text-white">
+                <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
+                  {activeToast.type === 'success'
+                    ? 'check_circle'
+                    : activeToast.type === 'warning'
+                    ? 'warning'
+                    : activeToast.type === 'error'
+                    ? 'error'
+                    : 'info'}
                 </Icon>
-                <p className="text-xs font-semibold leading-relaxed break-words">{toast.message}</p>
               </div>
+
+              {/* Message text */}
+              <div className="flex-1 min-w-0 pr-1 text-left">
+                {activeToast.title && (
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-[11px] font-black tracking-wide opacity-95">
+                      {activeToast.title}
+                    </span>
+                    {activeToast.tag && (
+                      <span className="px-1.5 py-0.2 rounded bg-black/25 text-[10px] font-mono font-bold">
+                        {activeToast.tag}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <p className="text-xs font-bold leading-snug text-white break-words">
+                  {activeToast.message}
+                </p>
+              </div>
+
+              {/* Queue badge counter if more notifications are waiting */}
+              {queue.length > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full bg-black/25 text-[10px] font-mono font-bold text-white/90 shrink-0 self-center">
+                  +{queue.length}
+                </span>
+              )}
+
+              {/* Dismiss button */}
               <button
                 type="button"
-                onClick={() => removeToast(toast.id)}
-                className="text-slate-400 hover:text-white p-1 rounded transition-colors shrink-0 cursor-pointer"
+                onClick={() => nextToast()}
+                className="text-white/80 hover:text-white hover:bg-white/20 p-1 rounded-md shrink-0 cursor-pointer transition-colors"
                 title="Dismiss"
               >
-                <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                <Icon className="material-symbols-outlined text-[16px] font-bold">close</Icon>
               </button>
             </div>
-          );
-        })}
+
+            {/* Auto-dismiss countdown bar */}
+            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/20 overflow-hidden">
+              <div
+                className="h-full bg-white/40 origin-left animate-toast-countdown"
+                style={{
+                  animationDuration: `${
+                    queue.length > 0 && activeToast.durationMs === DEFAULT_DURATION_MS
+                      ? QUEUED_DURATION_MS
+                      : activeToast.durationMs
+                  }ms`,
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </ToastContext.Provider>
   );

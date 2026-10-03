@@ -49,7 +49,7 @@ export const GovernanceRouter: React.FC<GovernanceRouterProps> = ({
         currentLang={lang}
         currentUserBadgeId={userBadgeId}
         initialTab={initialTab}
-        onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
+        onShowToast={(msg, type) => addToast(msg, type as any)}
       />
     );
   }

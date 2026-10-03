@@ -66,7 +66,7 @@ export const RevenueRouter: React.FC<RevenueRouterProps> = ({
         onAddPaymentReceipt={addPaymentReceipt}
         onDeleteReceipt={deletePaymentReceipt}
         onDeletePaymentReceipt={deletePaymentReceipt}
-        onShowToast={(msg, type) => addToast(msg, (type as string) === 'warning' ? 'error' : type)}
+        onShowToast={(msg, type) => addToast(msg, type as any)}
         isLoading={isLoading}
       />
     );

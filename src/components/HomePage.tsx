@@ -1147,37 +1147,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
     [setActivePage, setTableInitialTab, clearedNotificationIds, userNotificationScope, readStorageKey]
   );
 
-  // Toasts Notification State
-  interface ToastItem {
-    id: string;
-    message: string;
-    type: 'success' | 'error' | 'info' | 'warning';
-    title?: string;
-    tag?: string;
-  }
-
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
-
-  const addToast = (
-    message: string,
-    type: 'success' | 'error' | 'info' | 'warning' = 'success',
-    options?: { title?: string; tag?: string }
-  ) => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [
-      ...prev,
-      {
-        id,
-        message,
-        type,
-        title: options?.title,
-        tag: options?.tag,
-      },
-    ]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4500);
-  };
+  // Toast Notifications from ToastContext
+  const { addToast } = useToast();
 
   // Handlers for Firestore database updates
   const handleAddVerificationLog = async (newLog: VerificationLog, isNoteUpdate: boolean = false) => {
@@ -3067,99 +3038,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </footer>
           )}
         </main>
-      </div>
-
-      {/* Floating Toast Notification Stack - Right Aligned, Animated, Filled Background */}
-      <div
-        id="toast-notifications-container"
-        className="fixed top-5 right-5 z-[99999] flex flex-col items-end gap-3 w-full max-w-[390px] pointer-events-none px-4 sm:px-0"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {toasts.map((toast) => {
-          const isSuccess = toast.type === 'success';
-          const isError = toast.type === 'error';
-          const isWarning = toast.type === 'warning';
-          const isInfo = toast.type === 'info' || (!isSuccess && !isError && !isWarning);
-
-          return (
-            <div
-              key={toast.id}
-              className={`pointer-events-auto relative overflow-hidden w-full self-end ml-auto rounded-xl p-3.5 sm:p-4 shadow-xl text-white transition-all duration-300 animate-toast-in ${
-                isSuccess
-                  ? 'bg-emerald-600 border border-emerald-500 shadow-emerald-950/25 animate-toast-pulse-success'
-                  : isError
-                  ? 'bg-rose-600 border border-rose-500 shadow-rose-950/25'
-                  : isWarning
-                  ? 'bg-amber-600 border border-amber-500 shadow-amber-950/25'
-                  : 'bg-slate-900 border border-slate-700 shadow-black/30'
-              }`}
-            >
-              {/* Subtle top-light edge highlight */}
-              <div className="absolute inset-x-0 top-0 h-[1px] bg-white/25 pointer-events-none" />
-
-              {/* Subtle shimmer animation for success */}
-              {isSuccess && (
-                <div className="absolute inset-0 -translate-x-full animate-toast-shimmer bg-gradient-to-r from-transparent via-white/12 to-transparent pointer-events-none" />
-              )}
-
-              <div className="flex items-start gap-3 relative z-10">
-                {/* Animated Icon badge with filled contrast container */}
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 shadow-xs ${
-                    isSuccess
-                      ? 'bg-white/20 text-white'
-                      : isError
-                      ? 'bg-white/20 text-white'
-                      : isWarning
-                      ? 'bg-white/20 text-white'
-                      : 'bg-white/15 text-white'
-                  }`}
-                >
-                  <Icon
-                    className={`material-symbols-outlined text-[20px] ${
-                      isSuccess ? 'animate-toast-pop' : ''
-                    }`}
-                  >
-                    {isSuccess ? 'check_circle' : isError ? 'error' : isWarning ? 'warning' : 'info'}
-                  </Icon>
-                </div>
-
-                <div className="flex-1 min-w-0 pr-1 text-left">
-                  {toast.title && (
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[11px] font-black tracking-wide  opacity-90">
-                        {toast.title}
-                      </span>
-                      {toast.tag && (
-                        <span className="px-1.5 py-0.2 rounded bg-black/20 text-[10px] font-mono font-bold">
-                          {toast.tag}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <p className="text-xs font-bold leading-snug text-white/95 break-words">
-                    {toast.message}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
-                  className="text-white/80 hover:text-white hover:bg-white/15 p-1 rounded-md shrink-0 cursor-pointer transition-colors"
-                  title={isAmharic ? 'ዝጋ' : 'Dismiss'}
-                >
-                  <Icon className="material-symbols-outlined text-[16px] font-bold">close</Icon>
-                </button>
-              </div>
-
-              {/* Subtle Auto-dismiss Countdown Progress Bar */}
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/15 overflow-hidden">
-                <div className="h-full bg-white/40 animate-toast-countdown" />
-              </div>
-            </div>
-          );
-        })}
       </div>
 
       {/* Universal Logout Confirmation Modal for All Users */}
