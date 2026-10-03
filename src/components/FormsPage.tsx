@@ -54,8 +54,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
   return (
     <div className="space-y-2 md:space-y-2.5">
       {isDenied ? (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-2.5 shadow-2xs">
-          <Icon className="material-symbols-outlined text-[18px]">gpp_maybe</Icon>
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 rounded-xl text-rose-800 dark:text-rose-200 text-xs font-bold flex items-center gap-2.5 shadow-2xs">
+          <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0">gpp_maybe</Icon>
           <span>
             {isAmharic
               ? 'አዲስ አባልና ተሽከርካሪ መመዝገብ በእርስዎ ሚና ፈቃዶች (RBAC) መሰረት ገደብ ተጥሎበታል።'
@@ -63,8 +63,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
           </span>
         </div>
       ) : isReadOnly ? (
-        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center gap-2.5 shadow-2xs">
-          <Icon className="material-symbols-outlined text-[18px]">warning</Icon>
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 rounded-xl text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center gap-2.5 shadow-2xs">
+          <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0">warning</Icon>
           <span>
             {isAmharic
               ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ በእርስዎ ሚና ፈቃዶች መሰረት ማስተካከል እና አዲስ ምዝገባ ማስገባት አይቻልም።'

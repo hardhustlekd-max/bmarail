@@ -102,7 +102,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining,
       labelAm: `ህጋዊ (${daysRemaining} ቀናት)`,
       labelEn: `Active (${daysRemaining}d)`,
-      badgeClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20',
+      badgeClass: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 font-semibold shadow-2xs',
     };
   } else if (status === 'expiring_soon') {
     return {
@@ -110,7 +110,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining,
       labelAm: `ሊያልቅ የደረሰ (${daysRemaining} ቀናት)`,
       labelEn: `Expiring Soon (${daysRemaining}d)`,
-      badgeClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20',
+      badgeClass: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700 font-semibold shadow-2xs',
     };
   } else {
     return {
@@ -118,7 +118,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining,
       labelAm: 'ጊዜው ያለፈበት',
       labelEn: 'Expired',
-      badgeClass: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20',
+      badgeClass: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-700 font-semibold shadow-2xs',
     };
   }
 }

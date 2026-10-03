@@ -101,36 +101,36 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const variantStyles: Record<StatusBadgeVariant, { bg: string; dot: string }> = {
     active: {
-      bg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
-      dot: 'bg-emerald-500',
+      bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 shadow-2xs',
+      dot: 'bg-emerald-600 dark:bg-emerald-400',
     },
     success: {
-      bg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
-      dot: 'bg-emerald-500',
+      bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 shadow-2xs',
+      dot: 'bg-emerald-600 dark:bg-emerald-400',
     },
     overdue: {
-      bg: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20',
-      dot: 'bg-rose-500',
+      bg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700 shadow-2xs',
+      dot: 'bg-rose-600 dark:bg-rose-400',
     },
     danger: {
-      bg: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20',
-      dot: 'bg-rose-500',
+      bg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700 shadow-2xs',
+      dot: 'bg-rose-600 dark:bg-rose-400',
     },
     pending: {
-      bg: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
-      dot: 'bg-amber-500',
+      bg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-2xs',
+      dot: 'bg-amber-600 dark:bg-amber-400',
     },
     warning: {
-      bg: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
-      dot: 'bg-amber-500',
+      bg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-2xs',
+      dot: 'bg-amber-600 dark:bg-amber-400',
     },
     info: {
-      bg: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20',
-      dot: 'bg-sky-500',
+      bg: 'bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300 border-sky-300 dark:border-sky-700 shadow-2xs',
+      dot: 'bg-sky-600 dark:bg-sky-400',
     },
     neutral: {
-      bg: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20',
-      dot: 'bg-slate-400',
+      bg: 'bg-slate-100 text-slate-800 dark:bg-slate-800/90 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-2xs',
+      dot: 'bg-slate-500 dark:bg-slate-400',
     },
   };
 
@@ -810,83 +810,84 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
   const totalCols = columns.length + (hasPlate ? 1 : 0) + (showNumbering ? 1 : 0) + 1 + (expandableMobile ? 1 : 0);
 
   return (
-    <table className={`w-full border-collapse text-left ${className}`}>
-      <thead>
-        <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F7F9FC] dark:bg-[#24303F]">
-          {showNumbering && (
-            <th className="py-3 px-2.5 sm:px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-10 sm:w-12 font-mono">
-              {numberHeaderLabel}
+    <div className="w-full max-w-full overflow-x-auto min-w-0">
+      <table className={`w-full border-collapse text-left ${className}`}>
+        <thead>
+          <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F7F9FC] dark:bg-[#24303F]">
+            {showNumbering && (
+              <th className="py-3 px-2 sm:px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-8 sm:w-12 font-mono">
+                {numberHeaderLabel}
+              </th>
+            )}
+            <th className="py-3 px-2.5 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap min-w-[110px] sm:min-w-[170px]">
+              {memberHeaderLabel}
             </th>
-          )}
-          <th className="py-3 px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap min-w-[130px] sm:min-w-[170px]">
-            {memberHeaderLabel}
-          </th>
-          {hasPlate && (
-            <th className="py-3 px-3 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono min-w-[90px] sm:min-w-[110px]">
-              {plateHeaderLabel}
-            </th>
-          )}
-          {columns.map((col) => (
-            <th
-              key={col.key}
-              title={col.title}
-              className="hidden md:table-cell py-3 px-2 sm:px-3.5 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[38px] sm:min-w-[46px]"
-            >
-              {col.label}
-            </th>
-          ))}
-          {expandableMobile && (
-            <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-10 md:hidden">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleAllMobile();
-                }}
-                title={expandedMobileRowIds.size === rows.length ? (isAmharic ? 'ሁሉንም ሰብስብ' : 'Collapse All') : (isAmharic ? 'ሁሉንም ዘርጋ' : 'Expand All')}
-                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
+            {hasPlate && (
+              <th className="py-3 px-2 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono min-w-[80px] sm:min-w-[110px]">
+                {plateHeaderLabel}
+              </th>
+            )}
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                title={col.title}
+                className="hidden md:table-cell py-3 px-2 sm:px-3.5 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[38px] sm:min-w-[46px]"
               >
-                <Icon
-                  name={expandedMobileRowIds.size === rows.length ? 'unfold_less' : 'unfold_more'}
-                  size={18}
-                />
-              </button>
-            </th>
-          )}
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-        {rows.map((row, index) => {
-          const isExpanded = expandedMobileRowIds.has(row.id);
+                {col.label}
+              </th>
+            ))}
+            {expandableMobile && (
+              <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-8 sm:w-10 md:hidden">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleAllMobile();
+                  }}
+                  title={expandedMobileRowIds.size === rows.length ? (isAmharic ? 'ሁሉንም ሰብስብ' : 'Collapse All') : (isAmharic ? 'ሁሉንም ዘርጋ' : 'Expand All')}
+                  className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
+                >
+                  <Icon
+                    name={expandedMobileRowIds.size === rows.length ? 'unfold_less' : 'unfold_more'}
+                    size={18}
+                  />
+                </button>
+              </th>
+            )}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+          {rows.map((row, index) => {
+            const isExpanded = expandedMobileRowIds.has(row.id);
 
-          return (
-            <React.Fragment key={row.id}>
-              <tr
-                onClick={() => handleRowClick(row)}
-                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer select-none ${
-                  isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40 md:bg-transparent md:dark:bg-transparent' : ''
-                }`}
-              >
-                {showNumbering && (
-                  <td className="py-3.5 px-2.5 sm:px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
-                    {index + 1}
-                  </td>
-                )}
-                <td className="py-3.5 px-3 sm:px-4 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                  <div className="font-semibold text-slate-800 dark:text-slate-100">{row.title}</div>
-                  {row.subtitle && (
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400">{row.subtitle}</div>
+            return (
+              <React.Fragment key={row.id}>
+                <tr
+                  onClick={() => handleRowClick(row)}
+                  className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer select-none ${
+                    isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40 md:bg-transparent md:dark:bg-transparent' : ''
+                  }`}
+                >
+                  {showNumbering && (
+                    <td className="py-3.5 px-2 sm:px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
+                      {index + 1}
+                    </td>
                   )}
-                </td>
-                {hasPlate && (
-                  <td className="py-3.5 px-3 sm:px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200">
-                    {row.plateNumber ? (
-                      <span>{row.plateNumber}</span>
-                    ) : (
-                      <span className="text-slate-400 dark:text-slate-600 font-normal italic">—</span>
+                  <td className="py-3.5 px-2.5 sm:px-4 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
+                    <div className="font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[130px] sm:max-w-none">{row.title}</div>
+                    {row.subtitle && (
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[130px] sm:max-w-none">{row.subtitle}</div>
                     )}
                   </td>
-                )}
+                  {hasPlate && (
+                    <td className="py-3.5 px-2 sm:px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200">
+                      {row.plateNumber ? (
+                        <span className="truncate max-w-[85px] sm:max-w-none inline-block">{row.plateNumber}</span>
+                      ) : (
+                        <span className="text-slate-400 dark:text-slate-600 font-normal italic">—</span>
+                      )}
+                    </td>
+                  )}
                 {columns.map((col) => {
                   const status = row.periods[col.key] || 'muted';
                   return (
@@ -1007,7 +1008,8 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
         )}
       </tbody>
     </table>
-  );
+  </div>
+);
 };
 
 export interface HistoryItemData {

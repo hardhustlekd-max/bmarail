@@ -205,8 +205,8 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
                 <span>{isAmharic ? 'ስቲከሩን አትም' : 'Print Sticker'}</span>
               </button>
             ) : (
-              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-300 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-amber-500 text-[18px]">lock</Icon>
+              <div className="bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 shadow-2xs">
+                <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[18px]">lock</Icon>
                 <span>{isAmharic ? 'የሥራ አስኪያጅ ማፅደቅ ይጠበቃል' : 'Print Disabled — Awaiting Manager Approval'}</span>
               </div>
             )}

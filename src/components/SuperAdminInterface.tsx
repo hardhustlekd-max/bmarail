@@ -1244,7 +1244,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               <span className="px-3 py-1.5 rounded-md bg-surface-container text-xs font-bold text-on-surface border border-outline-variant">
                 {subCitiesList.length} {isAmharic ? 'ክፍለ ከተሞች' : 'Sub-Cities'}
               </span>
-              <span className="px-3 py-1.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-500/20">
+              <span className="px-3 py-1.5 rounded-md bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 text-xs font-bold border border-amber-300 dark:border-amber-700 shadow-2xs">
                 {Object.values(frozenSubCities).filter(Boolean).length} {isAmharic ? 'የታገዱ' : 'Frozen'}
               </span>
             </div>
@@ -1299,10 +1299,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       </div>
 
                       <span
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-black tracking-wide shrink-0 ${
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-black tracking-wide shrink-0 shadow-2xs border ${
                           isFrozen
-                            ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
-                            : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                            ? 'bg-red-100 text-red-800 dark:bg-red-950/80 dark:text-red-300 border-red-300 dark:border-red-700'
+                            : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
                         }`}
                       >
                         {isFrozen ? (isAmharic ? 'ምዝገባ ታግዷል' : 'Frozen') : (isAmharic ? 'ምዝገባ ክፍት' : 'Active')}

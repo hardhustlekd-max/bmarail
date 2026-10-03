@@ -125,21 +125,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]" title={isAmharic ? 'የተፈቀደ' : 'Approved'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-600 shadow-2xs" title={isAmharic ? 'የተፈቀደ' : 'Approved'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">check_circle</Icon>
             <span className={textClass}>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary" title={isAmharic ? 'የታተመ' : 'Printed'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-600 shadow-2xs" title={isAmharic ? 'የታተመ' : 'Printed'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">print</Icon>
             <span className={textClass}>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#6366F1]" title={isAmharic ? 'በሕትመት' : 'In Print'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 shadow-2xs" title={isAmharic ? 'በሕትመት' : 'In Print'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">local_printshop</Icon>
             <span className={textClass}>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
@@ -147,7 +147,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'rejected':
       case 'expired':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#FB5454]" title={status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-600 shadow-2xs" title={status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">cancel</Icon>
             <span className={textClass}>{status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}</span>
           </span>
@@ -156,7 +156,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#F59E0B]" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600 shadow-2xs" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">schedule</Icon>
             <span className={textClass}>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
@@ -2031,12 +2031,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                       </div>
 
                                       <div className="flex items-center gap-2 shrink-0">
-                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border shadow-2xs ${
                                           rcStatus.status === 'active'
-                                            ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
+                                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
                                             : rcStatus.status === 'expiring_soon'
-                                            ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
-                                            : 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20'
+                                            ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700'
+                                            : 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700'
                                         }`}>
                                           {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
                                         </span>

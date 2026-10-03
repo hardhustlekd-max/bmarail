@@ -107,8 +107,8 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
     <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
       {/* Success Notification Banner */}
       {successMessage && (
-        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs font-bold flex items-center gap-3 animate-in fade-in duration-200">
-          <Icon className="material-symbols-outlined text-emerald-600 text-[22px]">check_circle</Icon>
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-100 rounded-xl text-xs font-bold flex items-center gap-3 animate-in fade-in duration-200 shadow-2xs">
+          <Icon className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[22px]">check_circle</Icon>
           <span>{successMessage}</span>
         </div>
       )}

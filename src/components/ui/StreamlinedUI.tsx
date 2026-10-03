@@ -252,12 +252,12 @@ export const Badge = ({
   className?: string;
 }) => {
   const variantClasses = {
-    neutral: 'bg-surface-container text-secondary border-outline-variant font-bold',
-    primary: 'bg-primary/10 text-primary border-primary/30 font-bold',
-    success: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30 font-extrabold',
-    warning: 'bg-amber-500/15 text-amber-900 dark:text-amber-300 border-amber-500/30 font-extrabold',
-    error: 'bg-rose-500/15 text-rose-900 dark:text-rose-300 border-rose-500/30 font-extrabold',
-    info: 'bg-blue-500/15 text-blue-900 dark:text-blue-300 border-blue-500/30 font-bold',
+    neutral: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 font-bold',
+    primary: 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-300 dark:border-blue-700 font-bold',
+    success: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 font-extrabold',
+    warning: 'bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border-amber-300 dark:border-amber-700 font-extrabold',
+    error: 'bg-rose-50 dark:bg-rose-950/60 text-rose-900 dark:text-rose-300 border-rose-300 dark:border-rose-700 font-extrabold',
+    info: 'bg-blue-50 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 border-blue-300 dark:border-blue-700 font-bold',
   };
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border leading-none shrink-0 whitespace-nowrap ${variantClasses[variant]} ${className}`}>

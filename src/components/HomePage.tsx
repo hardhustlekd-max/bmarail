@@ -2953,7 +2953,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
         <main className={
           activePage === 'scan'
             ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
-            : "flex-1 overflow-y-auto w-full px-3 sm:px-5 md:px-7 pt-2 sm:pt-3 pb-8 min-h-0 flex flex-col"
+            : "flex-1 overflow-y-auto overflow-x-hidden w-full max-w-full px-3 sm:px-5 md:px-7 pt-2 sm:pt-3 pb-8 min-h-0 flex flex-col"
         }>
           {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (

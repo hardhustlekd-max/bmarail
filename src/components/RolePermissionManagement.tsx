@@ -54,7 +54,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     descriptionAm: 'የአባላት አዲስ ምዝገባ፣ የማመልከቻ ማስተካከያ፣ የሰነድ ማያያዣ እና የአባላት መዝገብ ሰንጠረዥ ቁጥጥር',
     descriptionEn: 'Unified governance for member registrations, corrections, document attachments, and registry tables.',
     icon: 'how_to_reg',
-    badgeBg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300',
+    badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 shadow-2xs',
     governedComponents: {
       sideMenuAm: 'የአባላት ምዝገባ፣ የዛሬ ማመልከቻዎች፣ የአባላት ሰንጠረዥ',
       sideMenuEn: 'Member Registrations, Today Submissions, Registry Table',
@@ -107,7 +107,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     descriptionAm: 'የQR ኮድ ስካነር፣ የቀጥታ ፍተሻ ታሪክ፣ ያልተመዘገቡ ተሽከርካሪዎች ሪፖርት እና የኦፊሰሮች ምደባ',
     descriptionEn: 'Live QR scanner, field inspection logs, unregistered vehicle reports, and officer duty assignments.',
     icon: 'local_police',
-    badgeBg: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300',
+    badgeBg: 'bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border-blue-300 dark:border-blue-700 shadow-2xs',
     governedComponents: {
       sideMenuAm: 'የQR ኮድ ስካነር፣ የፍተሻ ታሪክ፣ ያልተመዘገቡ ተሽከርካሪዎች',
       sideMenuEn: 'QR Scanner, Inspection History Log, Unregistered Vehicles',
@@ -160,7 +160,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     descriptionAm: 'የPVC ካርድ ህትመት ወረፋ፣ የባች ማዘዣዎች፣ ኤክስፖርት እና የህትመት ሁኔታ',
     descriptionEn: 'PVC card printing queues, batch printing orders, export lists, and print status trackers.',
     icon: 'print',
-    badgeBg: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300',
+    badgeBg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-2xs',
     governedComponents: {
       sideMenuAm: 'የPVC ህትመት ወረፋ፣ የባች ትዕዛዞች',
       sideMenuEn: 'PVC Print Queue, Batch Orders',
@@ -189,7 +189,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     descriptionAm: 'የ1 ወር ክፍያ ደረሰኝ መመዝገቢያ፣ የቴሌብር/ባንክ ማረጋገጫ፣ የገቢ ስታቲስቲክስ እና ሰንጠረዥ',
     descriptionEn: 'Commercial Bank and Telebirr payment receipt entries, revenue KPIs, and ledger records.',
     icon: 'payments',
-    badgeBg: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-300',
+    badgeBg: 'bg-purple-100 text-purple-900 dark:bg-purple-950/80 dark:text-purple-300 border-purple-300 dark:border-purple-700 shadow-2xs',
     governedComponents: {
       sideMenuAm: 'የክፍያ ደረሰኞች፣ የገቢ መዝገብ ሰንጠረዥ',
       sideMenuEn: 'Payment Receipts, Monthly Fee Statistics Table',
@@ -234,7 +234,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     descriptionAm: 'የተጠቃሚዎች አካውንት አስተዳደር፣ የሚናና ፈቃዶች ማትሪክስ፣ የክፍለ ከተማ እገዳ እና ኦዲት ሎግ',
     descriptionEn: 'User accounts management, role & permissions matrix, sub-city freeze, and security audit logs.',
     icon: 'admin_panel_settings',
-    badgeBg: 'bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-300',
+    badgeBg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700 shadow-2xs',
     governedComponents: {
       sideMenuAm: 'የተጠቃሚዎች አስተዳደር፣ የሚና ፈቃዶች፣ ኦዲት ሎግ፣ ቅንብሮች',
       sideMenuEn: 'User Management, Permissions Matrix, Audit Logs, Settings',

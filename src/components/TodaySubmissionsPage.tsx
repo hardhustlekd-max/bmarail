@@ -401,28 +401,28 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-600 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">check_circle</Icon>
             <span>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-600 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">print</Icon>
             <span>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">local_printshop</Icon>
             <span>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
         );
       case 'rejected':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-600 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">cancel</Icon>
             <span>{isAmharic ? 'ውድቅ' : 'Rejected'}</span>
           </span>
@@ -432,14 +432,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       default:
         if (reg?.isCorrection || reg?.lastRejectionReason) {
           return (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600 shadow-2xs">
               <Icon className="material-symbols-outlined text-[14px] shrink-0">edit_note</Icon>
               <span>{isAmharic ? 'ተስተካክሎ የቀረበ' : 'Corrected & Resubmitted'}</span>
             </span>
           );
         }
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-medium bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600 shadow-2xs">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
             <span>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
@@ -795,18 +795,18 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
         {/* --- BULK APPROVAL ACTION BANNER FOR ADMIN / SUPER ADMIN --- */}
         {canApproveBulk && selectedRegIds.size > 0 && (
-          <div className="m-4 p-3 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 rounded-sm flex flex-wrap items-center justify-between gap-3 animate-fade-in shadow-xs">
+          <div className="m-4 p-3 bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 rounded-sm flex flex-wrap items-center justify-between gap-3 animate-fade-in shadow-xs">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-sm bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+              <div className="w-8 h-8 rounded-sm bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 flex items-center justify-center shrink-0 border border-emerald-400 dark:border-emerald-700">
                 <Icon className="material-symbols-outlined text-[20px]">checklist</Icon>
               </div>
               <div>
-                <span className="font-bold text-xs text-emerald-800 dark:text-emerald-300">
+                <span className="font-bold text-xs text-emerald-900 dark:text-emerald-100">
                   {isAmharic
                     ? `${selectedRegIds.size} ማመልከቻዎች ተመርጠዋል`
                     : `${selectedRegIds.size} submission(s) selected`}
                 </span>
-                <p className="text-[11px] text-emerald-700/80 dark:text-emerald-400/80">
+                <p className="text-[11px] text-emerald-800 dark:text-emerald-300 font-medium">
                   {isAmharic
                     ? 'የተመረጡትን ማመልከቻዎች በአንድ ጊዜ በጅምላ ማጽደቅ ይችላሉ'
                     : 'You can approve all selected corrected submissions at once'}
@@ -818,7 +818,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedRegIds(new Set())}
-                className="px-3 py-1.5 rounded-sm border border-emerald-500/30 text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-sm border border-emerald-300 dark:border-emerald-700 text-xs font-semibold text-emerald-900 dark:text-emerald-200 hover:bg-emerald-200/60 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer"
               >
                 {isAmharic ? 'ምርጫውን ሰርዝ' : 'Clear Selection'}
               </button>
@@ -1425,8 +1425,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             {/* Modal Form Body */}
             <form onSubmit={handleSaveEdit} className="p-4 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {isReadOnly && (
-                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px]">lock</Icon>
+                <div className="p-3 bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 rounded-lg text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0">lock</Icon>
                   <span>
                     {isAmharic ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ ማስተካከል እና ማስቀመጥ አይፈቀድም።' : 'Read-Only Mode Active: Form editing and saving is disabled.'}
                   </span>
@@ -1773,7 +1773,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             </div>
 
             {/* Warning Message */}
-            <div className="p-3 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/30 rounded-sm text-xs text-amber-800 dark:text-amber-300 flex items-start gap-2">
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 rounded-sm text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2">
               <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">warning</Icon>
               <span>
                 {isAmharic

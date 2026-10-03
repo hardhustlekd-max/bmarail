@@ -2270,20 +2270,20 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       )}
 
                       {chekiError && (
-                        <div className="p-2 bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 rounded-md text-[11px] font-bold flex items-center justify-between gap-2">
+                        <div className="p-2 bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 rounded-md text-[11px] font-bold flex items-center justify-between gap-2 shadow-2xs">
                           <div className="flex items-center gap-1.5">
-                            <Icon className="material-symbols-outlined text-[15px] shrink-0">error</Icon>
+                            <Icon className="material-symbols-outlined text-[15px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
                             <span>{chekiError}</span>
                           </div>
-                          <button type="button" onClick={() => setChekiError('')} className="text-rose-600 hover:text-rose-800 font-bold text-xs">✕</button>
+                          <button type="button" onClick={() => setChekiError('')} className="text-rose-700 hover:text-rose-900 dark:text-rose-300 font-bold text-xs">✕</button>
                         </div>
                       )}
 
                       {chekiResult && (
-                        <div className={`p-2.5 rounded-md border text-xs space-y-1.5 ${
+                        <div className={`p-2.5 rounded-md border text-xs space-y-1.5 shadow-2xs ${
                           chekiResult.verified
-                            ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-950 dark:text-emerald-100'
-                            : 'bg-amber-500/10 border-amber-500/40 text-amber-950 dark:text-amber-100'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-100'
+                            : 'bg-amber-50 dark:bg-amber-950/80 border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-100'
                         }`}>
                           <div className="flex items-center justify-between font-black  text-[11px]">
                             <div className="flex items-center gap-1.5">

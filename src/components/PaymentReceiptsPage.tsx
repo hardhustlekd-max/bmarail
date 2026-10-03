@@ -991,9 +991,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-12">
+    <div className="space-y-4 pb-12 w-full max-w-full min-w-0 overflow-x-hidden">
       {/* HEADER SECTION: Minimized, sleek, matching other tables in the app */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-4 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-4 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs w-full max-w-full min-w-0">
         <div>
           <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
             <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">
@@ -1003,7 +1003,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </h2>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {canAddReceipt ? (
             <button
               type="button"
@@ -1030,12 +1030,12 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* TOP-LEVEL VIEW TABS: SEPARATE TABS FOR TABLE AND METRICS */}
       {canViewTable && canViewKPIs && (
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] rounded-sm px-4 pt-1 shadow-2xs">
-          <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-none -mb-[1px]">
+        <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] rounded-sm px-2 sm:px-4 pt-1 shadow-2xs w-full max-w-full overflow-hidden">
+          <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-none -mb-[1px] w-full min-w-0">
             <button
               type="button"
               onClick={() => setActiveMainTab('table')}
-              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 currentTab === 'table'
                   ? 'border-primary text-primary dark:text-primary dark:border-primary'
                   : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
@@ -1057,7 +1057,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <button
               type="button"
               onClick={() => setActiveMainTab('metrics')}
-              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 currentTab === 'metrics'
                   ? 'border-primary text-primary dark:text-primary dark:border-primary'
                   : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
@@ -1081,14 +1081,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* TAB 1: MONTHLY FEE STATISTICS VIEW (STANDALONE DEDICATED TAB) */}
       {currentTab === 'metrics' && canViewKPIs && (
-        <div className="space-y-4">
+        <div className="space-y-4 w-full max-w-full min-w-0">
           {/* Date Filter Card for Metrics (Kept per User Request) */}
-          <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative">
+          <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative w-full max-w-full overflow-hidden">
             {renderDateRangePicker()}
           </div>
 
           {/* MONTHLY FEE STATISTICS CONTAINER */}
-          <div className="p-3.5 sm:p-5 space-y-4 bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default">
+          <div className="p-3.5 sm:p-5 space-y-4 bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default w-full max-w-full overflow-hidden">
             {/* Header with Ethiopian Month Title */}
             <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               {/* Title */}
@@ -1288,8 +1288,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             >
 
           {isFormReadOnly && (
-            <div className="p-3 bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-200 rounded-lg text-xs font-bold flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-amber-600 text-[20px] shrink-0">lock</Icon>
+            <div className="p-3 bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 rounded-lg text-xs font-bold flex items-center gap-2 shadow-2xs">
+              <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[20px] shrink-0">lock</Icon>
               <span>
                 {isAmharic
                   ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ የክፍያ ደረሰኝ መመዝገብ አልተፈቀደም (የማየት ፈቃድ ብቻ)።'
@@ -1730,14 +1730,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* TAB 2: TABLE SECTION (STANDALONE DEDICATED TAB) */}
       {currentTab === 'table' && canViewTable && (
-        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative">
+        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative w-full max-w-full overflow-hidden">
           {/* NATIVE DATE RANGE PICKER (TAILWIND STYLED) */}
           {renderDateRangePicker()}
 
           {/* SEARCH & STATUS FILTER TOOLBAR (TAILADMIN DESIGN) */}
-          <div className="p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+          <div className="p-3 sm:p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] w-full max-w-full min-w-0">
             {/* Search Bar */}
-            <div className="relative flex-1 min-w-0 max-w-md">
+            <div className="relative flex-1 min-w-0 max-w-md w-full">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
                 <Icon className="material-symbols-outlined text-[18px]">search</Icon>
               </div>
@@ -1764,7 +1764,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
 
             {/* Status Tabs with Counts in Underline Tabs Style */}
-            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap shrink-0 max-w-full -mb-[1px]">
+            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap w-full sm:w-auto min-w-0 max-w-full -mb-[1px]">
               {[
                 { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
                 { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: matrixCounts.active },
@@ -1799,11 +1799,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           </div>
 
-
-
           {/* MATRIX STATUS LEGEND */}
-          <div className="px-4 md:px-6 py-2 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-end">
-            <div className="flex items-center gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-400 flex-wrap">
+          <div className="px-3 sm:px-4 md:px-6 py-2 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between sm:justify-end gap-2 w-full max-w-full flex-wrap">
+            <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-400 flex-wrap">
               <span className="inline-flex items-center gap-1.5">
                 <StatusDot status="paid" size={10} />
                 <span>{isAmharic ? 'የተከፈለ' : 'Paid'}</span>
@@ -1824,7 +1822,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* MONTHLY MATRIX LEDGER TABLE (RESPONSIVE HORIZONTAL SCROLL & COLLAPSIBLE ROWS) */}
-          <div className="overflow-x-auto bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default">
+          <div className="overflow-x-auto bg-white dark:bg-[#1C2434] w-full max-w-full min-w-0">
             <MonthlyMatrixLedger
               columns={matrixColumns}
               rows={filteredMatrixRows}

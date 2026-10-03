@@ -203,14 +203,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
         <div className="flex items-center gap-2 shrink-0">
           <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold  tracking-wider ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider shadow-2xs ${
               userRole === 'superadmin'
-                ? 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800'
+                ? 'bg-purple-100 text-purple-900 dark:bg-purple-950/80 dark:text-purple-300 border border-purple-300 dark:border-purple-700'
                 : userRole === 'admin'
-                ? 'bg-blue-500/10 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800'
+                ? 'bg-blue-100 text-blue-900 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-700'
                 : userRole === 'officer'
-                ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
-                : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+                ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
+                : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700'
             }`}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
@@ -426,10 +426,10 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               {/* Feedback Alert */}
               {feedback && (
                 <div
-                  className={`p-3.5 rounded-lg text-xs font-bold border flex items-start gap-2.5 animate-in fade-in ${
+                  className={`p-3.5 rounded-lg text-xs font-bold border flex items-start gap-2.5 animate-in fade-in shadow-2xs ${
                     feedback.type === 'success'
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
-                      : 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-100'
+                      : 'bg-rose-50 dark:bg-rose-950/80 border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-100'
                   }`}
                 >
                   <Icon className="material-symbols-outlined text-[20px] shrink-0">
@@ -693,7 +693,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
                     <Icon className="material-symbols-outlined text-[20px]">alarm</Icon>
                   </div>
                   <div>
@@ -707,7 +707,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-md text-[11px] font-black bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 whitespace-nowrap shrink-0">
+                <span className="px-2.5 py-1 rounded-md text-[11px] font-black bg-emerald-100 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 whitespace-nowrap shrink-0 shadow-2xs">
                   15 {isAmharic ? 'ደቂቃ' : 'min'}
                 </span>
               </div>

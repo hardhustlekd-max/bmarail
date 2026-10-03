@@ -66,12 +66,12 @@ export const DatabaseStatusWidget: React.FC<DatabaseStatusWidgetProps> = ({ isAm
       </div>
 
       {/* Database Provider Badge */}
-      <div className="p-2 border border-emerald-500/20 bg-emerald-500/10 text-emerald-900 dark:text-emerald-300 rounded-lg text-xs font-bold flex items-center justify-between">
+      <div className="p-2 border border-emerald-300 dark:border-emerald-700 bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-100 rounded-lg text-xs font-bold flex items-center justify-between shadow-2xs">
         <span className="flex items-center gap-1.5 text-secondary">
-          <Icon name="hard_drive" size={15} className="text-emerald-600" />
+          <Icon name="hard_drive" size={15} className="text-emerald-600 dark:text-emerald-400" />
           <span className="text-[10px] sm:text-[11px]">{isAmharic ? 'የዳታ አቀማመጥ' : 'Storage Engine'}</span>
         </span>
-        <span className="text-[10px] sm:text-[11px] font-black  tracking-tight text-emerald-700 dark:text-emerald-400">
+        <span className="text-[10px] sm:text-[11px] font-black tracking-tight text-emerald-800 dark:text-emerald-300">
           PostgreSQL + Railway S3
         </span>
       </div>

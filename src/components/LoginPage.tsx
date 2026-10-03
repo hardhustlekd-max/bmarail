@@ -107,15 +107,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
 
           {sessionExpiredMessage && (
-            <div className="p-3 rounded-lg text-xs bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/30 dark:border-amber-800 text-amber-800 dark:text-amber-300 flex items-start gap-2.5 animate-in fade-in">
+            <div className="p-3 rounded-lg text-xs bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 flex items-start gap-2.5 animate-in fade-in shadow-2xs">
               <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
                 alarm
               </Icon>
               <div className="flex-1 min-w-0">
-                <span className="block font-black text-xs text-amber-950 dark:text-amber-200">
+                <span className="block font-black text-xs text-amber-950 dark:text-amber-100">
                   {lang === 'am' ? 'የስራ ክፍለ-ጊዜ ማብቂያ' : 'Session Expired for Security'}
                 </span>
-                <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-amber-800/90 dark:text-amber-300/90">
+                <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-amber-900 dark:text-amber-300">
                   {sessionExpiredMessage}
                 </span>
               </div>
@@ -123,7 +123,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <button
                   type="button"
                   onClick={onClearSessionExpiredMessage}
-                  className="text-amber-600 hover:text-amber-800 dark:text-amber-400 p-0.5 rounded cursor-pointer shrink-0"
+                  className="text-amber-700 hover:text-amber-900 dark:text-amber-300 p-0.5 rounded cursor-pointer shrink-0"
                   title={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
                 >
                   <Icon className="material-symbols-outlined text-[16px]">close</Icon>
@@ -133,8 +133,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           )}
 
           {authError && (
-            <div className="p-2.5 rounded-lg text-xs font-bold bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 flex items-center gap-2 animate-in fade-in">
-              <Icon className="material-symbols-outlined text-[16px] shrink-0">error</Icon>
+            <div className="p-2.5 rounded-lg text-xs font-bold bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 flex items-center gap-2 animate-in fade-in shadow-2xs">
+              <Icon className="material-symbols-outlined text-[16px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
               <span>{authError}</span>
             </div>
           )}
