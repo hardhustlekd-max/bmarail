@@ -25,10 +25,41 @@ const memoryStore: Record<string, Map<string, any>> = {
   system_audit_logs: new Map(),
   notification_states: new Map(),
   file_uploads: new Map(),
+  actions: new Map(),
+  kpi_metrics: new Map(),
+  materialized_notifications: new Map(),
 };
 
 // Seed default in-memory data
 function seedInitialMemoryStore() {
+  if (memoryStore.kpi_metrics.size === 0) {
+    memoryStore.kpi_metrics.set('system_summary', {
+      id: 'system_summary',
+      totalUsers: 4,
+      adminUsers: 2,
+      disabledUsers: 0,
+      activeUsers: 4,
+      totalPermits: 10,
+      pendingPermits: 0,
+      approvedPermits: 10,
+      printedPermits: 0,
+      rejectedPermits: 0,
+      todaySubmissions: 0,
+      totalRevenue: 5000,
+      totalReceipts: 10,
+      currency: 'ETB',
+      totalVerifications: 0,
+      verifiedLogs: 0,
+      warningVerifications: 0,
+      illegalVerifications: 0,
+      totalUnregistered: 0,
+      pendingUnregistered: 0,
+      resolvedUnregistered: 0,
+      activeOfficers: 3,
+      lastActionId: 'seed_init',
+      updatedAt: new Date().toISOString(),
+    });
+  }
   if (memoryStore.system_settings.size === 0) {
     memoryStore.system_settings.set('global_config', {
       id: 'global_config',
@@ -1090,6 +1121,293 @@ export function isDatabaseConnected(): boolean {
   return isPostgresConnected;
 }
 
+/**
+  * HYBRID EVENT-DRIVEN KPI & NOTIFICATION ARCHITECTURE:
+  * When an action is recorded, insert into the `actions` table.
+  * In PostgreSQL, the database trigger `trg_actions_insert` automatically updates `kpi_metrics`
+  * and `materialized_notifications` behind the scenes!
+  * In-memory fallback maintains identical write-side state.
+  */
+export async function recordSystemAction(action: {
+  actionType: string;
+  entityType: string;
+  entityId: string;
+  actorId?: string;
+  actorBadgeId?: string;
+  actorRole?: string;
+  payload?: Record<string, any>;
+}): Promise<void> {
+  const actionId = `act-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+  const actionRecord = {
+    id: actionId,
+    actionType: action.actionType,
+    entityType: action.entityType,
+    entityId: action.entityId,
+    actorId: action.actorId || null,
+    actorBadgeId: action.actorBadgeId || null,
+    actorRole: action.actorRole || null,
+    payload: action.payload || {},
+    createdAt: new Date().toISOString(),
+  };
+
+  // 1. Maintain in-memory resilient store with write-side aggregation
+  if (!memoryStore.actions) memoryStore.actions = new Map();
+  memoryStore.actions.set(actionId, actionRecord);
+  applyActionToInMemoryKPIs(actionRecord);
+
+  // 2. PostgreSQL insert (Database Trigger automatically updates kpi_metrics & materialized_notifications)
+  if (isPostgresConnected && dbPool) {
+    try {
+      await dbPool.query(
+        `INSERT INTO actions (id, action_type, entity_type, entity_id, actor_id, actor_badge_id, actor_role, payload)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [
+          actionRecord.id,
+          actionRecord.actionType,
+          actionRecord.entityType,
+          actionRecord.entityId,
+          actionRecord.actorId,
+          actionRecord.actorBadgeId,
+          actionRecord.actorRole,
+          JSON.stringify(actionRecord.payload),
+        ]
+      );
+    } catch (err: any) {
+      if (isNetworkError(err)) {
+        isPostgresConnected = false;
+        scheduleBackgroundReconnect();
+      } else {
+        console.warn('[PostgreSQL Actions Trigger] Notice inserting action:', err.message);
+      }
+    }
+  }
+}
+
+/**
+ * Update in-memory KPI table and notifications behind the scenes
+ */
+function applyActionToInMemoryKPIs(action: any) {
+  if (!memoryStore.kpi_metrics) memoryStore.kpi_metrics = new Map();
+  let kpis = memoryStore.kpi_metrics.get('system_summary');
+  if (!kpis) {
+    kpis = {
+      id: 'system_summary',
+      totalUsers: 4,
+      adminUsers: 2,
+      disabledUsers: 0,
+      activeUsers: 4,
+      totalPermits: 10,
+      pendingPermits: 0,
+      approvedPermits: 10,
+      printedPermits: 0,
+      rejectedPermits: 0,
+      todaySubmissions: 0,
+      totalRevenue: 5000,
+      totalReceipts: 10,
+      currency: 'ETB',
+      totalVerifications: 0,
+      verifiedLogs: 0,
+      warningVerifications: 0,
+      illegalVerifications: 0,
+      totalUnregistered: 0,
+      pendingUnregistered: 0,
+      resolvedUnregistered: 0,
+      activeOfficers: 3,
+      lastActionId: '',
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  const p = action.payload || {};
+  const prevStatus = p.previousStatus || p.previous_status;
+  const newStatus = p.newStatus || p.new_status;
+  const amount = Number(p.amount) || 0;
+  const verifStatus = p.verificationStatus || p.verification_status;
+  const role = p.role;
+  const status = p.status;
+
+  if (action.actionType === 'REGISTRATION_CREATED') {
+    kpis.totalPermits++;
+    kpis.pendingPermits++;
+    kpis.todaySubmissions++;
+    if (!memoryStore.materialized_notifications) memoryStore.materialized_notifications = new Map();
+    memoryStore.materialized_notifications.set(`notif-reg-${action.entityId}`, {
+      id: `notif-reg-${action.entityId}`,
+      type: 'pending_approval',
+      titleAm: `አዲስ ማመልከቻ: ${p.fullName || action.entityId}`,
+      titleEn: `New Submission: ${p.fullName || action.entityId}`,
+      descriptionAm: 'ማመልከቻው የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።',
+      descriptionEn: 'Application awaiting manager review.',
+      actionPage: 'tables',
+      actionTab: 'pending',
+      entityId: action.entityId,
+      icon: 'how_to_reg',
+      iconBg: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
+      badgeLabelAm: 'ማፅደቂያ',
+      badgeLabelEn: 'Approval Needed',
+      badgeBg: 'bg-slate-200 dark:bg-slate-700',
+      badgeText: 'text-slate-800 dark:text-slate-200',
+      targetRole: 'admin',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  } else if (action.actionType === 'REGISTRATION_STATUS_CHANGED') {
+    if (prevStatus === 'pending_approval') kpis.pendingPermits = Math.max(0, kpis.pendingPermits - 1);
+    if (['approved', 'ordered_print', 'printed'].includes(prevStatus)) kpis.approvedPermits = Math.max(0, kpis.approvedPermits - 1);
+    if (prevStatus === 'printed') kpis.printedPermits = Math.max(0, kpis.printedPermits - 1);
+    if (prevStatus === 'rejected') kpis.rejectedPermits = Math.max(0, kpis.rejectedPermits - 1);
+
+    if (newStatus === 'pending_approval') kpis.pendingPermits++;
+    if (['approved', 'ordered_print', 'printed'].includes(newStatus)) kpis.approvedPermits++;
+    if (newStatus === 'printed') kpis.printedPermits++;
+    if (newStatus === 'rejected') kpis.rejectedPermits++;
+
+    if (['approved', 'rejected', 'printed', 'ordered_print'].includes(newStatus)) {
+      const notif = memoryStore.materialized_notifications?.get(`notif-reg-${action.entityId}`);
+      if (notif) notif.isActive = false;
+    }
+  } else if (action.actionType === 'REGISTRATION_DELETED') {
+    kpis.totalPermits = Math.max(0, kpis.totalPermits - 1);
+    if (prevStatus === 'pending_approval') kpis.pendingPermits = Math.max(0, kpis.pendingPermits - 1);
+    if (['approved', 'ordered_print', 'printed'].includes(prevStatus)) kpis.approvedPermits = Math.max(0, kpis.approvedPermits - 1);
+    if (prevStatus === 'rejected') kpis.rejectedPermits = Math.max(0, kpis.rejectedPermits - 1);
+    const notif = memoryStore.materialized_notifications?.get(`notif-reg-${action.entityId}`);
+    if (notif) notif.isActive = false;
+  } else if (action.actionType === 'PAYMENT_RECEIVED') {
+    kpis.totalReceipts++;
+    kpis.totalRevenue += amount;
+  } else if (action.actionType === 'PAYMENT_DELETED') {
+    kpis.totalReceipts = Math.max(0, kpis.totalReceipts - 1);
+    kpis.totalRevenue = Math.max(0, kpis.totalRevenue - amount);
+  } else if (action.actionType === 'VERIFICATION_LOGGED') {
+    kpis.totalVerifications++;
+    if (verifStatus === 'verified') kpis.verifiedLogs++;
+    if (verifStatus === 'warning') kpis.warningVerifications++;
+    if (['flagged', 'illegal', 'unregistered'].includes(verifStatus)) {
+      kpis.illegalVerifications++;
+      if (!memoryStore.materialized_notifications) memoryStore.materialized_notifications = new Map();
+      memoryStore.materialized_notifications.set(`notif-verif-${action.entityId}`, {
+        id: `notif-verif-${action.entityId}`,
+        type: 'flagged_inspection',
+        titleAm: `የፍተሻ ጥሰት ሪፖርት: ${p.plateNumber || action.entityId}`,
+        titleEn: `Inspection Violation: ${p.plateNumber || action.entityId}`,
+        descriptionAm: `በኦፊሰር የተመዘገበ ጥሰት: ${p.notes || 'የሰነድ ጉድለት'}`,
+        descriptionEn: `Patrol violation reported: ${p.notes || 'Violation found'}`,
+        actionPage: 'inspection_report',
+        actionTab: 'history',
+        entityId: action.entityId,
+        icon: 'warning',
+        iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+        badgeLabelAm: 'የጥሰት ሪፖርት',
+        badgeLabelEn: 'Violation Report',
+        badgeBg: 'bg-rose-500/20',
+        badgeText: 'text-rose-700 dark:text-rose-300',
+        targetRole: 'all',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  } else if (action.actionType === 'UNREGISTERED_REPORT_FILED') {
+    kpis.totalUnregistered++;
+    kpis.pendingUnregistered++;
+    if (!memoryStore.materialized_notifications) memoryStore.materialized_notifications = new Map();
+    memoryStore.materialized_notifications.set(`notif-unreg-${action.entityId}`, {
+      id: `notif-unreg-${action.entityId}`,
+      type: 'unregistered_alert',
+      titleAm: `ያልተመዘገበ ሞተር ጥቆማ: ${p.driverName || 'ያልታወቀ'}`,
+      titleEn: `Unregistered Motor Report: ${p.driverName || 'Unknown'}`,
+      descriptionAm: `የቻሲስ ቁጥር: ${p.chassisNumber || 'N/A'}`,
+      descriptionEn: `Chassis No: ${p.chassisNumber || 'N/A'}`,
+      actionPage: 'unregistered_list',
+      actionTab: 'list',
+      entityId: action.entityId,
+      icon: 'no_crash',
+      iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+      badgeLabelAm: 'ያልተመዘገበ',
+      badgeLabelEn: 'Unregistered Alert',
+      badgeBg: 'bg-amber-500/20',
+      badgeText: 'text-amber-800 dark:text-amber-300',
+      targetRole: 'all',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+  } else if (action.actionType === 'UNREGISTERED_REPORT_RESOLVED') {
+    kpis.pendingUnregistered = Math.max(0, kpis.pendingUnregistered - 1);
+    kpis.resolvedUnregistered++;
+    const notif = memoryStore.materialized_notifications?.get(`notif-unreg-${action.entityId}`);
+    if (notif) notif.isActive = false;
+  } else if (action.actionType === 'USER_CREATED') {
+    kpis.totalUsers++;
+    if (['admin', 'superadmin'].includes(role)) kpis.adminUsers++;
+    kpis.activeUsers++;
+  } else if (action.actionType === 'USER_STATUS_CHANGED') {
+    if (prevStatus === 'disabled') kpis.disabledUsers = Math.max(0, kpis.disabledUsers - 1);
+    if (prevStatus === 'active') kpis.activeUsers = Math.max(0, kpis.activeUsers - 1);
+    if (status === 'disabled') kpis.disabledUsers++;
+    if (status === 'active') kpis.activeUsers++;
+  } else if (action.actionType === 'USER_DELETED') {
+    kpis.totalUsers = Math.max(0, kpis.totalUsers - 1);
+    if (['admin', 'superadmin'].includes(role)) kpis.adminUsers = Math.max(0, kpis.adminUsers - 1);
+  }
+
+  kpis.lastActionId = action.id;
+  kpis.updatedAt = new Date().toISOString();
+  memoryStore.kpi_metrics.set('system_summary', kpis);
+}
+
+/**
+ * Fetch Write-Side Pre-Aggregated KPIs in O(1) time
+ */
+export async function getMaterializedKPIs(): Promise<any> {
+  if (isPostgresConnected && dbPool) {
+    try {
+      const res = await dbPool.query(`SELECT * FROM kpi_metrics WHERE id = 'system_summary' LIMIT 1`);
+      if (res.rows.length > 0) {
+        return normalizeRowFromPg(res.rows[0]);
+      }
+    } catch (err: any) {
+      if (isNetworkError(err)) {
+        isPostgresConnected = false;
+        scheduleBackgroundReconnect();
+      }
+    }
+  }
+  return memoryStore.kpi_metrics?.get('system_summary') || null;
+}
+
+/**
+ * Fetch Event-Driven Materialized Notifications without querying raw tables
+ */
+export async function getMaterializedNotifications(role?: string): Promise<any[]> {
+  if (isPostgresConnected && dbPool) {
+    try {
+      let sql = `SELECT * FROM materialized_notifications WHERE is_active = TRUE`;
+      const params: any[] = [];
+      if (role && role !== 'all') {
+        sql += ` AND (target_role = 'all' OR target_role = $1)`;
+        params.push(role);
+      }
+      sql += ` ORDER BY created_at DESC LIMIT 50`;
+      const res = await dbPool.query(sql, params);
+      return res.rows.map(normalizeRowFromPg);
+    } catch (err: any) {
+      if (isNetworkError(err)) {
+        isPostgresConnected = false;
+        scheduleBackgroundReconnect();
+      }
+    }
+  }
+  const all = Array.from(memoryStore.materialized_notifications?.values() || []);
+  return all
+    .filter((n: any) => n.isActive !== false)
+    .filter((n: any) => !role || role === 'all' || n.targetRole === 'all' || n.targetRole === role)
+    .reverse()
+    .slice(0, 50);
+}
+
 // Whitelist of columns per table in PostgreSQL schema
 const TABLE_COLUMNS: Record<string, Set<string>> = {
   system_settings: new Set([
@@ -1295,9 +1613,108 @@ const TABLE_COLUMNS: Record<string, Set<string>> = {
     'last_read_at',
     'updated_at',
   ]),
+  actions: new Set([
+    'id',
+    'action_type',
+    'entity_type',
+    'entity_id',
+    'actor_id',
+    'actor_badge_id',
+    'actor_role',
+    'payload',
+    'created_at',
+  ]),
+  kpi_metrics: new Set([
+    'id',
+    'total_users',
+    'admin_users',
+    'disabled_users',
+    'active_users',
+    'total_permits',
+    'pending_permits',
+    'approved_permits',
+    'printed_permits',
+    'rejected_permits',
+    'today_submissions',
+    'total_revenue',
+    'total_receipts',
+    'currency',
+    'total_verifications',
+    'verified_logs',
+    'warning_verifications',
+    'illegal_verifications',
+    'total_unregistered',
+    'pending_unregistered',
+    'resolved_unregistered',
+    'active_officers',
+    'last_action_id',
+    'updated_at',
+  ]),
+  materialized_notifications: new Set([
+    'id',
+    'type',
+    'title_am',
+    'title_en',
+    'description_am',
+    'description_en',
+    'action_page',
+    'action_tab',
+    'entity_id',
+    'icon',
+    'icon_bg',
+    'badge_label_am',
+    'badge_label_en',
+    'badge_bg',
+    'badge_text',
+    'target_role',
+    'target_subcity',
+    'is_active',
+    'created_at',
+    'updated_at',
+  ]),
 };
 
 const SPECIAL_CAMEL_TO_SNAKE: Record<string, string> = {
+  actionType: 'action_type',
+  entityType: 'entity_type',
+  entityId: 'entity_id',
+  actorId: 'actor_id',
+  actorBadgeId: 'actor_badge_id',
+  actorRole: 'actor_role',
+  totalUsers: 'total_users',
+  adminUsers: 'admin_users',
+  disabledUsers: 'disabled_users',
+  activeUsers: 'active_users',
+  totalPermits: 'total_permits',
+  pendingPermits: 'pending_permits',
+  approvedPermits: 'approved_permits',
+  printedPermits: 'printed_permits',
+  rejectedPermits: 'rejected_permits',
+  todaySubmissions: 'today_submissions',
+  totalRevenue: 'total_revenue',
+  totalReceipts: 'total_receipts',
+  totalVerifications: 'total_verifications',
+  verifiedLogs: 'verified_logs',
+  warningVerifications: 'warning_verifications',
+  illegalVerifications: 'illegal_verifications',
+  totalUnregistered: 'total_unregistered',
+  pendingUnregistered: 'pending_unregistered',
+  resolvedUnregistered: 'resolved_unregistered',
+  activeOfficers: 'active_officers',
+  lastActionId: 'last_action_id',
+  titleAm: 'title_am',
+  titleEn: 'title_en',
+  descriptionAm: 'description_am',
+  descriptionEn: 'description_en',
+  actionPage: 'action_page',
+  actionTab: 'action_tab',
+  badgeLabelAm: 'badge_label_am',
+  badgeLabelEn: 'badge_label_en',
+  badgeBg: 'badge_bg',
+  badgeText: 'badge_text',
+  targetRole: 'target_role',
+  targetSubcity: 'target_subcity',
+  isActive: 'is_active',
   autoPrintQR: 'auto_print_qr',
   autoPrintQr: 'auto_print_qr',
   security2FA: 'security_2fa',

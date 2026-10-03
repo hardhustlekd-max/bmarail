@@ -386,23 +386,28 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     return list;
   }, [verificationLogs, registrations, userRole]);
 
-  const pendingCount = scopedRegs.filter((r) => r.status === 'pending_approval').length;
-  const approvedCount = scopedRegs.filter(
+  // Use write-side materialized KPI aggregation view (O(1) instant rendering)
+  const pendingCount = preAggregatedKpis?.permits.pending ?? scopedRegs.filter((r) => r.status === 'pending_approval').length;
+  const approvedCount = preAggregatedKpis?.permits.approved ?? scopedRegs.filter(
     (r) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print'
   ).length;
-  const illegalVehiclesCount = scopedRegs.filter((r) => r.status === 'rejected').length;
-  const activeOfficersCount = officers.filter((o) => o.status === 'active').length;
+  const illegalVehiclesCount = preAggregatedKpis?.permits.rejected ?? scopedRegs.filter((r) => r.status === 'rejected').length;
+  const activeOfficersCount = (preAggregatedKpis as any)?.activeOfficers ?? officers.filter((o) => o.status === 'active').length;
 
   const todayEthStr = getDefaultEthiopianRegistrationDate();
-  const todaySubmissionsCount = scopedRegs.filter(
+  const todaySubmissionsCount = (preAggregatedKpis as any)?.todaySubmissions ?? scopedRegs.filter(
     (r) => normalizeToEthiopianDateStr(r.registrationDate) === todayEthStr
   ).length;
 
-  const totalLogsCount = scopedVerificationLogs.length;
-  const verifiedLogsCount = scopedVerificationLogs.filter((l) => l.verificationStatus === 'verified').length;
-  const warningLogsCount = scopedVerificationLogs.filter(
-    (l) => l.verificationStatus === 'warning' || l.verificationStatus === 'flagged'
-  ).length;
+  const totalLogsCount = preAggregatedKpis?.verifications.total ?? scopedVerificationLogs.length;
+  const verifiedLogsCount = preAggregatedKpis?.verifications.total !== undefined
+    ? Math.max(0, preAggregatedKpis.verifications.total - (preAggregatedKpis.verifications.warnings + preAggregatedKpis.verifications.illegal))
+    : scopedVerificationLogs.filter((l) => l.verificationStatus === 'verified').length;
+  const warningLogsCount = preAggregatedKpis?.verifications
+    ? (preAggregatedKpis.verifications.warnings + preAggregatedKpis.verifications.illegal)
+    : scopedVerificationLogs.filter(
+        (l) => l.verificationStatus === 'warning' || l.verificationStatus === 'flagged'
+      ).length;
 
   // Search match for live dashboard plate lookup
   const livePlateSearchMatch = searchPlate.trim()

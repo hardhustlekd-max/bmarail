@@ -21,6 +21,9 @@ export const TABLES = {
   USERS: 'system_users',
   AUDIT_LOGS: 'system_audit_logs',
   SETTINGS: 'system_settings',
+  ACTIONS: 'actions',
+  KPI_METRICS: 'kpi_metrics',
+  MATERIALIZED_NOTIFICATIONS: 'materialized_notifications',
 } as const;
 
 export function mapRegistrationToDb(reg: MotorcycleRegistration) {
@@ -474,4 +477,121 @@ export function mapAuditLogFromDb(row: any): SystemAuditLog {
     severity: row.severity || 'info',
   };
 }
+
+export interface SystemActionRecord {
+  id: string;
+  actionType: string;
+  entityType: string;
+  entityId: string;
+  actorId?: string;
+  actorBadgeId?: string;
+  actorRole?: string;
+  payload?: Record<string, any>;
+  createdAt?: string;
+}
+
+export interface MaterializedKPIRecord {
+  id: string;
+  totalUsers: number;
+  adminUsers: number;
+  disabledUsers: number;
+  activeUsers: number;
+  totalPermits: number;
+  pendingPermits: number;
+  approvedPermits: number;
+  printedPermits: number;
+  rejectedPermits: number;
+  todaySubmissions: number;
+  totalRevenue: number;
+  totalReceipts: number;
+  currency: string;
+  totalVerifications: number;
+  verifiedLogs: number;
+  warningVerifications: number;
+  illegalVerifications: number;
+  totalUnregistered: number;
+  pendingUnregistered: number;
+  resolvedUnregistered: number;
+  activeOfficers: number;
+  lastActionId?: string;
+  updatedAt: string;
+}
+
+export interface MaterializedNotificationRecord {
+  id: string;
+  type: string;
+  titleAm: string;
+  titleEn: string;
+  descriptionAm: string;
+  descriptionEn: string;
+  actionPage?: string;
+  actionTab?: string;
+  entityId?: string;
+  icon?: string;
+  iconBg?: string;
+  badgeLabelAm?: string;
+  badgeLabelEn?: string;
+  badgeBg?: string;
+  badgeText?: string;
+  targetRole?: string;
+  targetSubcity?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function mapKpiMetricsFromDb(row: any): MaterializedKPIRecord {
+  return {
+    id: row.id || 'system_summary',
+    totalUsers: Number(row.totalUsers ?? row.total_users ?? 0),
+    adminUsers: Number(row.adminUsers ?? row.admin_users ?? 0),
+    disabledUsers: Number(row.disabledUsers ?? row.disabled_users ?? 0),
+    activeUsers: Number(row.activeUsers ?? row.active_users ?? 0),
+    totalPermits: Number(row.totalPermits ?? row.total_permits ?? 0),
+    pendingPermits: Number(row.pendingPermits ?? row.pending_permits ?? 0),
+    approvedPermits: Number(row.approvedPermits ?? row.approved_permits ?? 0),
+    printedPermits: Number(row.printedPermits ?? row.printed_permits ?? 0),
+    rejectedPermits: Number(row.rejectedPermits ?? row.rejected_permits ?? 0),
+    todaySubmissions: Number(row.todaySubmissions ?? row.today_submissions ?? 0),
+    totalRevenue: Number(row.totalRevenue ?? row.total_revenue ?? 0),
+    totalReceipts: Number(row.totalReceipts ?? row.total_receipts ?? 0),
+    currency: row.currency || 'ETB',
+    totalVerifications: Number(row.totalVerifications ?? row.total_verifications ?? 0),
+    verifiedLogs: Number(row.verifiedLogs ?? row.verified_logs ?? 0),
+    warningVerifications: Number(row.warningVerifications ?? row.warning_verifications ?? 0),
+    illegalVerifications: Number(row.illegalVerifications ?? row.illegal_verifications ?? 0),
+    totalUnregistered: Number(row.totalUnregistered ?? row.total_unregistered ?? 0),
+    pendingUnregistered: Number(row.pendingUnregistered ?? row.pending_unregistered ?? 0),
+    resolvedUnregistered: Number(row.resolvedUnregistered ?? row.resolved_unregistered ?? 0),
+    activeOfficers: Number(row.activeOfficers ?? row.active_officers ?? 0),
+    lastActionId: row.lastActionId || row.last_action_id,
+    updatedAt: row.updatedAt || row.updated_at || new Date().toISOString(),
+  };
+}
+
+export function mapMaterializedNotificationFromDb(row: any): MaterializedNotificationRecord {
+  return {
+    id: row.id,
+    type: row.type || 'system_event',
+    titleAm: row.titleAm || row.title_am || '',
+    titleEn: row.titleEn || row.title_en || '',
+    descriptionAm: row.descriptionAm || row.description_am || '',
+    descriptionEn: row.descriptionEn || row.description_en || '',
+    actionPage: row.actionPage || row.action_page,
+    actionTab: row.actionTab || row.action_tab,
+    entityId: row.entityId || row.entity_id,
+    icon: row.icon || 'notifications',
+    iconBg: row.iconBg || row.icon_bg,
+    badgeLabelAm: row.badgeLabelAm || row.badge_label_am,
+    badgeLabelEn: row.badgeLabelEn || row.badge_label_en,
+    badgeBg: row.badgeBg || row.badge_bg,
+    badgeText: row.badgeText || row.badge_text,
+    targetRole: row.targetRole || row.target_role || 'all',
+    targetSubcity: row.targetSubcity || row.target_subcity,
+    isActive: Boolean(row.isActive ?? row.is_active ?? true),
+    createdAt: row.createdAt || row.created_at || new Date().toISOString(),
+    updatedAt: row.updatedAt || row.updated_at || new Date().toISOString(),
+  };
+}
+
 

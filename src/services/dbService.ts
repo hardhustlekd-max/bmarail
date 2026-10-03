@@ -2739,3 +2739,29 @@ export async function fetchPaginatedUsers(
   return null;
 }
 
+export async function fetchMaterializedNotifications(role?: string): Promise<any[]> {
+  try {
+    const url = role ? `/api/notifications/materialized?role=${encodeURIComponent(role)}` : '/api/notifications/materialized';
+    const res = await safeJsonFetch<{ success: boolean; notifications?: any[] }>(url);
+    if (res && res.success && Array.isArray(res.notifications)) {
+      return res.notifications;
+    }
+  } catch (err) {
+    console.warn('[Notification Service] Materialized notifications fetch notice:', err);
+  }
+  return [];
+}
+
+export async function fetchSystemActions(): Promise<any[]> {
+  try {
+    const res = await safeJsonFetch<{ success: boolean; actions?: any[] }>('/api/actions');
+    if (res && res.success && Array.isArray(res.actions)) {
+      return res.actions;
+    }
+  } catch (err) {
+    console.warn('[Actions Service] System actions fetch notice:', err);
+  }
+  return [];
+}
+
+

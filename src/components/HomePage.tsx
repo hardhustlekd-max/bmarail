@@ -41,6 +41,7 @@ import {
   getPermissionState,
   loadUserNotificationStateFromDb,
   saveUserNotificationStateToDb,
+  fetchMaterializedNotifications,
 } from '../services/dbService';
 import { MunicipalDashboardOverview } from './MunicipalDashboardOverview';
 import { FormsPage } from './FormsPage';
@@ -700,9 +701,42 @@ const HomePageShell: React.FC<HomePageProps> = ({
     };
   }, [activePage]);
 
+  // Event-driven materialized notifications loaded from write-side view
+  const [materializedNotifs, setMaterializedNotifs] = useState<any[]>([]);
+  useEffect(() => {
+    let active = true;
+    fetchMaterializedNotifications(userRole).then((notifs) => {
+      if (active && Array.isArray(notifs)) {
+        setMaterializedNotifs(notifs);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [userRole]);
+
   // Dynamic Municipal System Notifications routed strictly by RBAC recipient responsibility
   const systemNotifications = useMemo<NotificationItem[]>(() => {
     const list: NotificationItem[] = [];
+
+    // Prepend any event-driven materialized notifications from trigger table
+    if (materializedNotifs.length > 0) {
+      materializedNotifs.forEach((m) => {
+        list.push({
+          id: m.id,
+          title: isAmharic ? m.titleAm || m.title_am : m.titleEn || m.title_en,
+          description: isAmharic ? m.descriptionAm || m.description_am : m.descriptionEn || m.description_en,
+          type: m.type || 'info',
+          icon: m.icon || 'notifications',
+          iconBg: m.iconBg || m.icon_bg || 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
+          badgeLabel: isAmharic ? m.badgeLabelAm || m.badge_label_am : m.badgeLabelEn || m.badge_label_en,
+          badgeBg: m.badgeBg || m.badge_bg || 'bg-slate-200 dark:bg-slate-700',
+          badgeText: m.badgeText || m.badge_text || 'text-slate-800 dark:text-slate-200',
+          actionPage: m.actionPage || m.action_page,
+          actionTab: m.actionTab || m.action_tab,
+        });
+      });
+    }
 
     // RBAC Role classification
     const roleStr = userRole as string;

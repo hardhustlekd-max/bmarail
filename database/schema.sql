@@ -312,6 +312,314 @@ CREATE TABLE IF NOT EXISTS file_uploads (
 CREATE INDEX IF NOT EXISTS idx_file_uploads_folder ON file_uploads(folder);
 CREATE INDEX IF NOT EXISTS idx_file_uploads_key ON file_uploads(file_key);
 
+-- ----------------------------------------------------------------------------
+-- 12. WRITE-SIDE ACTIONS & EVENT LOG (HYBRID EVENT-DRIVEN ARCHITECTURE)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS actions (
+    id VARCHAR(128) PRIMARY KEY,
+    action_type VARCHAR(100) NOT NULL,
+    entity_type VARCHAR(100) NOT NULL,
+    entity_id VARCHAR(128) NOT NULL,
+    actor_id VARCHAR(100),
+    actor_badge_id VARCHAR(100),
+    actor_role VARCHAR(50),
+    payload JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_actions_action_type ON actions(action_type);
+CREATE INDEX IF NOT EXISTS idx_actions_entity_id ON actions(entity_id);
+CREATE INDEX IF NOT EXISTS idx_actions_created_at ON actions(created_at);
+
+-- ----------------------------------------------------------------------------
+-- 13. MATERIALIZED KPI METRICS (PRE-AGGREGATED WRITE-SIDE VIEW)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS kpi_metrics (
+    id VARCHAR(64) PRIMARY KEY DEFAULT 'system_summary',
+    total_users INTEGER DEFAULT 0,
+    admin_users INTEGER DEFAULT 0,
+    disabled_users INTEGER DEFAULT 0,
+    active_users INTEGER DEFAULT 0,
+    total_permits INTEGER DEFAULT 0,
+    pending_permits INTEGER DEFAULT 0,
+    approved_permits INTEGER DEFAULT 0,
+    printed_permits INTEGER DEFAULT 0,
+    rejected_permits INTEGER DEFAULT 0,
+    today_submissions INTEGER DEFAULT 0,
+    total_revenue NUMERIC(14, 2) DEFAULT 0,
+    total_receipts INTEGER DEFAULT 0,
+    currency VARCHAR(10) DEFAULT 'ETB',
+    total_verifications INTEGER DEFAULT 0,
+    verified_logs INTEGER DEFAULT 0,
+    warning_verifications INTEGER DEFAULT 0,
+    illegal_verifications INTEGER DEFAULT 0,
+    total_unregistered INTEGER DEFAULT 0,
+    pending_unregistered INTEGER DEFAULT 0,
+    resolved_unregistered INTEGER DEFAULT 0,
+    active_officers INTEGER DEFAULT 0,
+    last_action_id VARCHAR(128),
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ----------------------------------------------------------------------------
+-- 14. MATERIALIZED NOTIFICATIONS (EVENT-DRIVEN NOTIFICATION VIEW)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS materialized_notifications (
+    id VARCHAR(128) PRIMARY KEY,
+    type VARCHAR(50) NOT NULL,
+    title_am VARCHAR(255) NOT NULL,
+    title_en VARCHAR(255) NOT NULL,
+    description_am TEXT,
+    description_en TEXT,
+    action_page VARCHAR(100),
+    action_tab VARCHAR(100),
+    entity_id VARCHAR(128),
+    icon VARCHAR(50) DEFAULT 'notifications',
+    icon_bg VARCHAR(100),
+    badge_label_am VARCHAR(100),
+    badge_label_en VARCHAR(100),
+    badge_bg VARCHAR(100),
+    badge_text VARCHAR(100),
+    target_role VARCHAR(50) DEFAULT 'all',
+    target_subcity VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_materialized_notif_active ON materialized_notifications(is_active);
+CREATE INDEX IF NOT EXISTS idx_materialized_notif_type ON materialized_notifications(type);
+CREATE INDEX IF NOT EXISTS idx_materialized_notif_target_role ON materialized_notifications(target_role);
+
+-- ----------------------------------------------------------------------------
+-- 15. DATABASE TRIGGER: AUTO-UPDATE KPI TABLE ON ACTION INSERT
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION process_action_kpi_trigger()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_amount NUMERIC(14, 2);
+    v_prev_status TEXT;
+    v_new_status TEXT;
+    v_verif_status TEXT;
+    v_role TEXT;
+    v_user_status TEXT;
+BEGIN
+    -- Ensure system_summary row exists in kpi_metrics
+    INSERT INTO kpi_metrics (id) 
+    VALUES ('system_summary') 
+    ON CONFLICT (id) DO NOTHING;
+
+    -- Extract common payload values safely
+    v_prev_status := NEW.payload->>'previous_status';
+    v_new_status := NEW.payload->>'new_status';
+    v_verif_status := NEW.payload->>'verification_status';
+    v_role := NEW.payload->>'role';
+    v_user_status := NEW.payload->>'status';
+    
+    IF NEW.payload ? 'amount' THEN
+        BEGIN
+            v_amount := (NEW.payload->>'amount')::NUMERIC(14, 2);
+        EXCEPTION WHEN OTHERS THEN
+            v_amount := 0;
+        END;
+    ELSE
+        v_amount := 0;
+    END IF;
+
+    -- Update KPI metrics table based on action_type
+    IF NEW.action_type = 'REGISTRATION_CREATED' THEN
+        UPDATE kpi_metrics
+        SET total_permits = total_permits + 1,
+            pending_permits = pending_permits + 1,
+            today_submissions = today_submissions + 1,
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+        -- Materialize notification for pending approval
+        INSERT INTO materialized_notifications (
+            id, type, title_am, title_en, description_am, description_en,
+            action_page, action_tab, entity_id, icon, icon_bg,
+            badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+        ) VALUES (
+            'notif-reg-' || NEW.entity_id,
+            'pending_approval',
+            'አዲስ ማመልከቻ: ' || COALESCE(NEW.payload->>'full_name', NEW.entity_id),
+            'New Submission: ' || COALESCE(NEW.payload->>'full_name', NEW.entity_id),
+            'ማመልከቻው የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።',
+            'Application awaiting manager review.',
+            'tables', 'pending', NEW.entity_id, 'how_to_reg',
+            'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
+            'ማፅደቂያ', 'Approval Needed', 'bg-slate-200 dark:bg-slate-700',
+            'text-slate-800 dark:text-slate-200', 'admin', TRUE
+        ) ON CONFLICT (id) DO UPDATE SET
+            is_active = TRUE, updated_at = CURRENT_TIMESTAMP;
+
+    ELSIF NEW.action_type = 'REGISTRATION_STATUS_CHANGED' THEN
+        UPDATE kpi_metrics
+        SET pending_permits = GREATEST(0, pending_permits - CASE WHEN v_prev_status = 'pending_approval' THEN 1 ELSE 0 END)
+                              + CASE WHEN v_new_status = 'pending_approval' THEN 1 ELSE 0 END,
+            approved_permits = GREATEST(0, approved_permits - CASE WHEN v_prev_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END)
+                               + CASE WHEN v_new_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END,
+            printed_permits = GREATEST(0, printed_permits - CASE WHEN v_prev_status = 'printed' THEN 1 ELSE 0 END)
+                              + CASE WHEN v_new_status = 'printed' THEN 1 ELSE 0 END,
+            rejected_permits = GREATEST(0, rejected_permits - CASE WHEN v_prev_status = 'rejected' THEN 1 ELSE 0 END)
+                               + CASE WHEN v_new_status = 'rejected' THEN 1 ELSE 0 END,
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+        IF v_new_status IN ('approved', 'rejected', 'printed', 'ordered_print') THEN
+            UPDATE materialized_notifications
+            SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+            WHERE entity_id = NEW.entity_id AND type = 'pending_approval';
+        END IF;
+
+    ELSIF NEW.action_type = 'REGISTRATION_DELETED' THEN
+        UPDATE kpi_metrics
+        SET total_permits = GREATEST(0, total_permits - 1),
+            pending_permits = GREATEST(0, pending_permits - CASE WHEN v_prev_status = 'pending_approval' THEN 1 ELSE 0 END),
+            approved_permits = GREATEST(0, approved_permits - CASE WHEN v_prev_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END),
+            rejected_permits = GREATEST(0, rejected_permits - CASE WHEN v_prev_status = 'rejected' THEN 1 ELSE 0 END),
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+        UPDATE materialized_notifications
+        SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+        WHERE entity_id = NEW.entity_id;
+
+    ELSIF NEW.action_type = 'PAYMENT_RECEIVED' THEN
+        UPDATE kpi_metrics
+        SET total_receipts = total_receipts + 1,
+            total_revenue = total_revenue + COALESCE(v_amount, 0),
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+    ELSIF NEW.action_type = 'PAYMENT_DELETED' THEN
+        UPDATE kpi_metrics
+        SET total_receipts = GREATEST(0, total_receipts - 1),
+            total_revenue = GREATEST(0, total_revenue - COALESCE(v_amount, 0)),
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+    ELSIF NEW.action_type = 'VERIFICATION_LOGGED' THEN
+        UPDATE kpi_metrics
+        SET total_verifications = total_verifications + 1,
+            verified_logs = verified_logs + CASE WHEN v_verif_status = 'verified' THEN 1 ELSE 0 END,
+            warning_verifications = warning_verifications + CASE WHEN v_verif_status = 'warning' THEN 1 ELSE 0 END,
+            illegal_verifications = illegal_verifications + CASE WHEN v_verif_status IN ('flagged', 'illegal', 'unregistered') THEN 1 ELSE 0 END,
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+        IF v_verif_status IN ('flagged', 'warning') THEN
+            INSERT INTO materialized_notifications (
+                id, type, title_am, title_en, description_am, description_en,
+                action_page, action_tab, entity_id, icon, icon_bg,
+                badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+            ) VALUES (
+                'notif-verif-' || NEW.entity_id,
+                'flagged_inspection',
+                'የፍተሻ ጥሰት ሪፖርት: ' || COALESCE(NEW.payload->>'plate_number', NEW.entity_id),
+                'Inspection Violation: ' || COALESCE(NEW.payload->>'plate_number', NEW.entity_id),
+                'በኦፊሰር የተመዘገበ ጥሰት: ' || COALESCE(NEW.payload->>'notes', 'የሰነድ ጉድለት'),
+                'Patrol violation reported: ' || COALESCE(NEW.payload->>'notes', 'Violation found'),
+                'inspection_report', 'history', NEW.entity_id, 'warning',
+                'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+                'የጥሰት ሪፖርት', 'Violation Report', 'bg-rose-500/20',
+                'text-rose-700 dark:text-rose-300', 'all', TRUE
+            ) ON CONFLICT (id) DO UPDATE SET
+                is_active = TRUE, updated_at = CURRENT_TIMESTAMP;
+        END IF;
+
+    ELSIF NEW.action_type = 'UNREGISTERED_REPORT_FILED' THEN
+        UPDATE kpi_metrics
+        SET total_unregistered = total_unregistered + 1,
+            pending_unregistered = pending_unregistered + 1,
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+        INSERT INTO materialized_notifications (
+            id, type, title_am, title_en, description_am, description_en,
+            action_page, action_tab, entity_id, icon, icon_bg,
+            badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+        ) VALUES (
+            'notif-unreg-' || NEW.entity_id,
+            'unregistered_alert',
+            'ያልተመዘገበ ሞተር ጥቆማ: ' || COALESCE(NEW.payload->>'driver_name', 'ያልታወቀ'),
+            'Unregistered Motor Report: ' || COALESCE(NEW.payload->>'driver_name', 'Unknown'),
+            'የቻሲስ ቁጥር: ' || COALESCE(NEW.payload->>'chassis_number', 'N/A'),
+            'Chassis No: ' || COALESCE(NEW.payload->>'chassis_number', 'N/A'),
+            'unregistered_list', 'list', NEW.entity_id, 'no_crash',
+            'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+            'ያልተመዘገበ', 'Unregistered Alert', 'bg-amber-500/20',
+            'text-amber-800 dark:text-amber-300', 'all', TRUE
+        ) ON CONFLICT (id) DO UPDATE SET
+            is_active = TRUE, updated_at = CURRENT_TIMESTAMP;
+
+    ELSIF NEW.action_type = 'UNREGISTERED_REPORT_RESOLVED' THEN
+        UPDATE kpi_metrics
+        SET pending_unregistered = GREATEST(0, pending_unregistered - 1),
+            resolved_unregistered = resolved_unregistered + 1,
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+        UPDATE materialized_notifications
+        SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+        WHERE entity_id = NEW.entity_id AND type = 'unregistered_alert';
+
+    ELSIF NEW.action_type = 'USER_CREATED' THEN
+        UPDATE kpi_metrics
+        SET total_users = total_users + 1,
+            admin_users = admin_users + CASE WHEN v_role IN ('admin', 'superadmin') THEN 1 ELSE 0 END,
+            active_users = active_users + 1,
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+    ELSIF NEW.action_type = 'USER_STATUS_CHANGED' THEN
+        UPDATE kpi_metrics
+        SET disabled_users = GREATEST(0, disabled_users - CASE WHEN v_prev_status = 'disabled' THEN 1 ELSE 0 END)
+                             + CASE WHEN v_user_status = 'disabled' THEN 1 ELSE 0 END,
+            active_users = GREATEST(0, active_users - CASE WHEN v_prev_status = 'active' THEN 1 ELSE 0 END)
+                           + CASE WHEN v_user_status = 'active' THEN 1 ELSE 0 END,
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+    ELSIF NEW.action_type = 'USER_DELETED' THEN
+        UPDATE kpi_metrics
+        SET total_users = GREATEST(0, total_users - 1),
+            admin_users = GREATEST(0, admin_users - CASE WHEN v_role IN ('admin', 'superadmin') THEN 1 ELSE 0 END),
+            active_users = GREATEST(0, active_users - CASE WHEN v_user_status = 'active' THEN 1 ELSE 0 END),
+            disabled_users = GREATEST(0, disabled_users - CASE WHEN v_user_status = 'disabled' THEN 1 ELSE 0 END),
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+
+    ELSIF NEW.action_type = 'OFFICER_STATUS_CHANGED' THEN
+        UPDATE kpi_metrics
+        SET active_officers = (SELECT COUNT(*) FROM officer_assignments WHERE status = 'active'),
+            last_action_id = NEW.id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = 'system_summary';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_actions_insert ON actions;
+CREATE TRIGGER trg_actions_insert
+AFTER INSERT ON actions
+FOR EACH ROW
+EXECUTE FUNCTION process_action_kpi_trigger();
+
 -- ============================================================================
 -- SCHEMA UPDATES FOR EXISTING DATABASES (SAFE MIGRATIONS)
 -- ============================================================================

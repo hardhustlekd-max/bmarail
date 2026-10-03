@@ -13,6 +13,9 @@ import {
   dbDelete,
   dbClearTable,
   dbQuery,
+  recordSystemAction,
+  getMaterializedKPIs,
+  getMaterializedNotifications,
 } from './src/server/db.ts';
 import {
   authenticateToken,
@@ -395,106 +398,68 @@ app.get('/api/users/paginated', async (req, res) => {
 });
 
 // ============================================================================
-// 3.5. PRE-AGGREGATED DASHBOARD KPI ENGINE & CACHE
+// 3.5. EVENT-DRIVEN MATERIALIZED KPI & NOTIFICATION ENGINE
 // ============================================================================
-interface DashboardKPICache {
-  users: { total: number; admins: number; disabled: number; active: number };
-  permits: { pending: number; approved: number; rejected: number; total: number; printed: number };
-  revenue: { totalRevenue: number; totalReceipts: number; currency: string };
-  verifications: { total: number; warnings: number; illegal: number };
-  unregisteredReports: { total: number; pending: number };
-  calculatedAt: string;
-}
-
-let cachedDashboardKPIs: DashboardKPICache | null = null;
-let lastKpiCalculationTime = 0;
-
-export async function computeAndCacheDashboardKPIs(): Promise<DashboardKPICache> {
-  try {
-    const [users, registrations, receipts, verifications, unregistered] = await Promise.all([
-      dbGetAll('system_users').catch(() => []),
-      dbGetAll('motorcycle_registrations').catch(() => []),
-      dbGetAll('payment_receipts').catch(() => []),
-      dbGetAll('verification_logs').catch(() => []),
-      dbGetAll('unregistered_vehicle_reports').catch(() => []),
-    ]);
-
-    const totalUsers = users.length;
-    const admins = users.filter((u: any) => u.role === 'admin' || u.role === 'superadmin').length;
-    const disabled = users.filter((u: any) => u.status === 'disabled').length;
-
-    const pendingPermits = registrations.filter((r: any) => r.status === 'pending_approval').length;
-    const approvedPermits = registrations.filter((r: any) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print').length;
-    const printedPermits = registrations.filter((r: any) => r.status === 'printed').length;
-    const rejectedPermits = registrations.filter((r: any) => r.status === 'rejected').length;
-
-    let totalRevenue = 0;
-    receipts.forEach((r: any) => {
-      const amount = Number(r.amountPaid ?? r.amount ?? 0);
-      if (!isNaN(amount) && amount > 0) totalRevenue += amount;
-    });
-
-    const totalVerifications = verifications.length;
-    const warnings = verifications.filter((v: any) => v.verificationStatus === 'warning' || v.status === 'warning').length;
-    const illegal = verifications.filter((v: any) => v.verificationStatus === 'flagged' || v.verificationStatus === 'unregistered' || v.status === 'illegal').length;
-
-    const totalUnregistered = unregistered.length;
-    const pendingUnregistered = unregistered.filter((u: any) => u.status === 'pending' || !u.status).length;
-
-    const kpis: DashboardKPICache = {
-      users: {
-        total: totalUsers,
-        admins,
-        disabled,
-        active: totalUsers - disabled,
-      },
-      permits: {
-        pending: pendingPermits,
-        approved: approvedPermits,
-        printed: printedPermits,
-        rejected: rejectedPermits,
-        total: registrations.length,
-      },
-      revenue: {
-        totalRevenue,
-        totalReceipts: receipts.length,
-        currency: 'ETB',
-      },
-      verifications: {
-        total: totalVerifications,
-        warnings,
-        illegal,
-      },
-      unregisteredReports: {
-        total: totalUnregistered,
-        pending: pendingUnregistered,
-      },
-      calculatedAt: new Date().toISOString(),
-    };
-
-    cachedDashboardKPIs = kpis;
-    lastKpiCalculationTime = Date.now();
-    return kpis;
-  } catch (err: any) {
-    console.error('[KPI Aggregation Error]:', err);
-    if (cachedDashboardKPIs) return cachedDashboardKPIs;
-    throw err;
-  }
-}
-
-// Scheduled Background Pre-Aggregation (Every 3 minutes)
-setInterval(() => {
-  computeAndCacheDashboardKPIs().catch(() => {});
-}, 180000);
-
-// GET /api/dashboard/kpis (Pre-Aggregated High-Speed KPI endpoint)
+// Write-side aggregated KPI reader (O(1) time without querying raw data on the fly)
 app.get('/api/dashboard/kpis', async (req, res) => {
   try {
-    if (!cachedDashboardKPIs || Date.now() - lastKpiCalculationTime > 300000) {
-      await computeAndCacheDashboardKPIs();
-    }
-    res.setHeader('X-Cache-Status', 'HIT');
-    res.json({ success: true, data: cachedDashboardKPIs });
+    const kpiRow = await getMaterializedKPIs();
+    const data = {
+      users: {
+        total: Number(kpiRow?.totalUsers ?? kpiRow?.total_users ?? 0),
+        admins: Number(kpiRow?.adminUsers ?? kpiRow?.admin_users ?? 0),
+        disabled: Number(kpiRow?.disabledUsers ?? kpiRow?.disabled_users ?? 0),
+        active: Number(kpiRow?.activeUsers ?? kpiRow?.active_users ?? 0),
+      },
+      permits: {
+        pending: Number(kpiRow?.pendingPermits ?? kpiRow?.pending_permits ?? 0),
+        approved: Number(kpiRow?.approvedPermits ?? kpiRow?.approved_permits ?? 0),
+        printed: Number(kpiRow?.printedPermits ?? kpiRow?.printed_permits ?? 0),
+        rejected: Number(kpiRow?.rejectedPermits ?? kpiRow?.rejected_permits ?? 0),
+        total: Number(kpiRow?.totalPermits ?? kpiRow?.total_permits ?? 0),
+      },
+      revenue: {
+        totalRevenue: Number(kpiRow?.totalRevenue ?? kpiRow?.total_revenue ?? 0),
+        totalReceipts: Number(kpiRow?.totalReceipts ?? kpiRow?.total_receipts ?? 0),
+        currency: kpiRow?.currency || 'ETB',
+      },
+      verifications: {
+        total: Number(kpiRow?.totalVerifications ?? kpiRow?.total_verifications ?? 0),
+        warnings: Number(kpiRow?.warningVerifications ?? kpiRow?.warning_verifications ?? 0),
+        illegal: Number(kpiRow?.illegalVerifications ?? kpiRow?.illegal_verifications ?? 0),
+      },
+      unregisteredReports: {
+        total: Number(kpiRow?.totalUnregistered ?? kpiRow?.total_unregistered ?? 0),
+        pending: Number(kpiRow?.pendingUnregistered ?? kpiRow?.pending_unregistered ?? 0),
+      },
+      todaySubmissions: Number(kpiRow?.todaySubmissions ?? kpiRow?.today_submissions ?? 0),
+      activeOfficers: Number(kpiRow?.activeOfficers ?? kpiRow?.active_officers ?? 0),
+      calculatedAt: kpiRow?.updatedAt || kpiRow?.updated_at || new Date().toISOString(),
+    };
+
+    res.setHeader('X-Materialized-View', 'TRIGGER_DRIVEN');
+    res.json({ success: true, data });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
+// Event-driven materialized notifications endpoint
+app.get('/api/notifications/materialized', async (req, res) => {
+  try {
+    const role = String(req.query.role || '');
+    const notifs = await getMaterializedNotifications(role);
+    res.json({ success: true, notifications: notifs });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
+// Write-side action events query endpoint
+app.get('/api/actions', async (req, res) => {
+  try {
+    const actions = await dbGetAll('actions');
+    res.json({ success: true, actions });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || String(err) });
   }
@@ -525,6 +490,12 @@ app.post('/api/auth/users', async (req, res) => {
     };
 
     await dbUpsert('system_users', userId, formattedUser);
+    await recordSystemAction({
+      actionType: 'USER_CREATED',
+      entityType: 'user',
+      entityId: userId,
+      payload: { role: formattedUser.role, status: formattedUser.status },
+    });
     const sanitized = { ...formattedUser };
     delete sanitized.passwordHash;
     res.json({ success: true, user: sanitized });
@@ -546,6 +517,14 @@ app.post('/api/auth/users/update', async (req, res) => {
       delete cleanUpdates.password;
     }
     await dbUpdateFields('system_users', id, cleanUpdates);
+    if (cleanUpdates.status) {
+      await recordSystemAction({
+        actionType: 'USER_STATUS_CHANGED',
+        entityType: 'user',
+        entityId: id,
+        payload: { status: cleanUpdates.status },
+      });
+    }
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || String(err) });
@@ -589,7 +568,14 @@ app.delete('/api/auth/users/:id', async (req, res) => {
     if (!id) {
       return res.status(400).json({ success: false, error: 'Missing user ID' });
     }
+    const existing = await dbGetById('system_users', id);
     await dbDelete('system_users', id);
+    await recordSystemAction({
+      actionType: 'USER_DELETED',
+      entityType: 'user',
+      entityId: id,
+      payload: { role: existing?.role, status: existing?.status },
+    });
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || String(err) });
@@ -883,6 +869,19 @@ app.post('/api/registrations', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing registration ID' });
     }
     await dbUpsert('motorcycle_registrations', reg.id, reg);
+    await recordSystemAction({
+      actionType: 'REGISTRATION_CREATED',
+      entityType: 'registration',
+      entityId: reg.id,
+      actorBadgeId: reg.registeredBy,
+      payload: {
+        fullName: reg.fullName,
+        plateNumber: reg.plateNumber,
+        status: reg.status || 'pending_approval',
+        vehicleCategory: reg.vehicleCategory,
+        subCity: reg.subCity,
+      },
+    });
     broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: reg.id, data: reg });
     res.json({ success: true });
   } catch (err: any) {
@@ -897,7 +896,21 @@ app.post('/api/registrations/status', async (req, res) => {
     if (!id) {
       return res.status(400).json({ error: 'Missing registration ID' });
     }
+    const existing = await dbGetById('motorcycle_registrations', id);
     await dbUpdateFields('motorcycle_registrations', id, otherFields);
+    if (otherFields.status && otherFields.status !== existing?.status) {
+      await recordSystemAction({
+        actionType: 'REGISTRATION_STATUS_CHANGED',
+        entityType: 'registration',
+        entityId: id,
+        actorBadgeId: (req as any).user?.badgeId,
+        payload: {
+          previousStatus: existing?.status,
+          newStatus: otherFields.status,
+          plateNumber: existing?.plateNumber,
+        },
+      });
+    }
     broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: id, data: otherFields });
     res.json({ success: true });
   } catch (err: any) {
@@ -912,9 +925,23 @@ app.post('/api/registrations/update', async (req, res) => {
     if (!targetId) {
       return res.status(400).json({ error: 'Missing registration ID' });
     }
+    const existing = await dbGetById('motorcycle_registrations', targetId);
     const cleanUpdates = updates ? { ...updates } : { ...req.body };
     delete cleanUpdates.id;
     await dbUpdateFields('motorcycle_registrations', targetId, cleanUpdates);
+    if (cleanUpdates.status && cleanUpdates.status !== existing?.status) {
+      await recordSystemAction({
+        actionType: 'REGISTRATION_STATUS_CHANGED',
+        entityType: 'registration',
+        entityId: targetId,
+        actorBadgeId: (req as any).user?.badgeId,
+        payload: {
+          previousStatus: existing?.status,
+          newStatus: cleanUpdates.status,
+          plateNumber: existing?.plateNumber,
+        },
+      });
+    }
     broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: targetId, data: cleanUpdates });
     res.json({ success: true });
   } catch (err: any) {
@@ -925,7 +952,15 @@ app.post('/api/registrations/update', async (req, res) => {
 app.delete('/api/registrations/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    const existing = await dbGetById('motorcycle_registrations', id);
     await dbDelete('motorcycle_registrations', id);
+    await recordSystemAction({
+      actionType: 'REGISTRATION_DELETED',
+      entityType: 'registration',
+      entityId: id,
+      actorBadgeId: (req as any).user?.badgeId,
+      payload: { previousStatus: existing?.status },
+    });
     broadcastSseChange({ collection: 'motorcycle_registrations', action: 'delete', docId: id });
     res.json({ success: true });
   } catch (err: any) {
@@ -938,7 +973,15 @@ app.post('/api/registrations/bulk-delete', async (req, res) => {
     const { ids } = req.body;
     if (Array.isArray(ids)) {
       for (const id of ids) {
+        const existing = await dbGetById('motorcycle_registrations', id);
         await dbDelete('motorcycle_registrations', id);
+        await recordSystemAction({
+          actionType: 'REGISTRATION_DELETED',
+          entityType: 'registration',
+          entityId: id,
+          actorBadgeId: (req as any).user?.badgeId,
+          payload: { previousStatus: existing?.status },
+        });
         broadcastSseChange({ collection: 'motorcycle_registrations', action: 'delete', docId: id });
       }
     }
@@ -1059,6 +1102,18 @@ app.post('/api/unregistered-reports', async (req, res) => {
       return res.status(400).json({ error: 'Missing report ID' });
     }
     await dbUpsert('unregistered_vehicle_reports', report.id, report);
+    await recordSystemAction({
+      actionType: 'UNREGISTERED_REPORT_FILED',
+      entityType: 'unregistered_report',
+      entityId: report.id,
+      actorBadgeId: report.officerBadgeId,
+      payload: {
+        driverName: report.driverName,
+        chassisNumber: report.chassisNumber,
+        subCity: report.subCity,
+        locationName: report.locationName,
+      },
+    });
     broadcastSseChange({ collection: 'unregistered_vehicle_reports', action: 'upsert', docId: report.id, data: report });
     res.json({ success: true });
   } catch (err: any) {
@@ -1073,6 +1128,15 @@ app.post('/api/unregistered-reports/status', async (req, res) => {
       return res.status(400).json({ error: 'Missing report ID' });
     }
     await dbUpdateFields('unregistered_vehicle_reports', id, { status, resolutionNotes });
+    if (status === 'resolved' || status === 'registered') {
+      await recordSystemAction({
+        actionType: 'UNREGISTERED_REPORT_RESOLVED',
+        entityType: 'unregistered_report',
+        entityId: id,
+        actorBadgeId: (req as any).user?.badgeId,
+        payload: { status, resolutionNotes },
+      });
+    }
     broadcastSseChange({ collection: 'unregistered_vehicle_reports', action: 'upsert', docId: id, data: { status, resolutionNotes } });
     res.json({ success: true });
   } catch (err: any) {
@@ -1099,6 +1163,18 @@ app.post('/api/verification-logs', async (req, res) => {
       return res.status(400).json({ error: 'Missing verification log ID' });
     }
     await dbUpsert('verification_logs', log.id, log);
+    await recordSystemAction({
+      actionType: 'VERIFICATION_LOGGED',
+      entityType: 'verification',
+      entityId: log.id,
+      actorBadgeId: log.officerBadgeId || log.badgeId,
+      payload: {
+        plateNumber: log.plateNumber,
+        verificationStatus: log.verificationStatus,
+        notes: log.notes || log.officerNotes,
+        locationName: log.locationName,
+      },
+    });
     broadcastSseChange({ collection: 'verification_logs', action: 'upsert', docId: log.id, data: log });
     res.json({ success: true });
   } catch (err: any) {
@@ -1123,6 +1199,18 @@ app.post('/api/payment-receipts', async (req, res) => {
     }
     // 1. Audit ledger record write
     await dbUpsert('payment_receipts', receipt.id, receipt);
+    await recordSystemAction({
+      actionType: 'PAYMENT_RECEIVED',
+      entityType: 'payment',
+      entityId: receipt.id,
+      actorBadgeId: receipt.enteredBy,
+      payload: {
+        amount: receipt.amount,
+        receiptNumber: receipt.receiptNumber,
+        plateNumber: receipt.plateNumber,
+        ownerRegistrationId: receipt.ownerRegistrationId,
+      },
+    });
     broadcastSseChange({ collection: 'payment_receipts', action: 'upsert', docId: receipt.id, data: receipt });
 
     // 2. Account Ledger Model: Atomically update vehicle registration's active term & financial status
@@ -1170,6 +1258,13 @@ app.delete('/api/payment-receipts/:id', async (req, res) => {
     const receiptId = req.params.id;
     const existingReceipt = await dbGetById('payment_receipts', receiptId);
     await dbDelete('payment_receipts', receiptId);
+    await recordSystemAction({
+      actionType: 'PAYMENT_DELETED',
+      entityType: 'payment',
+      entityId: receiptId,
+      actorBadgeId: (req as any).user?.badgeId,
+      payload: { amount: existingReceipt?.amount },
+    });
     broadcastSseChange({ collection: 'payment_receipts', action: 'delete', docId: receiptId });
 
     // Re-evaluate the vehicle's financial ledger status if attached to a registration
