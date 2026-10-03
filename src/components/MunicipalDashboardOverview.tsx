@@ -101,7 +101,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   const [searchPlate, setSearchPlate] = useState('');
   const [selectedRegForModal, setSelectedRegForModal] = useState<MotorcycleRegistration | null>(null);
   const [showLookupModal, setShowLookupModal] = useState(false);
-  const [selectedLogForDetails, setSelectedLogForDetails] = useState<VerificationLog | null>(null);
   const [carouselModal, setCarouselModal] = useState<{
     items: DocumentViewerItem[];
     initialIndex: number;
@@ -982,89 +981,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
 
-      {/* RECENT FIELD VERIFICATIONS FEED FOR OFFICER DASHBOARD */}
-      {((userRole === 'officer' && getPermissionState(userRole, 10) !== 'deny') || userRole === 'admin' || userRole === 'superadmin') && (
-        <div className="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-4 shadow-xs space-y-3">
-          <div className="flex justify-between items-center border-b border-outline-variant pb-2.5">
-            <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[16px] sm:text-[18px] shrink-0">history</Icon>
-              <h3 className="text-sm sm:text-base font-bold text-on-surface  tracking-wider">
-                {isAmharic ? 'የቅርብ ጊዜ የመስክ ፍተሻዎች' : 'Recent Field Verifications'}
-              </h3>
-            </div>
-            <button
-              type="button"
-              onClick={() => onQuickAction && onQuickAction('inspection_report_all')}
-              className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer whitespace-nowrap"
-            >
-              <span>{isAmharic ? 'ሁሉንም ታሪክ ይመልከቱ' : 'View Full Verification Logs'}</span>
-              <Icon className="material-symbols-outlined text-[14px]">arrow_forward</Icon>
-            </button>
-          </div>
-
-          {scopedVerificationLogs.length === 0 ? (
-            <div className="p-6 text-center text-xs text-secondary space-y-1">
-              <p className="font-bold">{isAmharic ? 'ምንም የማረጋገጫ ታሪክ አልተመዘገበም' : 'No verification logs recorded yet.'}</p>
-              <p className="text-[11px]">
-                {isAmharic ? 'የሞባይል ካሜራ በመጠቀም QR ፍቃድ ይፈትሹ።' : 'Use the camera scanner or instant plate search to log new verifications.'}
-              </p>
-            </div>
-          ) : (
-            <div className="divide-y divide-outline-variant">
-              {scopedVerificationLogs.slice(0, 4).map((log) => (
-                <div
-                  key={log.id}
-                  className="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-surface-container-low/50 transition-colors px-1"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold shrink-0 shadow-2xs ${
-                      log.verificationStatus === 'verified'
-                        ? 'bg-emerald-600'
-                        : 'bg-amber-600'
-                    }`}>
-                      <Icon className="material-symbols-outlined text-[18px]">
-                        {log.verificationStatus === 'verified' ? 'verified' : 'warning'}
-                      </Icon>
-                    </div>
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs text-primary">{log.plateNumber}</span>
-                        <span className="font-medium text-xs text-on-surface">{log.fullName}</span>
-                      </div>
-                      <p className="text-[10px] text-secondary">
-                        {log.officerNotes} • <span className="font-mono">{formatEthiopianDateTime(log.scannedAt, isAmharic ? 'am' : 'en')}</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between sm:justify-end gap-3 text-xs">
-                    <span className="text-[10px] text-secondary font-mono">
-                      {log.officerBadgeId || userBadgeId}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold  border ${
-                        log.verificationStatus === 'verified'
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                          : 'bg-amber-50 text-amber-800 border-amber-200'
-                      }`}
-                    >
-                      {log.verificationStatus}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedLogForDetails(log)}
-                      className="p-1 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container cursor-pointer"
-                    >
-                      <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       {/* MODAL: INSPECT PERMIT CARD MODAL */}
       {selectedRegForModal && (
         <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
@@ -1075,40 +991,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             onClose={() => setSelectedRegForModal(null)}
           >
             <QRCodeCard registration={selectedRegForModal} lang={lang} />
-          </ZoomableDocumentContainer>
-        </div>
-      )}
-
-      {/* MODAL: INSPECT LOG DETAILS DIGITAL ID CARD */}
-      {selectedLogForDetails && (
-        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
-          <ZoomableDocumentContainer
-            lang={lang}
-            userRole={userRole}
-            title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
-            onClose={() => setSelectedLogForDetails(null)}
-          >
-            <QRCodeCard
-              registration={
-                registrations.find((r) => r.plateNumber === selectedLogForDetails.plateNumber) || {
-                  id: selectedLogForDetails.id,
-                  fullName: selectedLogForDetails.fullName,
-                  phone: selectedLogForDetails.phone,
-                  userPortraitPhoto: selectedLogForDetails.userPortraitPhoto,
-                  nationalIdPhoto: selectedLogForDetails.nationalIdPhoto || '',
-                  drivingLicensePhoto: selectedLogForDetails.drivingLicensePhoto || '',
-                  drivingPermitPhoto: selectedLogForDetails.drivingPermitPhoto || '',
-                  vehicleCategory: selectedLogForDetails.vehicleCategory,
-                  engineOrSerialNo: selectedLogForDetails.engineOrSerialNo,
-                  plateNumber: selectedLogForDetails.plateNumber,
-                  registrationDate: selectedLogForDetails.scannedAt,
-                  status: selectedLogForDetails.permitStatus,
-                  qrCodeData: selectedLogForDetails.plateNumber,
-                  registeredBy: selectedLogForDetails.officerBadgeId || userBadgeId,
-                }
-              }
-              lang={lang}
-            />
           </ZoomableDocumentContainer>
         </div>
       )}
