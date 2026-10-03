@@ -289,12 +289,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             <Icon className="material-symbols-outlined text-[20px] text-amber-600 dark:text-amber-400 shrink-0">lock</Icon>
             <div>
               <p className="font-black">
-                {isAmharic ? 'የማስተካከል ፈቃድ አልተሰጠም (RBAC Restricted)' : 'Access Restricted by Role Permissions'}
+                {isAmharic ? 'የማስተካከል ፈቃድ አልተሰጠም' : 'Editing Disabled'}
               </p>
               <p className="text-[11px] mt-0.5 text-amber-800 dark:text-amber-300">
                 {isAmharic
-                  ? 'የእርስዎ ሚና የአባላት መረጃን የማስተካከል ፈቃድ የለውም። መረጃዎችን መመልከት ብቻ ይችላሉ።'
-                  : 'Your user role does not currently have permissions to edit registration records. Changes cannot be saved.'}
+                  ? 'የአባላት መረጃን የማስተካከል ፈቃድ የለዎትም።'
+                  : 'Editing is disabled for your user role.'}
               </p>
             </div>
           </div>
@@ -602,12 +602,6 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
           {/* TAB 3: DOCUMENTS & PHOTOS */}
           {activeTab === 'documents' && (
             <div className="space-y-4">
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                {isAmharic
-                  ? 'የተያያዙ ፎቶዎችንና ሰነዶችን መተካት፣ ማጉላት ወይም አዲስ ፋይል ማያያዝ ይችላሉ።'
-                  : 'Update or replace uploaded identity, driving permit, and vehicle document photos.'}
-              </p>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <DocumentUploadInput
                   id="edit-portrait-input"

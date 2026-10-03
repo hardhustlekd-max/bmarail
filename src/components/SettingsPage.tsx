@@ -416,8 +416,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     </h2>
                     <p className="text-xs text-outline mt-0.5">
                       {isAmharic
-                        ? 'የመለያዎን ደህንነት ለመጠበቅ ጠንካራ የይለፍ ቃል ይምረጡ'
-                        : 'Update your login password to ensure security of your role account'}
+                        ? 'የመግቢያ የይለፍ ቃልዎን ይቀይሩ'
+                        : 'Update your login password'}
                     </p>
                   </div>
                 </div>

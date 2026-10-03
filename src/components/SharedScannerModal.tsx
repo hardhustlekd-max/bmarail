@@ -1349,12 +1349,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-amber-950 dark:text-amber-100 text-xs">
-                          {isAmharic ? 'ማስጠንቀቂያ፡ ማረጋገጫ በመጠባበቅ ላይ ያለ' : 'WARNING: PENDING APPROVAL'}
+                          {isAmharic ? 'ማረጋገጫ በመጠባበቅ ላይ ያለ' : 'PENDING APPROVAL'}
                         </p>
                         <p className="mt-0.5 text-[10px] text-amber-900 dark:text-amber-200 font-extrabold leading-tight">
                           {isAmharic
-                            ? 'ይህ ተሽከርካሪ በስርዓቱ ከተመዘገቡት መረጃዎች መካከል ቢገኝም በከተማው አስተዳደር ገና አልጸደቀም።'
-                            : 'This vehicle record exists in the system but is PENDING ADMIN APPROVAL.'}
+                            ? 'ይህ ተሽከርካሪ በአስተዳዳሪ ገና አልጸደቀም።'
+                            : 'This vehicle record is pending admin approval.'}
                         </p>
                       </div>
                     </div>

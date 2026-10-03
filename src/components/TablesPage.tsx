@@ -884,11 +884,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     </button>
                   )}
                 </div>
-                <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                  {isAmharic
-                    ? 'በተመረጡት አባላት ላይ የጅምላ እርምጃዎችን መፈጸም ይችላሉ'
-                    : 'Perform bulk actions on the selected member records'}
-                </p>
               </div>
             </div>
 
@@ -1228,8 +1223,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
                     {isAmharic
-                      ? 'አዲስ የሞተር ብስክሌት መረጃዎች ሲመዘገቡ እዚህ ይታያሉ።'
-                      : 'Vehicle permit applications will appear here once submitted.'}
+                      ? 'አዲስ የተመዘገቡ መረጃዎች እዚህ ይታያሉ።'
+                      : 'New registrations will appear here.'}
                   </p>
                 </div>
               ) : filteredRegistrations.length === 0 ? (
@@ -2520,8 +2515,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             <p className="text-xs text-[#64748B] dark:text-[#8A99AD] leading-relaxed">
               {isAmharic
-                ? 'ይህ እርምጃ መረጃዎችን ከመረጃ ቋቱ (Database) ሙሉ በሙሉ የሚያጠፋ ሲሆን ወደ ኋላ መመለስ አይቻልም።'
-                : 'This action will permanently remove all selected registrations from the database and cannot be undone.'}
+                ? 'የተመረጡትን መዝገቦች በዘላቂነት ይሰርዛል።'
+                : 'This action permanently deletes all selected registrations.'}
             </p>
 
             {/* Selected preview list */}

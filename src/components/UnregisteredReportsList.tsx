@@ -304,8 +304,8 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             </p>
             <p className="text-xs text-[#64748B] dark:text-[#8A99AD] max-w-sm mx-auto">
               {isAmharic
-                ? 'በቀረቡት ማጣሪያዎች መሠረት ምንም ሪፖርት አልተገኘም። እባክዎን ማጣሪያዎቹን ይቀይሩ።'
-                : 'No incident reports match your current search criteria or status filters.'}
+                ? 'ምንም ሪፖርት አልተገኘም።'
+                : 'No incident reports found for current filters.'}
             </p>
           </div>
         ) : (

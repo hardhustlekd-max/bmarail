@@ -111,8 +111,8 @@ export default function App() {
     () => {
       if (isSessionExpiredOnBoot) {
         return getStoredLang() === 'am'
-          ? 'የስራ ክፍለ ጊዜዎ ከ15 ደቂቃ እንቅስቃሴ አልባነት በኋላ ለደህንነት ሲባል ተዘግቷል። እባክዎ እንደገና ይግቡ።'
-          : 'Your session was cleared after 15 minutes of inactivity for security. Please sign in again.';
+          ? 'የስራ ክፍለ ጊዜዎ በእንቅስቃሴ አልባነት ምክንያት ተዘግቷል። እባክዎ እንደገና ይግቡ።'
+          : 'Session expired due to inactivity. Please sign in again.';
       }
       return getStoredSessionExpiredReason();
     }

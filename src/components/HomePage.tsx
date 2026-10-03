@@ -725,8 +725,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
             ? `${pendingRegs.length} አዳዲስ ማመልከቻዎች የስራ አስኪያጅ ውሳኔ ይጠብቃሉ`
             : `${pendingRegs.length} Registration Submissions Awaiting Approval`,
           description: isAmharic
-            ? `በፀሐፊዎች የተመዘገቡ ${pendingRegs.length} አዳዲስ የሞተር ምዝገባ ማመልከቻዎች የስራ አስኪያጅ ማረጋገጫና ውሳኔ ይፈልጋሉ።`
-            : `${pendingRegs.length} new motor registration applications submitted by clerks require manager verification and approval.`,
+            ? `${pendingRegs.length} ማመልከቻዎች ውሳኔ ይጠብቃሉ።`
+            : `${pendingRegs.length} applications awaiting manager approval.`,
           type: 'pending_approval',
           icon: 'how_to_reg',
           iconBg: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
@@ -739,8 +739,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
             id: `sub_pending_${reg.id}`,
             title: `${reg.fullName} (${reg.plateNumber || reg.id})`,
             description: isAmharic
-              ? `አዲስ የተሽከርካሪ ምዝገባ - ክፍለ ከተማ: ${reg.subCity || 'ባህር ዳር'}`
-              : `New Motor Registration - Subcity: ${reg.subCity || 'Bahir Dar'}`,
+              ? `አዲስ ምዝገባ - ${reg.subCity || 'ባህር ዳር'}`
+              : `New Registration - ${reg.subCity || 'Bahir Dar'}`,
             time: reg.registrationDate,
             actionPage: 'tables',
             actionTab: 'pending',
@@ -752,8 +752,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
           id: `reg_pending_single_${reg.id}`,
           title: isAmharic ? `አዲስ ማመልከቻ: ${reg.fullName} (${reg.plateNumber || reg.id})` : `New Submission: ${reg.fullName} (${reg.plateNumber || reg.id})`,
           description: isAmharic
-            ? `የማመልከቻ ቁጥር ${reg.plateNumber || reg.id} በፀሐፊ ተመዝግቦ የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።`
-            : `Registration application for ${reg.fullName} (${reg.plateNumber || reg.id}) submitted by clerk is waiting for manager decision.`,
+            ? 'ማመልከቻው የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።'
+            : 'Application awaiting manager review.',
           time: reg.registrationDate,
           type: 'pending_approval',
           icon: 'how_to_reg',
@@ -777,8 +777,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
             ? `${flaggedLogs.length} የፍተሻ ጥሰቶችና ማስጠንቀቂያዎች ተመዝግበዋል`
             : `${flaggedLogs.length} Field Inspection Violations Logged`,
           description: isAmharic
-            ? 'በመንገድ ፍተሻ ወቅት በኦፊሰሮች የተመዘገቡ የህግ ጥሰቶች የስራ አስኪያጅ ግምገማ ይፈልጋሉ።'
-            : 'Patrol officers reported non-compliant vehicle violations needing manager review.',
+            ? 'በኦፊሰሮች የተመዘገቡ የፍተሻ ጥሰቶች።'
+            : 'Patrol officers reported vehicle violations.',
           type: 'flagged_inspection',
           icon: 'warning',
           iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
@@ -825,8 +825,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
             ? `${unregisteredReports.length} ያልተመዘገቡ ሞተሮች ጥቆማዎች ቀርበዋል`
             : `${unregisteredReports.length} Unregistered Vehicle Patrol Reports`,
           description: isAmharic
-            ? 'በኦፊሰሮች በሜዳ ላይ የተገኙ ያልተመዘገቡ ተሽከርካሪዎች ሪፖርቶች ለክትትል ቀርበዋል።'
-            : 'Field officers reported unregistered motorcycle incidents during patrol duty.',
+            ? 'ያልተመዘገቡ ተሽከርካሪዎች የመስክ ሪፖርት።'
+            : 'Field officers reported unregistered vehicles.',
           type: 'unregistered_alert',
           icon: 'no_crash',
           iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
@@ -927,8 +927,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
             ? `${approvedRegs.length} ማመልከቻዎች በስራ አስኪያጅ ጸድቀዋል`
             : `${approvedRegs.length} Registration Submissions Approved by Manager`,
           description: isAmharic
-            ? 'የተረጋገጡ አዳዲስ የሞተር ፈቃዶች፤ የባጅ/ሰሌዳ ህትመት ማከናወን ወይም ለባለቤቱ መስጠት ይችላሉ።'
-            : 'Newly approved motor registration applications ready for permit card printing and issuing.',
+            ? 'የጸደቁ ፈቃዶች ለህትመትና ፈቃድ አሰጣጥ ዝግጁ ናቸው።'
+            : 'Approved permits ready for card printing and issuance.',
           type: 'print_order',
           icon: 'check_circle',
           iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',

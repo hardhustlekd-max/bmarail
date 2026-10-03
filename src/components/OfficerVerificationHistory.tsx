@@ -524,7 +524,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
               {isAmharic ? 'ምንም የፍተሻ ታሪክ መዝገብ አልተገኘም' : 'No verification history records found.'}
             </p>
             <p className="hidden sm:block text-xs text-[#64748B] dark:text-[#8A99AD]">
-              {isAmharic ? 'በካሜራ ስካነር አዲስ QR በመቃኘት የቀጥታ ፍተሻ ማረጋገጫ ያስመዝግቡ።' : 'Scan a vehicle permit QR code to generate a new field verification log.'}
+              {isAmharic ? 'በካሜራ ስካነር አዲስ ፍተሻ ያረጋግጡ።' : 'Scan a permit QR code to log verifications.'}
             </p>
           </div>
         ) : (

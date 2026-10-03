@@ -254,7 +254,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                   : isAmharic ? 'ፎቶ/ምስል ይጫኑ' : 'Upload Photo'}
               </p>
               <p className={`text-[10px] ${hasError ? 'text-red-500 font-semibold' : 'text-secondary'}`}>
-                {isAmharic ? 'በካሜራ ለማንሳት ወይም ፋይል ለመምረጥ እዚህ ይጫኑ' : 'Tap here to capture with camera or select file'}
+                {isAmharic ? 'ካሜራ ወይም ፋይል ይምረጡ' : 'Camera or device file'}
               </p>
             </>
           )}

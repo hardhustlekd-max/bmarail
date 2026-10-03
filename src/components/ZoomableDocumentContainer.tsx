@@ -252,12 +252,12 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
         </div>
         <div>
           <h4 className="font-extrabold text-base text-on-surface">
-            {isAmharic ? 'የመመልከት ጥያቄ ያስፈልጋል' : 'Clerk View Request Required'}
+            {isAmharic ? 'የመመልከት ጥያቄ ያስፈልጋል' : 'View Request Required'}
           </h4>
           <p className="text-xs text-secondary mt-1.5 leading-relaxed">
             {isAmharic
-              ? 'ክለርኮች የባለቤት መታወቂያ፣ የሞተር ተለጣፊ እና የመንቀሳቀሻ ፍቃድ ሰነዶችን ለማየት በቅድሚያ የዕይታ ጥያቄ ማቅረብ አለባቸው።'
-              : 'As a Clerk, official movement permits, owner ID documents, and sticker QR codes require an explicit view request.'}
+              ? 'ይህን ሰነድ ለመመልከት ማረጋገጫ ያስፈልጋል።'
+              : 'Viewing this document requires confirmation.'}
           </p>
         </div>
 
@@ -265,8 +265,8 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
           <Icon className="material-symbols-outlined text-amber-500 text-[18px] shrink-0">info</Icon>
           <span>
             {isAmharic
-              ? 'የመመልከት ጥያቄዎ በቀጥታ በስርዓቱ ኦዲት ይመዘገባል።'
-              : 'Submitting a view request will log your badge ID for security audit.'}
+              ? 'የዕይታ እንቅስቃሴዎ በደህንነት ኦዲት ይመዘገባል።'
+              : 'View action will be logged in security audit.'}
           </span>
         </div>
 

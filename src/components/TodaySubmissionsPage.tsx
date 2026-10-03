@@ -1777,8 +1777,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">warning</Icon>
               <span>
                 {isAmharic
-                  ? 'እነዚህን ማመልከቻዎች በአንድ ጊዜ በማፅደቅ የባለቤትነት ሁኔታቸው ይጸድቃል፤ መዝገቦቹም በተሳካ ሁኔታ ወደ ስርዓቱ ገቢ ይሆናሉ።'
-                  : 'Approving these submissions will change their status to Approved and update the database records. This action will process all selected records at once.'}
+                  ? 'የተመረጡትን ማመልከቻዎች በአንድ ጊዜ ያጸድቃል።'
+                  : 'Approving will set status to Approved for all selected submissions.'}
               </span>
             </div>
 

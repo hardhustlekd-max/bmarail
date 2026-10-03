@@ -1218,11 +1218,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     <Icon className="material-symbols-outlined text-[18px] text-emerald-600">account_balance</Icon>
                     <span>{isAmharic ? 'የአባልነት ክፍያ እርምጃዎች' : 'Membership Fee Actions'}</span>
                   </h4>
-                  <p className="text-xs text-[#64748B] dark:text-[#8A99AD] mt-1">
-                    {isAmharic
-                      ? 'የወርሃዊ መዋጮ ማትሪክስ መዝገብን ለማየት ወይም አዲስ ክፍያ ለመመዝገብ ከታች ያሉትን አቋራጮች ይጠቀሙ።'
-                      : 'Use quick links below to jump to the matrix table or record a new dues receipt.'}
-                  </p>
                 </div>
                 <div className="flex items-center gap-2 pt-1">
                   <button
@@ -1292,8 +1287,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[20px] shrink-0">lock</Icon>
               <span>
                 {isAmharic
-                  ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ የክፍያ ደረሰኝ መመዝገብ አልተፈቀደም (የማየት ፈቃድ ብቻ)።'
-                  : 'Read-only mode active: Creating new payment receipts is disabled for your role.'}
+                  ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ ደረሰኝ መመዝገብ ተገድቧል።'
+                  : 'Read-only mode: Creating receipts is disabled.'}
               </span>
             </div>
           )}

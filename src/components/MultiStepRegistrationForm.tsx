@@ -289,8 +289,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
     }
 
     const confirmMsg = isAmharic
-      ? 'ለስርዓቱ እና ዳታቤዝ ፍተሻ 100 ሙሉ የአባል መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) በራስ-ሰር መመዝገብ ይፈልጋሉ?'
-      : 'Do you want to auto-record 100 complete member records with sample image uploads (Portrait, National ID front/back, License, Permit, Receipt) for system and DB testing purposes?';
+      ? 'የሙከራ 100 ናሙና መዝገቦችን ወደ ዳታቤዝ ማስገባት ይፈልጋሉ?'
+      : 'Generate 100 sample member records with attachments for testing?';
 
     if (!window.confirm(confirmMsg)) return;
 
@@ -1146,7 +1146,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                   {isAmharic ? 'የኦንላይን ዳታቤዝ ማስቀመጥ አልተሳካም' : 'Online Storage Unsuccessful'}
                 </h4>
                 <p className="hidden sm:block text-[11px] text-secondary">
-                  {isAmharic ? 'የኮታ ወይም የመረብ ግንኙነት ችግር አጋጥሟል' : 'Cloud connection or quota limit encountered'}
+                  {isAmharic ? 'የመረብ ወይም የማስቀመጫ ችግር' : 'Network or cloud storage issue'}
                 </p>
               </div>
             </div>
@@ -1154,8 +1154,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
             <div className="space-y-2 text-xs leading-relaxed text-secondary">
               <p>
                 {isAmharic
-                  ? 'ተሽከርካሪውን በኦንላይን ፋየርቤዝ ዳታቤዝ ላይ ማስቀመጥ አልተሳካም።'
-                  : 'Saving the vehicle registration to the online cloud database was unsuccessful.'}
+                  ? 'ተሽከርካሪውን በዳታቤዝ ላይ ማስቀመጥ አልተሳካም።'
+                  : 'Cloud save unsuccessful.'}
               </p>
               {offlineErrorMsg && (
                 <div className="p-2.5 rounded-lg bg-surface-container border border-outline-variant text-[11px] font-mono text-amber-800 dark:text-amber-300">
@@ -1164,8 +1164,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
               )}
               <p className="font-bold text-on-surface pt-1">
                 {isAmharic
-                  ? 'መረጃው እንዳይጠፋ በብራውዘርዎ ሎካል ካሽ ውስጥ ማስቀመጥ ይፈልጋሉ?'
-                  : 'Would you like to store this registration locally in browser cache so no data is lost?'}
+                  ? 'መረጃው በብራውዘር ሎካል ካሽ ውስጥ ይቀመጥ?'
+                  : 'Save locally in browser cache?'}
               </p>
             </div>
 
@@ -1324,7 +1324,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <h4 className="font-extrabold text-xs sm:text-sm text-purple-950 dark:text-purple-100 truncate">
-                      {isAmharic ? 'ሱፐር አድሚን፡ 100 ናሙና መዝገቦችን በራስ-ሰር የመመዝገቢያ ባህሪ' : 'Super Admin: Auto-Record 100 Sample Members'}
+                      {isAmharic ? 'ሱፐር አድሚን፡ 100 ናሙና መዝገቦች ማስገቢያ' : 'Super Admin: Generate 100 Test Records'}
                     </h4>
                     <span className="text-[10px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-200 px-2 py-0.5 rounded-full shrink-0">
                       {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'SUPER ADMIN ONLY'}
@@ -1332,8 +1332,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                   </div>
                   <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed truncate">
                     {isAmharic
-                      ? 'ለዳታቤዝ እና ለስርዓት ፍተሻ 100 ሙሉ የአባልነት መዝገቦችን ከነናሙና ምስሎች (ጉርድ ፎቶ፣ መታወቂያ፣ መንጃ ፈቃድ፣ የፖሊስ ፈቃድ፣ ደረሰኝ) ጋር ያስገባል።'
-                      : 'Auto-generates 100 complete member registrations with sample image uploads (Portrait, ID Front/Back, Driving License, Permit, Bank Receipt) for system and DB testing.'}
+                      ? 'ለስርዓት ፍተሻ 100 ናሙና መዝገቦችን ያስገባል።'
+                      : 'Generates 100 sample records with mock documents for testing.'}
                   </p>
                 </div>
               </div>
@@ -2553,8 +2553,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           </div>
                           <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
                             {isAmharic
-                              ? 'ይህ አማራጭ ሲመረጥ ማመልከቻው በድብቅ ይቀመጣል፤ ለተራ ሰራተኞችና መኮንኖች በሰንጠረዦችና ፍተሻዎች ላይ አይታይም።'
-                              : 'When enabled, this application will be saved as hidden from other users (clerks and enforcement officers) in tables and scanning logs.'}
+                              ? 'ይህ ሲመረጥ ማመልከቻው ከአስተዳዳሪ ውጭ ለሆኑ ተጠቃሚዎች አይታይም።'
+                              : 'Hides this registration from non-admin users in tables and scan logs.'}
                           </p>
                         </div>
                       </label>
@@ -2576,13 +2576,13 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <div className="space-y-1">
                         <span className="text-xs font-extrabold text-amber-950 dark:text-amber-200 block">
                           {isAmharic
-                            ? 'የመረጃ እና የሰነድ ትክክለኛነት ማረጋገጫ ውል *'
+                            ? 'የመረጃ እና የሰነድ ትክክለኛነት ማረጋገጫ *'
                             : 'Data Correctness & Legal Validity Agreement *'}
                         </span>
                         <p className="text-[11px] text-amber-900 dark:text-amber-300 leading-relaxed">
                           {isAmharic
-                            ? 'እኔ ከላይ ስሜ የተጠቀሰው መዝጋቢ/ባለቤት፣ ያስገባሁት መረጃ፣ የክፍያ ደረሰኝ እና ያያያዝኩት የፖሊስ ፈቃድ ሰነድ ሙሉ በሙሉ እውነተኛና ህጋዊ መሆኑን አረጋግጣለሁ። ሐሰተኛ መረጃ ወይም የተጭበረበረ ሰነድ ማቅረብ በህግ ያስጠይቃል።'
-                            : 'I hereby confirm that all entered details, payment receipts, and attached Police Permit document are accurate, genuine, and legally valid. Providing false information or forged documentation is strictly punishable by law.'}
+                            ? 'ያስገባሁት መረጃ እና ያያያዝኳቸው ሰነዶች ትክክለኛና ህጋዊ መሆናቸውን አረጋግጣለሁ።'
+                            : 'I confirm all entered information and attached documents are accurate and legally valid.'}
                         </p>
                       </div>
                     </label>

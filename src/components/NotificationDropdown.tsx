@@ -173,8 +173,8 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             </p>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto break-words text-wrap">
               {isAmharic
-                ? 'አዳዲስ ምዝገባዎች፣ የፍተሻ ማንቂያዎች ወይም ሪፖርቶች ሲኖሩ እዚህ ይዘረዘራሉ።'
-                : 'New applications, inspection alerts, and reports will appear here.'}
+                ? 'አዳዲስ ማሳወቂያዎች እዚህ ይታያሉ።'
+                : 'New alerts and reports will appear here.'}
             </p>
           </div>
         ) : (

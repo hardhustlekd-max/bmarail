@@ -43,8 +43,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
     if (isReadOnly) {
       alert(
         isAmharic
-          ? 'ይህ አገልግሎት በእርስዎ ሚና ፈቃድ ገደብ ተጥሎበታል።'
-          : 'Submission restricted: Your current role does not have registration submission permissions.'
+          ? 'አዲስ ምዝገባ በሚናዎ ፈቃድ ተገድቧል።'
+          : 'Registration is disabled for your role.'
       );
       return { success: false, error: 'Registration submission restricted' };
     }
@@ -58,8 +58,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
           <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0">gpp_maybe</Icon>
           <span>
             {isAmharic
-              ? 'አዲስ አባልና ተሽከርካሪ መመዝገብ በእርስዎ ሚና ፈቃዶች (RBAC) መሰረት ገደብ ተጥሎበታል።'
-              : 'Registration Submission Restricted: New member registration is disabled by active role permissions.'}
+              ? 'አዲስ ምዝገባ በሚናዎ ፈቃድ ተገድቧል።'
+              : 'Registration disabled for your role.'}
           </span>
         </div>
       ) : isReadOnly ? (
@@ -67,8 +67,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
           <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0">warning</Icon>
           <span>
             {isAmharic
-              ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ በእርስዎ ሚና ፈቃዶች መሰረት ማስተካከል እና አዲስ ምዝገባ ማስገባት አይቻልም።'
-              : 'Read-Only Mode Active: Form editing and submissions are disabled based on your role permissions.'}
+              ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ ምዝገባ ተገድቧል።'
+              : 'Read-only mode: Submissions disabled.'}
           </span>
         </div>
       ) : null}

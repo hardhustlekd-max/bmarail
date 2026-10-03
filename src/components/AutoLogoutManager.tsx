@@ -262,8 +262,8 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
             </p>
             <p className="text-[11px] text-white/90 mt-0.5 leading-relaxed">
               {isAmharic
-                ? 'ተጨማሪ 15 ደቂቃዎች ተጨምረዋል። ስራዎን ያለማቋረጥ መቀጠል ይችላሉ።'
-                : '15 minutes added to your session. You can continue working safely.'}
+                ? 'ተጨማሪ 15 ደቂቃዎች ተጨምረዋል።'
+                : '15 minutes added to session.'}
             </p>
           </div>
           <button
@@ -305,7 +305,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                     id="inactivity-prompt-title"
                     className="text-sm sm:text-base font-black text-amber-950 dark:text-amber-200 leading-tight"
                   >
-                    {isAmharic ? 'ክፍለ ጊዜው ሊጠናቀቅ ነው፡ በመለያዎ እንዳሉ ይቀጥሉ?' : 'Session Expiring Soon: Keep Session Active?'}
+                    {isAmharic ? 'ክፍለ ጊዜው ሊጠናቀቅ ነው' : 'Session Expiring Soon'}
                   </h3>
                   {isTestPreview && (
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-900/60 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-slate-800">
@@ -315,8 +315,8 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                 </div>
                 <p className="text-[11px] text-amber-800/90 dark:text-amber-400/80 font-semibold mt-0.5">
                   {isAmharic
-                    ? 'የ15 ደቂቃ እንቅስቃሴ አልባነት የደህንነት ማብቂያ'
-                    : '15-minute municipal inactivity security threshold'}
+                    ? 'የእንቅስቃሴ አልባነት ማብቂያ'
+                    : 'Inactivity timeout'}
                 </p>
               </div>
             </div>
@@ -328,8 +328,8 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                 className="text-xs sm:text-sm text-secondary dark:text-slate-300 leading-relaxed max-w-md mx-auto"
               >
                 {isAmharic
-                  ? 'ላለፉት 13 ደቂቃዎች ምንም እንቅስቃሴ አልተገኘም። ለከተማው አስተዳደር ሚስጥራዊ መረጃዎች ደህንነት ሲባል ክፍለ ጊዜዎ በቅርቡ በራስ-ሰር ይዘጋል፡'
-                  : 'You have been inactive for over 13 minutes. To protect sensitive municipal records, your session will automatically end in:'}
+                  ? 'በእንቅስቃሴ አልባነት ምክንያት ክፍለ ጊዜዎ በቅርቡ ይዘጋል፡'
+                  : 'Due to inactivity, your session will end in:'}
               </p>
 
               {/* Countdown Clock Display Card */}

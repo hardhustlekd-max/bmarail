@@ -575,8 +575,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             </h2>
             <p className="text-xs text-secondary font-medium max-w-sm">
               {isAmharic
-                ? 'የሞተረኞችን የፈቃድ መታወቂያ ወይም የሞተር ተለጣፊ ትክክለኛነት በካሜራ ለማረጋገጥ ከታች ያለውን ሰማያዊ ቁልፍ ይጫኑ'
-                : 'Tap the blue button below or click the scanner ring to verify rider permit IDs or stickers.'}
+                ? 'የመንቀሳቀሻ ፈቃድ ወይም ሰሌዳ በካሜራ ያረጋግጡ'
+                : 'Scan permit QR code or verify license plate'}
             </p>
           </div>
 

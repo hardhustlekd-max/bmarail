@@ -1577,12 +1577,12 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           <div className="space-y-4 pb-6 border-b border-outline-variant/60">
             <h3 className="font-black text-base text-on-surface flex items-center gap-2">
               <Icon className="material-symbols-outlined text-emerald-600 text-[22px]">backup</Icon>
-              {isAmharic ? 'የሲስተም ዳታቤዝ ባክአፕና መልሶ ማግኛ (Backup & Restore)' : 'System Backup & Restoration'}
+              {isAmharic ? 'የዳታቤዝ ባክአፕና መልሶ ማግኛ' : 'System Backup & Restoration'}
             </h3>
             <p className="text-xs text-outline">
               {isAmharic
-                ? 'ሁሉንም የተመዘገቡ ተሽከርካሪዎች፣ ተጠቃሚዎች፣ ኦፊሰሮችና የኦዲት መዝገቦች በ JSON ፋይል ማውረድ ወይም ከቀድሞ ባክአፕ መመለስ ይችላሉ።'
-                : 'Safely export all database collections into a standardized JSON backup file or restore previously exported data.'}
+                ? 'የዳታቤዝ ባክአፕ ማውረጃ እና መመለሻ'
+                : 'Export or restore database backup snapshots.'}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
@@ -1597,8 +1597,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </div>
                   <p className="text-xs text-outline">
                     {isAmharic
-                      ? 'የተመዘገቡ ሞተሮችን፣ ኦፊሰሮችን፣ ተጠቃሚዎችንና ቅንብሮችን የያዘ ንጹህ የ JSON ፋይል ያውርዱ።'
-                      : 'Download a full snapshot of all database records, user profiles, assignments, and settings.'}
+                      ? 'የተሟላ የዳታቤዝ ባክአፕ ፋይል ያውርዱ።'
+                      : 'Download full database backup snapshot.'}
                   </p>
                 </div>
 
@@ -1623,8 +1623,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </div>
                   <p className="text-xs text-outline">
                     {isAmharic
-                      ? 'ቀደም ሲል የወረደውን የዳታቤዝ JSON ባክአፕ ፋይል በመምረጥ ዳታዎችን ይመልሱ።'
-                      : 'Upload a previously generated system backup JSON file to merge or restore lost records.'}
+                      ? 'የዳታቤዝ ባክአፕ ፋይል በመምረጥ ዳታዎችን ይመልሱ።'
+                      : 'Upload a database backup JSON file to restore.'}
                   </p>
                 </div>
 
@@ -1655,12 +1655,12 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               <div>
                 <h3 className="font-black text-base text-on-surface flex items-center gap-2">
                   <Icon className="material-symbols-outlined text-amber-600 text-[22px]">history_edu</Icon>
-                  {isAmharic ? 'የሲስተም አጠቃቀም የኦዲት ማህደር (System Audit Trail)' : 'System Audit Trail'}
+                  {isAmharic ? 'የሲስተም አጠቃቀም የኦዲት ማህደር' : 'System Audit Trail'}
                 </h3>
                 <p className="text-xs text-outline mt-0.5">
                   {isAmharic
-                    ? 'በዋና አስተዳዳሪዎችና ፀሐፊዎች የተከናወኑ የደህንነትና የፈቃድ ለውጦች ሙሉ ታሪክ'
-                    : 'Real-time trace of administrative actions, permission overrides, and permit reviews.'}
+                    ? 'የአስተዳዳሪ እና የደህንነት እንቅስቃሴዎች ማህደር'
+                    : 'Log of administrative and security actions.'}
                 </p>
               </div>
 
@@ -1981,12 +1981,12 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </div>
               <div>
                 <h3 className="font-black text-base text-red-900">
-                  {isAmharic ? 'አደገኛ ቀጠና (Danger Zone Operations)' : 'Danger Zone Operations'}
+                  {isAmharic ? 'አደገኛ ቀጠና' : 'Danger Zone Operations'}
                 </h3>
                 <p className="text-xs text-red-700 mt-0.5">
                   {isAmharic
-                    ? 'እነዚህ ተግባራት በዳታቤዝ ላይ ዘላቂ ለውጥ ያመጣሉ፤ እባክዎ ከመፈጸምዎ በፊት አስቀድመው ባክአፕ ይያዙ።'
-                    : 'Destructive system maintenance tasks. Actions cannot be undone without a recent JSON backup.'}
+                    ? 'እነዚህ እርምጃዎች ወደ ኋላ አይመለሱም። አስቀድመው ባክአፕ ይያዙ።'
+                    : 'Irreversible maintenance operations. Ensure you have a backup.'}
                 </p>
               </div>
             </div>
@@ -2001,8 +2001,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </h4>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
                     {isAmharic
-                      ? 'ሁሉንም የምዝገባ መዝገቦች፣ የህትመት ትዕዛዞችና የፍተሻ ዳታዎችን ወደ መጀመሪያው ንጹህ ደረጃ ይመልሳል።'
-                      : 'Clears all registration records, print batches, and test data back to factory state.'}
+                      ? 'ሁሉንም መዝገቦች ወደ መጀመሪያው ደረጃ ይመልሳል።'
+                      : 'Resets database records back to factory state.'}
                   </p>
                 </div>
                 <button
@@ -2027,8 +2027,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </h4>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
                     {isAmharic
-                      ? 'የተከለከሉ (Rejected) የሞተር ምዝገባዎችን በዘላቂነት ከዳታቤዝ በመሰረዝ ቦታ ያስለቅቃል።'
-                      : 'Permanently deletes all rejected permit applications to free up quota and database storage.'}
+                      ? 'ውድቅ የሆኑ ማመልከቻዎችን በዘላቂነት ይሰርዛል።'
+                      : 'Permanently removes all rejected applications.'}
                   </p>
                 </div>
                 <button
@@ -2053,8 +2053,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </h4>
                   <p className="text-[11px] text-slate-600 leading-relaxed">
                     {isAmharic
-                      ? 'በኦፊሰሮች የተከናወኑ የመንገድ ላይ የ QR ስካን ፍተሻ ታሪኮችን በሙሉ ያጸዳል።'
-                      : 'Clears all officer roadside scan verification history from local cache and cloud storage.'}
+                      ? 'የመንገድ ላይ ፍተሻ ታሪኮችን በሙሉ ያጸዳል።'
+                      : 'Deletes all roadside scan verification logs.'}
                   </p>
                 </div>
                 <button

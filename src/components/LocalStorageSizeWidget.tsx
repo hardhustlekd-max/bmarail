@@ -383,8 +383,8 @@ export const LocalStorageSizeWidget: React.FC<LocalStorageSizeWidgetProps> = ({
           <div className="mt-2 p-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-md space-y-1.5 animate-fadeIn">
             <p className="text-[10px] text-red-700 dark:text-red-300 font-semibold leading-tight">
               {lang === 'am'
-                ? 'የካች ውሂብን ማፅዳት ይፈልጋሉ? (የመለያ መረጃዎ ይቀራል)'
-                : 'Clear cached local storage data? (Your login session will be preserved)'}
+                ? 'የካች ዳታ ይጽዳ? የመለያ መረጃዎ ይቀራል።'
+                : 'Clear cached data? Login session will be kept.'}
             </p>
             <div className="flex gap-1.5 justify-end">
               <button

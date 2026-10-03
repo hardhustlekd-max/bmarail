@@ -125,8 +125,8 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               </h3>
               <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
                 {isAmharic
-                  ? 'ያልተመዘገቡ ወይም ሕገ-ወጥ ሞተሮች የመስክ ሪፖርት ማቅረቢያ ቅጽ'
-                  : 'Unregistered and non-compliant motorcycle incident logging form'}
+                  ? 'የመስክ ሪፖርት ማቅረቢያ ቅጽ'
+                  : 'Incident logging form'}
               </p>
             </div>
           </div>
