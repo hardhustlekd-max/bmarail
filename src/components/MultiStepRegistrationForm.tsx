@@ -1730,29 +1730,29 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
                       {isAmharic ? 'የሞተር ዓይነት እና ምድብ' : 'Motor Vehicle Category'} <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex flex-wrap items-center gap-6">
-                      <label className="flex items-center gap-2.5 cursor-pointer">
+                    <div className="flex flex-wrap items-center gap-3.5 sm:gap-6">
+                      <label className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer">
                         <input
                           type="radio"
                           name="vehicleCategoryStep2"
                           value="electric"
                           checked={vehicleCategory === 'electric'}
                           onChange={() => handleVehicleCategoryChange('electric')}
-                          className="w-4 h-4 text-primary focus:ring-primary accent-primary cursor-pointer"
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary focus:ring-primary accent-primary cursor-pointer shrink-0"
                         />
                         <span className={`text-xs ${vehicleCategory === 'electric' ? 'font-black text-primary dark:text-primary' : 'text-slate-600 dark:text-slate-400'}`}>
                           {isAmharic ? ' ኢቪ ኤሌክትሪክ' : ' Electric (EV)'}
                         </span>
                       </label>
 
-                      <label className="flex items-center gap-2.5 cursor-pointer">
+                      <label className="flex items-center gap-1.5 sm:gap-2.5 cursor-pointer">
                         <input
                           type="radio"
                           name="vehicleCategoryStep2"
                           value="gas_under_110cc"
                           checked={vehicleCategory === 'gas_under_110cc'}
                           onChange={() => handleVehicleCategoryChange('gas_under_110cc')}
-                          className="w-4 h-4 text-primary focus:ring-primary accent-primary cursor-pointer"
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary focus:ring-primary accent-primary cursor-pointer shrink-0"
                         />
                         <span className={`text-xs ${vehicleCategory === 'gas_under_110cc' ? 'font-black text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
                           {isAmharic ? ' ቤንዚን' : ' Gasoline (<110cc)'}
