@@ -2992,7 +2992,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
             key={activePage}
             className={
               activePage === 'scan'
-                ? "flex-1 w-full h-full min-h-[500px] flex flex-col overflow-hidden"
+                ? "flex-1 w-full h-full min-h-0 flex flex-col overflow-hidden"
                 : "flex-none flex flex-col"
             }
           >

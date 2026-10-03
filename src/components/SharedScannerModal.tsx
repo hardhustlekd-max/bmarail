@@ -981,11 +981,11 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     )}
                   </div>
 
-                  {/* 2. CENTER VIEWFINDER (Compact Reticle Size & Semi-Transparent Viewport Overlay) */}
-                  <div className="flex flex-col items-center justify-center my-auto pointer-events-none">
+                  {/* 2. CENTER VIEWFINDER (Adaptive Reticle Size & Semi-Transparent Viewport Overlay) */}
+                  <div className="flex flex-col items-center justify-center my-auto pointer-events-none py-1">
                     <div
                       ref={viewfinderReticleRef}
-                      className="relative w-56 h-56 sm:w-64 sm:h-64 max-w-[70vw] max-h-[50vh] border border-white/25 rounded-xl flex-shrink-0"
+                      className="relative w-48 h-48 xs:w-56 xs:h-56 sm:w-64 sm:h-64 max-w-[65vw] max-h-[38vh] border border-white/25 rounded-xl flex-shrink-0"
                       style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
                     >
                       {/* Inside scanner box: Extracted QR Code picked from fullscreen image */}
@@ -1052,7 +1052,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   </div>
 
                   {/* 3. BOTTOM SECTION: Guide Text & ACTION BUTTONS WITH BACK BUTTON */}
-                  <div className="pointer-events-auto flex flex-col items-center w-full max-w-md mx-auto px-4 pb-6 z-30 shrink-0 gap-2 sm:gap-2.5">
+                  <div className="pointer-events-auto flex flex-col items-center w-full max-w-md mx-auto px-3 sm:px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,12px))] mb-1 z-30 shrink-0 gap-1.5 sm:gap-2">
                     {/* Guide Text without background, positioned just above action buttons */}
                     <div className="text-center pointer-events-none select-none">
                       <span className="text-xs sm:text-sm font-semibold text-white/90 drop-shadow-md">
@@ -1071,29 +1071,29 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     </div>
 
                     {/* Bottom Action Buttons Row with Opaque Dark Background & Blur */}
-                    <div className="w-full bg-black/75 backdrop-blur-md border border-white/15 rounded-xl p-2.5 sm:p-3.5 flex items-center justify-between sm:justify-evenly shadow-2xl gap-1 sm:gap-2">
+                    <div className="w-full bg-black/80 backdrop-blur-md border border-white/15 rounded-xl p-2 sm:p-2.5 flex items-center justify-between sm:justify-evenly shadow-2xl gap-1 sm:gap-2">
                       {/* 1. Back Button */}
                       <button
                         type="button"
                         onClick={onClose}
-                        className="w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer border border-white/15"
+                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer border border-white/15"
                         title={isAmharic ? 'ተመለስ' : 'Back'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">arrow_back</Icon>
+                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">arrow_back</Icon>
                       </button>
 
                       {/* 2. Search Button */}
                       <button
                         type="button"
                         onClick={() => setShowTopMenu(!showTopMenu)}
-                        className={`w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           showTopMenu
                             ? 'bg-primary text-white shadow-primary/40 ring-4 ring-primary/50'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
                         }`}
                         title={isAmharic ? 'ፈልግ' : 'Search'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">search</Icon>
+                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">search</Icon>
                       </button>
 
                       {/* 3. Photo Gallery Upload */}
@@ -1105,24 +1105,24 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                             fileInputRef.current.click();
                           }
                         }}
-                        className="w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ምስል ስካን' : 'Select Photo'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">image</Icon>
+                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">image</Icon>
                       </button>
 
                       {/* 4. Flashlight / Torch Toggle */}
                       <button
                         type="button"
                         onClick={handleToggleTorch}
-                        className={`w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           isTorchOn
                             ? 'bg-amber-400 text-amber-950 shadow-amber-400/40 ring-4 ring-amber-300/60'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
                         }`}
                         title={isAmharic ? 'ፍላሽ' : 'Flashlight'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">
+                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">
                           {isTorchOn ? 'flashlight_on' : 'flashlight_off'}
                         </Icon>
                       </button>
@@ -1131,10 +1131,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <button
                         type="button"
                         onClick={() => setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'))}
-                        className="w-12 h-12 sm:w-13 sm:h-13 min-w-[46px] min-h-[46px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ካሜራ ቀይር' : 'Switch Camera'}
                       >
-                        <Icon className="material-symbols-outlined text-[24px] sm:text-[26px]">cameraswitch</Icon>
+                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">cameraswitch</Icon>
                       </button>
                     </div>
                   </div>
