@@ -467,9 +467,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                               {log.plateNumber}
                             </span>
                             <span className="font-bold text-xs text-on-surface truncate max-w-[140px] sm:max-w-none">{log.fullName}</span>
-                            <span className={`px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-bold ${
-                              log.vehicleCategory === 'electric' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25' : 'bg-surface-container text-on-surface border border-outline-variant'
-                            }`}>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-medium bg-surface-container text-on-surface border border-outline-variant">
                               {log.vehicleCategory === 'electric' ? 'EV' : 'Gasoline'}
                             </span>
                           </div>

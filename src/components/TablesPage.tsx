@@ -1115,17 +1115,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                             {/* Standalone Column 4: Vehicle Category (Fuel / EV) */}
                             <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                              {reg.vehicleCategory === 'electric' ? (
-                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
-                                  <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
-                                  <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
-                                  <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
-                                  <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
-                                </span>
-                              )}
+                              <span className="text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE]">
+                                {reg.vehicleCategory === 'electric'
+                                  ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
+                                  : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                              </span>
                             </td>
 
                             {/* Standalone Column 5: Chasis */}
@@ -1167,26 +1161,19 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="inline-flex items-center justify-end gap-1.5">
-                                {canApprove && (
+                                {canApprove && (reg.status === 'pending_approval' || (reg.status as string) === 'pending') && (
                                   <button
                                     type="button"
                                     id={`table-row-approve-btn-${reg.id}`}
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (reg.status !== 'approved') {
-                                        onApproveRegistration(reg.id);
-                                      }
+                                      onApproveRegistration(reg.id);
                                     }}
-                                    disabled={reg.status === 'approved'}
-                                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs ${
-                                      reg.status === 'approved'
-                                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default opacity-90'
-                                        : 'bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95'
-                                    }`}
-                                    title={reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Already Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95"
+                                    title={isAmharic ? 'አፅድቅ' : 'Approve'}
                                   >
                                     <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
-                                    <span>{reg.status === 'approved' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'አፅድቅ' : 'Approve')}</span>
+                                    <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
                                   </button>
                                 )}
                                 <button
@@ -1302,17 +1289,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                             <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
                               {/* Motor Type Tag */}
-                              {reg.vehicleCategory === 'electric' ? (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#10B981]">
-                                  <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
-                                  <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary">
-                                  <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
-                                  <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
-                                </span>
-                              )}
+                              <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD]">
+                                {reg.vehicleCategory === 'electric'
+                                  ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
+                                  : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
+                              </span>
 
                               <span className="text-slate-300 dark:text-slate-600 font-bold">•</span>
 
@@ -1706,18 +1687,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       </div>
                       <div>
                         <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ዓይነት' : 'Category'}</dt>
-                        <dd className="font-bold">
-                          {selectedRegForDetails.vehicleCategory === 'electric' ? (
-                            <span className="inline-flex items-center gap-0.5 text-[#10B981] font-bold text-xs">
-                              <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
-                              <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-0.5 text-primary font-bold text-xs">
-                              <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
-                              <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
-                            </span>
-                          )}
+                        <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs">
+                          {selectedRegForDetails.vehicleCategory === 'electric'
+                            ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
+                            : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                         </dd>
                       </div>
                       <div>

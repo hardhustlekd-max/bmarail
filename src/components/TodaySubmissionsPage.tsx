@@ -985,17 +985,11 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                           {/* 5. Standalone Category */}
                           <td className="py-2.5 px-3 align-middle text-xs whitespace-nowrap">
-                            {reg.vehicleCategory === 'electric' ? (
-                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#10B981]">
-                                <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
-                                <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
-                                <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
-                                <span>{isAmharic ? 'ቤንዚን' : 'Gasoline'}</span>
-                              </span>
-                            )}
+                            <span className="text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE]">
+                              {reg.vehicleCategory === 'electric'
+                                ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
+                                : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
+                            </span>
                           </td>
 
                           {/* 6. Standalone Chasis */}
@@ -1232,17 +1226,11 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                           <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
                             {/* Motor Type Tag - Clean */}
-                            {reg.vehicleCategory === 'electric' ? (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#10B981]">
-                                <Icon className="material-symbols-outlined text-[13px]">electric_bolt</Icon>
-                                <span>{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</span>
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary">
-                                <Icon className="material-symbols-outlined text-[13px]">local_gas_station</Icon>
-                                <span>{isAmharic ? 'የነዳጅ' : 'Gasoline'}</span>
-                              </span>
-                            )}
+                            <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD]">
+                              {reg.vehicleCategory === 'electric'
+                                ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
+                                : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
+                            </span>
 
                             <span className="text-slate-300 dark:text-slate-600 font-bold">•</span>
 
