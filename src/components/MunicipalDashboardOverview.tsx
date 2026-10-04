@@ -23,6 +23,9 @@ import {
   getCachedPreAggregatedKPIs,
   subscribePreAggregatedKPIs,
   PreAggregatedKPIData,
+  ServerMonthlyFeeStatistics,
+  getCachedServerMonthlyFeeStatistics,
+  subscribeMonthlyFeeStatistics,
 } from '../services/dbService';
 import { getPaymentReceiptStatus } from '../utils/paymentUtils';
 import { QRCodeCard } from './QRCodeCard';
@@ -90,6 +93,15 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   useEffect(() => {
     const unsub = subscribePreAggregatedKPIs((data) => {
       if (data) setPreAggregatedKpis(data);
+    });
+    return () => unsub();
+  }, []);
+
+  // Server-Side Monthly Fee Statistics for instant zero-lag dashboard rendering
+  const [serverFeeStats, setServerFeeStats] = useState<ServerMonthlyFeeStatistics | null>(getCachedServerMonthlyFeeStatistics());
+  useEffect(() => {
+    const unsub = subscribeMonthlyFeeStatistics((data) => {
+      if (data) setServerFeeStats(data);
     });
     return () => unsub();
   }, []);
@@ -190,6 +202,23 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
   // Payment Expiration Metrics strictly calculated according to the current Ethiopian calendar month
   const ethiopianMonthlyMetrics = React.useMemo(() => {
+    // If fast server-side statistics are available, return immediately with zero client lag
+    if (serverFeeStats) {
+      return {
+        targetMonth: serverFeeStats.targetMonth,
+        targetYear: serverFeeStats.targetYear,
+        monthName: isAmharic ? serverFeeStats.monthNameAm : serverFeeStats.monthNameEn,
+        isCurrentMonth: serverFeeStats.isCurrentMonth,
+        totalRevenue: serverFeeStats.totalRevenue,
+        totalReceiptsCount: serverFeeStats.totalReceiptsCount,
+        paidMembersCount: serverFeeStats.paidMembersCount,
+        dueSoonMembersCount: serverFeeStats.dueSoonMembersCount,
+        unpaidMembersCount: serverFeeStats.unpaidMembersCount,
+        activeBillableCount: serverFeeStats.activeBillableCount,
+        complianceRate: serverFeeStats.complianceRate,
+      };
+    }
+
     const targetMonth = currentEthMonth;
     const targetYear = currentEthYear;
     const targetPeriodIndex = targetYear * 13 + targetMonth;
@@ -261,10 +290,15 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
       const amountNum = parseFloat(String(rc.amount || ((rc as any).vehicleCategory === 'electric' ? '50' : '100')).replace(/[^0-9.]/g, '')) || ((rc as any).vehicleCategory === 'electric' ? 50 : 100);
 
+      const payIndex = payEth ? payEth.year * 13 + payEth.month : 0;
+      const expIndex = expEth ? expEth.year * 13 + expEth.month : payIndex;
+
       return {
         receipt: rc,
         payEth,
         expEth,
+        payIndex,
+        expIndex,
         status,
         daysRemaining,
         amountNum,
@@ -281,6 +315,49 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     const totalMonthRevenue = receiptsInSelectedMonth.reduce((acc, curr) => acc + curr.amountNum, 0);
     const totalReceiptsCount = receiptsInSelectedMonth.length;
 
+    // Build O(1) lookup index maps for fast member receipt retrieval
+    type ParsedReceiptType = typeof parsedReceipts[0];
+    const receiptsByRegId = new Map<string, ParsedReceiptType[]>();
+    const receiptsByPlate = new Map<string, ParsedReceiptType[]>();
+    const receiptsByPhone = new Map<string, ParsedReceiptType[]>();
+    const receiptsByName = new Map<string, ParsedReceiptType[]>();
+
+    for (const item of parsedReceipts) {
+      const rc = item.receipt;
+      if (rc.ownerRegistrationId) {
+        const k = cleanStr(rc.ownerRegistrationId);
+        if (k) {
+          const arr = receiptsByRegId.get(k) || [];
+          arr.push(item);
+          receiptsByRegId.set(k, arr);
+        }
+      }
+      if (rc.plateNumber) {
+        const k = cleanPlate(rc.plateNumber);
+        if (k) {
+          const arr = receiptsByPlate.get(k) || [];
+          arr.push(item);
+          receiptsByPlate.set(k, arr);
+        }
+      }
+      if (rc.phone) {
+        const k = cleanPhone(rc.phone);
+        if (k) {
+          const arr = receiptsByPhone.get(k) || [];
+          arr.push(item);
+          receiptsByPhone.set(k, arr);
+        }
+      }
+      if (rc.ownerName) {
+        const k = cleanStr(rc.ownerName);
+        if (k) {
+          const arr = receiptsByName.get(k) || [];
+          arr.push(item);
+          receiptsByName.set(k, arr);
+        }
+      }
+    }
+
     // 2. Member status evaluation for this Ethiopian Month
     let paidMembersCount = 0;
     let dueSoonMembersCount = 0;
@@ -296,15 +373,13 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       const regPhoneClean = cleanPhone(reg.phone);
       const regNameClean = cleanStr(reg.fullName);
 
-      // Find all receipts belonging to this member
-      const memberReceipts = parsedReceipts.filter((item) => {
-        const rc = item.receipt;
-        if (rc.ownerRegistrationId && cleanStr(rc.ownerRegistrationId) === regIdClean) return true;
-        if (rc.plateNumber && regPlateClean && cleanPlate(rc.plateNumber) === regPlateClean) return true;
-        if (rc.phone && regPhoneClean && cleanPhone(rc.phone) === regPhoneClean) return true;
-        if (rc.ownerName && regNameClean && cleanStr(rc.ownerName) === regNameClean) return true;
-        return false;
-      });
+      // O(1) retrieval of member receipts
+      const memberReceipts =
+        (regIdClean ? receiptsByRegId.get(regIdClean) : null) ||
+        (regPlateClean ? receiptsByPlate.get(regPlateClean) : null) ||
+        (regPhoneClean ? receiptsByPhone.get(regPhoneClean) : null) ||
+        (regNameClean ? receiptsByName.get(regNameClean) : null) ||
+        [];
 
       // A. Check direct payment for this Ethiopian month
       const directMatch = memberReceipts.find(
@@ -313,10 +388,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       // B. Check coverage across this Ethiopian month (validity duration spans across multiple months)
       const coveringMatch = memberReceipts.find((item) => {
-        if (!item.payEth) return false;
-        const payIndex = item.payEth.year * 13 + item.payEth.month;
-        const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
-        return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
+        return item.payIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex <= item.expIndex;
       });
 
       const matchingItem = directMatch || coveringMatch;

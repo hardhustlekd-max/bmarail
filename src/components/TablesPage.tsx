@@ -453,21 +453,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     setIsSubmittingBulk(true);
     try {
       const selectedIds = Array.from(selectedRegIds);
-      let approvedCount = 0;
+      const regsToApprove = registrations.filter((r) => selectedRegIds.has(r.id));
 
-      for (const id of selectedIds) {
-        const reg = registrations.find((r) => r.id === id);
-        if (reg) {
+      await Promise.all(
+        regsToApprove.map(async (reg) => {
           const updatedRecord: MotorcycleRegistration = {
             ...reg,
             status: 'approved',
             rejectionReason: undefined,
           };
           await saveRegistrationToDb(updatedRecord);
-          await updateRegistrationStatusInDb(id, 'approved');
-          approvedCount++;
-        }
-      }
+          await updateRegistrationStatusInDb(reg.id, 'approved');
+        })
+      );
+
+      const approvedCount = regsToApprove.length;
 
       await addAuditLogToDb({
         actorBadgeId: userBadgeId || (isSuperAdmin ? 'SUPERADMIN' : 'ADMIN-01'),

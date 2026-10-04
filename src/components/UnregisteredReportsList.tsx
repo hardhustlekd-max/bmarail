@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Icon } from './ui/Icon';
 import { formatEthiopianDateTime } from '../utils/ethiopianCalendar';
 import {
@@ -54,11 +54,25 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
     setExpandedReportIds((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Status Counts
-  const pendingCount = unregisteredReports.filter((r) => r.status === 'pending').length;
-  const investigationCount = unregisteredReports.filter((r) => r.status === 'under_investigation').length;
-  const resolvedCount = unregisteredReports.filter((r) => r.status === 'resolved').length;
-  const registeredCount = unregisteredReports.filter((r) => r.status === 'registered').length;
+  // Status Counts in a single fast pass
+  const { pendingCount, investigationCount, resolvedCount, registeredCount } = useMemo(() => {
+    let pending = 0;
+    let investigation = 0;
+    let resolved = 0;
+    let registered = 0;
+    unregisteredReports.forEach((r) => {
+      if (r.status === 'pending') pending++;
+      else if (r.status === 'under_investigation') investigation++;
+      else if (r.status === 'resolved') resolved++;
+      else if (r.status === 'registered') registered++;
+    });
+    return {
+      pendingCount: pending,
+      investigationCount: investigation,
+      resolvedCount: resolved,
+      registeredCount: registered,
+    };
+  }, [unregisteredReports]);
 
   // Filtered list computation
   const filteredReports = unregisteredReports.filter((rep) => {

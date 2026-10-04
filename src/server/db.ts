@@ -2,6 +2,14 @@ import pg from 'pg';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import {
+  toEthiopianDate,
+  ETHIOPIAN_MONTHS,
+  normalizeToEthiopianDateStr,
+  getDefaultEthiopianRegistrationDate,
+  EthiopianDate,
+} from '../utils/ethiopianCalendar';
+import { calculateOneMonthExpiration, getPaymentReceiptStatus } from '../utils/paymentUtils';
 
 dotenv.config({ override: true });
 
@@ -2211,4 +2219,252 @@ function normalizeRowFromPg(row: Record<string, any>): Record<string, any> {
     result[camelKey] = v;
   }
   return result;
+}
+
+/**
+ * High-performance Server-Side Monthly Fee Statistics calculation
+ * Materialized directly on backend to eliminate client-side O(N*M) loop delays
+ */
+export async function getMonthlyFeeStatisticsServerSide(options?: {
+  targetMonth?: number;
+  targetYear?: number;
+  role?: string;
+  badgeId?: string;
+}) {
+  const currentEth = toEthiopianDate(new Date());
+  const targetMonth = options?.targetMonth || currentEth.month;
+  const targetYear = options?.targetYear || currentEth.year;
+  const targetPeriodIndex = targetYear * 13 + targetMonth;
+  const isCurrentMonth = targetMonth === currentEth.month && targetYear === currentEth.year;
+
+  // Retrieve raw registrations and payment receipts directly
+  const [regsRes, receiptsRes] = await Promise.all([
+    dbGetRegistrationsScoped({ scope: { role: options?.role || 'admin', isClerk: options?.role === 'clerk', badgeId: options?.badgeId }, page: 1, limit: 10000 }),
+    dbGetPaymentReceiptsScoped({ scope: { isClerk: options?.role === 'clerk', badgeId: options?.badgeId }, page: 1, limit: 10000 }),
+  ]);
+
+  const rawRegs: any[] = regsRes.rows || [];
+  const rawReceipts: any[] = receiptsRes.rows || [];
+
+  const cleanPlate = (s?: string) => (s || '').replace(/[\s\-_]/g, '').toLowerCase();
+  const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
+  const cleanPhone = (s?: string) => (s || '').replace(/[^0-9]/g, '');
+
+  const allReceipts = [...rawReceipts];
+  const existingRegIds = new Set(allReceipts.map((r) => cleanStr(r.ownerRegistrationId || r.owner_registration_id)).filter(Boolean));
+
+  rawRegs.forEach((reg) => {
+    if (!reg || !reg.id) return;
+    const regIdClean = cleanStr(reg.id);
+    if (existingRegIds.has(regIdClean)) return;
+
+    const hasRegReceipt = Boolean(
+      reg.receiptNumber ||
+      reg.receipt_number ||
+      reg.lastReceiptNumber ||
+      reg.last_receipt_number ||
+      reg.paymentAmount ||
+      reg.payment_amount ||
+      reg.lastPaymentAmount ||
+      reg.last_payment_amount ||
+      reg.lastPaymentDate ||
+      reg.last_payment_date ||
+      reg.activeTermExpirationDate ||
+      reg.active_term_expiration_date ||
+      reg.termStatus === 'CURRENT' ||
+      reg.term_status === 'CURRENT' ||
+      reg.status === 'approved' ||
+      reg.status === 'printed' ||
+      reg.status === 'ordered_print'
+    );
+
+    if (hasRegReceipt) {
+      const rawPayDate = reg.lastPaymentDate || reg.last_payment_date || reg.registrationDate || reg.registration_date || getDefaultEthiopianRegistrationDate();
+      const payDate = normalizeToEthiopianDateStr(rawPayDate);
+      const expDate = (reg.activeTermExpirationDate || reg.active_term_expiration_date)
+        ? normalizeToEthiopianDateStr(reg.activeTermExpirationDate || reg.active_term_expiration_date)
+        : calculateOneMonthExpiration(payDate);
+
+      allReceipts.push({
+        id: `reg-init-${reg.id}`,
+        receiptNumber: reg.lastReceiptNumber || reg.last_receipt_number || reg.receiptNumber || reg.receipt_number || `REC-${reg.id}`,
+        ownerRegistrationId: reg.id,
+        ownerName: reg.fullName || reg.full_name || '',
+        plateNumber: reg.plateNumber || reg.plate_number,
+        phone: reg.phone,
+        paymentDate: payDate,
+        expirationDate: expDate,
+        amount: reg.lastPaymentAmount || reg.last_payment_amount || reg.paymentAmount || reg.payment_amount || ((reg.vehicleCategory || reg.vehicle_category) === 'electric' ? 50 : 100),
+        vehicleCategory: reg.vehicleCategory || reg.vehicle_category,
+        enteredBy: reg.registeredBy || reg.registered_by || 'SYSTEM',
+        createdAt: payDate,
+      });
+    }
+  });
+
+  const parsedReceipts = allReceipts.map((rc) => {
+    const payDateStr = rc.paymentDate || rc.payment_date || rc.createdAt || rc.created_at || '';
+    const expDateStr = rc.expirationDate || rc.expiration_date || (payDateStr ? calculateOneMonthExpiration(payDateStr) : '');
+    let payEth: EthiopianDate | null = null;
+    let expEth: EthiopianDate | null = null;
+    try {
+      if (payDateStr) payEth = toEthiopianDate(payDateStr);
+    } catch {}
+    try {
+      if (expDateStr) expEth = toEthiopianDate(expDateStr);
+    } catch {}
+
+    const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
+    const amountNum = parseFloat(String(rc.amount || ((rc as any).vehicleCategory === 'electric' ? '50' : '100')).replace(/[^0-9.]/g, '')) || ((rc as any).vehicleCategory === 'electric' ? 50 : 100);
+
+    const payIndex = payEth ? payEth.year * 13 + payEth.month : 0;
+    const expIndex = expEth ? expEth.year * 13 + expEth.month : payIndex;
+
+    return {
+      receipt: rc,
+      payEth,
+      expEth,
+      payIndex,
+      expIndex,
+      status,
+      daysRemaining,
+      amountNum,
+    };
+  });
+
+  const receiptsInSelectedMonth = parsedReceipts.filter((item) => {
+    if (item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth) {
+      return true;
+    }
+    return item.status === 'active' || item.status === 'expiring_soon';
+  });
+
+  const totalRevenue = receiptsInSelectedMonth.reduce((acc, curr) => acc + curr.amountNum, 0);
+  const totalReceiptsCount = receiptsInSelectedMonth.length;
+
+  const receiptsByRegId = new Map<string, typeof parsedReceipts[0][]>();
+  const receiptsByPlate = new Map<string, typeof parsedReceipts[0][]>();
+  const receiptsByPhone = new Map<string, typeof parsedReceipts[0][]>();
+  const receiptsByName = new Map<string, typeof parsedReceipts[0][]>();
+
+  for (const item of parsedReceipts) {
+    const rc = item.receipt;
+    const regId = rc.ownerRegistrationId || rc.owner_registration_id;
+    if (regId) {
+      const k = cleanStr(regId);
+      if (k) {
+        const arr = receiptsByRegId.get(k) || [];
+        arr.push(item);
+        receiptsByRegId.set(k, arr);
+      }
+    }
+    const plate = rc.plateNumber || rc.plate_number;
+    if (plate) {
+      const k = cleanPlate(plate);
+      if (k) {
+        const arr = receiptsByPlate.get(k) || [];
+        arr.push(item);
+        receiptsByPlate.set(k, arr);
+      }
+    }
+    if (rc.phone) {
+      const k = cleanPhone(rc.phone);
+      if (k) {
+        const arr = receiptsByPhone.get(k) || [];
+        arr.push(item);
+        receiptsByPhone.set(k, arr);
+      }
+    }
+    const name = rc.ownerName || rc.owner_name;
+    if (name) {
+      const k = cleanStr(name);
+      if (k) {
+        const arr = receiptsByName.get(k) || [];
+        arr.push(item);
+        receiptsByName.set(k, arr);
+      }
+    }
+  }
+
+  let paidMembersCount = 0;
+  let dueSoonMembersCount = 0;
+  let unpaidMembersCount = 0;
+  let notEnrolledCount = 0;
+
+  const billableRegs = rawRegs.filter((r) => r.status !== 'rejected');
+
+  billableRegs.forEach((reg) => {
+    const regIdClean = cleanStr(reg.id);
+    const regPlateClean = cleanPlate(reg.plateNumber || reg.plate_number);
+    const regPhoneClean = cleanPhone(reg.phone);
+    const regNameClean = cleanStr(reg.fullName || reg.full_name);
+
+    const memberReceipts =
+      (regIdClean ? receiptsByRegId.get(regIdClean) : null) ||
+      (regPlateClean ? receiptsByPlate.get(regPlateClean) : null) ||
+      (regPhoneClean ? receiptsByPhone.get(regPhoneClean) : null) ||
+      (regNameClean ? receiptsByName.get(regNameClean) : null) ||
+      [];
+
+    const directMatch = memberReceipts.find(
+      (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
+    );
+
+    const coveringMatch = memberReceipts.find((item) => {
+      return item.payIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex <= item.expIndex;
+    });
+
+    const matchingItem = directMatch || coveringMatch;
+    const termStatus = reg.termStatus || reg.term_status;
+
+    if (matchingItem || termStatus === 'CURRENT') {
+      if (isCurrentMonth && matchingItem?.status === 'expiring_soon' && termStatus !== 'CURRENT') {
+        dueSoonMembersCount++;
+      } else {
+        paidMembersCount++;
+      }
+    } else {
+      let regEth: EthiopianDate | null = null;
+      try {
+        const regDate = reg.registrationDate || reg.registration_date;
+        if (regDate) regEth = toEthiopianDate(regDate);
+      } catch {}
+
+      const regPeriodIndex = regEth ? regEth.year * 13 + regEth.month : 0;
+      if (regPeriodIndex && targetPeriodIndex < regPeriodIndex) {
+        notEnrolledCount++;
+      } else {
+        unpaidMembersCount++;
+      }
+    }
+  });
+
+  const activeBillableCount = Math.max(0, billableRegs.length - notEnrolledCount);
+  const complianceRate =
+    activeBillableCount > 0 ? Math.round(((paidMembersCount + dueSoonMembersCount) / activeBillableCount) * 100) : 0;
+
+  const monthObj = ETHIOPIAN_MONTHS[targetMonth - 1] || ETHIOPIAN_MONTHS[0];
+
+  return {
+    targetMonth,
+    targetYear,
+    monthNameAm: monthObj.am,
+    monthNameEn: monthObj.en,
+    isCurrentMonth,
+    totalRevenue,
+    totalReceiptsCount,
+    paidMembersCount,
+    dueSoonMembersCount,
+    unpaidMembersCount,
+    notEnrolledCount,
+    activeBillableCount,
+    complianceRate,
+    matrixCounts: {
+      all: activeBillableCount,
+      active: paidMembersCount,
+      expiring: dueSoonMembersCount,
+      expired: unpaidMembersCount,
+    },
+    calculatedAt: new Date().toISOString(),
+  };
 }

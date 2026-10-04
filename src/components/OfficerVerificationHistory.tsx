@@ -68,24 +68,38 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
   // Filter logs: verification logs for hidden registrations remain invisible except for privileged roles
   const filteredLogs = useMemo(() => {
-    return verificationLogs.filter((log) => {
-      const isHidden = registrations.some((r) => r.hideFromOtherUsers && (
-        (r.plateNumber && r.plateNumber.trim() !== '' && r.plateNumber.toLowerCase() === log.plateNumber?.toLowerCase()) ||
-        (r.engineOrSerialNo && r.engineOrSerialNo.trim() !== '' && r.engineOrSerialNo.toLowerCase() === log.engineOrSerialNo?.toLowerCase())
-      ));
+    // Pre-index hidden plates and engines in O(N) Set for O(1) checks
+    const hiddenPlates = new Set<string>();
+    const hiddenEngines = new Set<string>();
+    if (userRole !== 'superadmin' && (userRole as string) !== 'super_admin' && userRole !== 'officer' && userRole !== 'admin') {
+      registrations.forEach((r) => {
+        if (r.hideFromOtherUsers) {
+          if (r.plateNumber && r.plateNumber.trim()) hiddenPlates.add(r.plateNumber.trim().toLowerCase());
+          if (r.engineOrSerialNo && r.engineOrSerialNo.trim()) hiddenEngines.add(r.engineOrSerialNo.trim().toLowerCase());
+        }
+      });
+    }
 
-      if (isHidden && userRole !== 'superadmin' && (userRole as string) !== 'super_admin' && userRole !== 'officer' && userRole !== 'admin') {
-        return false;
+    const searchLower = searchTerm.toLowerCase().trim();
+
+    return verificationLogs.filter((log) => {
+      if (hiddenPlates.size > 0 || hiddenEngines.size > 0) {
+        const logPlate = log.plateNumber ? log.plateNumber.trim().toLowerCase() : '';
+        const logEngine = log.engineOrSerialNo ? log.engineOrSerialNo.trim().toLowerCase() : '';
+        if ((logPlate && hiddenPlates.has(logPlate)) || (logEngine && hiddenEngines.has(logEngine))) {
+          return false;
+        }
       }
 
       const matchesSearch =
-        (log.plateNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (log.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (log.phone || '').includes(searchTerm) ||
-        (log.engineOrSerialNo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (log.locationName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (log.officerBadgeId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (log.officerNotes && log.officerNotes.toLowerCase().includes(searchTerm.toLowerCase()));
+        !searchLower ||
+        (log.plateNumber || '').toLowerCase().includes(searchLower) ||
+        (log.fullName || '').toLowerCase().includes(searchLower) ||
+        (log.phone || '').includes(searchLower) ||
+        (log.engineOrSerialNo || '').toLowerCase().includes(searchLower) ||
+        (log.locationName || '').toLowerCase().includes(searchLower) ||
+        (log.officerBadgeId || '').toLowerCase().includes(searchLower) ||
+        (log.officerNotes && log.officerNotes.toLowerCase().includes(searchLower));
 
       const matchesStatus = statusFilter === 'all' ? true : log.verificationStatus === statusFilter;
       const matchesCategory =
@@ -99,13 +113,21 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
     });
   }, [verificationLogs, registrations, userRole, searchTerm, statusFilter, categoryFilter]);
 
-  // Tab counts
+  // Tab counts calculated in a single fast pass
   const statusCounts = useMemo(() => {
+    let verified = 0;
+    let warning = 0;
+    let flagged = 0;
+    verificationLogs.forEach((l) => {
+      if (l.verificationStatus === 'verified') verified++;
+      else if (l.verificationStatus === 'warning') warning++;
+      else if (l.verificationStatus === 'flagged') flagged++;
+    });
     return {
       all: verificationLogs.length,
-      verified: verificationLogs.filter((l) => l.verificationStatus === 'verified').length,
-      warning: verificationLogs.filter((l) => l.verificationStatus === 'warning').length,
-      flagged: verificationLogs.filter((l) => l.verificationStatus === 'flagged').length,
+      verified,
+      warning,
+      flagged,
     };
   }, [verificationLogs]);
 

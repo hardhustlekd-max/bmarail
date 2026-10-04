@@ -4,7 +4,14 @@ import { KpiCard, MonthlyMatrixLedger, StatusDot, StatusBadge, MatrixRowItem, Me
 import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus, calculateTermStatus } from '../utils/paymentUtils';
 import { SmartImage } from './SmartImage';
-import { getPermissionState, savePaymentReceiptToDb, deletePaymentReceiptFromDb } from '../services/dbService';
+import {
+  getPermissionState,
+  savePaymentReceiptToDb,
+  deletePaymentReceiptFromDb,
+  ServerMonthlyFeeStatistics,
+  getCachedServerMonthlyFeeStatistics,
+  subscribeMonthlyFeeStatistics,
+} from '../services/dbService';
 import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian, ETHIOPIAN_MONTHS, EthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, normalizeToEthiopianDateStr } from '../utils/ethiopianCalendar';
 import { LoadingSpinner, TableSkeleton } from './ui/Skeleton';
 import { EthiopianDateRangePicker, DateRangePreset, computeEthiopianPresetRange } from './EthiopianDateRangePicker';
@@ -90,6 +97,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [reconcileVerifyStatus, setReconcileVerifyStatus] = useState<'idle' | 'matched' | 'mismatch'>('idle');
   const [reconcileCopiedField, setReconcileCopiedField] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  // Server-Side Monthly Fee Statistics for instant zero-lag rendering
+  const [serverFeeStats, setServerFeeStats] = useState<ServerMonthlyFeeStatistics | null>(getCachedServerMonthlyFeeStatistics());
+  React.useEffect(() => {
+    const unsub = subscribeMonthlyFeeStatistics((data) => {
+      if (data) setServerFeeStats(data);
+    });
+    return () => unsub();
+  }, []);
 
   const handleVerifyReceiptInForm = async () => {
     const ref = receiptNumber.trim();
@@ -714,10 +730,39 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     const regPlates = new Set(members.map((m) => cleanPlate(m.plateNumber)).filter(Boolean));
     const regNames = new Set(members.map((m) => cleanStr(m.fullName)).filter(Boolean));
 
+    // Pre-index combinedReceipts into fast lookup maps
+    const receiptsByRegId = new Map<string, PaymentReceipt[]>();
+    const receiptsByPlate = new Map<string, PaymentReceipt[]>();
+    const receiptsByPhone = new Map<string, PaymentReceipt[]>();
+    const receiptsByName = new Map<string, PaymentReceipt[]>();
+
     combinedReceipts.forEach((rc) => {
+      if (!rc) return;
       const rcRegId = cleanStr(rc.ownerRegistrationId);
       const rcPlate = cleanPlate(rc.plateNumber);
+      const rcPhone = cleanPhone(rc.phone);
       const rcName = cleanStr(rc.ownerName);
+
+      if (rcRegId) {
+        const arr = receiptsByRegId.get(rcRegId) || [];
+        arr.push(rc);
+        receiptsByRegId.set(rcRegId, arr);
+      }
+      if (rcPlate) {
+        const arr = receiptsByPlate.get(rcPlate) || [];
+        arr.push(rc);
+        receiptsByPlate.set(rcPlate, arr);
+      }
+      if (rcPhone) {
+        const arr = receiptsByPhone.get(rcPhone) || [];
+        arr.push(rc);
+        receiptsByPhone.set(rcPhone, arr);
+      }
+      if (rcName) {
+        const arr = receiptsByName.get(rcName) || [];
+        arr.push(rc);
+        receiptsByName.set(rcName, arr);
+      }
 
       const alreadyCovered =
         (rcRegId && regIds.has(rcRegId)) ||
@@ -745,15 +790,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       const regPhoneClean = cleanPhone(reg.phone);
       const regNameClean = cleanStr(reg.fullName);
 
-      // 1. Match from full combinedReceipts collection across multiple keys
-      const matchedReceipts = combinedReceipts.filter((rc) => {
-        if (!rc) return false;
-        if (rc.ownerRegistrationId && cleanStr(rc.ownerRegistrationId) === regIdClean) return true;
-        if (regPlateClean && rc.plateNumber && cleanPlate(rc.plateNumber) === regPlateClean) return true;
-        if (regPhoneClean && rc.phone && cleanPhone(rc.phone) === regPhoneClean) return true;
-        if (regNameClean && rc.ownerName && cleanStr(rc.ownerName) === regNameClean) return true;
-        return false;
-      });
+      // 1. O(1) Fast Match from indexed maps
+      const matchedReceipts: PaymentReceipt[] =
+        (regIdClean ? receiptsByRegId.get(regIdClean) : null) ||
+        (regPlateClean ? receiptsByPlate.get(regPlateClean) : null) ||
+        (regPhoneClean ? receiptsByPhone.get(regPhoneClean) : null) ||
+        (regNameClean ? receiptsByName.get(regNameClean) : null) ||
+        [];
 
       // 2. Also incorporate payment receipt data directly attached to the registration intake record
       const allReceipts = [...matchedReceipts];
@@ -813,10 +856,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         } catch {}
 
         const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
+        const payIndex = payEth ? payEth.year * 13 + payEth.month : 0;
+        const expIndex = expEth ? expEth.year * 13 + expEth.month : payIndex;
+
         return {
           receipt: rc,
           payEth,
           expEth,
+          payIndex,
+          expIndex,
           status, // 'active' | 'expiring_soon' | 'expired'
           daysRemaining,
         };
@@ -844,10 +892,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         // B. Check if any receipt term covers this Ethiopian month (validity duration spans across multiple months)
         const targetPeriodIndex = targetYear * 13 + targetMonth;
         const coveringMatches = parsedReceipts.filter((item) => {
-          if (!item.payEth) return false;
-          const payIndex = item.payEth.year * 13 + item.payEth.month;
-          const expIndex = item.expEth ? item.expEth.year * 13 + item.expEth.month : payIndex;
-          return targetPeriodIndex >= payIndex && targetPeriodIndex <= expIndex;
+          return item.payIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex <= item.expIndex;
         });
 
         const activeReceipt = parsedReceipts.find((r) => r.status === 'active');
@@ -950,6 +995,23 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   // Ethiopian Monthly Fee Statistics metrics
   const ethiopianMonthlyMetrics = useMemo(() => {
+    // If fast server-side statistics are available, return immediately with zero client delay
+    if (serverFeeStats) {
+      return {
+        targetMonth: serverFeeStats.targetMonth,
+        targetYear: serverFeeStats.targetYear,
+        monthName: isAmharic ? serverFeeStats.monthNameAm : serverFeeStats.monthNameEn,
+        isCurrentMonth: serverFeeStats.isCurrentMonth,
+        totalRevenue: serverFeeStats.totalRevenue,
+        totalReceiptsCount: serverFeeStats.totalReceiptsCount,
+        paidMembersCount: serverFeeStats.paidMembersCount,
+        dueSoonMembersCount: serverFeeStats.dueSoonMembersCount,
+        unpaidMembersCount: serverFeeStats.unpaidMembersCount,
+        activeBillableCount: serverFeeStats.activeBillableCount,
+        complianceRate: serverFeeStats.complianceRate,
+      };
+    }
+
     const monthObj = ETHIOPIAN_MONTHS[currentEthMonth - 1] || ETHIOPIAN_MONTHS[0];
     const monthName = isAmharic ? monthObj.am : monthObj.en;
 

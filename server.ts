@@ -20,6 +20,7 @@ import {
   recordSystemAction,
   getMaterializedKPIs,
   getMaterializedNotifications,
+  getMonthlyFeeStatisticsServerSide,
 } from './src/server/db.ts';
 import {
   authenticateToken,
@@ -516,6 +517,32 @@ app.get('/api/notifications/materialized', async (req, res) => {
     const notifs = await getMaterializedNotifications(role);
     res.json({ success: true, notifications: notifs });
   } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
+// High-performance Server-Side Monthly Fee Statistics endpoint
+app.get('/api/statistics/monthly-fee', async (req, res) => {
+  const startMs = performance.now();
+  try {
+    const targetMonth = req.query.month ? parseInt(String(req.query.month), 10) : undefined;
+    const targetYear = req.query.year ? parseInt(String(req.query.year), 10) : undefined;
+    const role = String(req.query.role || req.headers['x-user-role'] || 'admin');
+    const badgeId = String(req.query.badgeId || req.headers['x-user-badge'] || '');
+
+    const data = await getMonthlyFeeStatisticsServerSide({
+      targetMonth,
+      targetYear,
+      role,
+      badgeId,
+    });
+
+    const durationMs = (performance.now() - startMs).toFixed(2);
+    res.setHeader('Server-Timing', `monthly_fee_stats;dur=${durationMs};desc="Server-Side Monthly Fee Stats"`);
+    res.json({ success: true, data, serverDurationMs: Number(durationMs) });
+  } catch (err: any) {
+    const durationMs = (performance.now() - startMs).toFixed(2);
+    console.error(`[Monthly Fee Stats Error after ${durationMs}ms]:`, err);
     res.status(500).json({ success: false, error: err.message || String(err) });
   }
 });

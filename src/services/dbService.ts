@@ -266,6 +266,7 @@ const listeners = {
   settings: new Set<(data: SystemSettings) => void>(),
   users: new Set<(data: SystemUser[]) => void>(),
   kpis: new Set<(data: PreAggregatedKPIData) => void>(),
+  monthlyFeeStats: new Set<(data: ServerMonthlyFeeStatistics) => void>(),
   auditLogs: new Set<(data: SystemAuditLog[]) => void>(),
 };
 
@@ -2085,9 +2086,10 @@ export async function syncCriticalStartup(activePage: string = 'dashboard'): Pro
     notifySyncStatus();
     setGlobalDbError(null);
 
-    // High Priority: Fetch instant pre-aggregated write-side KPIs + critical settings & active page data on-demand
+    // High Priority: Fetch instant pre-aggregated write-side KPIs + server-side Monthly Fee statistics & active page data on-demand
     const results = await Promise.allSettled([
       fetchPreAggregatedKPIs(),
+      fetchMonthlyFeeStatisticsServerSide(),
       syncSettings(),
       syncOfficers(),
       syncActivePageCollection(activePage),
@@ -2824,6 +2826,79 @@ export async function fetchPreAggregatedKPIs(): Promise<PreAggregatedKPIData | n
     console.warn(`[KPI Client Perf Notice] /api/dashboard/kpis request failed after ${totalMs}ms:`, err);
   }
   return cachedPreAggregatedKpis;
+}
+
+// Server-Side Monthly Fee Statistics interface & state cache
+export interface ServerMonthlyFeeStatistics {
+  targetMonth: number;
+  targetYear: number;
+  monthNameAm: string;
+  monthNameEn: string;
+  isCurrentMonth: boolean;
+  totalRevenue: number;
+  totalReceiptsCount: number;
+  paidMembersCount: number;
+  dueSoonMembersCount: number;
+  unpaidMembersCount: number;
+  notEnrolledCount: number;
+  activeBillableCount: number;
+  complianceRate: number;
+  matrixCounts: {
+    all: number;
+    active: number;
+    expiring: number;
+    expired: number;
+  };
+  calculatedAt: string;
+}
+
+let cachedServerMonthlyFeeStats: ServerMonthlyFeeStatistics | null = null;
+
+export function getCachedServerMonthlyFeeStatistics(): ServerMonthlyFeeStatistics | null {
+  return cachedServerMonthlyFeeStats;
+}
+
+export function subscribeMonthlyFeeStatistics(callback: (data: ServerMonthlyFeeStatistics) => void): () => void {
+  listeners.monthlyFeeStats.add(callback);
+  if (cachedServerMonthlyFeeStats) {
+    try {
+      callback(cachedServerMonthlyFeeStats);
+    } catch (e) {}
+  }
+  return () => listeners.monthlyFeeStats.delete(callback);
+}
+
+export function notifyMonthlyFeeStats(): void {
+  if (!cachedServerMonthlyFeeStats) return;
+  listeners.monthlyFeeStats.forEach((cb) => cb(cachedServerMonthlyFeeStats!));
+}
+
+export async function fetchMonthlyFeeStatisticsServerSide(
+  targetMonth?: number,
+  targetYear?: number
+): Promise<ServerMonthlyFeeStatistics | null> {
+  const startMs = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  try {
+    const params = new URLSearchParams();
+    if (targetMonth) params.set('month', String(targetMonth));
+    if (targetYear) params.set('year', String(targetYear));
+    const qs = params.toString();
+    const url = `/api/statistics/monthly-fee${qs ? `?${qs}` : ''}`;
+
+    const res = await safeJsonFetch<{ success: boolean; data?: ServerMonthlyFeeStatistics; serverDurationMs?: number }>(url);
+    const totalMs = (typeof performance !== 'undefined' ? performance.now() - startMs : Date.now() - startMs).toFixed(2);
+
+    if (res && res.success && res.data) {
+      console.log(`[Monthly Fee Stats Perf] /api/statistics/monthly-fee fetched in ${totalMs}ms`);
+      cachedServerMonthlyFeeStats = res.data;
+      notifyMonthlyFeeStats();
+      return res.data;
+    }
+  } catch (err) {
+    const totalMs = (typeof performance !== 'undefined' ? performance.now() - startMs : Date.now() - startMs).toFixed(2);
+    console.warn(`[Monthly Fee Stats Notice] Server request failed after ${totalMs}ms:`, err);
+  }
+  return cachedServerMonthlyFeeStats;
 }
 
 export interface PaginatedUsersResult {

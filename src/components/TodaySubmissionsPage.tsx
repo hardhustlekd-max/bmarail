@@ -484,33 +484,35 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   });
 
   // 2. Filter by Date (Today vs All) - seamlessly matches Ethiopian today and Gregorian today
-  const dateFilteredRegs = roleFilteredRegs.filter((reg) => {
-    if (dateFilter === 'today') {
-      const regDate = (reg.registrationDate || '').split(' ')[0];
-      if (!regDate || regDate === todayStr) return true;
-      try {
-        const ethReg = toEthiopianDate(regDate);
-        const ethNow = toEthiopianDate(new Date());
-        return ethReg.year === ethNow.year && ethReg.month === ethNow.month && ethReg.day === ethNow.day;
-      } catch {
-        return false;
+  const ethNow = React.useMemo(() => toEthiopianDate(new Date()), []);
+  const dateFilteredRegs = React.useMemo(() => {
+    return roleFilteredRegs.filter((reg) => {
+      if (dateFilter === 'today') {
+        const regDate = (reg.registrationDate || '').split(' ')[0];
+        if (!regDate || regDate === todayStr) return true;
+        try {
+          const ethReg = toEthiopianDate(regDate);
+          return ethReg.year === ethNow.year && ethReg.month === ethNow.month && ethReg.day === ethNow.day;
+        } catch {
+          return false;
+        }
       }
-    }
-    return true;
-  });
+      return true;
+    });
+  }, [roleFilteredRegs, dateFilter, todayStr, ethNow]);
 
-  // Calculate Status Counts based on Date Filter
-  const pendingCount = dateFilteredRegs.filter(
-    (r) => r.status === 'pending_approval' || (r.status as string) === 'pending'
-  ).length;
-
-  const approvedCount = dateFilteredRegs.filter(
-    (r) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print'
-  ).length;
-
-  const rejectedCount = dateFilteredRegs.filter(
-    (r) => r.status === 'rejected'
-  ).length;
+  // Calculate Status Counts based on Date Filter in a single pass
+  const { pendingCount, approvedCount, rejectedCount } = React.useMemo(() => {
+    let pending = 0;
+    let approved = 0;
+    let rejected = 0;
+    dateFilteredRegs.forEach((r) => {
+      if (r.status === 'pending_approval' || (r.status as string) === 'pending') pending++;
+      else if (r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print') approved++;
+      else if (r.status === 'rejected') rejected++;
+    });
+    return { pendingCount: pending, approvedCount: approved, rejectedCount: rejected };
+  }, [dateFilteredRegs]);
 
   // 2. Filter by Status and Search
   const finalFilteredRegs = dateFilteredRegs.filter((reg) => {

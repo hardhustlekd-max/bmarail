@@ -20,11 +20,23 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
 }) => {
   const isAmharic = lang === 'am';
 
-  // Calculate counts for each permit status
-  const pendingCount = registrations.filter((r) => r.status === 'pending_approval').length;
-  const approvedCount = registrations.filter((r) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print').length;
-  const rejectedCount = registrations.filter((r) => r.status === 'rejected').length;
-  const totalCount = registrations.length || 1; // avoid division by zero
+  // Calculate counts for each permit status in a single pass
+  const { pendingCount, approvedCount, rejectedCount, totalCount } = React.useMemo(() => {
+    let pending = 0;
+    let approved = 0;
+    let rejected = 0;
+    registrations.forEach((r) => {
+      if (r.status === 'pending_approval' || (r.status as string) === 'pending') pending++;
+      else if (r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print') approved++;
+      else if (r.status === 'rejected') rejected++;
+    });
+    return {
+      pendingCount: pending,
+      approvedCount: approved,
+      rejectedCount: rejected,
+      totalCount: registrations.length || 1,
+    };
+  }, [registrations]);
 
   // Status Cards Data Config
   const statusCards = [
