@@ -402,6 +402,7 @@ app.get('/api/users/paginated', async (req, res) => {
 // ============================================================================
 // Write-side aggregated KPI reader (O(1) time without querying raw data on the fly)
 app.get('/api/dashboard/kpis', async (req, res) => {
+  const startMs = performance.now();
   try {
     const kpiRow = await getMaterializedKPIs();
     const data = {
@@ -437,9 +438,15 @@ app.get('/api/dashboard/kpis', async (req, res) => {
       calculatedAt: kpiRow?.updatedAt || kpiRow?.updated_at || new Date().toISOString(),
     };
 
+    const durationMs = (performance.now() - startMs).toFixed(2);
     res.setHeader('X-Materialized-View', 'TRIGGER_DRIVEN');
-    res.json({ success: true, data });
+    res.setHeader('Server-Timing', `db_kpis;dur=${durationMs};desc="Materialized KPI Query"`);
+    console.log(`[API Perf GET /api/dashboard/kpis] Resolved in ${durationMs}ms`);
+
+    res.json({ success: true, data, serverDurationMs: Number(durationMs) });
   } catch (err: any) {
+    const durationMs = (performance.now() - startMs).toFixed(2);
+    console.error(`[API Perf GET /api/dashboard/kpis ERROR after ${durationMs}ms]:`, err);
     res.status(500).json({ success: false, error: err.message || String(err) });
   }
 });

@@ -20,6 +20,8 @@ import {
   isTaskAllowed,
   isTaskViewable,
   fetchPreAggregatedKPIs,
+  getCachedPreAggregatedKPIs,
+  subscribePreAggregatedKPIs,
   PreAggregatedKPIData,
 } from '../services/dbService';
 import { getPaymentReceiptStatus } from '../utils/paymentUtils';
@@ -83,18 +85,13 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     return () => unsub();
   }, []);
 
-  // Pre-aggregated Dashboard KPIs from background worker for zero-lag instant rendering
-  const [preAggregatedKpis, setPreAggregatedKpis] = useState<PreAggregatedKPIData | null>(null);
+  // Pre-aggregated Dashboard KPIs from write-side materialized view for instant zero-lag rendering
+  const [preAggregatedKpis, setPreAggregatedKpis] = useState<PreAggregatedKPIData | null>(getCachedPreAggregatedKPIs());
   useEffect(() => {
-    let active = true;
-    fetchPreAggregatedKPIs().then((data) => {
-      if (active && data) {
-        setPreAggregatedKpis(data);
-      }
+    const unsub = subscribePreAggregatedKPIs((data) => {
+      if (data) setPreAggregatedKpis(data);
     });
-    return () => {
-      active = false;
-    };
+    return () => unsub();
   }, []);
 
   // State for Instant Plate / QR Inspector Search on Dashboard

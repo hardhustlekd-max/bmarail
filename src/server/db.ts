@@ -1362,20 +1362,28 @@ function applyActionToInMemoryKPIs(action: any) {
  * Fetch Write-Side Pre-Aggregated KPIs in O(1) time
  */
 export async function getMaterializedKPIs(): Promise<any> {
+  const startMs = performance.now();
   if (isPostgresConnected && dbPool) {
     try {
       const res = await dbPool.query(`SELECT * FROM kpi_metrics WHERE id = 'system_summary' LIMIT 1`);
+      const durationMs = (performance.now() - startMs).toFixed(2);
       if (res.rows.length > 0) {
+        console.log(`[DB Perf] getMaterializedKPIs (PostgreSQL) executed in ${durationMs}ms`);
         return normalizeRowFromPg(res.rows[0]);
       }
     } catch (err: any) {
+      const durationMs = (performance.now() - startMs).toFixed(2);
+      console.warn(`[DB Perf] getMaterializedKPIs (PostgreSQL Error after ${durationMs}ms):`, err.message);
       if (isNetworkError(err)) {
         isPostgresConnected = false;
         scheduleBackgroundReconnect();
       }
     }
   }
-  return memoryStore.kpi_metrics?.get('system_summary') || null;
+  const memData = memoryStore.kpi_metrics?.get('system_summary') || null;
+  const durationMs = (performance.now() - startMs).toFixed(2);
+  console.log(`[DB Perf] getMaterializedKPIs (In-Memory) executed in ${durationMs}ms`);
+  return memData;
 }
 
 /**

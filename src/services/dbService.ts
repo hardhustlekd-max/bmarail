@@ -258,6 +258,7 @@ const listeners = {
   paymentReceipts: new Set<(data: PaymentReceipt[]) => void>(),
   settings: new Set<(data: SystemSettings) => void>(),
   users: new Set<(data: SystemUser[]) => void>(),
+  kpis: new Set<(data: PreAggregatedKPIData) => void>(),
   auditLogs: new Set<(data: SystemAuditLog[]) => void>(),
 };
 
@@ -1109,6 +1110,7 @@ export async function saveRegistrationToDb(
             method: 'POST',
             body: JSON.stringify(optimizedReg),
           });
+          fetchPreAggregatedKPIs();
         }
         return { success: true, isOfflineFallback: false };
       } catch (directErr: any) {
@@ -1147,6 +1149,7 @@ export async function updateRegistrationStatusInDb(
           method: 'POST',
           body: JSON.stringify({ id, status, rejectionReason }),
         });
+        fetchPreAggregatedKPIs();
       } catch (err) {
         console.warn('PostgreSQL update registration status notice:', err);
       }
@@ -1195,6 +1198,7 @@ export async function updateRegistrationInDb(
           method: 'POST',
           body: JSON.stringify({ id, updates }),
         });
+        fetchPreAggregatedKPIs();
       } catch (err) {
         console.warn('PostgreSQL update registration notice:', err);
       }
@@ -1222,6 +1226,7 @@ export async function deleteRegistrationFromDb(id: string): Promise<void> {
         await safeJsonFetch(`/api/registrations/${id}`, {
           method: 'DELETE',
         });
+        fetchPreAggregatedKPIs();
       } catch (err) {
         console.warn('PostgreSQL delete registration notice:', err);
       }
@@ -1513,6 +1518,7 @@ export async function saveUnregisteredReportToDb(report: UnregisteredVehicleRepo
           method: 'POST',
           body: JSON.stringify(report),
         });
+        fetchPreAggregatedKPIs();
       } catch (apiErr) {
         console.warn('Backend API save unregistered report notice:', apiErr);
       }
@@ -1549,6 +1555,7 @@ export async function updateUnregisteredReportStatusInDb(
           method: 'POST',
           body: JSON.stringify({ id, status, resolutionNotes }),
         });
+        fetchPreAggregatedKPIs();
       } catch (apiErr) {
         console.warn('Backend API update report status notice:', apiErr);
       }
@@ -1590,6 +1597,7 @@ export async function saveVerificationLogToDb(log: VerificationLog): Promise<voi
           method: 'POST',
           body: JSON.stringify(log),
         });
+        fetchPreAggregatedKPIs();
       } catch (apiErr) {
         console.warn('Backend API save verification log notice:', apiErr);
       }
@@ -1658,6 +1666,7 @@ export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<v
           method: 'POST',
           body: JSON.stringify(receipt),
         });
+        fetchPreAggregatedKPIs();
       } catch (apiErr) {
         console.warn('Backend API save payment receipt notice:', apiErr);
       }
@@ -1735,6 +1744,7 @@ export async function deletePaymentReceiptFromDb(id: string): Promise<void> {
         await safeJsonFetch(`/api/payment-receipts/${id}`, {
           method: 'DELETE',
         });
+        fetchPreAggregatedKPIs();
       } catch (apiErr) {
         console.warn('Backend API delete payment receipt notice:', apiErr);
       }
@@ -2011,8 +2021,9 @@ export async function syncCriticalStartup(activePage: string = 'dashboard'): Pro
   setGlobalDbError(null);
 
   try {
-    // 2. High Priority: Fetch critical settings + active page data on-demand
+    // 2. High Priority: Fetch instant pre-aggregated write-side KPIs + critical settings & active page data on-demand
     await Promise.allSettled([
+      fetchPreAggregatedKPIs(),
       syncSettings(),
       syncOfficers(),
       syncActivePageCollection(activePage),
@@ -2685,16 +2696,47 @@ export interface PreAggregatedKPIData {
   calculatedAt: string;
 }
 
+let cachedPreAggregatedKpis: PreAggregatedKPIData | null = null;
+
+export function getCachedPreAggregatedKPIs(): PreAggregatedKPIData | null {
+  return cachedPreAggregatedKpis;
+}
+
+export function subscribePreAggregatedKPIs(callback: (data: PreAggregatedKPIData) => void): () => void {
+  listeners.kpis.add(callback);
+  if (cachedPreAggregatedKpis) {
+    callback(cachedPreAggregatedKpis);
+  }
+  fetchPreAggregatedKPIs().then((data) => {
+    if (data) callback(data);
+  });
+  return () => listeners.kpis.delete(callback);
+}
+
+export function notifyKpis(): void {
+  if (!cachedPreAggregatedKpis) return;
+  listeners.kpis.forEach((cb) => cb(cachedPreAggregatedKpis!));
+}
+
 export async function fetchPreAggregatedKPIs(): Promise<PreAggregatedKPIData | null> {
+  const startMs = typeof performance !== 'undefined' ? performance.now() : Date.now();
   try {
-    const res = await safeJsonFetch<{ success: boolean; data?: PreAggregatedKPIData }>('/api/dashboard/kpis');
+    const res = await safeJsonFetch<{ success: boolean; data?: PreAggregatedKPIData; serverDurationMs?: number }>('/api/dashboard/kpis');
+    const totalMs = (typeof performance !== 'undefined' ? performance.now() - startMs : Date.now() - startMs).toFixed(2);
+
     if (res && res.success && res.data) {
+      console.log(`[KPI Client Perf] /api/dashboard/kpis fetched in ${totalMs}ms (server execution: ${res.serverDurationMs ?? 'N/A'}ms)`);
+      cachedPreAggregatedKpis = res.data;
+      notifyKpis();
       return res.data;
+    } else {
+      console.warn(`[KPI Client Perf] /api/dashboard/kpis returned non-success response after ${totalMs}ms:`, res);
     }
   } catch (err) {
-    console.warn('[KPI Service] Pre-aggregated KPI fetch notice:', err);
+    const totalMs = (typeof performance !== 'undefined' ? performance.now() - startMs : Date.now() - startMs).toFixed(2);
+    console.warn(`[KPI Client Perf Notice] /api/dashboard/kpis request failed after ${totalMs}ms:`, err);
   }
-  return null;
+  return cachedPreAggregatedKpis;
 }
 
 export interface PaginatedUsersResult {
