@@ -185,6 +185,12 @@ function getInitialBootState(): InMemoryState {
 
   if (typeof window === 'undefined') return defaultState;
 
+  // Only hydrate local cache at module boot if the device is currently offline
+  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+  if (!isOffline) {
+    return defaultState;
+  }
+
   try {
     const raw = localStorage.getItem(STATE_CACHE_KEY);
     if (!raw) return defaultState;
@@ -308,13 +314,15 @@ export function optimizeRegistrationForStorage(reg: MotorcycleRegistration): Mot
 
 let saveStateDebounceTimer: any = null;
 
+let isHydrating = false;
+
 /**
  * Save current state to IndexedDB (as primary large data store) and localStorage (as cache)
  * Only text fields are cached locally; photos and document scans are kept on DB/S3 server.
  * Non-blocking, debounced execution prevents UI thread stutter during rapid state updates.
  */
 export function saveStateToLocalStorage(immediate = false) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || isHydrating) return;
 
   if (saveStateDebounceTimer) {
     clearTimeout(saveStateDebounceTimer);
@@ -322,6 +330,7 @@ export function saveStateToLocalStorage(immediate = false) {
   }
 
   const executeSave = () => {
+    if (isHydrating) return;
     try {
       const textOnlyRegistrations = inMemory.registrations.map(optimizeRegistrationForStorage);
       const textOnlyVerifications = inMemory.verifications.map(stripImagesFromVerificationLog);
@@ -420,6 +429,7 @@ let isHydratingFromIdb = false;
 export async function hydrateFromIndexedDb(): Promise<boolean> {
   if (typeof window === 'undefined' || isHydratingFromIdb) return false;
   isHydratingFromIdb = true;
+  isHydrating = true;
 
   try {
     await migrateLocalStorageToIndexedDb();
@@ -449,7 +459,6 @@ export async function hydrateFromIndexedDb(): Promise<boolean> {
     if (idbSettings) {
       const wasReset = checkAndApplySystemResetIfNewer(idbSettings);
       if (wasReset) {
-        isHydratingFromIdb = false;
         return true;
       }
     }
@@ -515,6 +524,7 @@ export async function hydrateFromIndexedDb(): Promise<boolean> {
     console.warn('[Storage] Notice hydrating from IndexedDB:', err);
     return false;
   } finally {
+    isHydrating = false;
     isHydratingFromIdb = false;
   }
 }
@@ -524,6 +534,7 @@ export async function hydrateFromIndexedDb(): Promise<boolean> {
  */
 export function loadStateFromLocalStorage(): boolean {
   if (typeof window === 'undefined') return false;
+  isHydrating = true;
 
   try {
     const raw = localStorage.getItem(STATE_CACHE_KEY);
@@ -597,10 +608,12 @@ export function loadStateFromLocalStorage(): boolean {
       notifySettings();
       loaded = true;
     }
+
     return loaded;
-  } catch (err) {
-    console.warn('[Storage] LocalStorage load notice:', err);
+  } catch (e) {
     return false;
+  } finally {
+    isHydrating = false;
   }
 }
 
@@ -881,14 +894,29 @@ export function broadcastCrossTabSync(collection: string, action: string, id?: s
 }
 
 export function initLiveDbListeners(): () => void {
-  // 0. Ensure system-wide scrub of any legacy media from local storage & IndexedDB
-  scrubSystemWideLocalCache();
+  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
 
-  // 1. Immediate render from fast LocalStorage cache (strictly text metadata)
-  loadStateFromLocalStorage();
+  // If initially offline, hydrate from offline cache immediately
+  if (isOffline) {
+    loadStateFromLocalStorage();
+    hydrateFromIndexedDb().catch(() => {});
+  }
 
-  // 2. Asynchronous hydration of text-only dataset from IndexedDB
-  hydrateFromIndexedDb();
+  // Automatic online/offline transition listeners
+  if (typeof window !== 'undefined' && !areLiveListenersActive) {
+    window.addEventListener('online', () => {
+      isCloudConnected = true;
+      notifySyncStatus();
+      syncCriticalStartup().catch(() => {});
+    });
+
+    window.addEventListener('offline', () => {
+      isCloudConnected = false;
+      notifySyncStatus();
+      loadStateFromLocalStorage();
+      hydrateFromIndexedDb().catch(() => {});
+    });
+  }
 
   if (typeof window === 'undefined' || areLiveListenersActive) {
     return () => {};
@@ -2040,28 +2068,58 @@ export async function syncActivePageCollection(activePage: string, force = false
 }
 
 export async function syncCriticalStartup(activePage: string = 'dashboard'): Promise<void> {
-  // 1. Instant local display from cache
-  loadStateFromLocalStorage();
-  lastSyncTime = new Date();
-  isCloudConnected = true;
-  notifySyncStatus();
-  setGlobalDbError(null);
+  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+
+  if (isOffline) {
+    loadStateFromLocalStorage();
+    hydrateFromIndexedDb().catch(() => {});
+    lastSyncTime = new Date();
+    isCloudConnected = false;
+    notifySyncStatus();
+    return;
+  }
 
   try {
-    // 2. High Priority: Fetch instant pre-aggregated write-side KPIs + critical settings & active page data on-demand
-    await Promise.allSettled([
+    lastSyncTime = new Date();
+    isCloudConnected = true;
+    notifySyncStatus();
+    setGlobalDbError(null);
+
+    // High Priority: Fetch instant pre-aggregated write-side KPIs + critical settings & active page data on-demand
+    const results = await Promise.allSettled([
       fetchPreAggregatedKPIs(),
       syncSettings(),
       syncOfficers(),
       syncActivePageCollection(activePage),
     ]);
+
+    const anySuccess = results.some((r) => r.status === 'fulfilled');
+    if (!anySuccess) {
+      throw new Error('All network startup endpoints failed');
+    }
+
+    // Background update offline cache with fresh server data
+    saveStateToLocalStorage();
   } catch (err: any) {
-    console.warn('[Sync] Startup sync fallback notice:', err?.message);
+    console.warn('[Sync] Network error during startup sync, falling back to offline cache:', err?.message);
+    isCloudConnected = false;
+    notifySyncStatus();
+    loadStateFromLocalStorage();
+    hydrateFromIndexedDb().catch(() => {});
   }
 }
 
 export async function syncAllCollectionsWithDb(force = false): Promise<void> {
-  loadStateFromLocalStorage();
+  const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+
+  if (isOffline) {
+    loadStateFromLocalStorage();
+    hydrateFromIndexedDb().catch(() => {});
+    isCloudConnected = false;
+    notifySyncStatus();
+    return;
+  }
+
   lastSyncTime = new Date();
   isCloudConnected = true;
   notifySyncStatus();
@@ -2119,9 +2177,11 @@ export async function syncAllCollectionsWithDb(force = false): Promise<void> {
     ]);
     saveStateToLocalStorage();
   } catch (err: any) {
-    console.warn('[Sync] PostgreSQL sync notice (falling back to local cache):', err?.message);
+    console.warn('[Sync] PostgreSQL sync notice (falling back to offline cache):', err?.message);
     isCloudConnected = false;
     notifySyncStatus();
+    loadStateFromLocalStorage();
+    hydrateFromIndexedDb().catch(() => {});
   }
 }
 

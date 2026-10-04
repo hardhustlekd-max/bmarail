@@ -120,10 +120,7 @@ export default function App() {
 
   // Restore state and authentication session on load
   useEffect(() => {
-    // 1. Immediately restore local storage cached state
-    loadStateFromLocalStorage();
-
-    // 2. Synchronize critical startup configuration with cloud DB
+    // Synchronize startup data (network-first, falling back to local cache if offline)
     syncCriticalStartup().catch((err) => {
       console.warn('App mount sync notice:', err);
     });
@@ -158,9 +155,7 @@ export default function App() {
       userBadgeId: badgeId,
       userRole: role,
     });
-    // Restore and persist state automatically on sign-in
-    loadStateFromLocalStorage();
-    saveStateToLocalStorage();
+    // Synchronize latest authorized user data
     syncCriticalStartup().catch(() => {});
   };
 
