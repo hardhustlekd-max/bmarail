@@ -21,6 +21,7 @@ import {
   getMaterializedKPIs,
   getMaterializedNotifications,
   getMonthlyFeeStatisticsServerSide,
+  dbGetMembershipFeeDirectoryScoped,
 } from './src/server/db.ts';
 import {
   authenticateToken,
@@ -1346,6 +1347,42 @@ app.get('/api/payment-receipts', async (req, res) => {
     res.json({
       success: true,
       receipts: result.rows,
+      pagination: result.pagination,
+      totalCount: result.totalCount,
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Paginated Server-Side Membership Fee Directory with 10 records per request default
+app.get(['/api/membership-fees', '/api/membership-fee-directory'], async (req, res) => {
+  try {
+    const scope = getUserScope(req);
+    const page = req.query.page ? parseInt(String(req.query.page), 10) : 1;
+    const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : 10;
+    const search = req.query.search ? String(req.query.search) : undefined;
+    const status = req.query.status ? String(req.query.status) : undefined;
+    const targetMonth = req.query.month ? parseInt(String(req.query.month), 10) : undefined;
+    const targetYear = req.query.year ? parseInt(String(req.query.year), 10) : undefined;
+
+    const startHr = process.hrtime();
+    const result = await dbGetMembershipFeeDirectoryScoped({
+      page,
+      limit,
+      search,
+      status,
+      targetMonth,
+      targetYear,
+      scope,
+    });
+    const diff = process.hrtime(startHr);
+    const ms = (diff[0] * 1000 + diff[1] / 1e6).toFixed(2);
+    res.setHeader('Server-Timing', `membership_directory;dur=${ms}`);
+
+    res.json({
+      success: true,
+      rows: result.rows,
       pagination: result.pagination,
       totalCount: result.totalCount,
     });

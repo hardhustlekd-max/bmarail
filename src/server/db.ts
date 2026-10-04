@@ -2468,3 +2468,304 @@ export async function getMonthlyFeeStatisticsServerSide(options?: {
     calculatedAt: new Date().toISOString(),
   };
 }
+
+/**
+ * Server-Side Paginated Membership Fee Directory with 10 records per request default
+ */
+export async function dbGetMembershipFeeDirectoryScoped(options?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  targetMonth?: number;
+  targetYear?: number;
+  scope?: UserQueryScope;
+}) {
+  const currentEth = toEthiopianDate(new Date());
+  const targetMonth = options?.targetMonth || currentEth.month;
+  const targetYear = options?.targetYear || currentEth.year;
+  const targetPeriodIndex = targetYear * 13 + targetMonth;
+  const isCurrentMonth = targetMonth === currentEth.month && targetYear === currentEth.year;
+
+  const pageSize = Math.max(1, options?.limit || 10);
+  const currentPage = Math.max(1, options?.page || 1);
+
+  // Retrieve raw registrations and payment receipts directly
+  const [regsRes, receiptsRes] = await Promise.all([
+    dbGetRegistrationsScoped({ scope: options?.scope || { role: 'admin' }, page: 1, limit: 10000 }),
+    dbGetPaymentReceiptsScoped({ scope: options?.scope || { role: 'admin' }, page: 1, limit: 10000 }),
+  ]);
+
+  const rawRegs: any[] = regsRes.rows || [];
+  const rawReceipts: any[] = receiptsRes.rows || [];
+
+  const cleanPlate = (s?: string) => (s || '').replace(/[\s\-_]/g, '').toLowerCase();
+  const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
+  const cleanPhone = (s?: string) => (s || '').replace(/[^0-9]/g, '');
+
+  const allReceipts = [...rawReceipts];
+  const existingRegIds = new Set(allReceipts.map((r) => cleanStr(r.ownerRegistrationId || r.owner_registration_id)).filter(Boolean));
+
+  rawRegs.forEach((reg) => {
+    if (!reg || !reg.id) return;
+    const regIdClean = cleanStr(reg.id);
+    if (existingRegIds.has(regIdClean)) return;
+
+    const hasRegReceipt = Boolean(
+      reg.receiptNumber ||
+      reg.receipt_number ||
+      reg.lastReceiptNumber ||
+      reg.last_receipt_number ||
+      reg.paymentAmount ||
+      reg.payment_amount ||
+      reg.lastPaymentAmount ||
+      reg.last_payment_amount ||
+      reg.lastPaymentDate ||
+      reg.last_payment_date ||
+      reg.activeTermExpirationDate ||
+      reg.active_term_expiration_date ||
+      reg.termStatus === 'CURRENT' ||
+      reg.term_status === 'CURRENT' ||
+      reg.status === 'approved' ||
+      reg.status === 'printed' ||
+      reg.status === 'ordered_print'
+    );
+
+    if (hasRegReceipt) {
+      const rawPayDate = reg.lastPaymentDate || reg.last_payment_date || reg.registrationDate || reg.registration_date || getDefaultEthiopianRegistrationDate();
+      const payDate = normalizeToEthiopianDateStr(rawPayDate);
+      const expDate = (reg.activeTermExpirationDate || reg.active_term_expiration_date)
+        ? normalizeToEthiopianDateStr(reg.activeTermExpirationDate || reg.active_term_expiration_date)
+        : calculateOneMonthExpiration(payDate);
+
+      allReceipts.push({
+        id: `reg-init-${reg.id}`,
+        receiptNumber: reg.lastReceiptNumber || reg.last_receipt_number || reg.receiptNumber || reg.receipt_number || `REC-${reg.id}`,
+        ownerRegistrationId: reg.id,
+        ownerName: reg.fullName || reg.full_name || '',
+        plateNumber: reg.plateNumber || reg.plate_number,
+        phone: reg.phone,
+        paymentDate: payDate,
+        expirationDate: expDate,
+        amount: reg.lastPaymentAmount || reg.last_payment_amount || reg.paymentAmount || reg.payment_amount || ((reg.vehicleCategory || reg.vehicle_category) === 'electric' ? 50 : 100),
+        vehicleCategory: reg.vehicleCategory || reg.vehicle_category,
+        enteredBy: reg.registeredBy || reg.registered_by || 'SYSTEM',
+        createdAt: payDate,
+      });
+    }
+  });
+
+  const parsedReceipts = allReceipts.map((rc) => {
+    const payDateStr = rc.paymentDate || rc.payment_date || rc.createdAt || rc.created_at || '';
+    const expDateStr = rc.expirationDate || rc.expiration_date || (payDateStr ? calculateOneMonthExpiration(payDateStr) : '');
+    let payEth: EthiopianDate | null = null;
+    let expEth: EthiopianDate | null = null;
+    try {
+      if (payDateStr) payEth = toEthiopianDate(payDateStr);
+    } catch {}
+    try {
+      if (expDateStr) expEth = toEthiopianDate(expDateStr);
+    } catch {}
+
+    const { status, daysRemaining } = getPaymentReceiptStatus(expDateStr);
+    const amountNum = parseFloat(String(rc.amount || ((rc as any).vehicleCategory === 'electric' ? '50' : '100')).replace(/[^0-9.]/g, '')) || ((rc as any).vehicleCategory === 'electric' ? 50 : 100);
+
+    const payIndex = payEth ? payEth.year * 13 + payEth.month : 0;
+    const expIndex = expEth ? expEth.year * 13 + expEth.month : payIndex;
+
+    return {
+      receipt: rc,
+      payEth,
+      expEth,
+      payIndex,
+      expIndex,
+      status,
+      daysRemaining,
+      amountNum,
+    };
+  });
+
+  const receiptsByRegId = new Map<string, typeof parsedReceipts[0][]>();
+  const receiptsByPlate = new Map<string, typeof parsedReceipts[0][]>();
+  const receiptsByPhone = new Map<string, typeof parsedReceipts[0][]>();
+  const receiptsByName = new Map<string, typeof parsedReceipts[0][]>();
+
+  for (const item of parsedReceipts) {
+    const rc = item.receipt;
+    const rRegId = cleanStr(rc.ownerRegistrationId || rc.owner_registration_id);
+    const rPlate = cleanPlate(rc.plateNumber || rc.plate_number);
+    const rPhone = cleanPhone(rc.phone);
+    const rName = cleanStr(rc.ownerName || rc.owner_name);
+
+    if (rRegId) {
+      if (!receiptsByRegId.has(rRegId)) receiptsByRegId.set(rRegId, []);
+      receiptsByRegId.get(rRegId)!.push(item);
+    }
+    if (rPlate) {
+      if (!receiptsByPlate.has(rPlate)) receiptsByPlate.set(rPlate, []);
+      receiptsByPlate.get(rPlate)!.push(item);
+    }
+    if (rPhone) {
+      if (!receiptsByPhone.has(rPhone)) receiptsByPhone.set(rPhone, []);
+      receiptsByPhone.get(rPhone)!.push(item);
+    }
+    if (rName) {
+      if (!receiptsByName.has(rName)) receiptsByName.set(rName, []);
+      receiptsByName.get(rName)!.push(item);
+    }
+  }
+
+  // Active billable registrations
+  const billableRegs = rawRegs.filter((r) => r.status !== 'rejected');
+
+  // Build matrix row items
+  const allMatrixRows = billableRegs.map((reg) => {
+    const regIdClean = cleanStr(reg.id);
+    const regPlateClean = cleanPlate(reg.plateNumber || reg.plate_number);
+    const regPhoneClean = cleanPhone(reg.phone);
+    const regNameClean = cleanStr(reg.fullName || reg.full_name);
+
+    const memberItems =
+      (regIdClean ? receiptsByRegId.get(regIdClean) : null) ||
+      (regPlateClean ? receiptsByPlate.get(regPlateClean) : null) ||
+      (regPhoneClean ? receiptsByPhone.get(regPhoneClean) : null) ||
+      (regNameClean ? receiptsByName.get(regNameClean) : null) ||
+      [];
+
+    const memberReceipts = memberItems.map((it) => it.receipt);
+
+    const hasAnyPaymentRecord =
+      memberReceipts.length > 0 ||
+      Boolean(
+        reg.receiptNumber ||
+        reg.receipt_number ||
+        reg.lastReceiptNumber ||
+        reg.last_receipt_number ||
+        reg.paymentAmount ||
+        reg.payment_amount ||
+        reg.lastPaymentAmount ||
+        reg.last_payment_amount ||
+        reg.lastPaymentDate ||
+        reg.last_payment_date ||
+        reg.activeTermExpirationDate ||
+        reg.active_term_expiration_date ||
+        reg.termStatus === 'CURRENT' ||
+        reg.term_status === 'CURRENT'
+      );
+
+    const periods: Record<string, 'paid' | 'pending' | 'unpaid' | 'muted'> = {};
+
+    for (let m = 1; m <= 13; m++) {
+      const colKey = `eth_m_${m}`;
+      const colYear = targetYear;
+      const colMonth = m;
+      const colPeriodIndex = colYear * 13 + colMonth;
+      const isColCurrentMonth = colMonth === currentEth.month && colYear === currentEth.year;
+
+      if (!hasAnyPaymentRecord) {
+        periods[colKey] = 'muted';
+        continue;
+      }
+
+      const directMonthMatches = memberItems.filter(
+        (item) => item.payEth && item.payEth.year === colYear && item.payEth.month === colMonth
+      );
+
+      const coveringMatches = memberItems.filter((item) => {
+        return item.payIndex && colPeriodIndex >= item.payIndex && colPeriodIndex <= item.expIndex;
+      });
+
+      const activeReceipt = memberItems.find((r) => r.status === 'active');
+      const expiringReceipt = memberItems.find((r) => r.status === 'expiring_soon');
+
+      if (isColCurrentMonth) {
+        const hasPaidCoverage =
+          reg.termStatus === 'CURRENT' ||
+          reg.term_status === 'CURRENT' ||
+          Boolean(activeReceipt) ||
+          directMonthMatches.length > 0 ||
+          coveringMatches.length > 0;
+
+        if (hasPaidCoverage) {
+          periods[colKey] = 'paid';
+        } else if (reg.termStatus === 'DUE' || reg.term_status === 'DUE' || expiringReceipt) {
+          periods[colKey] = 'pending';
+        } else if (memberItems.some((r) => r.status === 'expired')) {
+          periods[colKey] = 'unpaid';
+        } else {
+          periods[colKey] = 'muted';
+        }
+      } else {
+        if (directMonthMatches.length > 0 || coveringMatches.length > 0) {
+          periods[colKey] = 'paid';
+        } else {
+          periods[colKey] = 'muted';
+        }
+      }
+    }
+
+    const matchedPlateFromReceipt = memberReceipts.find((rc) => (rc.plateNumber || rc.plate_number) && String(rc.plateNumber || rc.plate_number).trim())?.plateNumber;
+    const plate = (reg.plateNumber || reg.plate_number ? String(reg.plateNumber || reg.plate_number).trim() : '') || (matchedPlateFromReceipt ? String(matchedPlateFromReceipt).trim() : '');
+
+    return {
+      id: reg.id,
+      title: reg.fullName || reg.full_name || 'Unnamed Member',
+      plateNumber: plate || undefined,
+      periods,
+      member: reg,
+      allReceipts: memberReceipts,
+      currentMonthStatus: periods[`eth_m_${currentEth.month}`] || 'muted',
+    };
+  });
+
+  // Filter matrix rows according to search query and status filter
+  const searchQuery = (options?.search || '').trim().toLowerCase();
+  const cleanQ = searchQuery.replace(/[\s\-_]/g, '');
+  const statusFilter = options?.status || 'all';
+
+  const filteredRows = allMatrixRows.filter((row) => {
+    // 1. Search Query filter
+    if (searchQuery) {
+      const matchesName = row.title.toLowerCase().includes(searchQuery);
+      const matchesPlate =
+        (row.plateNumber || '').toLowerCase().includes(searchQuery) ||
+        (row.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase().includes(cleanQ) ||
+        (row.member?.plateNumber || row.member?.plate_number || '').toLowerCase().includes(searchQuery) ||
+        (row.member?.plateNumber || row.member?.plate_number || '').replace(/[\s\-_]/g, '').toLowerCase().includes(cleanQ);
+      const matchesPhone = (row.member?.phone || '').toLowerCase().includes(searchQuery);
+      const matchesId = String(row.member?.id || '').toLowerCase().includes(searchQuery);
+      const matchesReceipt = row.allReceipts.some((rc: any) =>
+        (rc.receiptNumber || rc.receipt_number || '').toLowerCase().includes(searchQuery) ||
+        (rc.plateNumber || rc.plate_number || '').toLowerCase().includes(searchQuery)
+      );
+      if (!matchesName && !matchesPlate && !matchesPhone && !matchesId && !matchesReceipt) {
+        return false;
+      }
+    }
+
+    // 2. Status filter
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'active') return row.currentMonthStatus === 'paid';
+    if (statusFilter === 'expiring_soon') return row.currentMonthStatus === 'pending';
+    if (statusFilter === 'expired') return row.currentMonthStatus === 'unpaid';
+
+    return true;
+  });
+
+  const totalCount = filteredRows.length;
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+  const safePage = Math.min(currentPage, totalPages);
+  const startIndex = (safePage - 1) * pageSize;
+  const paginatedRows = filteredRows.slice(startIndex, startIndex + pageSize);
+
+  return {
+    rows: paginatedRows,
+    totalCount,
+    pagination: {
+      currentPage: safePage,
+      pageSize,
+      totalPages,
+      totalCount,
+    },
+  };
+}

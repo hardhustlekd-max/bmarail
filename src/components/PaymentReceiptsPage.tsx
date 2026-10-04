@@ -11,6 +11,7 @@ import {
   ServerMonthlyFeeStatistics,
   getCachedServerMonthlyFeeStatistics,
   subscribeMonthlyFeeStatistics,
+  fetchMembershipFeeDirectory,
 } from '../services/dbService';
 import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian, ETHIOPIAN_MONTHS, EthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, normalizeToEthiopianDateStr } from '../utils/ethiopianCalendar';
 import { LoadingSpinner, TableSkeleton } from './ui/Skeleton';
@@ -325,6 +326,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'expiring_soon' | 'expired'>(
     initialFilter
   );
+
+  // Server-Side Paginated Membership Fee Directory State (Default 10 records per request)
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [serverRows, setServerRows] = useState<MatrixRowItem[] | null>(null);
+  const [serverPagination, setServerPagination] = useState<{
+    currentPage: number;
+    pageSize: number;
+    totalPages: number;
+    totalCount: number;
+  } | null>(null);
+  const [isFetchingRows, setIsFetchingRows] = useState(false);
 
   // Top-level View Tab: 'table' vs 'metrics' (Separating metrics and table into dedicated tabs)
   const [activeMainTab, setActiveMainTab] = useState<'table' | 'metrics'>('table');
@@ -975,6 +988,52 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     });
   }, [allMatrixRows, searchQuery, statusFilter]);
 
+  // Server-Side Paginated Membership Fee Directory Fetch Effect
+  React.useEffect(() => {
+    let isMounted = true;
+    const fetchPageData = async () => {
+      setIsFetchingRows(true);
+      try {
+        const result = await fetchMembershipFeeDirectory({
+          page,
+          limit: pageSize,
+          search: searchQuery.trim(),
+          status: statusFilter,
+          month: currentEthMonth,
+          year: currentEthYear,
+          role: userRole,
+          badgeId: userBadgeId,
+        });
+        if (isMounted && result && result.rows) {
+          setServerRows(result.rows);
+          setServerPagination(result.pagination);
+        }
+      } catch (err) {
+        console.warn('[PaymentReceiptsPage] Server-side page fetch notice:', err);
+      } finally {
+        if (isMounted) setIsFetchingRows(false);
+      }
+    };
+
+    const timer = setTimeout(fetchPageData, searchQuery ? 200 : 0);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [page, pageSize, searchQuery, statusFilter, currentEthMonth, currentEthYear, userRole, userBadgeId, registrations, paymentReceipts]);
+
+  // Pagination calculations (seamless fallback to client slicing if server data is pending)
+  const totalEntries = serverPagination ? serverPagination.totalCount : filteredMatrixRows.length;
+  const totalPages = serverPagination ? serverPagination.totalPages : Math.max(1, Math.ceil(totalEntries / pageSize));
+  const activePage = Math.min(page, totalPages);
+  const startIndex = (activePage - 1) * pageSize;
+  const displayMatrixRows = useMemo(() => {
+    if (serverRows && serverRows.length > 0) {
+      return serverRows;
+    }
+    return filteredMatrixRows.slice(startIndex, startIndex + pageSize);
+  }, [serverRows, filteredMatrixRows, startIndex, pageSize]);
+
   // Matrix member counts according to current month status
   const matrixCounts = useMemo(() => {
     let active = 0;
@@ -1112,7 +1171,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
                 }`}
               >
-                {filteredMatrixRows.length}
+                {totalEntries}
               </span>
             </button>
 
@@ -1801,7 +1860,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
                 placeholder={
                   isAmharic
                     ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
@@ -1812,7 +1874,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {searchQuery && (
                 <button
                   type="button"
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => {
+                    setSearchQuery('');
+                    setPage(1);
+                  }}
                   className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer font-bold text-xs"
                 >
                   ✕
@@ -1833,7 +1898,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => setStatusFilter(tab.key)}
+                    onClick={() => {
+                      setStatusFilter(tab.key);
+                      setPage(1);
+                    }}
                     className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                       isActive
                         ? 'border-primary text-primary dark:text-primary dark:border-primary font-bold'
@@ -1882,7 +1950,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="overflow-x-auto bg-white dark:bg-[#1C2434] w-full max-w-full min-w-0">
             <MonthlyMatrixLedger
               columns={matrixColumns}
-              rows={filteredMatrixRows}
+              rows={displayMatrixRows}
               showNumbering={true}
               numberHeaderLabel={isAmharic ? 'ተ.ቁ' : '#'}
               memberHeaderLabel={isAmharic ? 'አባል / ባለቤት' : 'Member / Owner'}
@@ -1919,6 +1987,57 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 setReconcileVerifyStatus('idle');
               }}
             />
+          </div>
+
+          {/* PAGINATION BAR (TAILADMIN DESIGN) - FIXED / STICKY AT BOTTOM */}
+          <div className="bg-white dark:bg-[#1C2434] px-3.5 sm:px-5 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#64748B] dark:text-[#8A99AD] border-t border-[#E2E8F0] dark:border-[#2E3A47] shrink-0 sticky bottom-0 z-10 shadow-2xs">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="font-medium text-[#1C2434] dark:text-white">{isAmharic ? 'በአንድ ገጽ:' : 'Rows per page:'}</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-primary focus:outline-none cursor-pointer"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <span className="hidden sm:inline font-medium text-[#64748B] dark:text-[#8A99AD]">
+                {isAmharic
+                  ? `${startIndex + 1}-${Math.min(startIndex + pageSize, totalEntries)} ከ ${totalEntries} አባላት`
+                  : `Showing ${startIndex + 1}–${Math.min(startIndex + pageSize, totalEntries)} of ${totalEntries} members`}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={activePage <= 1 || isFetchingRows}
+                className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
+                <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
+              </button>
+
+              <span className="px-3 py-1.5 bg-primary text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
+                {activePage} / {totalPages}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                disabled={activePage >= totalPages || isFetchingRows}
+                className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+              >
+                <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
+                <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
+              </button>
+            </div>
           </div>
         </div>
       )}

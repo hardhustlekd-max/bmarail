@@ -2968,4 +2968,62 @@ export async function fetchSystemActions(): Promise<any[]> {
   return [];
 }
 
+export interface PaginatedMembershipFeeDirectoryResult {
+  rows: any[];
+  totalCount: number;
+  pagination: {
+    currentPage: number;
+    pageSize: number;
+    totalPages: number;
+    totalCount: number;
+  };
+}
+
+export async function fetchMembershipFeeDirectory(options?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  month?: number;
+  year?: number;
+  role?: string;
+  badgeId?: string;
+}): Promise<PaginatedMembershipFeeDirectoryResult | null> {
+  try {
+    const params = new URLSearchParams();
+    if (options?.page) params.set('page', String(options.page));
+    if (options?.limit) params.set('limit', String(options.limit));
+    if (options?.search) params.set('search', options.search);
+    if (options?.status && options.status !== 'all') params.set('status', options.status);
+    if (options?.month) params.set('month', String(options.month));
+    if (options?.year) params.set('year', String(options.year));
+    if (options?.role) params.set('role', options.role);
+    if (options?.badgeId) params.set('badgeId', options.badgeId);
+
+    const res = await safeJsonFetch<{
+      success: boolean;
+      rows?: any[];
+      pagination?: any;
+      totalCount?: number;
+    }>(`/api/membership-fees?${params.toString()}`);
+
+    if (res && res.success && Array.isArray(res.rows)) {
+      return {
+        rows: res.rows,
+        totalCount: res.totalCount ?? res.rows.length,
+        pagination: res.pagination || {
+          currentPage: options?.page || 1,
+          pageSize: options?.limit || 10,
+          totalPages: Math.ceil((res.totalCount ?? res.rows.length) / (options?.limit || 10)) || 1,
+          totalCount: res.totalCount ?? res.rows.length,
+        },
+      };
+    }
+  } catch (err) {
+    console.warn('[Membership Fee Service] Server-side fetch notice:', err);
+  }
+  return null;
+}
+
+
 
