@@ -973,6 +973,360 @@ export async function dbGetById<T = any>(tableName: string, id: string): Promise
   return memoryStore[tableName]?.get(id) || null;
 }
 
+export interface UserQueryScope {
+  role?: string;
+  badgeId?: string;
+  subCity?: string;
+  isSuperAdmin?: boolean;
+  isAdmin?: boolean;
+  isClerk?: boolean;
+  isOfficer?: boolean;
+}
+
+export interface ScopedQueryResult<T> {
+  rows: T[];
+  totalCount: number;
+  pagination?: {
+    currentPage: number;
+    pageSize: number;
+    totalPages: number;
+    totalCount: number;
+  };
+}
+
+/**
+ * Fetch registrations with server-side role scoping, searching, and pagination
+ */
+export async function dbGetRegistrationsScoped(options: {
+  scope?: UserQueryScope;
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}): Promise<ScopedQueryResult<any>> {
+  const { scope, page, limit, search, status } = options;
+  const isPaginationRequested = Boolean(page || limit);
+  const currentPage = Math.max(1, page || 1);
+  const pageSize = Math.max(1, Math.min(100, limit || (isPaginationRequested ? 25 : 5000)));
+  const offset = (currentPage - 1) * pageSize;
+
+  if (isPostgresConnected && dbPool) {
+    try {
+      const whereClauses: string[] = [];
+      const queryParams: any[] = [];
+
+      // 1. Role-based scoping at SQL level
+      if (scope?.isClerk && scope.badgeId) {
+        if (scope.subCity) {
+          queryParams.push(scope.badgeId, scope.subCity);
+          whereClauses.push(`(registered_by = $${queryParams.length - 1} OR sub_city = $${queryParams.length})`);
+        } else {
+          queryParams.push(scope.badgeId);
+          whereClauses.push(`registered_by = $${queryParams.length}`);
+        }
+      } else if (scope?.isOfficer && scope.badgeId) {
+        queryParams.push(scope.badgeId);
+        whereClauses.push(`assigned_officer = $${queryParams.length}`);
+      }
+
+      // 2. Status filter
+      if (status && status !== 'all') {
+        queryParams.push(status);
+        whereClauses.push(`status = $${queryParams.length}`);
+      }
+
+      // 3. Search filter
+      if (search && search.trim()) {
+        queryParams.push(`%${search.trim().toLowerCase()}%`);
+        const pIdx = queryParams.length;
+        whereClauses.push(`(LOWER(plate_number) LIKE $${pIdx} OR LOWER(full_name) LIKE $${pIdx} OR phone_number LIKE $${pIdx})`);
+      }
+
+      const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
+      // Count query
+      const countRes = await dbPool.query(`SELECT COUNT(*) AS count FROM motorcycle_registrations ${whereSql}`, queryParams);
+      const totalCount = parseInt(countRes.rows[0]?.count || '0', 10);
+
+      // Data query with pagination / limit
+      const dataParams = [...queryParams];
+      let limitSql = '';
+      if (isPaginationRequested) {
+        dataParams.push(pageSize, offset);
+        limitSql = `LIMIT $${dataParams.length - 1} OFFSET $${dataParams.length}`;
+      }
+
+      const sql = `SELECT * FROM motorcycle_registrations ${whereSql} ORDER BY created_at DESC ${limitSql}`;
+      const dataRes = await dbPool.query(sql, dataParams);
+      const rows = dataRes.rows.map(normalizeRowFromPg);
+
+      return {
+        rows,
+        totalCount,
+        pagination: isPaginationRequested
+          ? {
+              currentPage,
+              pageSize,
+              totalPages: Math.ceil(totalCount / pageSize) || 1,
+              totalCount,
+            }
+          : undefined,
+      };
+    } catch (err: any) {
+      console.warn('[PostgreSQL] Scoped registrations query warning:', err.message);
+      if (isNetworkError(err)) {
+        isPostgresConnected = false;
+        scheduleBackgroundReconnect();
+      }
+    }
+  }
+
+  // Fallback in-memory
+  let all = Array.from(memoryStore['motorcycle_registrations']?.values() || []);
+  if (scope?.isClerk && scope.badgeId) {
+    all = all.filter((r: any) =>
+      r.registeredBy === scope.badgeId ||
+      r.registered_by === scope.badgeId ||
+      (scope.subCity && (r.subCity === scope.subCity || r.sub_city === scope.subCity))
+    );
+  } else if (scope?.isOfficer && scope.badgeId) {
+    all = all.filter((r: any) => r.assignedOfficer === scope.badgeId || r.assigned_officer === scope.badgeId);
+  }
+
+  if (status && status !== 'all') {
+    all = all.filter((r: any) => r.status === status);
+  }
+
+  if (search && search.trim()) {
+    const term = search.trim().toLowerCase();
+    all = all.filter((r: any) =>
+      String(r.plateNumber || '').toLowerCase().includes(term) ||
+      String(r.fullName || '').toLowerCase().includes(term) ||
+      String(r.phoneNumber || '').includes(term)
+    );
+  }
+
+  const totalCount = all.length;
+  let rows = all;
+  if (isPaginationRequested) {
+    rows = all.slice(offset, offset + pageSize);
+  }
+
+  return {
+    rows,
+    totalCount,
+    pagination: isPaginationRequested
+      ? {
+          currentPage,
+          pageSize,
+          totalPages: Math.ceil(totalCount / pageSize) || 1,
+          totalCount,
+        }
+      : undefined,
+  };
+}
+
+/**
+ * Single vehicle lookup by Plate or QR
+ */
+export async function dbFindRegistrationByPlateOrQr(plate?: string, qr?: string): Promise<any | null> {
+  if (isPostgresConnected && dbPool) {
+    try {
+      if (plate) {
+        const res = await dbPool.query(
+          `SELECT * FROM motorcycle_registrations WHERE LOWER(plate_number) = LOWER($1) LIMIT 1`,
+          [plate.trim()]
+        );
+        if (res.rows.length > 0) return normalizeRowFromPg(res.rows[0]);
+      }
+      if (qr) {
+        const res = await dbPool.query(
+          `SELECT * FROM motorcycle_registrations WHERE qr_code_data = $1 OR id = $1 LIMIT 1`,
+          [qr.trim()]
+        );
+        if (res.rows.length > 0) return normalizeRowFromPg(res.rows[0]);
+      }
+    } catch (err: any) {
+      console.warn('[PostgreSQL] Plate lookup warning:', err.message);
+    }
+  }
+
+  const all = Array.from(memoryStore['motorcycle_registrations']?.values() || []);
+  if (plate) {
+    const found = all.find((r: any) => String(r.plateNumber || '').toLowerCase() === plate.trim().toLowerCase());
+    if (found) return found;
+  }
+  if (qr) {
+    const found = all.find((r: any) => r.qrCodeData === qr || r.id === qr);
+    if (found) return found;
+  }
+  return null;
+}
+
+/**
+ * Fetch payment receipts with server-side role scoping
+ */
+export async function dbGetPaymentReceiptsScoped(options: {
+  scope?: UserQueryScope;
+  page?: number;
+  limit?: number;
+}): Promise<ScopedQueryResult<any>> {
+  const { scope, page, limit } = options;
+  const isPaginationRequested = Boolean(page || limit);
+  const currentPage = Math.max(1, page || 1);
+  const pageSize = Math.max(1, Math.min(100, limit || (isPaginationRequested ? 25 : 5000)));
+  const offset = (currentPage - 1) * pageSize;
+
+  if (isPostgresConnected && dbPool) {
+    try {
+      const whereClauses: string[] = [];
+      const queryParams: any[] = [];
+
+      if (scope?.isClerk && scope.badgeId) {
+        queryParams.push(scope.badgeId);
+        whereClauses.push(`entered_by = $${queryParams.length}`);
+      }
+
+      const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+      const countRes = await dbPool.query(`SELECT COUNT(*) AS count FROM payment_receipts ${whereSql}`, queryParams);
+      const totalCount = parseInt(countRes.rows[0]?.count || '0', 10);
+
+      const dataParams = [...queryParams];
+      let limitSql = '';
+      if (isPaginationRequested) {
+        dataParams.push(pageSize, offset);
+        limitSql = `LIMIT $${dataParams.length - 1} OFFSET $${dataParams.length}`;
+      }
+
+      const sql = `SELECT * FROM payment_receipts ${whereSql} ORDER BY created_at DESC ${limitSql}`;
+      const dataRes = await dbPool.query(sql, dataParams);
+      const rows = dataRes.rows.map(normalizeRowFromPg);
+
+      return {
+        rows,
+        totalCount,
+        pagination: isPaginationRequested
+          ? {
+              currentPage,
+              pageSize,
+              totalPages: Math.ceil(totalCount / pageSize) || 1,
+              totalCount,
+            }
+          : undefined,
+      };
+    } catch (err: any) {
+      console.warn('[PostgreSQL] Scoped receipts query warning:', err.message);
+    }
+  }
+
+  let all = Array.from(memoryStore['payment_receipts']?.values() || []);
+  if (scope?.isClerk && scope.badgeId) {
+    all = all.filter(
+      (r: any) =>
+        r.enteredBy === scope.badgeId ||
+        r.entered_by === scope.badgeId ||
+        r.registeredBy === scope.badgeId ||
+        r.cashierBadgeId === scope.badgeId
+    );
+  }
+  const totalCount = all.length;
+  let rows = all;
+  if (isPaginationRequested) {
+    rows = all.slice(offset, offset + pageSize);
+  }
+  return {
+    rows,
+    totalCount,
+    pagination: isPaginationRequested
+      ? {
+          currentPage,
+          pageSize,
+          totalPages: Math.ceil(totalCount / pageSize) || 1,
+          totalCount,
+        }
+      : undefined,
+  };
+}
+
+/**
+ * Fetch verification logs with server-side role scoping
+ */
+export async function dbGetVerificationLogsScoped(options: {
+  scope?: UserQueryScope;
+  page?: number;
+  limit?: number;
+}): Promise<ScopedQueryResult<any>> {
+  const { scope, page, limit } = options;
+  const isPaginationRequested = Boolean(page || limit);
+  const currentPage = Math.max(1, page || 1);
+  const pageSize = Math.max(1, Math.min(100, limit || (isPaginationRequested ? 25 : 5000)));
+  const offset = (currentPage - 1) * pageSize;
+
+  if (isPostgresConnected && dbPool) {
+    try {
+      const whereClauses: string[] = [];
+      const queryParams: any[] = [];
+
+      if (scope?.isOfficer && scope.badgeId) {
+        queryParams.push(scope.badgeId);
+        whereClauses.push(`officer_badge_id = $${queryParams.length}`);
+      }
+
+      const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+      const countRes = await dbPool.query(`SELECT COUNT(*) AS count FROM verification_logs ${whereSql}`, queryParams);
+      const totalCount = parseInt(countRes.rows[0]?.count || '0', 10);
+
+      const dataParams = [...queryParams];
+      let limitSql = '';
+      if (isPaginationRequested) {
+        dataParams.push(pageSize, offset);
+        limitSql = `LIMIT $${dataParams.length - 1} OFFSET $${dataParams.length}`;
+      }
+
+      const sql = `SELECT * FROM verification_logs ${whereSql} ORDER BY created_at DESC ${limitSql}`;
+      const dataRes = await dbPool.query(sql, dataParams);
+      const rows = dataRes.rows.map(normalizeRowFromPg);
+
+      return {
+        rows,
+        totalCount,
+        pagination: isPaginationRequested
+          ? {
+              currentPage,
+              pageSize,
+              totalPages: Math.ceil(totalCount / pageSize) || 1,
+              totalCount,
+            }
+          : undefined,
+      };
+    } catch (err: any) {
+      console.warn('[PostgreSQL] Scoped verifications query warning:', err.message);
+    }
+  }
+
+  let all = Array.from(memoryStore['verification_logs']?.values() || []);
+  if (scope?.isOfficer && scope.badgeId) {
+    all = all.filter((l: any) => l.officerBadgeId === scope.badgeId);
+  }
+  const totalCount = all.length;
+  let rows = all;
+  if (isPaginationRequested) {
+    rows = all.slice(offset, offset + pageSize);
+  }
+  return {
+    rows,
+    totalCount,
+    pagination: isPaginationRequested
+      ? {
+          currentPage,
+          pageSize,
+          totalPages: Math.ceil(totalCount / pageSize) || 1,
+          totalCount,
+        }
+      : undefined,
+  };
+}
+
 export interface DbMutationResult {
   success: boolean;
   target: 'postgresql' | 'in-memory';

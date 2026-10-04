@@ -85,6 +85,7 @@ CREATE INDEX IF NOT EXISTS idx_registrations_sub_city ON motorcycle_registration
 CREATE INDEX IF NOT EXISTS idx_registrations_registered_by ON motorcycle_registrations(registered_by);
 CREATE INDEX IF NOT EXISTS idx_registrations_registration_date ON motorcycle_registrations(registration_date);
 CREATE INDEX IF NOT EXISTS idx_registrations_receipt_number ON motorcycle_registrations(receipt_number);
+CREATE INDEX IF NOT EXISTS idx_registrations_created_at ON motorcycle_registrations(created_at DESC);
 
 -- ----------------------------------------------------------------------------
 -- 3. OFFICER ASSIGNMENTS
@@ -164,6 +165,7 @@ CREATE INDEX IF NOT EXISTS idx_verification_logs_officer_badge ON verification_l
 CREATE INDEX IF NOT EXISTS idx_verification_logs_scanned_at ON verification_logs(scanned_at);
 CREATE INDEX IF NOT EXISTS idx_verification_logs_status ON verification_logs(verification_status);
 CREATE INDEX IF NOT EXISTS idx_verification_logs_registration_id ON verification_logs(registration_id);
+CREATE INDEX IF NOT EXISTS idx_verification_logs_created_at ON verification_logs(created_at DESC);
 
 -- ----------------------------------------------------------------------------
 -- 6. UNREGISTERED VEHICLE REPORTS (reported_at defaults to Ethiopian datetime)
@@ -223,6 +225,8 @@ CREATE INDEX IF NOT EXISTS idx_payment_receipts_receipt_number ON payment_receip
 CREATE INDEX IF NOT EXISTS idx_payment_receipts_plate_number ON payment_receipts(plate_number);
 CREATE INDEX IF NOT EXISTS idx_payment_receipts_payment_date ON payment_receipts(payment_date);
 CREATE INDEX IF NOT EXISTS idx_payment_receipts_owner_reg ON payment_receipts(owner_registration_id);
+CREATE INDEX IF NOT EXISTS idx_payment_receipts_entered_by ON payment_receipts(entered_by);
+CREATE INDEX IF NOT EXISTS idx_payment_receipts_created_at ON payment_receipts(created_at DESC);
 
 -- ----------------------------------------------------------------------------
 -- 8. SYSTEM GLOBAL CONFIGURATION & SETTINGS

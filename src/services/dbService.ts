@@ -13,6 +13,7 @@ import {
 import { mapSettingsFromDb } from '../db/schema';
 import { uploadDocumentPhoto } from './storageService';
 import { trackGlobalAction } from './actionTracker';
+import { getCurrentUser } from './authService';
 import {
   KEYS,
   getStoredLastAckResetEpoch,
@@ -805,6 +806,18 @@ async function safeJsonFetch<T = any>(
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
 
+  let userRole = '';
+  let userBadge = '';
+  let userSubCity = '';
+  try {
+    const user = getCurrentUser();
+    if (user) {
+      userRole = user.role || '';
+      userBadge = user.badgeId || '';
+      userSubCity = user.subCity || '';
+    }
+  } catch {}
+
   let res: Response;
   try {
     res = await fetch(url, {
@@ -812,6 +825,9 @@ async function safeJsonFetch<T = any>(
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
+        ...(userRole ? { 'X-User-Role': userRole } : {}),
+        ...(userBadge ? { 'X-User-Badge': userBadge } : {}),
+        ...(userSubCity ? { 'X-User-Subcity': userSubCity } : {}),
         ...(options?.headers || {}),
       },
     });
@@ -914,7 +930,20 @@ export function initLiveDbListeners(): () => void {
   const connectSSE = () => {
     try {
       if (typeof EventSource !== 'undefined' && !realtimeEventSource) {
-        realtimeEventSource = new EventSource('/api/realtime/events');
+        let sseUrl = '/api/realtime/events';
+        try {
+          const user = getCurrentUser();
+          if (user) {
+            const params = new URLSearchParams();
+            if (user.role) params.set('role', user.role);
+            if (user.badgeId) params.set('badgeId', user.badgeId);
+            if (user.subCity) params.set('subCity', user.subCity);
+            const qs = params.toString();
+            if (qs) sseUrl = `${sseUrl}?${qs}`;
+          }
+        } catch {}
+
+        realtimeEventSource = new EventSource(sseUrl);
         
         const handlePayload = (raw: string) => {
           try {
@@ -1296,19 +1325,17 @@ export async function lookupRegistrationInDb(
 
   if (match) return match;
 
-  // 2. Query backend API directly
+  // 2. Query targeted backend API lookup endpoint in O(1) time
   try {
-    const res = await safeJsonFetch<any>(`/api/registrations`);
-    if (res && Array.isArray(res.registrations)) {
-      const found = res.registrations.find((r: MotorcycleRegistration) => {
-        if (r.id === candidateId || r.id === cleanInput) return true;
-        if (r.plateNumber && r.plateNumber.replace(/[\s\-_]/g, '').toLowerCase() === cleanPlateInput) return true;
-        return false;
-      });
-      if (found) {
-        saveRegistrationToDb(found, { forceLocalOnly: true }).catch(() => {});
-        return found;
-      }
+    const params = new URLSearchParams();
+    params.set('plate', cleanInput);
+    params.set('qr', cleanInput);
+    const res = await safeJsonFetch<{ success: boolean; registration?: MotorcycleRegistration }>(
+      `/api/registrations/lookup?${params.toString()}`
+    );
+    if (res && res.success && res.registration) {
+      saveRegistrationToDb(res.registration, { forceLocalOnly: true }).catch(() => {});
+      return res.registration;
     }
   } catch (err) {}
 

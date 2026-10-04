@@ -8,6 +8,10 @@ import {
   isDatabaseConnected,
   dbGetAll,
   dbGetById,
+  dbGetRegistrationsScoped,
+  dbFindRegistrationByPlateOrQr,
+  dbGetPaymentReceiptsScoped,
+  dbGetVerificationLogsScoped,
   dbUpsert,
   dbUpdateFields,
   dbDelete,
@@ -44,11 +48,37 @@ dotenv.config({ override: true });
 export const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+export interface UserScope {
+  role?: string;
+  badgeId?: string;
+  subCity?: string;
+  isSuperAdmin: boolean;
+  isAdmin: boolean;
+  isClerk: boolean;
+  isOfficer: boolean;
+}
+
+export function getUserScope(req: express.Request): UserScope {
+  const role = String(req.headers['x-user-role'] || req.query.role || '').toLowerCase().trim();
+  const badgeId = String(req.headers['x-user-badge'] || req.query.badgeId || '').trim();
+  const subCity = String(req.headers['x-user-subcity'] || req.query.subCity || '').trim();
+
+  const isSuperAdmin = role === 'superadmin' || role === 'super_admin';
+  const isAdmin = isSuperAdmin || role === 'admin' || role === 'supervisor';
+  const isClerk = role === 'clerk';
+  const isOfficer = role === 'officer';
+
+  return { role, badgeId, subCity, isSuperAdmin, isAdmin, isClerk, isOfficer };
+}
+
 // Universal CORS & Preflight middleware for seamless preview and image loading
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-User-Role, X-User-Badge, X-User-Subcity'
+  );
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
@@ -147,7 +177,14 @@ app.use((req, res, next) => {
 // ============================================================================
 // 1. HEALTH, REALTIME SSE STREAM & SYSTEM STATUS
 // ============================================================================
-const sseClients = new Set<express.Response>();
+interface SseClientSession {
+  res: express.Response;
+  role?: string;
+  badgeId?: string;
+  subCity?: string;
+}
+
+const sseClients = new Set<SseClientSession>();
 
 export function broadcastSseChange(event: {
   collection: string;
@@ -157,9 +194,22 @@ export function broadcastSseChange(event: {
 }) {
   const json = JSON.stringify({ ...event, timestamp: Date.now() });
   const payload = `event: database_change\ndata: ${json}\n\n`;
+
   for (const client of sseClients) {
     try {
-      client.write(payload);
+      // Role-based scoping for SSE events:
+      // If collection is motorcycle_registrations and client is a clerk, only deliver events matching their badge or subcity (or deletes/resets)
+      if (event.collection === 'motorcycle_registrations' && event.action === 'upsert' && client.role === 'clerk') {
+        const item = event.data || {};
+        const isOwn =
+          (client.badgeId && item.registeredBy === client.badgeId) ||
+          (client.subCity && item.subCity === client.subCity);
+        if (!isOwn) {
+          continue; // Skip delivering another clerk's private records
+        }
+      }
+
+      client.res.write(payload);
     } catch (e) {
       sseClients.delete(client);
     }
@@ -167,6 +217,7 @@ export function broadcastSseChange(event: {
 }
 
 app.get('/api/realtime/events', (req, res) => {
+  const scope = getUserScope(req);
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache, no-transform',
@@ -174,20 +225,27 @@ app.get('/api/realtime/events', (req, res) => {
     'Access-Control-Allow-Origin': '*',
   });
   res.write(': connected\n\n');
-  sseClients.add(res);
+
+  const clientSession: SseClientSession = {
+    res,
+    role: scope.role,
+    badgeId: scope.badgeId,
+    subCity: scope.subCity,
+  };
+  sseClients.add(clientSession);
 
   const heartbeat = setInterval(() => {
     try {
       res.write(': ping\n\n');
     } catch (e) {
       clearInterval(heartbeat);
-      sseClients.delete(res);
+      sseClients.delete(clientSession);
     }
   }, 25000);
 
   req.on('close', () => {
     clearInterval(heartbeat);
-    sseClients.delete(res);
+    sseClients.delete(clientSession);
   });
 });
 
@@ -815,19 +873,30 @@ app.delete('/api/storage/file/:key', async (req, res) => {
 });
 
 // ============================================================================
-// 4. SYNC ALL COLLECTIONS FROM POSTGRESQL
+// 4. SYNC ALL COLLECTIONS FROM POSTGRESQL (ROLE-SCOPED)
 // ============================================================================
 app.get('/api/sync', async (req, res) => {
   try {
+    const scope = getUserScope(req);
+
+    // Scoped queries according to user role
+    const pRegistrations = dbGetRegistrationsScoped({ scope, limit: 2000 }).then((r) => r.rows);
+    const pOfficers = dbGetAll('officer_assignments');
+    const pPrintOrders = (scope.isAdmin || scope.isSuperAdmin) ? dbGetAll('print_batch_orders') : Promise.resolve([]);
+    const pVerifications = dbGetVerificationLogsScoped({ scope, limit: 300 }).then((r) => r.rows);
+    const pUnregistered = dbGetAll('unregistered_vehicle_reports');
+    const pReceipts = dbGetPaymentReceiptsScoped({ scope, limit: 1000 }).then((r) => r.rows);
+    const pSettings = dbGetById('system_settings', 'global_config');
+
     const [registrations, officers, printOrders, verifications, unregisteredReports, paymentReceipts, settingsDoc] =
       await Promise.all([
-        dbGetAll('motorcycle_registrations'),
-        dbGetAll('officer_assignments'),
-        dbGetAll('print_batch_orders'),
-        dbGetAll('verification_logs'),
-        dbGetAll('unregistered_vehicle_reports'),
-        dbGetAll('payment_receipts'),
-        dbGetById('system_settings', 'global_config'),
+        pRegistrations,
+        pOfficers,
+        pPrintOrders,
+        pVerifications,
+        pUnregistered,
+        pReceipts,
+        pSettings,
       ]);
 
     res.json({
@@ -840,6 +909,11 @@ app.get('/api/sync', async (req, res) => {
       settings: settingsDoc || null,
       configured: true,
       fromCache: false,
+      userScope: {
+        role: scope.role || 'all',
+        badgeId: scope.badgeId || null,
+        subCity: scope.subCity || null,
+      },
     });
   } catch (err: any) {
     console.error('[PostgreSQL Sync Error]:', err);
@@ -858,12 +932,49 @@ app.get('/api/sync', async (req, res) => {
 });
 
 // ============================================================================
-// 5. MOTORCYCLE REGISTRATIONS ENDPOINTS
+// 5. MOTORCYCLE REGISTRATIONS ENDPOINTS (SERVER-SIDE SCOPED & PAGINATED)
 // ============================================================================
 app.get('/api/registrations', async (req, res) => {
   try {
-    const rows = await dbGetAll('motorcycle_registrations');
-    res.json({ success: true, registrations: rows });
+    const scope = getUserScope(req);
+    const page = req.query.page ? parseInt(String(req.query.page), 10) : undefined;
+    const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
+    const search = req.query.search ? String(req.query.search).trim() : undefined;
+    const status = req.query.status ? String(req.query.status).trim() : undefined;
+
+    const result = await dbGetRegistrationsScoped({
+      scope,
+      page,
+      limit,
+      search,
+      status,
+    });
+
+    res.json({
+      success: true,
+      registrations: result.rows,
+      pagination: result.pagination,
+      totalCount: result.totalCount,
+      userScope: {
+        role: scope.role || 'all',
+        badgeId: scope.badgeId || null,
+      },
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Single lookup for plates or QR codes without loading entire database
+app.get('/api/registrations/lookup', async (req, res) => {
+  try {
+    const plate = String(req.query.plate || '').trim();
+    const qr = String(req.query.qr || '').trim();
+    if (!plate && !qr) {
+      return res.status(400).json({ success: false, error: 'Provide plate or qr query parameter' });
+    }
+    const reg = await dbFindRegistrationByPlateOrQr(plate, qr);
+    res.json({ success: true, registration: reg });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -1152,12 +1263,21 @@ app.post('/api/unregistered-reports/status', async (req, res) => {
 });
 
 // ============================================================================
-// 9. VERIFICATION LOGS & AUDIT LOGS ENDPOINTS
+// 9. VERIFICATION LOGS & AUDIT LOGS ENDPOINTS (ROLE-SCOPED)
 // ============================================================================
 app.get('/api/verification-logs', async (req, res) => {
   try {
-    const rows = await dbGetAll('verification_logs');
-    res.json({ success: true, verifications: rows });
+    const scope = getUserScope(req);
+    const page = req.query.page ? parseInt(String(req.query.page), 10) : undefined;
+    const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
+
+    const result = await dbGetVerificationLogsScoped({ scope, page, limit });
+    res.json({
+      success: true,
+      verifications: result.rows,
+      pagination: result.pagination,
+      totalCount: result.totalCount,
+    });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -1191,8 +1311,17 @@ app.post('/api/verification-logs', async (req, res) => {
 
 app.get('/api/payment-receipts', async (req, res) => {
   try {
-    const rows = await dbGetAll('payment_receipts');
-    res.json({ success: true, receipts: rows });
+    const scope = getUserScope(req);
+    const page = req.query.page ? parseInt(String(req.query.page), 10) : undefined;
+    const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
+
+    const result = await dbGetPaymentReceiptsScoped({ scope, page, limit });
+    res.json({
+      success: true,
+      receipts: result.rows,
+      pagination: result.pagination,
+      totalCount: result.totalCount,
+    });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }
