@@ -944,42 +944,44 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* ==================== QUICK ACTION SHORTCUTS ==================== */}
       {currentRoleConfig.actions.length > 0 && (
-        <div className="p-4 sm:p-6 bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-2xs space-y-4">
-          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
-            <div className="flex items-center gap-3">
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">{currentRoleConfig.headerIcon}</Icon>
-              <h3 className="text-sm sm:text-base font-extrabold text-on-surface">
+        <div className="p-3 sm:p-5 bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-2xs space-y-2.5 sm:space-y-3.5">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2 sm:pb-2.5">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <Icon className="material-symbols-outlined text-[18px] text-primary shrink-0">{currentRoleConfig.headerIcon}</Icon>
+              <h3 className="text-xs sm:text-sm font-black text-on-surface uppercase tracking-wider">
                 {currentRoleConfig.title}
               </h3>
             </div>
+            <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary">
+              {currentRoleConfig.actions.length} {isAmharic ? 'አቋራጮች' : 'Actions'}
+            </span>
           </div>
 
-          <div className={`grid grid-cols-1 ${currentRoleConfig.actions.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3 sm:gap-4`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
             {currentRoleConfig.actions.map((act) => (
               <button
                 key={act.key}
                 type="button"
                 onClick={() => handleActionClick(act.key)}
-                className="min-h-[56px] p-4 bg-surface-container-low/70 hover:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 group shadow-2xs hover:shadow-xs active:scale-98"
+                className="group relative min-h-[46px] sm:min-h-[52px] px-3 py-2 sm:px-3.5 sm:py-2.5 bg-surface-container-low/70 hover:bg-surface-container active:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 shadow-2xs hover:shadow-xs active:scale-[0.98] touch-manipulation select-none overflow-hidden"
               >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className={`w-11 h-11 rounded-xl ${act.iconBg} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}>
-                    <Icon className="material-symbols-outlined text-[22px]">{act.icon}</Icon>
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${act.iconBg} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}>
+                    <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">{act.icon}</Icon>
                   </div>
-                  <div className="min-w-0">
-                    <h4 className="text-sm font-extrabold text-on-surface group-hover:text-primary transition-colors truncate">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-xs sm:text-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
                       {act.title}
                     </h4>
-                    <p className="text-xs text-secondary mt-0.5 truncate font-medium">
+                    <p className="text-[10px] sm:text-xs text-secondary truncate font-medium">
                       {act.subtitle}
                     </p>
                   </div>
                 </div>
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
-                  <Icon className="material-symbols-outlined text-[20px]">
-                    chevron_right
-                  </Icon>
-                </div>
+
+                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
+                  chevron_right
+                </Icon>
               </button>
             ))}
           </div>
