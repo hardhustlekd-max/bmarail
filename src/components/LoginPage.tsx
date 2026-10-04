@@ -3,6 +3,7 @@ import { Icon } from './ui/Icon';
 import { Language, UserRole, APP_LOGO } from '../types';
 import { validateBadgeId } from '../utils/validation';
 import { SYSTEM_ROLE_CREDENTIALS, loginOnlineUser } from '../services/authService';
+import { CentralPageSpinner } from './ui/CentralPageSpinner';
 
 interface LoginPageProps {
   currentLang?: Language;
@@ -242,6 +243,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
         </div>
       </main>
+
+      {/* Central Spinning Page Loader */}
+      {isLoading && (
+        <CentralPageSpinner
+          label={lang === 'am' ? 'በመግባት ላይ...' : 'Signing in...'}
+          subtitle={lang === 'am' ? 'የተጠቃሚ መለያ እየተረጋገጠ ነው' : 'Authenticating account credentials'}
+        />
+      )}
     </div>
   );
 };

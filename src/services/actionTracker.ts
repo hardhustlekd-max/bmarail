@@ -114,7 +114,7 @@ export async function trackGlobalAction<T>(
 }
 
 /**
- * Trigger a brief navbar action pulse (useful for fast client-side navigations)
+ * Trigger a brief page loader pulse (useful for fast client-side navigations)
  */
 export function pulseNavbarLoader(
   labelAm: string = 'ገፁ እየተጫነ ነው...',
@@ -126,3 +126,5 @@ export function pulseNavbarLoader(
     end();
   }, durationMs);
 }
+
+export const pulsePageLoader = pulseNavbarLoader;

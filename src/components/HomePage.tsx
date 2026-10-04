@@ -64,6 +64,7 @@ import {
 import { ToastProvider, useToast } from '../context/ToastContext';
 import { DataProvider, useData } from '../context/DataContext';
 import { ActionProvider } from '../context/ActionContext';
+import { CentralPageSpinner } from './ui/CentralPageSpinner';
 import { DashboardOverviewRouter } from '../domains/dashboard/DashboardOverviewRouter';
 import { RegistryRouter } from '../domains/registry/RegistryRouter';
 import { EnforcementRouter } from '../domains/enforcement/EnforcementRouter';
@@ -1922,13 +1923,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
         
         {/* MOBILE NAVIGATION HEADER (md:hidden) */}
         <header className="sticky top-0 z-50 bg-[#1e293b] text-white shadow-md px-3 sm:px-6 py-2.5 md:hidden shrink-0 relative overflow-hidden">
-          {/* Animated Navbar Action Loading Progress Bar (Under top navbar) */}
-          {actionLoadingState.isLoading && (
-            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/20 overflow-hidden z-50 pointer-events-none">
-              <div className="h-full bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-400 animate-navbar-progress rounded-full" />
-            </div>
-          )}
-
           <div className="relative z-50 max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
               
               {/* Left Logo & App Brand Title */}
@@ -2658,13 +2652,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
         {/* DESKTOP TOP BAR (hidden md:flex) */}
         <header className="hidden md:flex items-center justify-between px-4 sm:px-6 md:px-8 py-2.5 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0] dark:border-[#2E3A47] sticky top-0 z-40 shadow-xs relative overflow-hidden transition-colors">
-          {/* Animated Navbar Action Loading Progress Bar (Under top navbar) */}
-          {actionLoadingState.isLoading && (
-            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-blue-100 dark:bg-slate-800 overflow-hidden z-50 pointer-events-none">
-              <div className="h-full bg-gradient-to-r from-slate-700 via-amber-400 to-slate-700 animate-navbar-progress rounded-full" />
-            </div>
-          )}
-
           {/* Left Side: Sidebar Toggle Button & Current Context */}
           <div className="flex items-center gap-3">
             <button
@@ -3138,6 +3125,26 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Central Spinning Page Loader throughout the app */}
+      {(actionLoadingState.isLoading || pageLoading) && (
+        <CentralPageSpinner
+          label={
+            pageLoading
+              ? (isAmharic ? 'ገፁ እየተጫነ ነው...' : 'Loading view...')
+              : (isAmharic
+                  ? actionLoadingState.labelAm || 'እባክዎ ይጠብቁ...'
+                  : actionLoadingState.labelEn || 'Please wait...')
+          }
+          subtitle={
+            !pageLoading && actionLoadingState.activeCount > 1
+              ? (isAmharic
+                  ? `${actionLoadingState.activeCount} ተግባራት በሂደት ላይ`
+                  : `${actionLoadingState.activeCount} actions in progress`)
+              : undefined
+          }
+        />
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import React from 'react';
+export { CentralPageSpinner, type CentralPageSpinnerProps } from './CentralPageSpinner';
 
 interface SkeletonProps {
   className?: string;
