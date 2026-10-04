@@ -3129,22 +3129,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
       {/* Central Spinning Page Loader throughout the app */}
       {(actionLoadingState.isLoading || pageLoading) && (
-        <CentralPageSpinner
-          label={
-            pageLoading
-              ? (isAmharic ? 'ገፁ እየተጫነ ነው...' : 'Loading view...')
-              : (isAmharic
-                  ? actionLoadingState.labelAm || 'እባክዎ ይጠብቁ...'
-                  : actionLoadingState.labelEn || 'Please wait...')
-          }
-          subtitle={
-            !pageLoading && actionLoadingState.activeCount > 1
-              ? (isAmharic
-                  ? `${actionLoadingState.activeCount} ተግባራት በሂደት ላይ`
-                  : `${actionLoadingState.activeCount} actions in progress`)
-              : undefined
-          }
-        />
+        <CentralPageSpinner />
       )}
     </div>
   );

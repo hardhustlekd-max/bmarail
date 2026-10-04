@@ -245,12 +245,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       </main>
 
       {/* Central Spinning Page Loader */}
-      {isLoading && (
-        <CentralPageSpinner
-          label={lang === 'am' ? 'በመግባት ላይ...' : 'Signing in...'}
-          subtitle={lang === 'am' ? 'የተጠቃሚ መለያ እየተረጋገጠ ነው' : 'Authenticating account credentials'}
-        />
-      )}
+      {isLoading && <CentralPageSpinner />}
     </div>
   );
 };
