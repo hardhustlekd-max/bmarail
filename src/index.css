@@ -63,118 +63,147 @@ html {
 }
 
 :root, html.light {
-  --color-primary: #0F172A;
-  --color-primary-hover: #1E293B;
-  --color-primary-container: #F1F5F9;
-  --color-primary-light: #E2E8F0;
-  --color-secondary-container: #F1F5F9;
-  --color-surface: #F8FAFC;
-  --color-on-surface: #0F172A;
-  --color-on-surface-variant: #64748B;
+  /* ☀️ Light Mode Tokens (Charcoal Text on Light) */
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-muted: #6C757D;
+  --color-bg-main: #FFFFFF;
+  --color-bg-surface: #F8F9FA;
+
+  /* UI Component Accents */
+  --assoc-accent: #0D6EFD;
+  --assoc-accent-hover: #0B5ED7;
+  --assoc-success: #198754;
+  --assoc-success-bg: #D1E7DD;
+  --assoc-success-text: #0F5132;
+  --assoc-warning: #FFC107;
+  --assoc-warning-bg: #FFF3CD;
+  --assoc-warning-text: #664D03;
+  --assoc-danger: #DC3545;
+  --assoc-danger-bg: #F8D7DA;
+  --assoc-danger-text: #842029;
+  --assoc-info: #495057;
+  --assoc-info-bg: #F8F9FA;
+  --assoc-info-text: #212529;
+
+  --color-primary: #0D6EFD;
+  --color-primary-hover: #0B5ED7;
+  --color-primary-container: #F8F9FA;
+  --color-primary-light: #E9ECEF;
+  --color-secondary-container: #F8F9FA;
+  --color-surface: #F8F9FA;
+  --color-on-surface: #212529;
+  --color-on-surface-variant: #495057;
   --color-surface-container: #FFFFFF;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #F8FAFC;
-  --color-surface-container-high: #F1F5F9;
-  --color-surface-container-highest: #E2E8F0;
+  --color-surface-container-low: #F8F9FA;
+  --color-surface-container-high: #F8F9FA;
+  --color-surface-container-highest: #E9ECEF;
   --color-surface-bright: #ffffff;
-  --color-surface-dim: #F8FAFC;
-  --color-surface-variant: #F1F5F9;
-  --color-secondary: #64748B;
-  --color-outline: #94A3B8;
-  --color-outline-variant: #E2E8F0;
-  --color-brand-indigo: #0F172A;
+  --color-surface-dim: #F8F9FA;
+  --color-surface-variant: #F8F9FA;
+  --color-secondary: #495057;
+  --color-outline: #6C757D;
+  --color-outline-variant: #DEE2E6;
+  --color-brand-indigo: #0D6EFD;
   --color-topnav: #ffffff;
-  --color-topnav-hover: #F8FAFC;
-  --color-topnav-dark: #1E293B;
-  --color-sidebar-bg: #0F172A;
-  --color-sidebar-hover: #1E293B;
-  --color-sidebar-text: #E2E8F0;
-  --color-sidebar-active-text: #ffffff;
+  --color-topnav-hover: #F8F9FA;
+  --color-topnav-dark: #1E1E24;
+  --color-sidebar-bg: #1E1E24;
+  --color-sidebar-hover: #2B2B36;
+  --color-sidebar-text: #CED4DA;
+  --color-sidebar-active-text: #F8F9FA;
   
   /* Association Design System Tokens (Light Mode) */
-  --assoc-bg-primary: #F8FAFC;
-  --assoc-sidebar-bg: #0F172A;
-  --assoc-text-main: #0F172A;
-  --assoc-text-muted: #64748B;
-  --assoc-text-subtle: #94A3B8;
+  --assoc-bg-primary: #F8F9FA;
+  --assoc-sidebar-bg: #1E1E24;
+  --assoc-text-main: #212529;
+  --assoc-text-muted: #6C757D;
+  --assoc-text-subtle: #495057;
   --assoc-card-bg: #FFFFFF;
-  --assoc-border: #E2E8F0;
-  --assoc-accent: #0F172A;
-  --assoc-accent-hover: #1E293B;
-  --assoc-success: #16A34A;
-  --assoc-success-bg: #DCFCE7;
-  --assoc-success-text: #15803D;
-  --assoc-danger: #DC2626;
-  --assoc-danger-bg: #FEE2E2;
-  --assoc-danger-text: #B91C1C;
-  --assoc-warning: #D97706;
-  --assoc-warning-bg: #FEF3C7;
-  --assoc-warning-text: #B45309;
-  --assoc-info: #475569;
-  --assoc-info-bg: #F1F5F9;
-  --assoc-info-text: #334155;
-  --assoc-backdrop: rgba(15, 23, 42, 0.6);
+  --assoc-border: #DEE2E6;
+  --assoc-backdrop: rgba(18, 18, 18, 0.6);
   color-scheme: light;
 }
 
 html.dark {
-  --color-primary: #F8FAFC;
-  --color-primary-hover: #FFFFFF;
-  --color-primary-container: #1E293B;
-  --color-primary-light: #334155;
-  --color-secondary-container: #1E293B;
-  --color-surface: #0F172A;
-  --color-on-surface: #F8FAFC;
-  --color-on-surface-variant: #94A3B8;
-  --color-surface-container: #1E293B;
-  --color-surface-container-lowest: #0F172A;
-  --color-surface-container-low: #0B132B;
-  --color-surface-container-high: #334155;
-  --color-surface-container-highest: #475569;
-  --color-surface-bright: #1E293B;
-  --color-surface-dim: #0F172A;
-  --color-surface-variant: #1E293B;
-  --color-secondary: #94A3B8;
-  --color-outline: #64748B;
-  --color-outline-variant: #334155;
-  --color-brand-indigo: #F8FAFC;
-  --color-topnav: #1E293B;
-  --color-topnav-hover: #0F172A;
-  --color-topnav-dark: #0F172A;
-  --color-sidebar-bg: #0B132B;
-  --color-sidebar-hover: #1E293B;
-  --color-sidebar-text: #E2E8F0;
-  --color-sidebar-active-text: #ffffff;
+  /* 🌙 Dark Mode Tokens (Light Text on Charcoal) */
+  --color-text-primary: #F8F9FA;
+  --color-text-secondary: #CED4DA;
+  --color-text-muted: #ADB5BD;
+  --color-bg-main: #121212;
+  --color-bg-surface: #1E1E24;
+  --color-text-dark-primary: #F8F9FA;
+  --color-text-dark-secondary: #CED4DA;
+
+  /* UI Component Accents in Dark Mode */
+  --assoc-accent: #0D6EFD;
+  --assoc-accent-hover: #3B82F6;
+  --assoc-success: #198754;
+  --assoc-success-bg: rgba(25, 135, 84, 0.2);
+  --assoc-success-text: #75B798;
+  --assoc-warning: #FFC107;
+  --assoc-warning-bg: rgba(255, 193, 7, 0.2);
+  --assoc-warning-text: #FFDA6A;
+  --assoc-danger: #DC3545;
+  --assoc-danger-bg: rgba(220, 53, 69, 0.2);
+  --assoc-danger-text: #EA868F;
+  --assoc-info: #CED4DA;
+  --assoc-info-bg: rgba(206, 212, 218, 0.15);
+  --assoc-info-text: #F8F9FA;
+
+  --color-primary: #0D6EFD;
+  --color-primary-hover: #3B82F6;
+  --color-primary-container: #1E1E24;
+  --color-primary-light: #2B2B36;
+  --color-secondary-container: #1E1E24;
+  --color-surface: #121212;
+  --color-on-surface: #F8F9FA;
+  --color-on-surface-variant: #CED4DA;
+  --color-surface-container: #1E1E24;
+  --color-surface-container-lowest: #121212;
+  --color-surface-container-low: #121212;
+  --color-surface-container-high: #2B2B36;
+  --color-surface-container-highest: #383844;
+  --color-surface-bright: #1E1E24;
+  --color-surface-dim: #121212;
+  --color-surface-variant: #1E1E24;
+  --color-secondary: #CED4DA;
+  --color-outline: #6C757D;
+  --color-outline-variant: #2E3A47;
+  --color-brand-indigo: #0D6EFD;
+  --color-topnav: #1E1E24;
+  --color-topnav-hover: #121212;
+  --color-topnav-dark: #121212;
+  --color-sidebar-bg: #1E1E24;
+  --color-sidebar-hover: #2B2B36;
+  --color-sidebar-text: #CED4DA;
+  --color-sidebar-active-text: #F8F9FA;
   
   /* Association Design System Tokens (Dark Mode) */
-  --assoc-bg-primary: #0F172A;
-  --assoc-sidebar-bg: #0B132B;
-  --assoc-text-main: #F8FAFC;
-  --assoc-text-muted: #94A3B8;
-  --assoc-text-subtle: #64748B;
-  --assoc-card-bg: #1E293B;
-  --assoc-border: #334155;
-  --assoc-accent: #F8FAFC;
-  --assoc-accent-hover: #FFFFFF;
-  --assoc-success: #22C55E;
-  --assoc-success-bg: rgba(34, 197, 94, 0.15);
-  --assoc-success-text: #4ADE80;
-  --assoc-danger: #EF4444;
-  --assoc-danger-bg: rgba(239, 68, 68, 0.15);
-  --assoc-danger-text: #F87171;
-  --assoc-warning: #F59E0B;
-  --assoc-warning-bg: rgba(245, 158, 11, 0.15);
-  --assoc-warning-text: #FBBF24;
-  --assoc-info: #94A3B8;
-  --assoc-info-bg: rgba(148, 163, 184, 0.15);
-  --assoc-info-text: #CBD5E1;
-  --assoc-backdrop: rgba(0, 0, 0, 0.75);
+  --assoc-bg-primary: #121212;
+  --assoc-sidebar-bg: #1E1E24;
+  --assoc-text-main: #F8F9FA;
+  --assoc-text-muted: #ADB5BD;
+  --assoc-text-subtle: #6C757D;
+  --assoc-card-bg: #1E1E24;
+  --assoc-border: #2E3A47;
+  --assoc-backdrop: rgba(0, 0, 0, 0.85);
   color-scheme: dark;
 }
 
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-ethiopic: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Charcoal Design Tokens */
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-bg-main: var(--color-bg-main);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-text-dark-primary: #F8F9FA;
+  --color-text-dark-secondary: #CED4DA;
 
   --color-assoc-bg: var(--assoc-bg-primary);
   --color-assoc-sidebar: var(--assoc-sidebar-bg);
@@ -188,8 +217,8 @@ html.dark {
   --color-assoc-muted: var(--assoc-text-muted);
   --color-assoc-subtle: var(--assoc-text-subtle);
 
-  --color-primary: var(--assoc-accent);
-  --color-primary-hover: var(--assoc-accent-hover);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
   --color-primary-container: var(--color-primary-container);
   --color-primary-light: var(--color-primary-light);
   --color-secondary-container: var(--color-secondary-container);
@@ -217,16 +246,16 @@ html.dark {
   --color-sidebar-active-text: var(--color-sidebar-active-text);
 
   /* TailAdmin Theme Specific Tokens */
-  --color-stroke: #E2E8F0;
+  --color-stroke: #DEE2E6;
   --color-strokedark: #2E3A47;
-  --color-boxdark: #24303F;
-  --color-boxdark-2: #1A222C;
-  --color-whiten: #F1F5F9;
-  --color-tailadmin-sidebar: #1C2434;
-  --color-tailadmin-hover: #333A48;
-  --color-tailadmin-text: #DEE4EE;
-  --color-tailadmin-muted: #8A99AD;
-  --color-tailadmin-primary: #1E293B;
+  --color-boxdark: #1E1E24;
+  --color-boxdark-2: #16161C;
+  --color-whiten: #F8F9FA;
+  --color-tailadmin-sidebar: #1E1E24;
+  --color-tailadmin-hover: #2B2B36;
+  --color-tailadmin-text: #F8F9FA;
+  --color-tailadmin-muted: #ADB5BD;
+  --color-tailadmin-primary: #0D6EFD;
   --color-tailadmin-accent: var(--assoc-accent);
 }
 

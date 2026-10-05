@@ -181,7 +181,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           filteredNotifications.map((item) => {
             const isRead = readIds.has(item.id);
             const hasSubItems = item.subItems && item.subItems.length > 0;
-            const isExpanded = expandedGroups[item.id] ?? true;
+            const isExpanded = expandedGroups[item.id] ?? false;
 
             return (
               <div
