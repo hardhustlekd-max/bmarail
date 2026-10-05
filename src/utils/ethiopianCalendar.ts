@@ -87,36 +87,41 @@ function getEATDateComponents(input?: Date | string | number | null) {
  * Accurate Gregorian to Ethiopian Date algorithm (strictly bound to GMT+3)
  */
 export function toEthiopianDate(gregorianDateInput?: Date | string | number | null): EthiopianDate {
-  // If the input is already formatted as an Ethiopian calendar date string (e.g., year 1970-2035),
-  // parse it directly to avoid double-converting or shifting it 8 years back into the past.
+  // If the input is a pure Ethiopian calendar date string (YYYY-MM-DD with Ethiopian year 1900-2022, or Pagume month 13),
+  // parse it directly to avoid double-converting. Any Gregorian year (>= 2023) or ISO timestamp must be converted.
   if (typeof gregorianDateInput === 'string') {
     const trimmed = gregorianDateInput.trim();
-    const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-    if (ethMatch) {
-      const parsedYear = parseInt(ethMatch[1], 10);
-      const parsedMonth = parseInt(ethMatch[2], 10);
-      const parsedDay = parseInt(ethMatch[3], 10);
-      if (parsedYear >= 1970 && parsedYear <= 2035 && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
-        const monthObj = ETHIOPIAN_MONTHS[parsedMonth - 1] || ETHIOPIAN_MONTHS[0];
-        const gEquiv = ethiopianToGregorian(parsedYear, parsedMonth, parsedDay);
-        const dayOfWeek = new Date(gEquiv.dateStr + 'T12:00:00Z').getUTCDay();
-        const weekdayObj = ETHIOPIAN_WEEKDAYS[dayOfWeek] || ETHIOPIAN_WEEKDAYS[0];
-        return {
-          year: parsedYear,
-          month: parsedMonth,
-          day: parsedDay,
-          monthNameAm: monthObj.am,
-          monthNameEn: monthObj.en,
-          weekdayAm: weekdayObj.am,
-          weekdayEn: weekdayObj.en,
-          formattedAm: `${monthObj.am} ${parsedDay}, ${parsedYear} ዓ.ም`,
-          formattedEn: `${monthObj.en} ${parsedDay}, ${parsedYear} E.C.`,
-          timeAm: '12:00:00 ጠዋት',
-          timeEn: '12:00:00 Morning',
-          traditionalTimeAm: '12:00 ጠዋት',
-          traditionalTimeEn: '12:00 Morning',
-          isPagume: parsedMonth === 13,
-        };
+    // Only pure date strings without time components (no 'T', 'Z', or ':') can be Ethiopian date strings
+    if (!trimmed.includes('T') && !trimmed.includes(':') && !trimmed.includes('Z')) {
+      const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+      if (ethMatch) {
+        const parsedYear = parseInt(ethMatch[1], 10);
+        const parsedMonth = parseInt(ethMatch[2], 10);
+        const parsedDay = parseInt(ethMatch[3], 10);
+        const isKnownEthYear = parsedYear >= 1900 && parsedYear <= 2022;
+        const isPagume = parsedMonth === 13 && parsedDay >= 1 && parsedDay <= 6;
+        if ((isKnownEthYear || isPagume) && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
+          const monthObj = ETHIOPIAN_MONTHS[parsedMonth - 1] || ETHIOPIAN_MONTHS[0];
+          const gEquiv = ethiopianToGregorian(parsedYear, parsedMonth, parsedDay);
+          const dayOfWeek = new Date(gEquiv.dateStr + 'T12:00:00Z').getUTCDay();
+          const weekdayObj = ETHIOPIAN_WEEKDAYS[dayOfWeek] || ETHIOPIAN_WEEKDAYS[0];
+          return {
+            year: parsedYear,
+            month: parsedMonth,
+            day: parsedDay,
+            monthNameAm: monthObj.am,
+            monthNameEn: monthObj.en,
+            weekdayAm: weekdayObj.am,
+            weekdayEn: weekdayObj.en,
+            formattedAm: `${monthObj.am} ${parsedDay}, ${parsedYear} ዓ.ም`,
+            formattedEn: `${monthObj.en} ${parsedDay}, ${parsedYear} E.C.`,
+            timeAm: '12:00:00 ጠዋት',
+            timeEn: '12:00:00 Morning',
+            traditionalTimeAm: '12:00 ጠዋት',
+            traditionalTimeEn: '12:00 Morning',
+            isPagume: parsedMonth === 13,
+          };
+        }
       }
     }
   }
@@ -328,14 +333,18 @@ export function normalizeToEthiopianDateStr(dateInput?: Date | string | number |
   if (!dateInput) return getTodayEthiopianDateIso();
   if (typeof dateInput === 'string') {
     const trimmed = dateInput.trim();
-    const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-    if (ethMatch) {
-      const parsedYear = parseInt(ethMatch[1], 10);
-      const parsedMonth = parseInt(ethMatch[2], 10);
-      const parsedDay = parseInt(ethMatch[3], 10);
-      if (parsedYear >= 1970 && parsedYear <= 2035 && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
-        const pad = (n: number) => String(n).padStart(2, '0');
-        return `${parsedYear}-${pad(parsedMonth)}-${pad(parsedDay)}`;
+    if (!trimmed.includes('T') && !trimmed.includes(':') && !trimmed.includes('Z')) {
+      const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+      if (ethMatch) {
+        const parsedYear = parseInt(ethMatch[1], 10);
+        const parsedMonth = parseInt(ethMatch[2], 10);
+        const parsedDay = parseInt(ethMatch[3], 10);
+        const isKnownEthYear = parsedYear >= 1900 && parsedYear <= 2022;
+        const isPagume = parsedMonth === 13 && parsedDay >= 1 && parsedDay <= 6;
+        if ((isKnownEthYear || isPagume) && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
+          const pad = (n: number) => String(n).padStart(2, '0');
+          return `${parsedYear}-${pad(parsedMonth)}-${pad(parsedDay)}`;
+        }
       }
     }
   }
@@ -350,14 +359,18 @@ export function normalizeToEthiopianDateStr(dateInput?: Date | string | number |
 export function normalizeToGregorianDateStr(dateInput?: string | null): string {
   if (!dateInput) return new Date().toISOString().split('T')[0];
   const trimmed = dateInput.trim();
-  const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
-  if (ethMatch) {
-    const y = parseInt(ethMatch[1], 10);
-    const m = parseInt(ethMatch[2], 10);
-    const d = parseInt(ethMatch[3], 10);
-    if (y >= 1970 && y <= 2035 && m >= 1 && m <= 13 && d >= 1 && d <= 30) {
-      const g = ethiopianToGregorian(y, m, d);
-      return g.dateStr;
+  if (!trimmed.includes('T') && !trimmed.includes(':') && !trimmed.includes('Z')) {
+    const ethMatch = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+    if (ethMatch) {
+      const y = parseInt(ethMatch[1], 10);
+      const m = parseInt(ethMatch[2], 10);
+      const d = parseInt(ethMatch[3], 10);
+      const isKnownEthYear = y >= 1900 && y <= 2022;
+      const isPagume = m === 13 && d >= 1 && d <= 6;
+      if ((isKnownEthYear || isPagume) && m >= 1 && m <= 13 && d >= 1 && d <= 30) {
+        const g = ethiopianToGregorian(y, m, d);
+        return g.dateStr;
+      }
     }
   }
   const cleanStr = trimmed.split('T')[0].split(' ')[0];
