@@ -70,9 +70,9 @@ html {
   --color-bg-main: #FFFFFF;
   --color-bg-surface: #F8F9FA;
 
-  /* UI Component Accents */
-  --assoc-accent: #0D6EFD;
-  --assoc-accent-hover: #0B5ED7;
+  /* UI Component Accents (Primary Actions Reverted to Original #0F172A) */
+  --assoc-accent: #0F172A;
+  --assoc-accent-hover: #1E293B;
   --assoc-success: #198754;
   --assoc-success-bg: #D1E7DD;
   --assoc-success-text: #0F5132;
@@ -86,10 +86,10 @@ html {
   --assoc-info-bg: #F8F9FA;
   --assoc-info-text: #212529;
 
-  --color-primary: #0D6EFD;
-  --color-primary-hover: #0B5ED7;
+  --color-primary: #0F172A;
+  --color-primary-hover: #1E293B;
   --color-primary-container: #F8F9FA;
-  --color-primary-light: #E9ECEF;
+  --color-primary-light: #E2E8F0;
   --color-secondary-container: #F8F9FA;
   --color-surface: #F8F9FA;
   --color-on-surface: #212529;
@@ -105,7 +105,7 @@ html {
   --color-secondary: #495057;
   --color-outline: #6C757D;
   --color-outline-variant: #DEE2E6;
-  --color-brand-indigo: #0D6EFD;
+  --color-brand-indigo: #0F172A;
   --color-topnav: #ffffff;
   --color-topnav-hover: #F8F9FA;
   --color-topnav-dark: #1E1E24;
@@ -136,9 +136,9 @@ html.dark {
   --color-text-dark-primary: #F8F9FA;
   --color-text-dark-secondary: #CED4DA;
 
-  /* UI Component Accents in Dark Mode */
-  --assoc-accent: #0D6EFD;
-  --assoc-accent-hover: #3B82F6;
+  /* UI Component Accents in Dark Mode (Primary Actions Reverted to Original #F8FAFC) */
+  --assoc-accent: #F8FAFC;
+  --assoc-accent-hover: #FFFFFF;
   --assoc-success: #198754;
   --assoc-success-bg: rgba(25, 135, 84, 0.2);
   --assoc-success-text: #75B798;
@@ -152,13 +152,13 @@ html.dark {
   --assoc-info-bg: rgba(206, 212, 218, 0.15);
   --assoc-info-text: #F8F9FA;
 
-  --color-primary: #0D6EFD;
-  --color-primary-hover: #3B82F6;
+  --color-primary: #F8FAFC;
+  --color-primary-hover: #FFFFFF;
   --color-primary-container: #1E1E24;
-  --color-primary-light: #2B2B36;
+  --color-primary-light: #334155;
   --color-secondary-container: #1E1E24;
   --color-surface: #121212;
-  --color-on-surface: #F8F9FA;
+  --color-on-surface: #F8FAFC;
   --color-on-surface-variant: #CED4DA;
   --color-surface-container: #1E1E24;
   --color-surface-container-lowest: #121212;
@@ -171,7 +171,7 @@ html.dark {
   --color-secondary: #CED4DA;
   --color-outline: #6C757D;
   --color-outline-variant: #2E3A47;
-  --color-brand-indigo: #0D6EFD;
+  --color-brand-indigo: #F8FAFC;
   --color-topnav: #1E1E24;
   --color-topnav-hover: #121212;
   --color-topnav-dark: #121212;
@@ -183,7 +183,7 @@ html.dark {
   /* Association Design System Tokens (Dark Mode) */
   --assoc-bg-primary: #121212;
   --assoc-sidebar-bg: #1E1E24;
-  --assoc-text-main: #F8F9FA;
+  --assoc-text-main: #F8FAFC;
   --assoc-text-muted: #ADB5BD;
   --assoc-text-subtle: #6C757D;
   --assoc-card-bg: #1E1E24;
@@ -255,7 +255,7 @@ html.dark {
   --color-tailadmin-hover: #2B2B36;
   --color-tailadmin-text: #F8F9FA;
   --color-tailadmin-muted: #ADB5BD;
-  --color-tailadmin-primary: #0D6EFD;
+  --color-tailadmin-primary: #1E293B;
   --color-tailadmin-accent: var(--assoc-accent);
 }
 
