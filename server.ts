@@ -1690,7 +1690,7 @@ app.post('/api/cheki/verify', async (req, res) => {
     if (!reference) {
       return res.status(400).json({ success: false, error: 'Receipt reference number is required' });
     }
-    const resp = await fetch('https://chekiapp.vercel.app/api/verify', {
+    const resp = await fetch('https://cheki.et/api/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reference, bank }),
@@ -1705,7 +1705,7 @@ app.post('/api/cheki/verify', async (req, res) => {
 
 app.get('/api/cheki/banks', async (req, res) => {
   try {
-    const resp = await fetch('https://chekiapp.vercel.app/api/banks');
+    const resp = await fetch('https://cheki.et/api/banks');
     const data = await resp.json();
     return res.json(data);
   } catch (err: any) {
@@ -1716,7 +1716,7 @@ app.get('/api/cheki/banks', async (req, res) => {
 
 app.get('/api/cheki/health', async (req, res) => {
   try {
-    const resp = await fetch('https://chekiapp.vercel.app/api/health');
+    const resp = await fetch('https://cheki.et/api/health');
     const data = await resp.json();
     return res.json(data);
   } catch (err: any) {

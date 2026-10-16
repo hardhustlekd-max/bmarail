@@ -2410,10 +2410,9 @@ export async function getMonthlyFeeStatisticsServerSide(options?: {
     );
 
     const matchingItem = directMatch;
-    const termStatus = reg.termStatus || reg.term_status;
 
-    if (matchingItem || termStatus === 'CURRENT') {
-      if (isCurrentMonth && matchingItem?.status === 'expiring_soon' && termStatus !== 'CURRENT') {
+    if (matchingItem) {
+      if (isCurrentMonth && matchingItem?.status === 'expiring_soon') {
         dueSoonMembersCount++;
       } else {
         paidMembersCount++;

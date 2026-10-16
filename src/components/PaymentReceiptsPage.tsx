@@ -1583,113 +1583,75 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
             {/* INTEGRATED READ-ONLY MANIFEST STRIP (Zero-Jump Dynamic Fields) */}
             <div
-              className={`transition-all duration-150 rounded-lg border p-3 ${
+              className={`transition-all duration-150 rounded-xl border p-4 ${
                 selectedRegInfo
-                  ? 'bg-slate-50 dark:bg-slate-800/90 border-slate-300 dark:border-slate-700 shadow-2xs'
-                  : 'bg-slate-100/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800'
+                  ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900 shadow-sm'
+                  : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
               }`}
             >
               {selectedRegInfo ? (
-                <div className="flex flex-wrap items-center justify-between gap-y-2.5 gap-x-4 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {/* 1. Name */}
-                  <div className="flex items-center gap-2 min-w-[150px]">
-                    <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[18px]">
-                      person
-                    </Icon>
-                    <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
-                        {isAmharic ? 'የባለቤት ስም' : 'Owner Name'}
-                      </span>
-                      <span className="font-black text-slate-950 dark:text-white text-xs">
-                        {selectedRegInfo.registration.fullName}
-                      </span>
-                    </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                      {isAmharic ? 'የባለቤት ስም' : 'Owner Name'}
+                    </span>
+                    <span className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                      {selectedRegInfo.registration.fullName}
+                    </span>
                   </div>
 
                   {/* 2. Plate */}
-                  <div className="flex items-center gap-2 min-w-[120px]">
-                    <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[18px]">
-                      numbers
-                    </Icon>
-                    <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
-                        {isAmharic ? 'ሰሌዳ ቁጥር' : 'Plate #'}
-                      </span>
-                      <span className="font-mono font-black text-slate-950 dark:text-white text-xs">
-                        {selectedRegInfo.registration.plateNumber || (isAmharic ? 'ሰሌዳ የለም' : 'No Plate')}
-                      </span>
-                    </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                      {isAmharic ? 'ሰሌዳ ቁጥር' : 'Plate #'}
+                    </span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">
+                      {selectedRegInfo.registration.plateNumber || (isAmharic ? 'ሰሌዳ የለም' : 'No Plate')}
+                    </span>
                   </div>
 
-                  {/* 3. Status & Expiration */}
-                  <div className="flex items-center gap-2 min-w-[160px]">
-                    <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[18px]">
-                      verified_user
-                    </Icon>
-                    <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
-                        {isAmharic ? 'የሂሳብ ሁኔታ' : 'Ledger Status'}
-                      </span>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-black  tracking-wider ${
-                            selectedRegInfo.termStatus === 'CURRENT'
-                              ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-400'
-                              : selectedRegInfo.termStatus === 'DUE'
-                              ? 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200 border border-amber-400'
-                              : 'bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-200 border border-rose-400'
-                          }`}
-                        >
-                          {selectedRegInfo.termStatus}
-                        </span>
-                        <span className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200">
-                          {selectedRegInfo.expirationStatusType === 'active'
-                            ? `(${selectedRegInfo.daysRemaining}d left)`
-                            : selectedRegInfo.expirationStatusType === 'expiring_soon'
-                            ? `(Due: ${selectedRegInfo.daysRemaining}d)`
-                            : selectedRegInfo.expirationStatusType === 'expired'
-                            ? `(Overdue ${Math.abs(selectedRegInfo.daysRemaining)}d)`
-                            : '(Unpaid)'}
-                        </span>
-                      </div>
-                    </div>
+                  {/* 3. Status */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                      {isAmharic ? 'የሂሳብ ሁኔታ' : 'Ledger Status'}
+                    </span>
+                    <span
+                      className={`inline-block px-2 py-0.5 rounded text-[10px] font-black tracking-wider w-fit ${
+                        selectedRegInfo.termStatus === 'CURRENT'
+                          ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200'
+                          : selectedRegInfo.termStatus === 'DUE'
+                          ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200'
+                          : 'bg-rose-100 text-rose-900 dark:bg-rose-900/40 dark:text-rose-200'
+                      }`}
+                    >
+                      {selectedRegInfo.termStatus}
+                    </span>
                   </div>
 
-                  {/* 4. Prior Balance / Debt */}
-                  <div className="flex items-center gap-2 min-w-[140px]">
-                    <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[18px]">
-                      account_balance_wallet
-                    </Icon>
-                    <div>
-                      <span className="block text-[10px] font-extrabold text-slate-700 dark:text-slate-300  leading-none">
-                        {isAmharic ? 'ያልተከፈለ ዕዳ / ቀሪ' : 'Prior Balance / Debt'}
-                      </span>
-                      <span
-                        className={`font-mono font-black text-xs ${
-                          selectedRegInfo.unpaidDebtAmount > 0
-                            ? 'text-rose-700 dark:text-rose-300'
-                            : 'text-emerald-700 dark:text-emerald-300'
-                        }`}
-                      >
-                        {selectedRegInfo.unpaidDebtAmount} ETB
-                      </span>
-                    </div>
+                  {/* 4. Prior Balance */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                      {isAmharic ? 'ቀሪ ዕዳ' : 'Prior Debt'}
+                    </span>
+                    <span
+                      className={`font-mono font-bold text-sm ${
+                        selectedRegInfo.unpaidDebtAmount > 0
+                          ? 'text-rose-600 dark:text-rose-400'
+                          : 'text-emerald-600 dark:text-emerald-400'
+                      }`}
+                    >
+                      {selectedRegInfo.unpaidDebtAmount} ETB
+                    </span>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-between py-0.5 text-slate-700 dark:text-slate-300 text-xs">
-                  <div className="flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[18px]">
-                      badge
-                    </Icon>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      {isAmharic
-                        ? 'የምዝገባ ቁጥር ሲያስገቡ የባለቤት ስም፣ ሰሌዳ፣ የሂሳብ ሁኔታ እና ቀሪ ዕዳ በራስ-ሰር እዚህ ይሞላል።'
-                        : 'Auto-fetched manifest strip will display Name, Plate, Status, and Prior Balance.'}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-extrabold  tracking-wider px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 shrink-0">
-                    {isAmharic ? 'ዝግጁ' : 'Ready'}
+                <div className="flex items-center gap-3 text-slate-400">
+                  <Icon className="material-symbols-outlined text-[20px]">info</Icon>
+                  <span className="text-xs font-medium">
+                    {isAmharic
+                      ? 'የምዝገባ ቁጥር ሲያስገቡ የባለቤት ስም፣ ሰሌዳ፣ የሂሳብ ሁኔታ እና ቀሪ ዕዳ በራስ-ሰር እዚህ ይሞላል።'
+                      : 'Auto-fetched manifest strip will display Name, Plate, Status, and Prior Balance once a registration is selected.'}
                   </span>
                 </div>
               )}

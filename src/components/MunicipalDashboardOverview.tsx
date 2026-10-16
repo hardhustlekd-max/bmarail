@@ -385,8 +385,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       const matchingItem = directMatch;
 
-      if (matchingItem || reg.termStatus === 'CURRENT') {
-        if (isCurrentMonth && matchingItem?.status === 'expiring_soon' && reg.termStatus !== 'CURRENT') {
+      if (matchingItem) {
+        if (isCurrentMonth && matchingItem?.status === 'expiring_soon') {
           dueSoonMembersCount++;
         } else {
           paidMembersCount++;
