@@ -1686,14 +1686,21 @@ app.post('/api/reset-data', async (req, res) => {
 // Cheki Bank Receipt Verification Proxy Endpoints
 app.post('/api/cheki/verify', async (req, res) => {
   try {
-    const { reference, bank } = req.body;
+    const { reference, bank, account } = req.body;
     if (!reference) {
       return res.status(400).json({ success: false, error: 'Receipt reference number is required' });
     }
+    
+    // According to guide: POST /api/verify
+    // Body: { "bank": "string", "reference": "string", "account": "string" }
+    const payload: any = { reference };
+    if (bank) payload.bank = bank;
+    if (account) payload.account = account;
+
     const resp = await fetch('https://cheki.et/api/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reference, bank }),
+      body: JSON.stringify(payload),
     });
     const data = await resp.json();
     return res.json(data);

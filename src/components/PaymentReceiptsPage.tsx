@@ -130,6 +130,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         body: JSON.stringify({
           reference: ref,
           bank: formChekiBank.trim() || undefined,
+          // account: undefined // Add account field if UI supports it
         }),
       });
       const data = await res.json();
@@ -902,26 +903,17 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
         );
 
-        // B. Check if any receipt term covers this Ethiopian month (validity duration spans across multiple months)
-        const targetPeriodIndex = targetYear * 13 + targetMonth;
-        const coveringMatches = parsedReceipts.filter((item) => {
-          return item.payIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex <= item.expIndex;
-        });
-
-        const activeReceipt = parsedReceipts.find((r) => r.status === 'active');
-        const expiringReceipt = parsedReceipts.find((r) => r.status === 'expiring_soon');
-
         if (isCurrentMonth) {
-          // For current month: evaluate live active status
-          const hasPaidCoverage =
-            reg.termStatus === 'CURRENT' ||
-            Boolean(activeReceipt) ||
-            directMonthMatches.length > 0 ||
-            coveringMatches.length > 0;
+          // For current month: evaluate status based on direct payments in this month
+          const directMatch = directMonthMatches[0];
 
-          if (hasPaidCoverage) {
-            periods[col.key] = 'paid';
-          } else if (reg.termStatus === 'DUE' || expiringReceipt) {
+          if (directMatch) {
+            if (directMatch.status === 'expiring_soon') {
+              periods[col.key] = 'pending';
+            } else {
+              periods[col.key] = 'paid';
+            }
+          } else if (parsedReceipts.some((r) => r.status === 'expiring_soon')) {
             periods[col.key] = 'pending';
           } else if (parsedReceipts.some((r) => r.status === 'expired')) {
             periods[col.key] = 'unpaid';
@@ -929,8 +921,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             periods[col.key] = 'muted';
           }
         } else {
-          // For other months: show paid if payment record exists, otherwise grey dot (muted)
-          if (directMonthMatches.length > 0 || coveringMatches.length > 0) {
+          // For other months: show paid if payment record exists in that specific month, otherwise grey dot (muted)
+          if (directMonthMatches.length > 0) {
             periods[col.key] = 'paid';
           } else {
             // No payment data for this column -> grey dot
@@ -1554,7 +1546,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 type="text"
                 value={regNumber}
                 onChange={(e) => handleRegNumberChange(e.target.value)}
-                list="reg-numbers-datalist"
+                onFocus={() => setIsFormOpen(true)}
                 placeholder={
                   isAmharic
                     ? 'የምዝገባ ቁጥር፣ ሰሌዳ፣ ወይም ሞተር ቁጥር አስገባ...'
@@ -1565,21 +1557,47 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-500">
                 <Icon className="material-symbols-outlined text-[18px]">search</Icon>
               </div>
+
+              {/* Custom Suggestion Dropdown */}
+              {regNumber.length >= 2 && !isAutoFilled && (
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                  {registrations
+                    .filter(
+                      (r) =>
+                        r.id.toLowerCase().includes(regNumber.toLowerCase()) ||
+                        (r.plateNumber && r.plateNumber.toLowerCase().includes(regNumber.toLowerCase())) ||
+                        (r.fullName && r.fullName.toLowerCase().includes(regNumber.toLowerCase()))
+                    )
+                    .slice(0, 10)
+                    .map((r) => (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={() => {
+                          handleRegNumberChange(r.id);
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 cursor-pointer"
+                      >
+                        <span className="font-bold">{r.fullName}</span>
+                        <span className="text-slate-500 dark:text-slate-400">
+                          {' '}
+                          ({r.plateNumber || 'No Plate'}) — ID: {r.id}
+                        </span>
+                      </button>
+                    ))}
+                  {registrations.filter(
+                    (r) =>
+                      r.id.toLowerCase().includes(regNumber.toLowerCase()) ||
+                      (r.plateNumber && r.plateNumber.toLowerCase().includes(regNumber.toLowerCase())) ||
+                      (r.fullName && r.fullName.toLowerCase().includes(regNumber.toLowerCase()))
+                  ).length === 0 && (
+                    <div className="px-4 py-2 text-xs text-slate-500 italic">
+                      {isAmharic ? 'ምንም ውጤት አልተገኘም' : 'No results found'}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <datalist id="reg-numbers-datalist">
-              {registrations.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.fullName} ({r.plateNumber || 'No Plate'}) — {r.phone}
-                </option>
-              ))}
-              {registrations
-                .filter((r) => r.plateNumber)
-                .map((r) => (
-                  <option key={`plate-${r.id}`} value={r.plateNumber}>
-                    {r.fullName} — Reg #: {r.id}
-                  </option>
-                ))}
-            </datalist>
 
             {/* INTEGRATED READ-ONLY MANIFEST STRIP (Zero-Jump Dynamic Fields) */}
             <div

@@ -362,6 +362,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         body: JSON.stringify({
           reference: ref,
           bank: chekiBank.trim() || undefined,
+          // account: undefined // Add account field if UI supports it
         }),
       });
       const data = await res.json();
@@ -1903,7 +1904,17 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             <Icon className="material-symbols-outlined text-[18px] text-emerald-600 dark:text-emerald-400">
                               eco
                             </Icon>
-                            <span>{isAmharic ? 'አረንጓዴ አሻራ' : 'Green legacy'}</span>
+                            <input
+                              type="text"
+                              value={plateRegion}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setPlateRegion(val);
+                                updateCombinedPlate(val, plateCode, plateDigits, 'electric', evPlateDigits);
+                              }}
+                              className="bg-transparent border-none outline-none focus:ring-0 w-20 text-emerald-800 dark:text-emerald-300 font-bold text-xs"
+                              placeholder={isAmharic ? 'ቅድመ ቅጥያ' : 'Prefix'}
+                            />
                           </div>
                           <input
                             type="text"
@@ -1925,7 +1936,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           <span>
                             {isAmharic ? 'የሰሌዳ ማጠቃለያ፡' : 'Combined Plate:'}{' '}
                             <strong className="font-mono text-emerald-700 dark:text-emerald-400 font-bold">
-                              {plateNumber || (isAmharic ? 'አረንጓዴ አሻራ' : 'Green legacy')}
+                              {plateNumber}
                             </strong>
                           </span>
                         </div>
