@@ -2335,10 +2335,7 @@ export async function getMonthlyFeeStatisticsServerSide(options?: {
   });
 
   const receiptsInSelectedMonth = parsedReceipts.filter((item) => {
-    if (item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth) {
-      return true;
-    }
-    return item.status === 'active' || item.status === 'expiring_soon';
+    return item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth;
   });
 
   const totalRevenue = receiptsInSelectedMonth.reduce((acc, curr) => acc + curr.amountNum, 0);
@@ -2412,11 +2409,7 @@ export async function getMonthlyFeeStatisticsServerSide(options?: {
       (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
     );
 
-    const coveringMatch = memberReceipts.find((item) => {
-      return item.payIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex <= item.expIndex;
-    });
-
-    const matchingItem = directMatch || coveringMatch;
+    const matchingItem = directMatch;
     const termStatus = reg.termStatus || reg.term_status;
 
     if (matchingItem || termStatus === 'CURRENT') {

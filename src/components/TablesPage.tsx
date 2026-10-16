@@ -1634,9 +1634,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">badge</Icon>
                         <span>{isAmharic ? 'የባለቤትና የተሽከርካሪ መረጃ' : 'Owner & Vehicle Details'}</span>
                       </h4>
-                      <span className="font-semibold text-xs">
-                        {renderStatusBadge(selectedRegForDetails.status)}
-                      </span>
+                
                     </div>
 
                     <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">

@@ -464,9 +464,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                           <p className="text-[10px] text-secondary">{rep.reportedAt}</p>
                         </div>
                       </div>
-
                       <div className="flex flex-col items-end gap-1">
-                        {getStatusBadge(rep.status)}
                         <button
                           type="button"
                           onClick={() => toggleReportExpand(rep.id)}

@@ -305,12 +305,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       };
     });
 
-    // 1. Receipts collected in this specific Ethiopian month & year or actively covering it
+    // 1. Receipts collected strictly in this specific Ethiopian month & year only (not mixing previous month extended payments)
     const receiptsInSelectedMonth = parsedReceipts.filter((item) => {
-      if (item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth) {
-        return true;
-      }
-      return item.status === 'active' || item.status === 'expiring_soon';
+      return item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth;
     });
     const totalMonthRevenue = receiptsInSelectedMonth.reduce((acc, curr) => acc + curr.amountNum, 0);
     const totalReceiptsCount = receiptsInSelectedMonth.length;
@@ -381,17 +378,12 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         (regNameClean ? receiptsByName.get(regNameClean) : null) ||
         [];
 
-      // A. Check direct payment for this Ethiopian month
+      // Check direct payment for this specific Ethiopian month strictly (not mixing previous month extended payments)
       const directMatch = memberReceipts.find(
         (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
       );
 
-      // B. Check coverage across this Ethiopian month (validity duration spans across multiple months)
-      const coveringMatch = memberReceipts.find((item) => {
-        return item.payIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex <= item.expIndex;
-      });
-
-      const matchingItem = directMatch || coveringMatch;
+      const matchingItem = directMatch;
 
       if (matchingItem || reg.termStatus === 'CURRENT') {
         if (isCurrentMonth && matchingItem?.status === 'expiring_soon' && reg.termStatus !== 'CURRENT') {
