@@ -583,9 +583,6 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                     <th className="py-3 px-3 text-center text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
                       {isAmharic ? 'የፍተሻ ውጤት' : 'Inspection Result'}
                     </th>
-                    <th className="py-3 px-3 text-center text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
-                      {isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}
-                    </th>
                     <th className="py-3 px-3 text-right text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
                       {isAmharic ? 'እርምጃዎች' : 'Actions'}
                     </th>
@@ -663,10 +660,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                           {renderVerificationBadge(log.verificationStatus)}
                         </td>
 
-                        {/* 10. Permit Status Badge */}
-                        <td className="py-3.5 px-3 text-center whitespace-nowrap">
-                          {renderPermitBadge(log.permitStatus)}
-                        </td>
+
 
                         {/* 11. Actions */}
                         <td
@@ -778,10 +772,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                             <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold">{isAmharic ? 'የፍተሻ ውጤት:' : 'Result:'}</span>
                             {renderVerificationBadge(log.verificationStatus)}
                           </div>
-                          <div className="flex items-center gap-1.5 pt-1">
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold">{isAmharic ? 'ፈቃድ:' : 'Permit:'}</span>
-                            {renderPermitBadge(log.permitStatus)}
-                          </div>
+
                         </div>
 
                         <div className="pt-1 flex justify-end">

@@ -1079,16 +1079,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                                   <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container-high text-on-surface border border-outline-variant tracking-wider">
                                     {user.role}
                                   </span>
-                                  <span
-                                    className={`inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-extrabold ${
-                                      user.status === 'disabled'
-                                        ? 'bg-red-500/10 text-red-600 border border-red-500/20'
-                                        : 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
-                                    }`}
-                                  >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                    {user.status === 'disabled' ? (isAmharic ? 'የታገደ' : 'Disabled') : (isAmharic ? 'ንቁ' : 'Active')}
-                                  </span>
                                 </div>
                               </div>
                             </div>

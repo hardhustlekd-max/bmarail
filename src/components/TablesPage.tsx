@@ -1004,7 +1004,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}</th>
                     <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
                     <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}</th>
-                    <th className="py-2.5 px-3 text-center font-medium whitespace-nowrap">{isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}</th>
                     <th className="py-2.5 px-3 text-right font-medium whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                   </tr>
                 </thead>
@@ -1145,10 +1144,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               </span>
                             </td>
 
-                            {/* Permit Status */}
-                            <td className="px-3 py-2.5 align-middle text-center whitespace-nowrap">
-                              {renderStatusBadge(reg.status, false, reg)}
-                            </td>
+
 
                             {/* Actions Column: Open Drawer & Quick Approve */}
                             <td
@@ -1300,16 +1296,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           </div>
                         </div>
 
-                        {/* Right Side: Status Badge & Open Drawer Indicator */}
-                        <div className="shrink-0 pl-1 flex items-center gap-2">
-                          <div className="scale-90 origin-right">
-                            {renderStatusBadge(reg.status, false, reg)}
-                          </div>
-                          <div className="text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
-                            <Icon className="material-symbols-outlined text-[20px]">
-                              chevron_right
-                            </Icon>
-                          </div>
+                        {/* Right Side: Open Drawer Indicator */}
+                        <div className="shrink-0 pl-1 text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
+                          <Icon className="material-symbols-outlined text-[20px]">
+                            chevron_right
+                          </Icon>
                         </div>
                       </div>
                     </div>

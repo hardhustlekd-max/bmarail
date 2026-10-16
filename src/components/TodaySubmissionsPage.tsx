@@ -882,7 +882,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}</th>
                   <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
                   <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}</th>
-                  <th className="py-2.5 px-3 text-center font-medium whitespace-nowrap">{isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}</th>
                   <th className="py-2.5 px-3 text-right font-medium whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                 </tr>
               </thead>
@@ -1014,17 +1013,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
                           </td>
 
-                          {/* 10. Status Badge */}
-                          <td className="py-2.5 px-3 align-middle text-center whitespace-nowrap">
-                            <div className="inline-flex flex-col items-center gap-1">
-                              {renderStatusBadge(reg.status, reg)}
-                              {reg.status === 'rejected' && reg.rejectionReason && (
-                                <span className="text-[10px] text-[#FB5454] max-w-[120px] truncate" title={reg.rejectionReason}>
-                                  {reg.rejectionReason}
-                                </span>
-                              )}
-                            </div>
-                          </td>
+
 
                           {/* 11. Actions Column: Clean Expand / Action Trigger */}
                           <td className="py-2.5 px-3 align-middle text-right whitespace-nowrap">
@@ -1076,7 +1065,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                     <span className="font-bold text-xs text-[#1C2434] dark:text-white  tracking-wider">
                                       {isAmharic ? 'የተግባር አዝራሮች:' : 'Actions:'}
                                     </span>
-                                    {renderStatusBadge(reg.status, reg)}
                                   </div>
 
                                   <div className="flex flex-wrap items-center gap-2">
@@ -1254,7 +1242,6 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                     <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-[#E2E8F0] dark:border-[#2E3A47] mt-2">
                       <div className="flex items-center gap-2">
-                        {renderStatusBadge(reg.status, reg)}
                         <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium">{reg.subCity || '—'}</span>
                       </div>
 

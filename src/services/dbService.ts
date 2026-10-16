@@ -136,6 +136,7 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   highRiskAlerts: true,
   themeMode: 'light',
   scannerResultTheme: 'warm_ivory_cream',
+  systemLogoUrl: '/logo.jpg',
   showClerkPermitStatus: false,
   showClerkSubmissionsAction: false,
   showClerkApprovedVehiclesAction: false,

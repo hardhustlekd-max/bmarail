@@ -1512,8 +1512,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
             }`}
             title={isAmharic ? 'ወደ ዋና ገፅ ሂድ (ለመቀየር ጠቅ ያድርጉ)' : 'Go to Dashboard (Click to toggle sidebar)'}
           >
-            <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0 overflow-hidden border border-slate-200">
-              <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 overflow-hidden border border-slate-200">
+              <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
             </div>
             {!isCollapsed && (
               <div className="min-w-0">

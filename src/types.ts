@@ -1,4 +1,4 @@
-export const APP_LOGO = '/logo.png';
+export const APP_LOGO = '/logo.jpg';
 export const APP_FLAG = '/flag.jpg';
 export const APP_TITLE_AM = 'ባህር ዳር ሞተረኞች ማህበር';
 export const APP_TITLE_EN = 'Bahir Dar Motorist Association';
@@ -184,6 +184,7 @@ export interface SystemSettings {
   registrationFreeze?: boolean;
   maintenanceMode?: boolean;
   scannerResultTheme?: ScannerResultTheme;
+  systemLogoUrl?: string;
   updatedAt?: string;
   showClerkPermitStatus?: boolean;
   showClerkSubmissionsAction?: boolean;

@@ -721,6 +721,7 @@ async function runSchemaMigrations(client: pg.PoolClient) {
       `UPDATE notification_states SET id = user_scope_id WHERE id IS NULL OR id = ''`,
 
       `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS scanner_result_theme VARCHAR(100) DEFAULT 'warm_ivory_cream'`,
+      `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS system_logo_url VARCHAR(255) DEFAULT '/logo.jpg'`,
       `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_permit_status BOOLEAN DEFAULT FALSE`,
       `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_submissions_action BOOLEAN DEFAULT FALSE`,
       `ALTER TABLE system_settings ADD COLUMN IF NOT EXISTS show_clerk_approved_vehicles_action BOOLEAN DEFAULT FALSE`,
@@ -1796,6 +1797,7 @@ const TABLE_COLUMNS: Record<string, Set<string>> = {
     'registration_freeze',
     'maintenance_mode',
     'scanner_result_theme',
+    'system_logo_url',
     'show_clerk_permit_status',
     'show_clerk_submissions_action',
     'show_clerk_approved_vehicles_action',
