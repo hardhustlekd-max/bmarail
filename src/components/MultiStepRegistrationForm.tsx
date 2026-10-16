@@ -356,13 +356,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
     setChekiResult(null);
 
     try {
-      const res = await fetch('/api/cheki/verify', {
+      const res = await fetch('/api/verify-receipt-v2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          reference: ref,
+          url: ref,
           bank: chekiBank.trim() || undefined,
-          // account: undefined // Add account field if UI supports it
         }),
       });
       const data = await res.json();

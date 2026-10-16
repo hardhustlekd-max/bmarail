@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { GoogleGenAI, Type } from "@google/genai";
 import {
   getDbPool,
   initializeDatabaseSchema,
@@ -46,6 +47,15 @@ import {
 } from './src/server/storage.ts';
 
 dotenv.config({ override: true });
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  httpOptions: {
+    headers: {
+      'User-Agent': 'aistudio-build',
+    }
+  }
+});
 
 export const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -1683,30 +1693,52 @@ app.post('/api/reset-data', async (req, res) => {
   }
 });
 
-// Cheki Bank Receipt Verification Proxy Endpoints
-app.post('/api/cheki/verify', async (req, res) => {
+// Custom Receipt Parser
+app.post('/api/verify-receipt-v2', async (req, res) => {
   try {
-    const { reference, bank, account } = req.body;
-    if (!reference) {
-      return res.status(400).json({ success: false, error: 'Receipt reference number is required' });
+    const { url, bank } = req.body;
+    if (!url) {
+      return res.status(400).json({ success: false, error: 'URL is required' });
     }
-    
-    // According to guide: POST /api/verify
-    // Body: { "bank": "string", "reference": "string", "account": "string" }
-    const payload: any = { reference };
-    if (bank) payload.bank = bank;
-    if (account) payload.account = account;
 
-    const resp = await fetch('https://cheki.et/api/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+    const response = await fetch(url);
+    const content = await response.text();
+
+    const prompt = `Extract the following receipt information from the provided HTML/text content for bank ${bank || 'unknown'}:
+    - Amount (as number)
+    - Date (as YYYY-MM-DD)
+    - Receipt Number / Transaction ID
+    - Sender Name
+    - Receiver Name
+    
+    Content:
+    ${content.substring(0, 5000)} // Truncate content to fit model limits
+    `;
+
+    const aiResponse = await ai.models.generateContent({
+      model: "gemini-3.8-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            amount: { type: Type.NUMBER },
+            date: { type: Type.STRING },
+            receiptNumber: { type: Type.STRING },
+            sender: { type: Type.STRING },
+            receiver: { type: Type.STRING },
+          },
+          required: ["amount", "date", "receiptNumber"],
+        },
+      },
     });
-    const data = await resp.json();
-    return res.json(data);
+
+    const data = JSON.parse(aiResponse.text || '{}');
+    return res.json({ success: true, verified: true, ...data });
   } catch (err: any) {
-    console.error('[Cheki Verify Error]:', err);
-    return res.status(500).json({ success: false, error: err?.message || 'Failed to verify receipt with Cheki API' });
+    console.error('[Verify Receipt Error]:', err);
+    return res.status(500).json({ success: false, error: err?.message || 'Failed to verify receipt' });
   }
 });
 

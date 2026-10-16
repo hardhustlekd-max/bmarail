@@ -124,13 +124,12 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     setFormChekiResult(null);
 
     try {
-      const res = await fetch('/api/cheki/verify', {
+      const res = await fetch('/api/verify-receipt-v2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          reference: ref,
+          url: ref, // Assuming user inputs URL directly or we interpret it as URL
           bank: formChekiBank.trim() || undefined,
-          // account: undefined // Add account field if UI supports it
         }),
       });
       const data = await res.json();
