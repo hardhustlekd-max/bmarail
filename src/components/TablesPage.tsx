@@ -1952,7 +1952,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                               ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
                                               : 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                           }`}>
-                                            {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
+                                            {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያልተከፈለበት' : 'Over due')}
                                           </span>
                                         </td>
                                         <td className="px-2.5 py-1.5">
@@ -2022,7 +2022,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700'
                                             : 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700'
                                         }`}>
-                                          {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያለፈ' : 'Expired')}
+                                          {rcStatus.status === 'active' ? (isAmharic ? 'ህጋዊ' : 'Active') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያልተከፈለበት' : 'Over due')}
                                         </span>
                                         <Icon className={`material-symbols-outlined text-slate-500 transition-transform duration-200 text-[18px] ${isExpanded ? 'rotate-180' : ''}`}>
                                           keyboard_arrow_down

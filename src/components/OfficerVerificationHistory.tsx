@@ -377,7 +377,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-600 shadow-2xs whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">cancel</Icon>
-            <span>{status === 'expired' ? (isAmharic ? 'ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}</span>
+            <span>{status === 'expired' ? (isAmharic ? 'ያልተከፈለበት' : 'Over due') : (isAmharic ? 'ውድቅ' : 'Rejected')}</span>
           </span>
         );
       default:

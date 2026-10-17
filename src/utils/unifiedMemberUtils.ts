@@ -117,7 +117,7 @@ export function getUnifiedPaymentCompliance(
       status: 'expired',
       daysRemaining,
       labelAm: 'ጊዜው ያለፈበት',
-      labelEn: 'Expired',
+      labelEn: 'Over due',
       badgeClass: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-700 font-semibold shadow-2xs',
     };
   }

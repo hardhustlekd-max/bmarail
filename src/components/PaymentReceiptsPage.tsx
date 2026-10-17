@@ -1027,6 +1027,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   // Matrix member counts according to current month status
   const matrixCounts = useMemo(() => {
+    if (serverFeeStats) {
+      return {
+        all: serverFeeStats.activeBillableCount,
+        active: serverFeeStats.paidMembersCount,
+        expiring: serverFeeStats.dueSoonMembersCount,
+        expired: serverFeeStats.unpaidMembersCount,
+      };
+    }
     let active = 0;
     let expiring = 0;
     let expired = 0;
@@ -1041,7 +1049,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       expiring,
       expired,
     };
-  }, [allMatrixRows]);
+  }, [allMatrixRows, serverFeeStats]);
 
   // Ethiopian Monthly Fee Statistics metrics
   const ethiopianMonthlyMetrics = useMemo(() => {
@@ -1870,7 +1878,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
                 { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: matrixCounts.active },
                 { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: matrixCounts.expiring },
-                { key: 'expired' as const, label: isAmharic ? 'ያለፈበት' : 'Expired', count: matrixCounts.expired },
+                { key: 'expired' as const, label: isAmharic ? 'ያልተከፈለባቸው' : 'Over due', count: matrixCounts.expired },
               ].map((tab) => {
                 const isActive = statusFilter === tab.key;
                 return (
