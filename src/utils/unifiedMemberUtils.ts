@@ -100,8 +100,8 @@ export function getUnifiedPaymentCompliance(
     return {
       status: 'active',
       daysRemaining,
-      labelAm: `ህጋዊ (${daysRemaining} ቀናት)`,
-      labelEn: `Active (${daysRemaining}d)`,
+      labelAm: `ክፍያ የፈጸሙ (${daysRemaining} ቀናት)`,
+      labelEn: `Paid (${daysRemaining}d)`,
       badgeClass: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 font-semibold shadow-2xs',
     };
   } else if (status === 'expiring_soon') {

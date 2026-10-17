@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import { KpiCard, MonthlyMatrixLedger, StatusDot, StatusBadge, MatrixRowItem, MetricStatCard, MetricGrid } from './ui/AssocDesignSystem';
 import { Language, UserRole, MotorcycleRegistration, PaymentReceipt, TermStatus } from '../types';
@@ -12,6 +12,7 @@ import {
   getCachedServerMonthlyFeeStatistics,
   subscribeMonthlyFeeStatistics,
   fetchMembershipFeeDirectory,
+  fetchMonthlyFeeStatisticsServerSide,
 } from '../services/dbService';
 import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopianToGregorian, ETHIOPIAN_MONTHS, EthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, normalizeToEthiopianDateStr } from '../utils/ethiopianCalendar';
 import { LoadingSpinner, TableSkeleton } from './ui/Skeleton';
@@ -1013,6 +1014,19 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     };
   }, [page, pageSize, searchQuery, statusFilter, currentEthMonth, currentEthYear, userRole, userBadgeId, registrations, paymentReceipts]);
 
+  // Fetch server-side monthly fee statistics when selected month/year changes
+  useEffect(() => {
+    let isMounted = true;
+    fetchMonthlyFeeStatisticsServerSide(currentEthMonth, currentEthYear).then((stats) => {
+      if (isMounted && stats) {
+        setServerFeeStats(stats);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [currentEthMonth, currentEthYear]);
+
   // Pagination calculations (seamless fallback to client slicing if server data is pending)
   const totalEntries = serverPagination ? serverPagination.totalCount : filteredMatrixRows.length;
   const totalPages = serverPagination ? serverPagination.totalPages : Math.max(1, Math.ceil(totalEntries / pageSize));
@@ -1876,7 +1890,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap w-full sm:w-auto min-w-0 max-w-full -mb-[1px]">
               {[
                 { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
-                { key: 'active' as const, label: isAmharic ? 'ህጋዊ' : 'Active', count: matrixCounts.active },
+                { key: 'active' as const, label: isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid', count: matrixCounts.active },
                 { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: matrixCounts.expiring },
                 { key: 'expired' as const, label: isAmharic ? 'ያልተከፈለባቸው' : 'Over due', count: matrixCounts.expired },
               ].map((tab) => {
