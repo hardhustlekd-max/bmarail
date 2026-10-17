@@ -2649,6 +2649,13 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
 
     const periods: Record<string, 'paid' | 'pending' | 'unpaid' | 'muted'> = {};
 
+    let regEth: EthiopianDate | null = null;
+    try {
+      const regDate = reg.registrationDate || reg.registration_date;
+      if (regDate) regEth = toEthiopianDate(regDate);
+    } catch {}
+    const regPeriodIndex = regEth ? regEth.year * 13 + regEth.month : 0;
+
     for (let m = 1; m <= 13; m++) {
       const colKey = `eth_m_${m}`;
       const colYear = targetYear;
@@ -2656,7 +2663,7 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
       const colPeriodIndex = colYear * 13 + colMonth;
       const isColCurrentMonth = colMonth === currentEth.month && colYear === currentEth.year;
 
-      if (!hasAnyPaymentRecord) {
+      if (regPeriodIndex && colPeriodIndex < regPeriodIndex) {
         periods[colKey] = 'muted';
         continue;
       }
@@ -2665,30 +2672,19 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
         (item) => item.payEth && item.payEth.year === colYear && item.payEth.month === colMonth
       );
 
-      const activeReceipt = memberItems.find((r) => r.status === 'active');
-      const expiringReceipt = memberItems.find((r) => r.status === 'expiring_soon');
+      const directMatch = directMonthMatches[0];
 
-      if (isColCurrentMonth) {
-        const hasPaidCoverage =
-          reg.termStatus === 'CURRENT' ||
-          reg.term_status === 'CURRENT' ||
-          Boolean(activeReceipt) ||
-          directMonthMatches.length > 0;
-
-        if (hasPaidCoverage) {
-          periods[colKey] = 'paid';
-        } else if (reg.termStatus === 'DUE' || reg.term_status === 'DUE' || expiringReceipt) {
+      if (directMatch) {
+        if (isColCurrentMonth && directMatch.status === 'expiring_soon') {
           periods[colKey] = 'pending';
-        } else if (memberItems.some((r) => r.status === 'expired')) {
-          periods[colKey] = 'unpaid';
         } else {
-          periods[colKey] = 'muted';
+          periods[colKey] = 'paid';
         }
       } else {
-        if (directMonthMatches.length > 0) {
-          periods[colKey] = 'paid';
+        if (isColCurrentMonth && (reg.termStatus === 'DUE' || reg.term_status === 'DUE')) {
+          periods[colKey] = 'pending';
         } else {
-          periods[colKey] = 'muted';
+          periods[colKey] = 'unpaid';
         }
       }
     }
