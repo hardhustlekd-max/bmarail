@@ -2665,10 +2665,6 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
         (item) => item.payEth && item.payEth.year === colYear && item.payEth.month === colMonth
       );
 
-      const coveringMatches = memberItems.filter((item) => {
-        return item.payIndex && colPeriodIndex >= item.payIndex && colPeriodIndex <= item.expIndex;
-      });
-
       const activeReceipt = memberItems.find((r) => r.status === 'active');
       const expiringReceipt = memberItems.find((r) => r.status === 'expiring_soon');
 
@@ -2677,8 +2673,7 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
           reg.termStatus === 'CURRENT' ||
           reg.term_status === 'CURRENT' ||
           Boolean(activeReceipt) ||
-          directMonthMatches.length > 0 ||
-          coveringMatches.length > 0;
+          directMonthMatches.length > 0;
 
         if (hasPaidCoverage) {
           periods[colKey] = 'paid';
@@ -2690,7 +2685,7 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
           periods[colKey] = 'muted';
         }
       } else {
-        if (directMonthMatches.length > 0 || coveringMatches.length > 0) {
+        if (directMonthMatches.length > 0) {
           periods[colKey] = 'paid';
         } else {
           periods[colKey] = 'muted';
