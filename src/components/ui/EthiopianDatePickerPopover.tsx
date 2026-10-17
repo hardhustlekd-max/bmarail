@@ -70,6 +70,36 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
     };
   }, [isOpen]);
 
+  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
+
+  useEffect(() => {
+    if (isOpen && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const popoverWidth = 288;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let left = rect.left;
+      if (left + popoverWidth > viewportWidth - 16) {
+        left = Math.max(16, viewportWidth - popoverWidth - 16);
+      }
+
+      let top = rect.bottom + 6;
+      const popoverHeight = 360;
+      if (top + popoverHeight > viewportHeight - 16) {
+        top = Math.max(16, rect.top - popoverHeight - 6);
+      }
+
+      setPopoverStyle({
+        position: 'fixed',
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${popoverWidth}px`,
+        zIndex: 99999,
+      });
+    }
+  }, [isOpen, viewYear, viewMonth]);
+
   const monthDetails = useMemo(() => {
     return getEthiopianMonthDetails(viewYear, viewMonth);
   }, [viewYear, viewMonth]);
@@ -153,7 +183,10 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
 
       {/* Ethiopian Calendar Popover Menu */}
       {isOpen && (
-        <div className="absolute z-50 mt-1 w-72 p-3 bg-white dark:bg-[#24303F] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] shadow-xl animate-in fade-in zoom-in-95 duration-100">
+        <div
+          style={popoverStyle}
+          className="p-3 bg-white dark:bg-[#24303F] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xl ring-1 ring-black/10 animate-in fade-in zoom-in-95 duration-100"
+        >
           {/* Header Controls: Month dropdown, Year dropdown, Navigation */}
           <div className="flex items-center justify-between gap-1 mb-2.5 pb-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             <button

@@ -104,6 +104,8 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
     };
   }, [isCustomOpen]);
 
+
+
   // Click outside listener to dismiss floating dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
@@ -141,6 +143,38 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
       } catch {}
     }
   }, [activeDateTab]);
+
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
+
+  useEffect(() => {
+    if (isCustomOpen && dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect();
+      const popoverWidth = 315;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let left = alignment === 'right' ? rect.right - popoverWidth : rect.left;
+      if (left + popoverWidth > viewportWidth - 16) {
+        left = Math.max(16, viewportWidth - popoverWidth - 16);
+      }
+      if (left < 16) left = 16;
+
+      let top = rect.bottom + 6;
+      const popoverHeight = 380;
+      if (top + popoverHeight > viewportHeight - 16) {
+        top = Math.max(16, rect.top - popoverHeight - 6);
+      }
+
+      setDropdownStyle({
+        position: 'fixed',
+        top: `${top}px`,
+        left: `${left}px`,
+        width: '315px',
+        maxWidth: 'calc(100vw - 32px)',
+        zIndex: 99999,
+      });
+    }
+  }, [isCustomOpen, alignment, activeDateTab, viewYear, viewMonth]);
 
   const presetOptions: { key: DateRangePreset; label: string }[] = [
     { key: 'this_month', label: isAmharic ? 'ይህ ወር' : 'This Month' },
@@ -247,7 +281,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
   }, [startDate, endDate, isAmharic]);
 
   return (
-    <div className={`relative bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47] w-full max-w-full min-w-0 overflow-hidden ${className}`}>
+    <div className={`relative bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47] w-full max-w-full min-w-0 overflow-visible ${className}`}>
       {/* Top Toolbar Row: Presets + Active Range Badge */}
       <div className="p-2 sm:p-2.5 sm:px-4 flex flex-wrap items-center justify-between gap-2 w-full max-w-full min-w-0">
         {/* Preset Pills - Wrapping cleanly on mobile, zero overflow */}
@@ -292,13 +326,11 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                 </Icon>
               </button>
 
-              {/* COMPACT FLOATING ETHIOPIAN DATE PICKER DROPDOWN (DYNAMIC AUTO-ALIGNMENT) */}
+              {/* COMPACT FLOATING ETHIOPIAN DATE PICKER DROPDOWN (DYNAMIC FIXED POSITIONING) */}
               {isCustomOpen && (
                 <div
-                  className={`absolute mt-1.5 z-50 w-[285px] xs:w-[305px] sm:w-[315px] p-2.5 sm:p-3 bg-white dark:bg-[#24303F] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] shadow-xl ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-100 ${
-                    alignment === 'right' ? 'right-0' : 'left-0'
-                  }`}
-                  style={{ maxWidth: 'calc(100vw - 28px)' }}
+                  style={dropdownStyle}
+                  className="p-2.5 sm:p-3 bg-white dark:bg-[#24303F] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xl ring-1 ring-black/10 animate-in fade-in zoom-in-95 duration-100"
                 >
                   {/* From - To Compact Tab Switcher */}
                   <div className="grid grid-cols-2 gap-1.5 p-0.5 bg-slate-100 dark:bg-[#1C2434] rounded-lg mb-2.5 border border-[#E2E8F0] dark:border-[#2E3A47]">
