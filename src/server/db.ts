@@ -1016,7 +1016,7 @@ export async function dbGetRegistrationsScoped(options: {
   const { scope, page, limit, search, status } = options;
   const isPaginationRequested = Boolean(page || limit);
   const currentPage = Math.max(1, page || 1);
-  const pageSize = Math.max(1, Math.min(100, limit || (isPaginationRequested ? 25 : 5000)));
+  const pageSize = Math.max(1, limit || (isPaginationRequested ? 25 : 5000));
   const offset = (currentPage - 1) * pageSize;
 
   if (isPostgresConnected && dbPool) {
@@ -1183,7 +1183,7 @@ export async function dbGetPaymentReceiptsScoped(options: {
   const { scope, page, limit } = options;
   const isPaginationRequested = Boolean(page || limit);
   const currentPage = Math.max(1, page || 1);
-  const pageSize = Math.max(1, Math.min(100, limit || (isPaginationRequested ? 25 : 5000)));
+  const pageSize = Math.max(1, limit || (isPaginationRequested ? 25 : 5000));
   const offset = (currentPage - 1) * pageSize;
 
   if (isPostgresConnected && dbPool) {
@@ -1268,7 +1268,7 @@ export async function dbGetVerificationLogsScoped(options: {
   const { scope, page, limit } = options;
   const isPaginationRequested = Boolean(page || limit);
   const currentPage = Math.max(1, page || 1);
-  const pageSize = Math.max(1, Math.min(100, limit || (isPaginationRequested ? 25 : 5000)));
+  const pageSize = Math.max(1, limit || (isPaginationRequested ? 25 : 5000));
   const offset = (currentPage - 1) * pageSize;
 
   if (isPostgresConnected && dbPool) {
