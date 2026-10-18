@@ -1341,24 +1341,48 @@ export interface DbMutationResult {
   target: 'postgresql' | 'in-memory';
   error?: string;
   rowCount?: number;
+  conflict?: boolean;
+  serverRecord?: any;
+  serverVersion?: number;
 }
 
 /**
- * Upsert a document by ID
+ * Upsert a document by ID with Optimistic Concurrency Control (OCC)
  */
 export async function dbUpsert(tableName: string, id: string, data: Record<string, any>): Promise<DbMutationResult> {
   if (!memoryStore[tableName]) {
     memoryStore[tableName] = new Map();
   }
-  const existing = memoryStore[tableName].get(id) || {};
-  memoryStore[tableName].set(id, { ...existing, ...data, id });
+  const existing = memoryStore[tableName].get(id) || (await dbGetById(tableName, id)) || {};
+  const dataAny = data as any;
+  const clientVersion = dataAny.expectedVersion !== undefined ? Number(dataAny.expectedVersion) : (dataAny.clientVersion !== undefined ? Number(dataAny.clientVersion) : undefined);
+  const currentVersion = Number(existing.version || 1);
+
+  if (clientVersion !== undefined && clientVersion < currentVersion) {
+    return {
+      success: false,
+      conflict: true,
+      error: `Concurrency Conflict: Record was modified by another user (Server version ${currentVersion}, your version ${clientVersion}).`,
+      serverRecord: existing,
+      serverVersion: currentVersion,
+      target: isPostgresConnected ? 'postgresql' : 'in-memory',
+    };
+  }
+
+  const newVersion = currentVersion + 1;
+  const dataWithVersion = { ...data, version: newVersion };
+  delete (dataWithVersion as any).expectedVersion;
+  delete (dataWithVersion as any).clientVersion;
+
+  const merged = { ...existing, ...dataWithVersion, id };
+  memoryStore[tableName].set(id, merged);
 
   if (!isPostgresConnected || !dbPool) {
     return { success: true, target: 'in-memory' };
   }
 
   try {
-    const pgData = normalizeRowToPg(tableName, { ...data, id });
+    const pgData = normalizeRowToPg(tableName, { ...merged, version: newVersion });
     const keys = Object.keys(pgData);
     if (keys.length === 0) {
       return { success: true, target: 'postgresql', rowCount: 0 };
@@ -1393,14 +1417,34 @@ export async function dbUpsert(tableName: string, id: string, data: Record<strin
 }
 
 /**
- * Update partial document fields
+ * Update partial document fields with Optimistic Concurrency Control (OCC)
  */
 export async function dbUpdateFields(tableName: string, id: string, updates: Record<string, any>): Promise<DbMutationResult> {
   if (!memoryStore[tableName]) {
     memoryStore[tableName] = new Map();
   }
-  const current = memoryStore[tableName].get(id) || {};
-  const merged = { ...current, ...updates, id };
+  const current = memoryStore[tableName].get(id) || (await dbGetById(tableName, id)) || {};
+  const updatesAny = updates as any;
+  const clientVersion = updatesAny.expectedVersion !== undefined ? Number(updatesAny.expectedVersion) : (updatesAny.clientVersion !== undefined ? Number(updatesAny.clientVersion) : undefined);
+  const currentVersion = Number(current.version || 1);
+
+  if (clientVersion !== undefined && clientVersion < currentVersion) {
+    return {
+      success: false,
+      conflict: true,
+      error: `Concurrency Conflict: Record was modified by another user (Server version ${currentVersion}, your version ${clientVersion}).`,
+      serverRecord: current,
+      serverVersion: currentVersion,
+      target: isPostgresConnected ? 'postgresql' : 'in-memory',
+    };
+  }
+
+  const newVersion = currentVersion + 1;
+  const cleanUpdates = { ...updates, version: newVersion };
+  delete (cleanUpdates as any).expectedVersion;
+  delete (cleanUpdates as any).clientVersion;
+
+  const merged = { ...current, ...cleanUpdates, id };
   memoryStore[tableName].set(id, merged);
 
   if (!isPostgresConnected || !dbPool) {
@@ -1408,7 +1452,7 @@ export async function dbUpdateFields(tableName: string, id: string, updates: Rec
   }
 
   try {
-    const pgUpdates = normalizeRowToPg(tableName, updates);
+    const pgUpdates = normalizeRowToPg(tableName, cleanUpdates);
     const keys = Object.keys(pgUpdates).filter((k) => k !== 'id');
     if (keys.length === 0) {
       return await dbUpsert(tableName, id, merged);

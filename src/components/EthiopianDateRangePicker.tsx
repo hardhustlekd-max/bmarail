@@ -132,17 +132,19 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
   const [viewYear, setViewYear] = useState<number>(() => activeEthDate.year);
   const [viewMonth, setViewMonth] = useState<number>(() => activeEthDate.month);
 
-  // When switching activeDateTab (from vs to), sync viewYear and viewMonth
+  // When switching activeDateTab (from vs to) or when tempStart/startDate changes while custom is open, sync viewYear and viewMonth
   useEffect(() => {
-    const targetDate = activeDateTab === 'from' ? tempStart : tempEnd;
+    const targetDate = activeDateTab === 'from' ? (tempStart || startDate) : (tempEnd || endDate);
     if (targetDate) {
       try {
         const eth = toEthiopianDate(targetDate);
-        setViewYear(eth.year);
-        setViewMonth(eth.month);
+        if (eth && !isNaN(eth.year) && !isNaN(eth.month)) {
+          setViewYear(eth.year);
+          setViewMonth(eth.month);
+        }
       } catch {}
     }
-  }, [activeDateTab]);
+  }, [activeDateTab, tempStart, tempEnd, startDate, endDate, isCustomOpen]);
 
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
 
