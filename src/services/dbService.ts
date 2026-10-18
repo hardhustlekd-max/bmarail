@@ -1112,69 +1112,88 @@ export async function saveRegistrationToDb(
         } catch {}
       }
 
-      // 1. Update in-memory state and persist to IndexedDB & LocalStorage
-      const index = inMemory.registrations.findIndex((r) => r.id === reg.id);
-      if (index >= 0) {
-        inMemory.registrations[index] = { ...inMemory.registrations[index], ...reg };
-      } else {
-        inMemory.registrations.unshift(reg);
-      }
-      notifyRegistrations();
-      asyncUpsertSingleRegistration(optimizeRegistrationForStorage(reg));
-      saveStateToLocalStorage();
-      lastSyncTime = new Date();
-      isCloudConnected = true;
-      setGlobalDbError(null);
-
-      // 2. Persist to PostgreSQL backend via Railway API
-      try {
-        if (!_options?.forceLocalOnly) {
-          const optimizedReg = { ...reg };
-          const [
-            upPortrait,
-            upNatIdFront,
-            upNatIdBack,
-            upLicense,
-            upPermit,
-            upReceipt,
-          ] = await Promise.all([
-            optimizedReg.userPortraitPhoto?.startsWith('data:image/')
-              ? uploadDocumentPhoto(optimizedReg.userPortraitPhoto, 'permits/portraits')
-              : Promise.resolve(optimizedReg.userPortraitPhoto),
-            optimizedReg.nationalIdPhoto?.startsWith('data:image/')
-              ? uploadDocumentPhoto(optimizedReg.nationalIdPhoto, 'permits/national_ids')
-              : Promise.resolve(optimizedReg.nationalIdPhoto),
-            optimizedReg.nationalIdBackPhoto?.startsWith('data:image/')
-              ? uploadDocumentPhoto(optimizedReg.nationalIdBackPhoto, 'permits/national_ids')
-              : Promise.resolve(optimizedReg.nationalIdBackPhoto),
-            optimizedReg.drivingLicensePhoto?.startsWith('data:image/')
-              ? uploadDocumentPhoto(optimizedReg.drivingLicensePhoto, 'permits/licenses')
-              : Promise.resolve(optimizedReg.drivingLicensePhoto),
-            optimizedReg.drivingPermitPhoto?.startsWith('data:image/')
-              ? uploadDocumentPhoto(optimizedReg.drivingPermitPhoto, 'permits/police_permits')
-              : Promise.resolve(optimizedReg.drivingPermitPhoto),
-            optimizedReg.receiptScreenshot?.startsWith('data:image/')
-              ? uploadDocumentPhoto(optimizedReg.receiptScreenshot, 'permits/receipts')
-              : Promise.resolve(optimizedReg.receiptScreenshot),
-          ]);
-
-          optimizedReg.userPortraitPhoto = upPortrait;
-          optimizedReg.nationalIdPhoto = upNatIdFront;
-          optimizedReg.nationalIdBackPhoto = upNatIdBack;
-          optimizedReg.drivingLicensePhoto = upLicense;
-          optimizedReg.drivingPermitPhoto = upPermit;
-          optimizedReg.receiptScreenshot = upReceipt;
-
-          await safeJsonFetch('/api/registrations', {
-            method: 'POST',
-            body: JSON.stringify(optimizedReg),
-          });
-          fetchPreAggregatedKPIs();
+      // 1. If forceLocalOnly is requested, update local cache directly
+      if (_options?.forceLocalOnly) {
+        const index = inMemory.registrations.findIndex((r) => r.id === reg.id);
+        if (index >= 0) {
+          inMemory.registrations[index] = { ...inMemory.registrations[index], ...reg };
+        } else {
+          inMemory.registrations.unshift(reg);
         }
+        notifyRegistrations();
+        asyncUpsertSingleRegistration(optimizeRegistrationForStorage(reg));
+        saveStateToLocalStorage();
+        return { success: true, isOfflineFallback: true };
+      }
+
+      // 2. Server-Authoritative Save: Upload photos and persist to PostgreSQL via server API first
+      try {
+        const optimizedReg = { ...reg };
+        const [
+          upPortrait,
+          upNatIdFront,
+          upNatIdBack,
+          upLicense,
+          upPermit,
+          upReceipt,
+        ] = await Promise.all([
+          optimizedReg.userPortraitPhoto?.startsWith('data:image/')
+            ? uploadDocumentPhoto(optimizedReg.userPortraitPhoto, 'permits/portraits')
+            : Promise.resolve(optimizedReg.userPortraitPhoto),
+          optimizedReg.nationalIdPhoto?.startsWith('data:image/')
+            ? uploadDocumentPhoto(optimizedReg.nationalIdPhoto, 'permits/national_ids')
+            : Promise.resolve(optimizedReg.nationalIdPhoto),
+          optimizedReg.nationalIdBackPhoto?.startsWith('data:image/')
+            ? uploadDocumentPhoto(optimizedReg.nationalIdBackPhoto, 'permits/national_ids')
+            : Promise.resolve(optimizedReg.nationalIdBackPhoto),
+          optimizedReg.drivingLicensePhoto?.startsWith('data:image/')
+            ? uploadDocumentPhoto(optimizedReg.drivingLicensePhoto, 'permits/licenses')
+            : Promise.resolve(optimizedReg.drivingLicensePhoto),
+          optimizedReg.drivingPermitPhoto?.startsWith('data:image/')
+            ? uploadDocumentPhoto(optimizedReg.drivingPermitPhoto, 'permits/police_permits')
+            : Promise.resolve(optimizedReg.drivingPermitPhoto),
+          optimizedReg.receiptScreenshot?.startsWith('data:image/')
+            ? uploadDocumentPhoto(optimizedReg.receiptScreenshot, 'permits/receipts')
+            : Promise.resolve(optimizedReg.receiptScreenshot),
+        ]);
+
+        optimizedReg.userPortraitPhoto = upPortrait;
+        optimizedReg.nationalIdPhoto = upNatIdFront;
+        optimizedReg.nationalIdBackPhoto = upNatIdBack;
+        optimizedReg.drivingLicensePhoto = upLicense;
+        optimizedReg.drivingPermitPhoto = upPermit;
+        optimizedReg.receiptScreenshot = upReceipt;
+
+        // Persist to PostgreSQL backend via Server API
+        const serverResult = await safeJsonFetch<{ success: boolean; error?: string }>('/api/registrations', {
+          method: 'POST',
+          body: JSON.stringify(optimizedReg),
+        });
+
+        if (serverResult && serverResult.success === false) {
+          throw new Error(serverResult.error || 'Server rejected registration');
+        }
+
+        // 3. Only once DB persistence is confirmed by server: update local state & counters
+        const index = inMemory.registrations.findIndex((r) => r.id === optimizedReg.id);
+        if (index >= 0) {
+          inMemory.registrations[index] = { ...inMemory.registrations[index], ...optimizedReg };
+        } else {
+          inMemory.registrations.unshift(optimizedReg);
+        }
+        notifyRegistrations();
+        asyncUpsertSingleRegistration(optimizeRegistrationForStorage(optimizedReg));
+        saveStateToLocalStorage();
+        lastSyncTime = new Date();
+        isCloudConnected = true;
+        setGlobalDbError(null);
+
+        fetchPreAggregatedKPIs();
         return { success: true, isOfflineFallback: false };
       } catch (directErr: any) {
-        console.warn('PostgreSQL save registration notice:', directErr);
-        return { success: true, isOfflineFallback: true, error: directErr?.message };
+        console.error('PostgreSQL server-authoritative save failed:', directErr);
+        // Do NOT deceptively report success. Report real error so user knows to retry.
+        return { success: false, isOfflineFallback: false, error: directErr?.message || 'Database save failed' };
       }
     },
     'ምዝገባው በዳታቤዝ እየተቀመጠ ነው...',

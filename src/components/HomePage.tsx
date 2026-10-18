@@ -54,6 +54,7 @@ import { UnregisteredReportsList } from './UnregisteredReportsList';
 import { PaymentReceiptsPage } from './PaymentReceiptsPage';
 import { SettingsPage } from './SettingsPage';
 import { NotificationDropdown, NotificationItem } from './NotificationDropdown';
+import { OfflineFetchModal } from './OfflineFetchModal';
 import { APP_LOGO } from '../types';
 import { toEthiopianDate } from '../utils/ethiopianCalendar';
 import {
@@ -420,6 +421,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
   // Inspection report filter state passed to OfficerVerificationHistory
   const [inspectionInitialFilter, setInspectionInitialFilter] = useState<'all' | 'verified' | 'warning' | 'flagged'>('all');
+
+  // Offline fetch modal from bma_offline_db
+  const [isOfflineFetchModalOpen, setIsOfflineFetchModalOpen] = useState(false);
 
   // Dynamic Amharic navbar title memo for the active page
   const currentNavbarTitleAmharic = useMemo(() => {
@@ -2050,6 +2054,17 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   </button>
                 </div>
 
+                {/* Mobile Offline Fetch Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsOfflineFetchModalOpen(true)}
+                  className="px-2 py-1 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded flex items-center gap-1 active:scale-95 transition-colors"
+                  title={isAmharic ? 'ከመስመር ውጭ የተከማቹ መዝገቦችን አምጣ' : 'Fetch records from bma_offline_db'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px] text-blue-300">download_for_offline</Icon>
+                  <span className="text-[11px]">{isAmharic ? 'ፈትሽ' : 'Fetch'}</span>
+                </button>
+
                 {/* Mobile Drawer Menu Toggle (Container removed for sleek mobile appearance) */}
                 <button
                   ref={mobileMenuButtonRef}
@@ -2806,6 +2821,17 @@ const HomePageShell: React.FC<HomePageProps> = ({
               )}
             </div>
 
+            {/* Offline Cache Fetch Button */}
+            <button
+              type="button"
+              onClick={() => setIsOfflineFetchModalOpen(true)}
+              className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 dark:hover:border-blue-500 flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-semibold"
+              title={isAmharic ? 'ከመስመር ውጭ የተከማቹ መዝገቦችን አምጣ (bma_offline_db)' : 'Fetch records from bma_offline_db'}
+            >
+              <Icon className="material-symbols-outlined text-[17px] text-blue-500">download_for_offline</Icon>
+              <span>{isAmharic ? 'ፈትሽ (Fetch)' : 'Fetch'}</span>
+            </button>
+
             {/* Notification Bell Icon Button with dynamic unread badge */}
             <div className="relative" ref={notificationDropdownRef}>
               <button
@@ -3126,6 +3152,22 @@ const HomePageShell: React.FC<HomePageProps> = ({
           </div>
         </div>
       )}
+
+      {/* Offline Fetch Modal for bma_offline_db */}
+      <OfflineFetchModal
+        isOpen={isOfflineFetchModalOpen}
+        onClose={() => setIsOfflineFetchModalOpen(false)}
+        isAmharic={isAmharic}
+        onRestoreSuccess={(count) => {
+          addToast(
+            isAmharic
+              ? `${count} መዝገቦች በተሳካ ሁኔታ ወደ ዳታቤዝ ተልከዋል!`
+              : `${count} records successfully synced to DB!`,
+            'success'
+          );
+          syncActivePageCollection(activePage, true).catch(() => {});
+        }}
+      />
 
       {/* Central Spinning Page Loader throughout the app */}
       {(actionLoadingState.isLoading || pageLoading) && (

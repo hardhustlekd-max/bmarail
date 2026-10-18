@@ -564,18 +564,41 @@ export function getDbPool(): pg.Pool | null {
   if (dbPool) return dbPool;
 
   const databaseUrl = process.env.DATABASE_URL || process.env.PG_DATABASE_URL || process.env.POSTGRES_URL;
-  if (!databaseUrl) {
+  const hasPgHost = Boolean(process.env.PGHOST && process.env.PGUSER);
+  if (!databaseUrl && !hasPgHost) {
     return null;
   }
 
   try {
-    dbPool = new Pool({
-      connectionString: databaseUrl,
-      ssl: databaseUrl.includes('localhost') || databaseUrl.includes('127.0.0.1') ? false : { rejectUnauthorized: false },
-      max: 15,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 3000,
-    });
+    let poolConfig: pg.PoolConfig;
+
+    if (process.env.PGHOST && process.env.PGUSER && process.env.PGPASSWORD) {
+      poolConfig = {
+        host: process.env.PGHOST,
+        port: Number(process.env.PGPORT || 5432),
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        database: process.env.PGDATABASE || 'railway',
+        ssl: { rejectUnauthorized: false },
+        max: 15,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 5000,
+      };
+    } else {
+      const sanitizedUrl = databaseUrl!.includes('postgres.railway.internal') && process.env.PGHOST
+        ? databaseUrl!.replace('postgres.railway.internal', process.env.PGHOST)
+        : databaseUrl!;
+
+      poolConfig = {
+        connectionString: sanitizedUrl,
+        ssl: sanitizedUrl.includes('localhost') || sanitizedUrl.includes('127.0.0.1') ? false : { rejectUnauthorized: false },
+        max: 15,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 5000,
+      };
+    }
+
+    dbPool = new Pool(poolConfig);
 
     dbPool.on('error', (err) => {
       if (isNetworkError(err)) {
