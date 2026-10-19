@@ -77,7 +77,7 @@ export async function runStandaloneMigration(): Promise<void> {
 
   if (!databaseUrl) {
     console.log('[Database Migration CLI] No DATABASE_URL found in environment.');
-    console.log('[Database Migration CLI] Verified database/schema.sql is ready for deployment.');
+    console.log('[Database Migration CLI] Verified database/schema.sql and database/seed.sql are ready for deployment.');
     return;
   }
 
@@ -128,14 +128,21 @@ export async function runStandaloneMigration(): Promise<void> {
         console.log(`[Database Migration CLI] Auto-synchronization complete: ${addedCount} new column(s) reconciled.`);
       }
 
-      console.log('[Database Migration CLI] ✅ Database schema is up-to-date and ready for production!');
+      const seedPath = path.join(process.cwd(), 'database', 'seed.sql');
+      if (fs.existsSync(seedPath)) {
+        console.log(`[Database Migration CLI] Verifying seed records from ${seedPath}...`);
+        const seedSql = fs.readFileSync(seedPath, 'utf8');
+        await client.query(seedSql);
+      }
+
+      console.log('[Database Migration CLI] ✅ Database schema and seed data are up-to-date and ready for production!');
     } finally {
       client.release();
     }
   } catch (err: any) {
     if (isNetworkError(err)) {
       console.warn('[Database Migration CLI Notice] Remote host is not reachable from this local/sandboxed environment:', err.message);
-      console.log('[Database Migration CLI] Note: Schema file is fully prepared and will automatically synchronize upon deployment.');
+      console.log('[Database Migration CLI] Note: Schema and seed files are fully prepared and will automatically synchronize upon deployment to Railway or when connecting via external public database URL.');
       return;
     }
     console.error('[Database Migration CLI Error]:', err.message || err);

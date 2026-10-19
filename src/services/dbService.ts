@@ -27,7 +27,6 @@ import {
   asyncUpsertSingleRegistration,
   asyncDeleteRegistration,
   asyncLoadRegistrations,
-  asyncDetectLocalDiscrepancies,
   asyncSaveKeyVal,
   asyncLoadKeyVal,
   migrateLocalStorageToIndexedDb,
@@ -40,68 +39,6 @@ import { generateThumbnailBase64 } from '../utils/imageCompressor';
 let lastSyncTime: Date | null = null;
 let isCloudConnected: boolean = true;
 let globalDbError: string | null = null;
-
-// Track records present locally in IndexedDB and comparison with online server
-let offlineDiscrepancyCount: number = 0;
-let offlineTotalLocalCount: number = 0;
-let offlineHasComparedState: boolean = false;
-let offlineMissingRecords: MotorcycleRegistration[] = [];
-const offlineDiscrepancyListeners = new Set<
-  (discrepancies: {
-    count: number;
-    totalLocalCount: number;
-    hasComparedState: boolean;
-    missingRecords: MotorcycleRegistration[];
-  }) => void
->();
-
-export function getOfflineDiscrepancies(): {
-  count: number;
-  totalLocalCount: number;
-  hasComparedState: boolean;
-  missingRecords: MotorcycleRegistration[];
-} {
-  return {
-    count: offlineDiscrepancyCount,
-    totalLocalCount: offlineTotalLocalCount,
-    hasComparedState: offlineHasComparedState,
-    missingRecords: offlineMissingRecords,
-  };
-}
-
-export function subscribeOfflineDiscrepancies(
-  cb: (discrepancies: {
-    count: number;
-    totalLocalCount: number;
-    hasComparedState: boolean;
-    missingRecords: MotorcycleRegistration[];
-  }) => void
-): () => void {
-  cb({
-    count: offlineDiscrepancyCount,
-    totalLocalCount: offlineTotalLocalCount,
-    hasComparedState: offlineHasComparedState,
-    missingRecords: offlineMissingRecords,
-  });
-  offlineDiscrepancyListeners.add(cb);
-  return () => {
-    offlineDiscrepancyListeners.delete(cb);
-  };
-}
-
-export function notifyOfflineDiscrepancies() {
-  const data = {
-    count: offlineDiscrepancyCount,
-    totalLocalCount: offlineTotalLocalCount,
-    hasComparedState: offlineHasComparedState,
-    missingRecords: offlineMissingRecords,
-  };
-  offlineDiscrepancyListeners.forEach((cb) => {
-    try {
-      cb(data);
-    } catch (e) {}
-  });
-}
 
 const errorListeners = new Set<(err: string | null) => void>();
 const syncStatusListeners = new Set<
@@ -2025,28 +1962,10 @@ export async function syncRegistrations(force = false): Promise<boolean> {
 
   try {
     const res = await safeJsonFetch<{ success: boolean; registrations?: MotorcycleRegistration[] }>('/api/registrations');
-    const serverList = (res && Array.isArray(res.registrations)) ? res.registrations : [];
-
-    // Check for any records present locally in IndexedDB that the server does not have
-    try {
-      const { missingFromServer, allLocal } = await asyncDetectLocalDiscrepancies(serverList);
-      offlineMissingRecords = missingFromServer;
-      offlineDiscrepancyCount = missingFromServer.length;
-      offlineTotalLocalCount = allLocal.length;
-      offlineHasComparedState = true;
-      notifyOfflineDiscrepancies();
-
-      // Ensure local records are merged and preserved in inMemory state
-      inMemory.registrations = mergeRegistrationsPreservingPhotos(serverList, allLocal.length > 0 ? allLocal : inMemory.registrations);
+    if (res && Array.isArray(res.registrations) && res.registrations.length > 0) {
+      inMemory.registrations = mergeRegistrationsPreservingPhotos(res.registrations, inMemory.registrations);
       notifyRegistrations();
-    } catch {
-      offlineHasComparedState = true;
-      if (serverList.length > 0) {
-        inMemory.registrations = mergeRegistrationsPreservingPhotos(serverList, inMemory.registrations);
-        notifyRegistrations();
-      }
     }
-
     markCollectionSynced('registrations');
     saveStateToLocalStorage();
     return true;
