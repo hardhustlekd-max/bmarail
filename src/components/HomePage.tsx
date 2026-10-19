@@ -42,6 +42,7 @@ import {
   loadUserNotificationStateFromDb,
   saveUserNotificationStateToDb,
   fetchMaterializedNotifications,
+  subscribeOfflineDiscrepancies,
 } from '../services/dbService';
 import { MunicipalDashboardOverview } from './MunicipalDashboardOverview';
 import { FormsPage } from './FormsPage';
@@ -424,6 +425,14 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
   // Offline fetch modal from bma_offline_db
   const [isOfflineFetchModalOpen, setIsOfflineFetchModalOpen] = useState(false);
+  const [offlineDiscrepancyCount, setOfflineDiscrepancyCount] = useState(0);
+
+  useEffect(() => {
+    const unsub = subscribeOfflineDiscrepancies((disc) => {
+      setOfflineDiscrepancyCount(disc.count);
+    });
+    return () => unsub();
+  }, []);
 
   // Dynamic Amharic navbar title memo for the active page
   const currentNavbarTitleAmharic = useMemo(() => {
@@ -2058,11 +2067,22 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsOfflineFetchModalOpen(true)}
-                  className="px-2 py-1 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded flex items-center gap-1 active:scale-95 transition-colors"
+                  className={`px-2 py-1 text-xs font-semibold rounded flex items-center gap-1 active:scale-95 transition-colors relative ${
+                    offlineDiscrepancyCount > 0
+                      ? 'bg-amber-500 text-white font-bold'
+                      : 'bg-white/10 hover:bg-white/20 text-white'
+                  }`}
                   title={isAmharic ? 'ከመስመር ውጭ የተከማቹ መዝገቦችን አምጣ' : 'Fetch records from bma_offline_db'}
                 >
-                  <Icon className="material-symbols-outlined text-[16px] text-blue-300">download_for_offline</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] text-white">
+                    {offlineDiscrepancyCount > 0 ? 'cloud_off' : 'download_for_offline'}
+                  </Icon>
                   <span className="text-[11px]">{isAmharic ? 'ፈትሽ' : 'Fetch'}</span>
+                  {offlineDiscrepancyCount > 0 && (
+                    <span className="bg-rose-600 text-white text-[9px] font-black px-1 rounded-full">
+                      {offlineDiscrepancyCount}
+                    </span>
+                  )}
                 </button>
 
                 {/* Mobile Drawer Menu Toggle (Container removed for sleek mobile appearance) */}
@@ -2825,11 +2845,26 @@ const HomePageShell: React.FC<HomePageProps> = ({
             <button
               type="button"
               onClick={() => setIsOfflineFetchModalOpen(true)}
-              className="h-8.5 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 dark:hover:border-blue-500 flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-semibold"
-              title={isAmharic ? 'ከመስመር ውጭ የተከማቹ መዝገቦችን አምጣ (bma_offline_db)' : 'Fetch records from bma_offline_db'}
+              className={`h-8.5 px-3 rounded-sm border flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95 text-xs font-semibold relative ${
+                offlineDiscrepancyCount > 0
+                  ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-400 text-amber-900 dark:text-amber-200 hover:bg-amber-100'
+                  : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 dark:hover:border-blue-500'
+              }`}
+              title={
+                offlineDiscrepancyCount > 0
+                  ? (isAmharic ? `${offlineDiscrepancyCount} በኦንላይን ዳታቤዝ የሌሉ የአካባቢ መዝገቦች ተገኝተዋል` : `${offlineDiscrepancyCount} local records missing from Online DB detected`)
+                  : (isAmharic ? 'ከመስመር ውጭ የተከማቹ መዝገቦችን አምጣ (bma_offline_db)' : 'Fetch records from bma_offline_db')
+              }
             >
-              <Icon className="material-symbols-outlined text-[17px] text-blue-500">download_for_offline</Icon>
+              <Icon className={`material-symbols-outlined text-[17px] ${offlineDiscrepancyCount > 0 ? 'text-amber-600 animate-pulse' : 'text-blue-500'}`}>
+                {offlineDiscrepancyCount > 0 ? 'cloud_off' : 'download_for_offline'}
+              </Icon>
               <span>{isAmharic ? 'ፈትሽ (Fetch)' : 'Fetch'}</span>
+              {offlineDiscrepancyCount > 0 && (
+                <span className="bg-amber-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full shadow-2xs">
+                  {offlineDiscrepancyCount}
+                </span>
+              )}
             </button>
 
             {/* Notification Bell Icon Button with dynamic unread badge */}

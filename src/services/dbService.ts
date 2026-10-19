@@ -27,6 +27,7 @@ import {
   asyncUpsertSingleRegistration,
   asyncDeleteRegistration,
   asyncLoadRegistrations,
+  asyncDetectLocalDiscrepancies,
   asyncSaveKeyVal,
   asyncLoadKeyVal,
   migrateLocalStorageToIndexedDb,
@@ -39,6 +40,34 @@ import { generateThumbnailBase64 } from '../utils/imageCompressor';
 let lastSyncTime: Date | null = null;
 let isCloudConnected: boolean = true;
 let globalDbError: string | null = null;
+
+// Track records present locally in IndexedDB but missing from online server
+let offlineDiscrepancyCount: number = 0;
+let offlineMissingRecords: MotorcycleRegistration[] = [];
+const offlineDiscrepancyListeners = new Set<(discrepancies: { count: number; missingRecords: MotorcycleRegistration[] }) => void>();
+
+export function getOfflineDiscrepancies(): { count: number; missingRecords: MotorcycleRegistration[] } {
+  return { count: offlineDiscrepancyCount, missingRecords: offlineMissingRecords };
+}
+
+export function subscribeOfflineDiscrepancies(
+  cb: (discrepancies: { count: number; missingRecords: MotorcycleRegistration[] }) => void
+): () => void {
+  cb({ count: offlineDiscrepancyCount, missingRecords: offlineMissingRecords });
+  offlineDiscrepancyListeners.add(cb);
+  return () => {
+    offlineDiscrepancyListeners.delete(cb);
+  };
+}
+
+export function notifyOfflineDiscrepancies() {
+  const data = { count: offlineDiscrepancyCount, missingRecords: offlineMissingRecords };
+  offlineDiscrepancyListeners.forEach((cb) => {
+    try {
+      cb(data);
+    } catch (e) {}
+  });
+}
 
 const errorListeners = new Set<(err: string | null) => void>();
 const syncStatusListeners = new Set<
@@ -1962,10 +1991,25 @@ export async function syncRegistrations(force = false): Promise<boolean> {
 
   try {
     const res = await safeJsonFetch<{ success: boolean; registrations?: MotorcycleRegistration[] }>('/api/registrations');
-    if (res && Array.isArray(res.registrations) && res.registrations.length > 0) {
-      inMemory.registrations = mergeRegistrationsPreservingPhotos(res.registrations, inMemory.registrations);
+    const serverList = (res && Array.isArray(res.registrations)) ? res.registrations : [];
+
+    // Check for any records present locally in IndexedDB that the server does not have
+    try {
+      const { missingFromServer, allLocal } = await asyncDetectLocalDiscrepancies(serverList);
+      offlineMissingRecords = missingFromServer;
+      offlineDiscrepancyCount = missingFromServer.length;
+      notifyOfflineDiscrepancies();
+
+      // Ensure local records are merged and preserved in inMemory state
+      inMemory.registrations = mergeRegistrationsPreservingPhotos(serverList, allLocal.length > 0 ? allLocal : inMemory.registrations);
       notifyRegistrations();
+    } catch {
+      if (serverList.length > 0) {
+        inMemory.registrations = mergeRegistrationsPreservingPhotos(serverList, inMemory.registrations);
+        notifyRegistrations();
+      }
     }
+
     markCollectionSynced('registrations');
     saveStateToLocalStorage();
     return true;

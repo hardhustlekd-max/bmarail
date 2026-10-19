@@ -1,0 +1,6 @@
+{
+  "summary": "Revised implementation plan enforcing 100% zero-wipe protection for all records in local IndexedDB caches (regardless of status, deletion, or remote changes), preventing automatic erasure on startup, and providing complete UI options to review, reconcile, and upload local records back to the online PostgreSQL database.",
+  "updatedAt": "2026-10-19T14:39:08.410083089Z",
+  "requestFeedback": true,
+  "userFacing": true
+}
