@@ -8,6 +8,7 @@ interface OfflineFetchModalProps {
   onClose: () => void;
   isAmharic: boolean;
   onRestoreSuccess?: (restoredCount: number) => void;
+  onEmptyLocalDb?: () => void;
 }
 
 export const OfflineFetchModal: React.FC<OfflineFetchModalProps> = ({
@@ -15,6 +16,7 @@ export const OfflineFetchModal: React.FC<OfflineFetchModalProps> = ({
   onClose,
   isAmharic,
   onRestoreSuccess,
+  onEmptyLocalDb,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [offlineRecords, setOfflineRecords] = useState<MotorcycleRegistration[]>([]);
@@ -62,6 +64,9 @@ export const OfflineFetchModal: React.FC<OfflineFetchModalProps> = ({
       }
 
       setOfflineRecords(records);
+      if (records.length === 0) {
+        onEmptyLocalDb?.();
+      }
     } catch (err: any) {
       console.error('Error fetching offline records:', err);
     } finally {

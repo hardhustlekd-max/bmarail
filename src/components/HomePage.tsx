@@ -426,13 +426,25 @@ const HomePageShell: React.FC<HomePageProps> = ({
   // Offline fetch modal from bma_offline_db
   const [isOfflineFetchModalOpen, setIsOfflineFetchModalOpen] = useState(false);
   const [offlineDiscrepancyCount, setOfflineDiscrepancyCount] = useState(0);
+  const hasAlertedNoLocalDbRef = useRef(false);
 
   useEffect(() => {
     const unsub = subscribeOfflineDiscrepancies((disc) => {
       setOfflineDiscrepancyCount(disc.count);
+
+      // Show notification toaster during app initialization / data comparison state if local db has 0 records
+      if (disc.hasComparedState && disc.totalLocalCount === 0 && !hasAlertedNoLocalDbRef.current) {
+        hasAlertedNoLocalDbRef.current = true;
+        addToast(
+          isAmharic
+            ? 'በአካባቢው ዳታቤዝ (bma_offline_db) ውስጥ ምንም መዝገብ አልተገኘም!'
+            : 'No records found in local database (bma_offline_db)!',
+          'info'
+        );
+      }
     });
     return () => unsub();
-  }, []);
+  }, [addToast, isAmharic]);
 
   // Dynamic Amharic navbar title memo for the active page
   const currentNavbarTitleAmharic = useMemo(() => {
@@ -3201,6 +3213,14 @@ const HomePageShell: React.FC<HomePageProps> = ({
             'success'
           );
           syncActivePageCollection(activePage, true).catch(() => {});
+        }}
+        onEmptyLocalDb={() => {
+          addToast(
+            isAmharic
+              ? 'በአካባቢው ዳታቤዝ (bma_offline_db) ውስጥ ምንም መዝገብ አልተገኘም!'
+              : 'No records found in local database (bma_offline_db)!',
+            'info'
+          );
         }}
       />
 
