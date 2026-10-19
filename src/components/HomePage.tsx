@@ -117,6 +117,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
 }) => {
   const isAmharic = currentLang === 'am';
 
+  // Toast Notifications from ToastContext
+  const { addToast } = useToast();
+
   // User profile dropdown toggle state for topbar
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -1222,7 +1225,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
   );
 
   // Toast Notifications from ToastContext
-  const { addToast } = useToast();
 
   // Handlers for Firestore database updates
   const handleAddVerificationLog = async (newLog: VerificationLog, isNoteUpdate: boolean = false) => {
