@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { Icon } from './ui/Icon';
 import {
   Language,
@@ -432,14 +432,28 @@ const HomePageShell: React.FC<HomePageProps> = ({
     const unsub = subscribeOfflineDiscrepancies((disc) => {
       setOfflineDiscrepancyCount(disc.count);
 
-      // Show notification toaster during app initialization / data comparison state if local db has 0 records
-      if (disc.hasComparedState && disc.totalLocalCount === 0 && !hasAlertedNoLocalDbRef.current) {
+      // Check if user previously chose to ignore this notice on this device
+      const isIgnored = typeof localStorage !== 'undefined' && localStorage.getItem('bma_ignore_empty_offline_db') === 'true';
+
+      // Show notification toaster during app initialization / data comparison state if local db has 0 records and not ignored
+      if (disc.hasComparedState && disc.totalLocalCount === 0 && !hasAlertedNoLocalDbRef.current && !isIgnored) {
         hasAlertedNoLocalDbRef.current = true;
         addToast(
           isAmharic
             ? 'በአካባቢው ዳታቤዝ (bma_offline_db) ውስጥ ምንም መዝገብ አልተገኘም!'
             : 'No records found in local database (bma_offline_db)!',
-          'info'
+          'info',
+          {
+            durationMs: 5000,
+            action: {
+              label: isAmharic ? 'አትድገመኝ (Ignore)' : 'Ignore',
+              onClick: () => {
+                if (typeof localStorage !== 'undefined') {
+                  localStorage.setItem('bma_ignore_empty_offline_db', 'true');
+                }
+              },
+            },
+          }
         );
       }
     });

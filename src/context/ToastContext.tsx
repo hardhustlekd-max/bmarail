@@ -3,10 +3,16 @@ import { Icon } from '../components/ui/Icon';
 
 export type ToastType = 'success' | 'warning' | 'error' | 'info';
 
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 export interface ToastOptions {
   title?: string;
   tag?: string;
   durationMs?: number;
+  action?: ToastAction;
 }
 
 export interface ToastItem {
@@ -17,6 +23,7 @@ export interface ToastItem {
   tag?: string;
   timestamp: number;
   durationMs: number;
+  action?: ToastAction;
 }
 
 interface ToastContextType {
@@ -142,6 +149,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         tag: options.tag,
         timestamp: now,
         durationMs,
+        action: options.action,
       };
 
       // If no active toast, show immediately; otherwise queue to show one after the other
@@ -250,6 +258,25 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 <p className="text-xs font-bold leading-snug text-white break-words">
                   {activeToast.message}
                 </p>
+
+                {activeToast.action && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try {
+                          activeToast.action?.onClick();
+                        } catch (e) {
+                          console.error(e);
+                        }
+                        nextToast();
+                      }}
+                      className="px-2.5 py-1 rounded bg-white/20 hover:bg-white/30 text-[11px] font-black text-white cursor-pointer transition-all border border-white/30 shadow-2xs active:scale-95"
+                    >
+                      {activeToast.action.label}
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Queue badge counter if more notifications are waiting */}
