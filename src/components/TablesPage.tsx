@@ -23,6 +23,8 @@ import {
   OfficerAssignment,
   VerificationLog,
   PaymentReceipt,
+  BAHIR_DAR_SUBCITIES,
+  VehicleCategory,
 } from '../types';
 import { calculateOneMonthExpiration, getPaymentReceiptStatus } from '../utils/paymentUtils';
 import { getReceiptsForRegistration, getLatestReceiptForRegistration, getUnifiedPaymentCompliance, getChassisDisplay, getChassisNumber } from '../utils/unifiedMemberUtils';
@@ -228,6 +230,23 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [regCategoryFilter, setRegCategoryFilter] = useState<'all' | 'private' | 'commercial' | 'governmental'>('all');
   const [regSubCityFilter, setRegSubCityFilter] = useState<string>('all');
+  const [regVehicleTypeFilter, setRegVehicleTypeFilter] = useState<'all' | 'electric' | 'gas_under_110cc'>('all');
+
+  // Sorting state
+  type RegSortField = 'date' | 'name' | 'plate' | 'category' | 'subCity' | 'brand';
+  type RegSortOrder = 'asc' | 'desc';
+  const [sortField, setSortField] = useState<RegSortField>('date');
+  const [sortOrder, setSortOrder] = useState<RegSortOrder>('desc');
+
+  const handleToggleSort = (field: RegSortField) => {
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortOrder(field === 'name' || field === 'plate' || field === 'subCity' ? 'asc' : 'desc');
+    }
+    setRegPage(1);
+  };
 
   // Role-specific scoped registrations (hidden records excluded from totals & tables except for Super Admin)
   const scopedRegistrations = React.useMemo(() => {
@@ -255,6 +274,28 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
   const expiredCount = scopedRegistrations.filter(
     (r) => (r.status as string) === 'expired' || r.status === 'rejected'
+  ).length;
+
+  // Counts of vehicle types within current active status tab
+  const tabScopedRegistrations = React.useMemo(() => {
+    return scopedRegistrations.filter((r) => {
+      if (activeTableTab === 'approved') {
+        return r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print';
+      } else if (activeTableTab === 'pending') {
+        return r.status === 'pending_approval' || (r.status as string) === 'pending';
+      } else if (activeTableTab === 'expired') {
+        return (r.status as string) === 'expired' || r.status === 'rejected';
+      }
+      return true;
+    });
+  }, [scopedRegistrations, activeTableTab]);
+
+  const electricCount = tabScopedRegistrations.filter(
+    (r) => (r.vehicleCategory || 'gas_under_110cc') === 'electric'
+  ).length;
+
+  const gasCount = tabScopedRegistrations.filter(
+    (r) => (r.vehicleCategory || 'gas_under_110cc') === 'gas_under_110cc'
   ).length;
 
   const filteredRegistrations = scopedRegistrations.filter((r) => {
@@ -293,6 +334,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     // 4. Sub-City Filter
     if (regSubCityFilter !== 'all') {
       if (r.subCity !== regSubCityFilter) return false;
+    }
+
+    // 5. Vehicle Type Filter (Electric vs Gasoline)
+    if (regVehicleTypeFilter !== 'all') {
+      const cat = r.vehicleCategory || 'gas_under_110cc';
+      if (cat !== regVehicleTypeFilter) return false;
     }
 
     return true;
@@ -361,11 +408,50 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState('');
 
-  const totalRegs = filteredRegistrations.length;
+  // Sorted & Filtered Registrations memo
+  const sortedAndFilteredRegistrations = React.useMemo(() => {
+    const list = [...filteredRegistrations];
+    list.sort((a, b) => {
+      let valA: any = '';
+      let valB: any = '';
+      switch (sortField) {
+        case 'date':
+          valA = new Date(a.registrationDate || 0).getTime();
+          valB = new Date(b.registrationDate || 0).getTime();
+          break;
+        case 'name':
+          valA = (a.fullName || '').toLowerCase();
+          valB = (b.fullName || '').toLowerCase();
+          break;
+        case 'plate':
+          valA = (a.plateNumber || '').toLowerCase();
+          valB = (b.plateNumber || '').toLowerCase();
+          break;
+        case 'category':
+          valA = (a.vehicleCategory || '').toLowerCase();
+          valB = (b.vehicleCategory || '').toLowerCase();
+          break;
+        case 'subCity':
+          valA = (a.subCity || '').toLowerCase();
+          valB = (b.subCity || '').toLowerCase();
+          break;
+        case 'brand':
+          valA = (a.motorBrand || '').toLowerCase();
+          valB = (b.motorBrand || '').toLowerCase();
+          break;
+      }
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filteredRegistrations, sortField, sortOrder]);
+
+  const totalRegs = sortedAndFilteredRegistrations.length;
   const totalRegPages = Math.ceil(totalRegs / regPageSize) || 1;
   const activeRegPage = Math.min(regPage, totalRegPages);
   const regStartIndex = (activeRegPage - 1) * regPageSize;
-  const paginatedRegistrations = filteredRegistrations.slice(regStartIndex, regStartIndex + regPageSize);
+  const paginatedRegistrations = sortedAndFilteredRegistrations.slice(regStartIndex, regStartIndex + regPageSize);
 
   const handleConfirmReject = (id: string) => {
     if (!rejectReason.trim()) return;
@@ -854,6 +940,101 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <span>{isAmharic ? 'አጽዳ' : 'Clear'}</span>
               </button>
             )}
+          </div>
+        </div>
+
+        {/* VEHICLE TYPE FILTER & SORTING TOOLBAR */}
+        <div className="px-3 sm:px-5 py-2 bg-[#F8FAFC] dark:bg-[#1E293B] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex flex-wrap items-center justify-between gap-3 text-xs">
+          {/* Left: Vehicle Type Filter Pills */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[#64748B] dark:text-[#8A99AD] font-semibold text-[11px] mr-1 flex items-center gap-1">
+              <Icon className="material-symbols-outlined text-[14px]">directions_bike</Icon>
+              {isAmharic ? 'የሞተር ዓይነት:' : 'Vehicle Type:'}
+            </span>
+            {[
+              { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: tabScopedRegistrations.length },
+              { id: 'electric' as const, label: isAmharic ? 'ኤሌክትሪክ (EV)' : 'Electric', count: electricCount },
+              { id: 'gas_under_110cc' as const, label: isAmharic ? 'ቤንዚን (Gas)' : 'Gasoline', count: gasCount },
+            ].map((vType) => {
+              const active = regVehicleTypeFilter === vType.id;
+              return (
+                <button
+                  key={vType.id}
+                  type="button"
+                  onClick={() => {
+                    setRegVehicleTypeFilter(vType.id);
+                    setRegPage(1);
+                  }}
+                  className={`px-2.5 py-1 rounded-sm text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    active
+                      ? 'bg-primary text-white shadow-xs font-bold'
+                      : 'bg-white dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  <span>{vType.label}</span>
+                  <span className={`text-[10px] px-1 rounded-full font-mono ${active ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}>
+                    {vType.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right: Sub-City Dropdown & Sorting Controls */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Sub-City Filter */}
+            <div className="flex items-center gap-1">
+              <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-semibold hidden sm:inline">
+                {isAmharic ? 'ክ/ከተማ:' : 'SubCity:'}
+              </span>
+              <select
+                value={regSubCityFilter}
+                onChange={(e) => {
+                  setRegSubCityFilter(e.target.value);
+                  setRegPage(1);
+                }}
+                className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-primary focus:outline-none cursor-pointer"
+              >
+                <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
+                {BAHIR_DAR_SUBCITIES.map((sc) => (
+                  <option key={sc.en} value={sc.en}>
+                    {isAmharic ? sc.am : sc.en}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Sorting Dropdown */}
+            <div className="flex items-center gap-1">
+              <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-semibold flex items-center gap-0.5">
+                <Icon className="material-symbols-outlined text-[14px]">sort</Icon>
+                {isAmharic ? 'ደድርግ:' : 'Sort By:'}
+              </span>
+              <select
+                value={sortField}
+                onChange={(e) => handleToggleSort(e.target.value as any)}
+                className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-primary focus:outline-none cursor-pointer"
+              >
+                <option value="date">{isAmharic ? 'የተመዘገበበት ቀን (Date)' : 'Registration Date'}</option>
+                <option value="name">{isAmharic ? 'የባለቤት ስም (Owner Name)' : 'Owner Name'}</option>
+                <option value="plate">{isAmharic ? 'የሰሌዳ ቁጥር (Plate No)' : 'Plate Number'}</option>
+                <option value="category">{isAmharic ? 'የሞተር ዓይነት (Type)' : 'Vehicle Type'}</option>
+                <option value="subCity">{isAmharic ? 'ክፍለ ከተማ (Sub-City)' : 'Sub-City'}</option>
+                <option value="brand">{isAmharic ? 'ብራንድ (Brand)' : 'Motor Brand'}</option>
+              </select>
+
+              {/* Sort Order Asc/Desc Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                className="p-1 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                title={sortOrder === 'asc' ? (isAmharic ? 'ቅደም ተከተል: ከትንሽ ወደ ትልቅ (ASC)' : 'Ascending order') : (isAmharic ? 'ቅደም ተከተል: ከትልቅ ወደ ትንሽ (DESC)' : 'Descending order')}
+              >
+                <Icon className="material-symbols-outlined text-[15px]">
+                  {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                </Icon>
+              </button>
+            </div>
           </div>
         </div>
 
