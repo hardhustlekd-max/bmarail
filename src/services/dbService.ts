@@ -2945,65 +2945,6 @@ export async function fetchMembershipFeeDirectory(options?: {
   return null;
 }
 
-export interface OfflineDiscrepancyState {
-  count: number;
-  totalLocalCount: number;
-  hasComparedState: boolean;
-}
-
-const offlineDiscrepancyListeners = new Set<(state: OfflineDiscrepancyState) => void>();
-let currentOfflineDiscrepancy: OfflineDiscrepancyState = {
-  count: 0,
-  totalLocalCount: 0,
-  hasComparedState: false,
-};
-
-export function notifyOfflineDiscrepancies(state?: Partial<OfflineDiscrepancyState>) {
-  if (state) {
-    currentOfflineDiscrepancy = { ...currentOfflineDiscrepancy, ...state };
-  }
-  offlineDiscrepancyListeners.forEach((cb) => {
-    try {
-      cb(currentOfflineDiscrepancy);
-    } catch (e) {
-      console.warn('Error in offline discrepancy listener:', e);
-    }
-  });
-}
-
-export function subscribeOfflineDiscrepancies(
-  callback: (state: OfflineDiscrepancyState) => void
-): () => void {
-  callback(currentOfflineDiscrepancy);
-  offlineDiscrepancyListeners.add(callback);
-
-  if (typeof window !== 'undefined' && !currentOfflineDiscrepancy.hasComparedState) {
-    setTimeout(async () => {
-      try {
-        const { asyncLoadRegistrations } = await import('../utils/indexedDbStorage');
-        const localRegs = await asyncLoadRegistrations();
-        const localCount = Array.isArray(localRegs) ? localRegs.length : 0;
-        const serverIds = new Set(inMemory.registrations.map((r) => r.id));
-        const discrepancies = localRegs.filter((r) => r.id && !serverIds.has(r.id)).length;
-        notifyOfflineDiscrepancies({
-          count: discrepancies,
-          totalLocalCount: localCount,
-          hasComparedState: true,
-        });
-      } catch {
-        notifyOfflineDiscrepancies({
-          count: 0,
-          totalLocalCount: inMemory.registrations.length,
-          hasComparedState: true,
-        });
-      }
-    }, 1500);
-  }
-
-  return () => {
-    offlineDiscrepancyListeners.delete(callback);
-  };
-}
 
 
 
