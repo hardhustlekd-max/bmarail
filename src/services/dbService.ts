@@ -10,6 +10,7 @@ import {
   SystemAuditLog,
   TermStatus,
 } from '../types';
+export { mapSettingsFromDb } from '../db/schema';
 import { mapSettingsFromDb } from '../db/schema';
 import { uploadDocumentPhoto } from './storageService';
 import { trackGlobalAction } from './actionTracker';
@@ -408,7 +409,7 @@ function applySystemReset(resetEpoch: number, resetTimestamp?: string) {
   notifySettings();
 }
 
-function checkAndApplySystemResetIfNewer(incomingSettings?: Partial<SystemSettings> | null): boolean {
+export function checkAndApplySystemResetIfNewer(incomingSettings?: Partial<SystemSettings> | null): boolean {
   if (!incomingSettings) return false;
   const incomingEpoch = Number(incomingSettings.systemResetEpoch) || 0;
   if (!incomingEpoch) return false;
@@ -620,7 +621,7 @@ export function loadStateFromLocalStorage(): boolean {
 }
 
 // Helper to merge lists by ID without losing rich in-memory fields
-function mergeById<T extends { id?: string; badgeId?: string; uid?: string }>(
+export function mergeById<T extends { id?: string; badgeId?: string; uid?: string }>(
   remoteItems: T[],
   localItems: T[]
 ): T[] {
@@ -639,7 +640,7 @@ function mergeById<T extends { id?: string; badgeId?: string; uid?: string }>(
   return Array.from(map.values());
 }
 
-function mergeRegistrationsPreservingPhotos(
+export function mergeRegistrationsPreservingPhotos(
   remoteRegs: MotorcycleRegistration[],
   localRegs: MotorcycleRegistration[]
 ): MotorcycleRegistration[] {
@@ -702,7 +703,7 @@ function mergeRegistrationsPreservingPhotos(
 }
 
 // Notification triggers
-function notifyRegistrations() {
+export function notifyRegistrations() {
   const data = [...inMemory.registrations];
   listeners.registrations.forEach((cb) => {
     try {
@@ -714,7 +715,7 @@ function notifyRegistrations() {
   saveStateToLocalStorage();
 }
 
-function notifyOfficers() {
+export function notifyOfficers() {
   const data = [...inMemory.officers];
   listeners.officers.forEach((cb) => {
     try {
@@ -726,7 +727,7 @@ function notifyOfficers() {
   saveStateToLocalStorage();
 }
 
-function notifyPrintOrders() {
+export function notifyPrintOrders() {
   const data = [...inMemory.printOrders];
   listeners.printOrders.forEach((cb) => {
     try {
@@ -738,7 +739,7 @@ function notifyPrintOrders() {
   saveStateToLocalStorage();
 }
 
-function notifyVerifications() {
+export function notifyVerifications() {
   const data = [...inMemory.verifications];
   listeners.verifications.forEach((cb) => {
     try {
@@ -750,7 +751,7 @@ function notifyVerifications() {
   saveStateToLocalStorage();
 }
 
-function notifyUnregisteredReports() {
+export function notifyUnregisteredReports() {
   const data = [...inMemory.unregisteredReports];
   listeners.unregisteredReports.forEach((cb) => {
     try {
@@ -762,7 +763,7 @@ function notifyUnregisteredReports() {
   saveStateToLocalStorage();
 }
 
-function notifyPaymentReceipts() {
+export function notifyPaymentReceipts() {
   const data = [...inMemory.paymentReceipts];
   listeners.paymentReceipts.forEach((cb) => {
     try {
@@ -774,7 +775,7 @@ function notifyPaymentReceipts() {
   saveStateToLocalStorage();
 }
 
-function notifySettings() {
+export function notifySettings() {
   const data = { ...inMemory.settings };
   listeners.settings.forEach((cb) => {
     try {
@@ -786,7 +787,7 @@ function notifySettings() {
   saveStateToLocalStorage();
 }
 
-function notifyUsers() {
+export function notifyUsers() {
   const data = [...inMemory.users];
   listeners.users.forEach((cb) => {
     try {
@@ -798,7 +799,7 @@ function notifyUsers() {
   saveStateToLocalStorage();
 }
 
-function notifyAuditLogs() {
+export function notifyAuditLogs() {
   const data = [...inMemory.auditLogs];
   listeners.auditLogs.forEach((cb) => {
     try {
@@ -813,7 +814,7 @@ function notifyAuditLogs() {
 /**
  * Safe JSON fetch utility with timeout and offline protection
  */
-async function safeJsonFetch<T = any>(
+export async function safeJsonFetch<T = any>(
   url: string,
   options?: RequestInit,
   timeoutMs: number = 8000
@@ -956,109 +957,8 @@ export function initLiveDbListeners(): () => void {
     }
   } catch (e) {}
 
-  // 4. Connect to Server-Sent Events (SSE) for instant cross-device updates
-  const connectSSE = () => {
-    try {
-      if (typeof EventSource !== 'undefined' && !realtimeEventSource) {
-        let sseUrl = '/api/realtime/events';
-        try {
-          const user = getCurrentUser();
-          if (user) {
-            const params = new URLSearchParams();
-            if (user.role) params.set('role', user.role);
-            if (user.badgeId) params.set('badgeId', user.badgeId);
-            if (user.subCity) params.set('subCity', user.subCity);
-            const qs = params.toString();
-            if (qs) sseUrl = `${sseUrl}?${qs}`;
-          }
-        } catch {}
-
-        realtimeEventSource = new EventSource(sseUrl);
-        
-        const handlePayload = (raw: string) => {
-          try {
-            const payload = JSON.parse(raw);
-            if (!payload || !payload.collection) return;
-
-            const { collection, action, docId, data } = payload;
-
-            if (collection === 'motorcycle_registrations') {
-              if (action === 'upsert' && data && (data.id || docId)) {
-                const targetId = data.id || docId;
-                const idx = inMemory.registrations.findIndex((r) => r.id === targetId);
-                if (idx >= 0) {
-                  inMemory.registrations[idx] = { ...inMemory.registrations[idx], ...data };
-                } else {
-                  inMemory.registrations.unshift(data);
-                }
-                notifyRegistrations();
-              } else if (action === 'delete' && docId) {
-                inMemory.registrations = inMemory.registrations.filter((r) => r.id !== docId);
-                notifyRegistrations();
-              }
-              syncRegistrations(true).catch(() => {});
-            } else if (collection === 'payment_receipts') {
-              if (action === 'upsert' && data && (data.id || docId)) {
-                const targetId = data.id || docId;
-                const idx = inMemory.paymentReceipts.findIndex((rc) => rc.id === targetId);
-                if (idx >= 0) {
-                  inMemory.paymentReceipts[idx] = { ...inMemory.paymentReceipts[idx], ...data };
-                } else {
-                  inMemory.paymentReceipts.unshift(data);
-                }
-                notifyPaymentReceipts();
-              } else if (action === 'delete' && docId) {
-                inMemory.paymentReceipts = inMemory.paymentReceipts.filter((rc) => rc.id !== docId);
-                notifyPaymentReceipts();
-              }
-              syncPaymentReceipts(true).catch(() => {});
-            } else if (collection === 'officer_assignments') {
-              syncOfficers(true).catch(() => {});
-            } else if (collection === 'print_batch_orders') {
-              syncPrintOrders(true).catch(() => {});
-            } else if (collection === 'unregistered_vehicle_reports') {
-              syncUnregisteredReports(true).catch(() => {});
-            } else if (collection === 'verification_logs') {
-              syncVerifications(true).catch(() => {});
-            } else if (collection === 'system_settings') {
-              if (data) {
-                inMemory.settings = mapSettingsFromDb(data, inMemory.settings);
-                notifySettings();
-              }
-              syncSettings(true).catch(() => {});
-            } else if (collection === 'system_reset') {
-              if (payload.data?.systemResetEpoch) {
-                checkAndApplySystemResetIfNewer(payload.data);
-              }
-            }
-          } catch (err) {}
-        };
-
-        realtimeEventSource.addEventListener('database_change', (event: MessageEvent) => {
-          handlePayload(event.data);
-        });
-
-        realtimeEventSource.onmessage = (event: MessageEvent) => {
-          handlePayload(event.data);
-        };
-
-        realtimeEventSource.onerror = () => {
-          if (realtimeEventSource) {
-            realtimeEventSource.close();
-            realtimeEventSource = null;
-          }
-          // Reconnect SSE after brief delay
-          setTimeout(() => {
-            if (areLiveListenersActive) {
-              connectSSE();
-            }
-          }, 3000);
-        };
-      }
-    } catch (e) {}
-  };
-
-  connectSSE();
+  // 4. Server-Sent Events (SSE) stream is authoritatively managed by realtimeSync.ts
+  // which synchronizes both TanStack Query cache and inMemory state with sequence replay.
 
   // 5. Periodic background synchronization interval (lightweight active-page sync only)
   const syncInterval = setInterval(() => {
@@ -3043,6 +2943,66 @@ export async function fetchMembershipFeeDirectory(options?: {
     console.warn('[Membership Fee Service] Server-side fetch notice:', err);
   }
   return null;
+}
+
+export interface OfflineDiscrepancyState {
+  count: number;
+  totalLocalCount: number;
+  hasComparedState: boolean;
+}
+
+const offlineDiscrepancyListeners = new Set<(state: OfflineDiscrepancyState) => void>();
+let currentOfflineDiscrepancy: OfflineDiscrepancyState = {
+  count: 0,
+  totalLocalCount: 0,
+  hasComparedState: false,
+};
+
+export function notifyOfflineDiscrepancies(state?: Partial<OfflineDiscrepancyState>) {
+  if (state) {
+    currentOfflineDiscrepancy = { ...currentOfflineDiscrepancy, ...state };
+  }
+  offlineDiscrepancyListeners.forEach((cb) => {
+    try {
+      cb(currentOfflineDiscrepancy);
+    } catch (e) {
+      console.warn('Error in offline discrepancy listener:', e);
+    }
+  });
+}
+
+export function subscribeOfflineDiscrepancies(
+  callback: (state: OfflineDiscrepancyState) => void
+): () => void {
+  callback(currentOfflineDiscrepancy);
+  offlineDiscrepancyListeners.add(callback);
+
+  if (typeof window !== 'undefined' && !currentOfflineDiscrepancy.hasComparedState) {
+    setTimeout(async () => {
+      try {
+        const { asyncLoadRegistrations } = await import('../utils/indexedDbStorage');
+        const localRegs = await asyncLoadRegistrations();
+        const localCount = Array.isArray(localRegs) ? localRegs.length : 0;
+        const serverIds = new Set(inMemory.registrations.map((r) => r.id));
+        const discrepancies = localRegs.filter((r) => r.id && !serverIds.has(r.id)).length;
+        notifyOfflineDiscrepancies({
+          count: discrepancies,
+          totalLocalCount: localCount,
+          hasComparedState: true,
+        });
+      } catch {
+        notifyOfflineDiscrepancies({
+          count: 0,
+          totalLocalCount: inMemory.registrations.length,
+          hasComparedState: true,
+        });
+      }
+    }, 1500);
+  }
+
+  return () => {
+    offlineDiscrepancyListeners.delete(callback);
+  };
 }
 
 

@@ -190,13 +190,76 @@ app.use((req, res, next) => {
 // 1. HEALTH, REALTIME SSE STREAM & SYSTEM STATUS
 // ============================================================================
 interface SseClientSession {
+  id: string;
   res: express.Response;
   role?: string;
   badgeId?: string;
   subCity?: string;
+  deviceId?: string;
+  connectedAt: number;
 }
 
 const sseClients = new Set<SseClientSession>();
+let sseEventCounter = 0;
+
+// Collection version tracker for ultra-lightweight HTTP 304 Not Modified responses
+export const collectionVersions: Record<string, number> = {
+  motorcycle_registrations: 1,
+  payment_receipts: 1,
+  officer_assignments: 1,
+  print_batch_orders: 1,
+  verification_logs: 1,
+  unregistered_vehicle_reports: 1,
+  system_settings: 1,
+  dashboard_kpis: 1,
+};
+
+/**
+ * Serverless Cost Saver: Checks client ETag / If-None-Match header.
+ * If data hasn't changed, returns 304 Not Modified with 0 bytes transferred and 0 DB queries!
+ */
+export function handleConditionalGet(
+  req: express.Request,
+  res: express.Response,
+  collectionKey: string,
+  extraScopeKey = ''
+): boolean {
+  const version = collectionVersions[collectionKey] || 1;
+  const etag = `W/"${collectionKey}-v${version}${extraScopeKey ? `-${extraScopeKey}` : ''}"`;
+  res.setHeader('ETag', etag);
+  res.setHeader('Cache-Control', 'public, max-age=3, stale-while-revalidate=30');
+
+  const ifNoneMatch = req.headers['if-none-match'];
+  if (ifNoneMatch && ifNoneMatch === etag) {
+    res.status(304).end();
+    return true;
+  }
+  return false;
+}
+
+interface StoredSseEvent {
+  id: number;
+  timestamp: number;
+  collection: string;
+  action: 'upsert' | 'delete' | 'clear';
+  docId?: string;
+  data?: any;
+}
+
+const sseRecentEvents: StoredSseEvent[] = [];
+const MAX_RECENT_EVENTS = 150;
+
+function broadcastPresence() {
+  const activeCount = sseClients.size;
+  const payload = `event: peer_presence\ndata: ${JSON.stringify({ activeDevices: activeCount, timestamp: Date.now() })}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.res.write(payload);
+    } catch {
+      sseClients.delete(client);
+    }
+  }
+}
 
 export function broadcastSseChange(event: {
   collection: string;
@@ -204,8 +267,26 @@ export function broadcastSseChange(event: {
   docId?: string;
   data?: any;
 }) {
-  const json = JSON.stringify({ ...event, timestamp: Date.now() });
-  const payload = `event: database_change\ndata: ${json}\n\n`;
+  const eventId = ++sseEventCounter;
+  collectionVersions[event.collection] = (collectionVersions[event.collection] || 1) + 1;
+  collectionVersions.dashboard_kpis = (collectionVersions.dashboard_kpis || 1) + 1;
+
+  const storedEvent: StoredSseEvent = {
+    id: eventId,
+    timestamp: Date.now(),
+    collection: event.collection,
+    action: event.action,
+    docId: event.docId,
+    data: event.data,
+  };
+
+  sseRecentEvents.push(storedEvent);
+  if (sseRecentEvents.length > MAX_RECENT_EVENTS) {
+    sseRecentEvents.shift();
+  }
+
+  const json = JSON.stringify({ ...storedEvent });
+  const payload = `id: ${eventId}\nevent: database_change\ndata: ${json}\n\n`;
 
   for (const client of sseClients) {
     try {
@@ -230,35 +311,92 @@ export function broadcastSseChange(event: {
 
 app.get('/api/realtime/events', (req, res) => {
   const scope = getUserScope(req);
+  const deviceId = String(req.query.deviceId || req.headers['x-device-id'] || `device_${Math.random().toString(36).substring(2, 9)}`);
+  const rawLastId = req.headers['last-event-id'] || req.query.lastEventId;
+  const lastEventId = rawLastId ? Number(rawLastId) : 0;
+
   res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
+    'Content-Type': 'text/event-stream; charset=utf-8',
     'Cache-Control': 'no-cache, no-transform',
     'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no', // Disable proxy/nginx buffer delays
     'Access-Control-Allow-Origin': '*',
   });
+
+  if (typeof (res as any).flushHeaders === 'function') {
+    (res as any).flushHeaders();
+  }
+
   res.write(': connected\n\n');
 
   const clientSession: SseClientSession = {
+    id: `${deviceId}_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     res,
     role: scope.role,
     badgeId: scope.badgeId,
     subCity: scope.subCity,
+    deviceId,
+    connectedAt: Date.now(),
   };
   sseClients.add(clientSession);
 
+  // Send initial connection packet with server timestamp, device count, and latest event sequence
+  const initPayload = JSON.stringify({
+    deviceId,
+    activeDevices: sseClients.size,
+    serverTime: Date.now(),
+    latestEventId: sseEventCounter,
+  });
+  res.write(`event: sse_init\ndata: ${initPayload}\n\n`);
+
+  // Replay missed events if client reconnected after a brief network lapse or tab sleep
+  if (lastEventId > 0 && lastEventId < sseEventCounter) {
+    const missed = sseRecentEvents.filter((ev) => ev.id > lastEventId);
+    for (const ev of missed) {
+      const json = JSON.stringify(ev);
+      res.write(`id: ${ev.id}\nevent: database_change\ndata: ${json}\n\n`);
+    }
+  }
+
+  // Notify other connected devices about the new peer
+  broadcastPresence();
+
+  // Send keep-alive heartbeats every 45s (saving 66% outbound traffic while keeping Railway proxy alive)
   const heartbeat = setInterval(() => {
     try {
-      res.write(': ping\n\n');
+      res.write(`event: ping\ndata: ${JSON.stringify({ time: Date.now(), activeDevices: sseClients.size })}\n\n`);
     } catch (e) {
       clearInterval(heartbeat);
       sseClients.delete(clientSession);
+      broadcastPresence();
     }
-  }, 25000);
+  }, 45000);
 
   req.on('close', () => {
     clearInterval(heartbeat);
     sseClients.delete(clientSession);
+    broadcastPresence();
   });
+});
+
+app.get('/api/realtime/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    activeDevices: sseClients.size,
+    latestEventId: sseEventCounter,
+    serverTime: Date.now(),
+    recentEventsBuffered: sseRecentEvents.length,
+  });
+});
+
+app.post('/api/realtime/pulse', (req, res) => {
+  const { collection, action, docId, data } = req.body || {};
+  if (collection) {
+    broadcastSseChange({ collection, action: action || 'upsert', docId, data });
+  } else {
+    broadcastPresence();
+  }
+  res.json({ success: true, activeDevices: sseClients.size });
 });
 
 app.get('/api/sync/events', (req, res) => {
@@ -472,6 +610,9 @@ app.get('/api/users/paginated', async (req, res) => {
 // ============================================================================
 // Write-side aggregated KPI reader (O(1) time without querying raw data on the fly)
 app.get('/api/dashboard/kpis', async (req, res) => {
+  if (handleConditionalGet(req, res, 'dashboard_kpis')) {
+    return;
+  }
   const startMs = performance.now();
   try {
     const kpiRow = await getMaterializedKPIs();
@@ -980,6 +1121,12 @@ app.get('/api/registrations', async (req, res) => {
     const search = req.query.search ? String(req.query.search).trim() : undefined;
     const status = req.query.status ? String(req.query.status).trim() : undefined;
 
+    // Serverless Cost Saver: Check if client has cached copy matching scope & query
+    const scopeSalt = `${scope.role || 'all'}_${scope.badgeId || 'all'}_p${page || 'all'}_l${limit || 'all'}_s${status || 'all'}_q${search || ''}`;
+    if (handleConditionalGet(req, res, 'motorcycle_registrations', scopeSalt)) {
+      return;
+    }
+
     const result = await dbGetRegistrationsScoped({
       scope,
       page,
@@ -1151,6 +1298,7 @@ app.post('/api/registrations/bulk-delete', async (req, res) => {
 // 6. OFFICER ASSIGNMENTS ENDPOINTS
 // ============================================================================
 app.get('/api/officers', async (req, res) => {
+  if (handleConditionalGet(req, res, 'officer_assignments')) return;
   try {
     const rows = await dbGetAll('officer_assignments');
     res.json({ success: true, officers: rows });
@@ -1201,6 +1349,7 @@ app.delete('/api/officers/:id', async (req, res) => {
 // 7. PRINT BATCH ORDERS ENDPOINTS
 // ============================================================================
 app.get('/api/print-orders', async (req, res) => {
+  if (handleConditionalGet(req, res, 'print_batch_orders')) return;
   try {
     const rows = await dbGetAll('print_batch_orders');
     res.json({ success: true, printOrders: rows });
@@ -1243,6 +1392,7 @@ app.post('/api/print-orders/status', async (req, res) => {
 // 8. UNREGISTERED VEHICLE REPORTS ENDPOINTS
 // ============================================================================
 app.get('/api/unregistered-reports', async (req, res) => {
+  if (handleConditionalGet(req, res, 'unregistered_vehicle_reports')) return;
   try {
     const rows = await dbGetAll('unregistered_vehicle_reports');
     res.json({ success: true, reports: rows });
@@ -1309,6 +1459,9 @@ app.get('/api/verification-logs', async (req, res) => {
     const page = req.query.page ? parseInt(String(req.query.page), 10) : undefined;
     const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
 
+    const scopeSalt = `${scope.role || 'all'}_${scope.badgeId || 'all'}_p${page || 'all'}_l${limit || 'all'}`;
+    if (handleConditionalGet(req, res, 'verification_logs', scopeSalt)) return;
+
     const result = await dbGetVerificationLogsScoped({ scope, page, limit });
     res.json({
       success: true,
@@ -1352,6 +1505,9 @@ app.get('/api/payment-receipts', async (req, res) => {
     const scope = getUserScope(req);
     const page = req.query.page ? parseInt(String(req.query.page), 10) : undefined;
     const limit = req.query.limit ? parseInt(String(req.query.limit), 10) : undefined;
+
+    const scopeSalt = `${scope.role || 'all'}_${scope.badgeId || 'all'}_p${page || 'all'}_l${limit || 'all'}`;
+    if (handleConditionalGet(req, res, 'payment_receipts', scopeSalt)) return;
 
     const result = await dbGetPaymentReceiptsScoped({ scope, page, limit });
     res.json({
@@ -1594,6 +1750,7 @@ app.post('/api/notifications/state', async (req, res) => {
 });
 
 app.get('/api/settings', async (req, res) => {
+  if (handleConditionalGet(req, res, 'system_settings')) return;
   try {
     const settings = await dbGetById('system_settings', 'global_config');
     res.json({ success: true, settings });

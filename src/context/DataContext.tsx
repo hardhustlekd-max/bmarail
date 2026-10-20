@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   MotorcycleRegistration,
   OfficerAssignment,
@@ -31,6 +32,17 @@ import {
   DEFAULT_SETTINGS,
   getInMemoryState,
 } from '../services/dbService';
+import {
+  queryKeys,
+  fetchRegistrationsQuery,
+  fetchOfficersQuery,
+  fetchPrintOrdersQuery,
+  fetchVerificationLogsQuery,
+  fetchUnregisteredReportsQuery,
+  fetchPaymentReceiptsQuery,
+  fetchSettingsQuery,
+  invalidateAllCoreQueries,
+} from '../services/queryClient';
 import { getStoredActivePage } from '../utils/storage';
 import { useToast } from './ToastContext';
 
@@ -65,35 +77,74 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   const { addToast } = useToast();
   const isAmharic = lang === 'am';
 
-  const [registrations, setRegistrations] = useState<MotorcycleRegistration[]>(() => getInMemoryState().registrations);
-  const [officers, setOfficers] = useState<OfficerAssignment[]>(() => getInMemoryState().officers);
-  const [printOrders, setPrintOrders] = useState<PrintBatchOrder[]>(() => getInMemoryState().printOrders);
-  const [verificationLogs, setVerificationLogs] = useState<VerificationLog[]>(() => getInMemoryState().verifications);
-  const [unregisteredReports, setUnregisteredReports] = useState<UnregisteredVehicleReport[]>(() => getInMemoryState().unregisteredReports);
-  const [paymentReceipts, setPaymentReceipts] = useState<PaymentReceipt[]>(() => getInMemoryState().paymentReceipts);
-  const [settings, setSettings] = useState<SystemSettings>(() => getInMemoryState().settings);
-  const [isLoading, setIsLoading] = useState<boolean>(() => getInMemoryState().registrations.length === 0);
+  // TanStack Query Hooks for Server-Backed Synchronization
+  const { data: qRegistrations, isLoading: isRegLoading } = useQuery({
+    queryKey: queryKeys.registrations,
+    queryFn: fetchRegistrationsQuery,
+    initialData: () => getInMemoryState().registrations,
+  });
 
-  // Real-time subscriptions with on-demand active page sync
+  const { data: qOfficers } = useQuery({
+    queryKey: queryKeys.officers,
+    queryFn: fetchOfficersQuery,
+    initialData: () => getInMemoryState().officers,
+  });
+
+  const { data: qPrintOrders } = useQuery({
+    queryKey: queryKeys.printOrders,
+    queryFn: fetchPrintOrdersQuery,
+    initialData: () => getInMemoryState().printOrders,
+  });
+
+  const { data: qVerificationLogs } = useQuery({
+    queryKey: queryKeys.verificationLogs,
+    queryFn: fetchVerificationLogsQuery,
+    initialData: () => getInMemoryState().verifications,
+  });
+
+  const { data: qUnregisteredReports } = useQuery({
+    queryKey: queryKeys.unregisteredReports,
+    queryFn: fetchUnregisteredReportsQuery,
+    initialData: () => getInMemoryState().unregisteredReports,
+  });
+
+  const { data: qPaymentReceipts } = useQuery({
+    queryKey: queryKeys.paymentReceipts,
+    queryFn: fetchPaymentReceiptsQuery,
+    initialData: () => getInMemoryState().paymentReceipts,
+  });
+
+  const { data: qSettings } = useQuery({
+    queryKey: queryKeys.settings,
+    queryFn: fetchSettingsQuery,
+    initialData: () => getInMemoryState().settings || DEFAULT_SETTINGS,
+  });
+
+  // Local fallback listeners for instant in-tab updates
+  const [localRegistrations, setLocalRegistrations] = useState<MotorcycleRegistration[]>(() => getInMemoryState().registrations);
+  const [localOfficers, setLocalOfficers] = useState<OfficerAssignment[]>(() => getInMemoryState().officers);
+  const [localPrintOrders, setLocalPrintOrders] = useState<PrintBatchOrder[]>(() => getInMemoryState().printOrders);
+  const [localVerificationLogs, setLocalVerificationLogs] = useState<VerificationLog[]>(() => getInMemoryState().verifications);
+  const [localUnregisteredReports, setLocalUnregisteredReports] = useState<UnregisteredVehicleReport[]>(() => getInMemoryState().unregisteredReports);
+  const [localPaymentReceipts, setLocalPaymentReceipts] = useState<PaymentReceipt[]>(() => getInMemoryState().paymentReceipts);
+  const [localSettings, setLocalSettings] = useState<SystemSettings>(() => getInMemoryState().settings || DEFAULT_SETTINGS);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Synchronize startup and bind direct change events
   useEffect(() => {
     syncCriticalStartup().catch(() => {});
 
-    const unsubRegs = subscribeRegistrations(setRegistrations);
-    const unsubOffs = subscribeOfficers(setOfficers);
-    const unsubPrints = subscribePrintOrders(setPrintOrders);
-    const unsubLogs = subscribeVerificationLogs(setVerificationLogs);
-    const unsubUnregistered = subscribeUnregisteredReports(setUnregisteredReports);
-    const unsubPayments = subscribePaymentReceipts(setPaymentReceipts);
+    const unsubRegs = subscribeRegistrations(setLocalRegistrations);
+    const unsubOffs = subscribeOfficers(setLocalOfficers);
+    const unsubPrints = subscribePrintOrders(setLocalPrintOrders);
+    const unsubLogs = subscribeVerificationLogs(setLocalVerificationLogs);
+    const unsubUnregistered = subscribeUnregisteredReports(setLocalUnregisteredReports);
+    const unsubPayments = subscribePaymentReceipts(setLocalPaymentReceipts);
     const unsubSettings = subscribeSettings((data) => {
-      if (data) setSettings(data);
+      if (data) setLocalSettings(data);
     });
 
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 400);
-
     return () => {
-      clearTimeout(timer);
       unsubRegs();
       unsubOffs();
       unsubPrints();
@@ -104,13 +155,24 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     };
   }, []);
 
+  // Prefer TanStack Query cache if populated; fall back cleanly to local inMemory
+  const registrations = (qRegistrations && qRegistrations.length > 0) ? qRegistrations : localRegistrations;
+  const officers = (qOfficers && qOfficers.length > 0) ? qOfficers : localOfficers;
+  const printOrders = (qPrintOrders && qPrintOrders.length > 0) ? qPrintOrders : localPrintOrders;
+  const verificationLogs = (qVerificationLogs && qVerificationLogs.length > 0) ? qVerificationLogs : localVerificationLogs;
+  const unregisteredReports = (qUnregisteredReports && qUnregisteredReports.length > 0) ? qUnregisteredReports : localUnregisteredReports;
+  const paymentReceipts = (qPaymentReceipts && qPaymentReceipts.length > 0) ? qPaymentReceipts : localPaymentReceipts;
+  const settings = qSettings || localSettings || DEFAULT_SETTINGS;
+  const isLoading = isRefreshing || (isRegLoading && registrations.length === 0);
+
   const refreshData = useCallback(async () => {
-    setIsLoading(true);
+    setIsRefreshing(true);
     try {
+      invalidateAllCoreQueries();
       const activePage = getStoredActivePage();
       await syncActivePageCollection(activePage, true);
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, []);
 

@@ -57,7 +57,9 @@ export let saveRegTimer: any = null;
 export const saveKeyValTimers = new Map<string, any>();
 
 /**
- * Persists all registrations asynchronously to IndexedDB in a single transaction.
+ * Persists registrations asynchronously to IndexedDB in a single transaction.
+ * Strictly NON-DESTRUCTIVE: Never clears the store! Only upserts/merges records,
+ * guaranteeing 100% preservation of all local cached records.
  * Strictly text-only: all photos, scans, and base64 strings are stripped before write.
  */
 export async function asyncSaveRegistrations(registrations: MotorcycleRegistration[]): Promise<void> {
@@ -72,7 +74,8 @@ export async function asyncSaveRegistrations(registrations: MotorcycleRegistrati
         const tx = db.transaction('registrations', 'readwrite');
         const store = tx.objectStore('registrations');
 
-        await store.clear();
+        // NON-DESTRUCTIVE: Do NOT clear existing records.
+        // Simply upsert incoming records, ensuring any local records deleted from server are never lost!
         for (const reg of registrations) {
           if (reg && reg.id) {
             const textOnly = sanitizeTextOnlyStorage(reg);
@@ -87,6 +90,26 @@ export async function asyncSaveRegistrations(registrations: MotorcycleRegistrati
       }
     }, 80);
   });
+}
+
+/**
+ * Detects records present in local IndexedDB that are completely missing from a server list.
+ */
+export async function asyncDetectLocalDiscrepancies(
+  serverRecords: MotorcycleRegistration[]
+): Promise<{
+  missingFromServer: MotorcycleRegistration[];
+  allLocal: MotorcycleRegistration[];
+}> {
+  try {
+    const allLocal = await asyncLoadRegistrations();
+    const serverIdSet = new Set(serverRecords.map((r) => r.id).filter(Boolean));
+    const missingFromServer = allLocal.filter((r) => r.id && !serverIdSet.has(r.id));
+    return { missingFromServer, allLocal };
+  } catch (err) {
+    console.warn('Notice detecting local discrepancies in IndexedDB:', err);
+    return { missingFromServer: [], allLocal: [] };
+  }
 }
 
 /**
