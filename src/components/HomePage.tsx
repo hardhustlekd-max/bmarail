@@ -54,7 +54,6 @@ import { UnregisteredReportsList } from './UnregisteredReportsList';
 import { PaymentReceiptsPage } from './PaymentReceiptsPage';
 import { SettingsPage } from './SettingsPage';
 import { NotificationDropdown, NotificationItem } from './NotificationDropdown';
-import { MultiDeviceSyncIndicator } from './ui/MultiDeviceSyncIndicator';
 import { APP_LOGO } from '../types';
 import { toEthiopianDate } from '../utils/ethiopianCalendar';
 import {
@@ -2028,8 +2027,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
               {/* Right Controls (BORDERLESS MENU TOGGLE BUTTON & NOTIFICATION BELL FOR MOBILE) */}
               <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                {/* Live Multi-Device Sync Indicator */}
-                <MultiDeviceSyncIndicator isAmharic={isAmharic} compact={true} />
 
                 {/* Mobile Notification Bell Icon Button (Container removed for sleek mobile appearance) */}
                 <div className="relative" ref={mobileNotificationRef}>
@@ -2811,9 +2808,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 </div>
               )}
             </div>
-
-            {/* Live Multi-Device Realtime Sync Indicator (SSE + TanStack Query) */}
-            <MultiDeviceSyncIndicator isAmharic={isAmharic} />
 
             {/* Notification Bell Icon Button with dynamic unread badge */}
             <div className="relative" ref={notificationDropdownRef}>
