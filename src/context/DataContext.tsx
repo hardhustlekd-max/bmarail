@@ -45,6 +45,7 @@ import {
 } from '../services/queryClient';
 import { getStoredActivePage } from '../utils/storage';
 import { useToast } from './ToastContext';
+import { initRealtimeSync } from '../services/realtimeSync';
 
 interface DataContextType {
   registrations: MotorcycleRegistration[];
@@ -133,6 +134,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   // Synchronize startup and bind direct change events
   useEffect(() => {
     syncCriticalStartup().catch(() => {});
+    const cleanupRealtime = initRealtimeSync();
 
     const unsubRegs = subscribeRegistrations(setLocalRegistrations);
     const unsubOffs = subscribeOfficers(setLocalOfficers);
@@ -145,6 +147,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     });
 
     return () => {
+      cleanupRealtime();
       unsubRegs();
       unsubOffs();
       unsubPrints();
