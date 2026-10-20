@@ -704,24 +704,25 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 )}
               </div>
 
-              {/* Super Admin Secret Visibility Toggle */}
+              {/* Super Admin Company Vehicle Toggle */}
               {isSuperAdmin && (
-                <div className="p-3.5 bg-rose-50/50 dark:bg-rose-950/20 rounded-lg border border-rose-200 dark:border-rose-800 flex items-center justify-between gap-3">
+                <div className="p-3.5 bg-purple-50/70 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-800 flex items-center justify-between gap-3">
                   <div>
-                    <span className="font-bold text-slate-900 dark:text-white block">
-                      {isAmharic ? '🔒 መረጃውን ከሌሎች ተጠቃሚዎች ደብቅ' : '🔒 Hide Owner Details From Other Users'}
+                    <span className="font-bold text-slate-900 dark:text-white block flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[17px] text-purple-600">business</span>
+                      {isAmharic ? 'እንደ የኩባንያ ተሽከርካሪ መዝግብ (Company Vehicle)' : 'Save as Company Vehicle'}
                     </span>
                     <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
                       {isAmharic
-                        ? 'ይህ ሲበራ ከሱፐር አድሚን ውጭ ያሉ ተጠቃሚዎች የባለቤቱን ስምና ስልክ ማየት አይችሉም።'
-                        : 'When enabled, only Super Admins can see the true owner name and phone.'}
+                        ? 'ይህ ሲበራ እንደ ኩባንያ ተሽከርካሪ ይመዝገባል (ከሱፐር አድሚን ውጭ ለሌሎች ተጠቃሚዎች በሰንጠረዥና ፍተሻ ላይ አይታይም)።'
+                        : 'When enabled, saved as a company vehicle record (hidden from standard non-admin users).'}
                     </span>
                   </div>
                   <input
                     type="checkbox"
                     checked={hideFromOtherUsers}
                     onChange={(e) => setHideFromOtherUsers(e.target.checked)}
-                    className="w-5 h-5 accent-rose-600 rounded cursor-pointer"
+                    className="w-5 h-5 accent-purple-600 rounded cursor-pointer"
                   />
                 </div>
               )}

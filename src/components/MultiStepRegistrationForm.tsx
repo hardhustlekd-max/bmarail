@@ -1527,16 +1527,16 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             visibility_off
                           </Icon>
                           <span className="text-xs font-black text-purple-950 dark:text-purple-200">
-                            {isAmharic ? 'ምስጢራዊ / ድብቅ ምዝገባ (Save as Hidden Registration)' : 'Save as Hidden Registration'}
+                            {isAmharic ? 'የኩባንያ ተሽከርካሪ (Save as Company Vehicle)' : 'Save as Company Vehicle'}
                           </span>
-                          <span className="text-[10px] font-bold  tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                             {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                           </span>
                         </div>
                         <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
                           {isAmharic
-                            ? 'ይህ አማራጭ ሲበራ ማመልከቻው በድብቅ ይቀመጣል፤ ለተራ ሰራተኞችና መኮንኖች በሰንጠረዦችና በፍተሻ መዝገብ ላይ አይታይም።'
-                            : 'When enabled, this application will be saved as hidden from other users (clerks and field officers) in municipal tables and enforcement scans.'}
+                            ? 'ይህ አማራጭ ሲበራ ማመልከቻው እንደ የኩባንያ ተሽከርካሪ ይመዝገባል፤ ከተራ ሰራተኞችና መኮንኖች በሰንጠረዦችና በፍተሻ መዝገብ ላይ ተደብቆ ይቆያል።'
+                            : 'When enabled, this application will be saved as a company vehicle record (hidden from standard non-admin users in municipal tables and enforcement scans).'}
                         </p>
                       </label>
                     </div>
@@ -2310,8 +2310,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <DataField label={isAmharic ? 'የተከፈለ መጠን:' : 'Amount Paid:'} value={paymentAmount ? `${paymentAmount} ETB` : '-'} isMono />
                       {isSuperAdmin && (
                         <DataField
-                          label={isAmharic ? 'የምዝገባ ሁኔታ:' : 'Visibility Status:'}
-                          value={hideFromOtherUsers ? (isAmharic ? '🔒 ምስጢራዊ / የተደበቀ' : '🔒 Hidden Record') : (isAmharic ? 'መደበኛ (ግልጽ)' : 'Standard (Visible)')}
+                          label={isAmharic ? 'የምዝገባ ሁኔታ:' : 'Record Type:'}
+                          value={hideFromOtherUsers ? (isAmharic ? '🏢 የኩባንያ ተሽከርካሪ' : '🏢 Company Vehicle') : (isAmharic ? 'መደበኛ (ግልጽ)' : 'Standard (Visible)')}
                           isPrimary={hideFromOtherUsers}
                         />
                       )}
@@ -2394,19 +2394,19 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         <div className="space-y-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-1.5">
                             <Icon className="material-symbols-outlined text-[17px] text-purple-700 dark:text-purple-300 shrink-0">
-                              visibility_off
+                              business
                             </Icon>
                             <span className="text-xs font-black text-purple-950 dark:text-purple-200">
-                              {isAmharic ? 'ይህ ምዝገባ በድብቅ (Hidden Registration) ይቀመጥ' : 'Save as Hidden Registration'}
+                              {isAmharic ? 'እንደ የኩባንያ ተሽከርካሪ (Company Vehicle) አስቀምጥ' : 'Save as Company Vehicle'}
                             </span>
-                            <span className="text-[10px] font-bold  tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                               {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                             </span>
                           </div>
                           <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
                             {isAmharic
-                              ? 'ይህ ሲመረጥ ማመልከቻው ከአስተዳዳሪ ውጭ ለሆኑ ተጠቃሚዎች አይታይም።'
-                              : 'Hides this registration from non-admin users in tables and scan logs.'}
+                              ? 'ይህ ሲመረጥ እንደ የኩባንያ ተሽከርካሪ ይመዝገባል (ከአስተዳዳሪዎች ውጭ ለሌሎች ተጠቃሚዎች አይታይም)።'
+                              : 'Saves this registration as a company vehicle record (hidden from standard non-admin users).'}
                           </p>
                         </div>
                       </label>

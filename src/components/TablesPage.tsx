@@ -197,20 +197,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const canShowRegistration = userRole === 'clerk' || userRole === 'admin';
   const canShowPrint = userRole === 'admin';
 
-  // Helper functions for masking hidden owner details for non-superadmin users
-  const getDisplayName = (reg: MotorcycleRegistration) => {
-    if (reg.hideFromOtherUsers && !isSuperAdmin) {
-      return isAmharic ? '🔒 [የተደበቀ ባለቤት]' : '🔒 [Hidden Owner]';
-    }
-    return reg.fullName || '—';
-  };
-
-  const getDisplayPhone = (reg: MotorcycleRegistration) => {
-    if (reg.hideFromOtherUsers && !isSuperAdmin) {
-      return '***-***-****';
-    }
-    return reg.phone || '—';
-  };
+  // Helper functions for member details
+  const getDisplayName = (reg: MotorcycleRegistration) => reg.fullName || '—';
+  const getDisplayPhone = (reg: MotorcycleRegistration) => reg.phone || '—';
 
   // Table status filter tab: 'approved' | 'pending' | 'expired'
   const [activeTableTab, setActiveTableTab] = useState<'approved' | 'pending' | 'expired'>(initialTableTab || 'approved');
@@ -231,6 +220,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const [regCategoryFilter, setRegCategoryFilter] = useState<'all' | 'private' | 'commercial' | 'governmental'>('all');
   const [regSubCityFilter, setRegSubCityFilter] = useState<string>('all');
   const [regVehicleTypeFilter, setRegVehicleTypeFilter] = useState<'all' | 'electric' | 'gas_under_110cc'>('all');
+  const [regCompanyVehicleFilter, setRegCompanyVehicleFilter] = useState<'all' | 'standard' | 'company'>('all');
 
   // Sorting state
   type RegSortField = 'date' | 'name' | 'plate' | 'category' | 'subCity' | 'brand';
@@ -248,11 +238,15 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     setRegPage(1);
   };
 
-  // Role-specific scoped registrations (hidden records excluded from totals & tables except for Super Admin)
+  // Role-specific scoped registrations (company vehicles shown mixed with members, with optional SuperAdmin filter)
   const scopedRegistrations = React.useMemo(() => {
     let list = registrations;
-    if (!isSuperAdmin) {
-      list = list.filter((r) => !r.hideFromOtherUsers);
+    if (isSuperAdmin) {
+      if (regCompanyVehicleFilter === 'standard') {
+        list = list.filter((r) => !r.hideFromOtherUsers);
+      } else if (regCompanyVehicleFilter === 'company') {
+        list = list.filter((r) => r.hideFromOtherUsers);
+      }
     }
     if (userRole === 'clerk') {
       const clerkBadge = (userBadgeId || '').trim().toLowerCase();
@@ -262,7 +256,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       });
     }
     return list;
-  }, [registrations, isSuperAdmin, userRole, userBadgeId]);
+  }, [registrations, isSuperAdmin, regCompanyVehicleFilter, userRole, userBadgeId]);
 
   const approvedCount = scopedRegistrations.filter(
     (r) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print'
@@ -982,6 +976,27 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
           {/* Right: Sub-City Dropdown & Sorting Controls */}
           <div className="flex items-center gap-2 flex-wrap">
+            {/* SuperAdmin Dedicated Company Vehicle Filter */}
+            {isSuperAdmin && (
+              <div className="flex items-center gap-1">
+                <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-semibold hidden sm:inline">
+                  {isAmharic ? 'ዓይነት:' : 'Type:'}
+                </span>
+                <select
+                  value={regCompanyVehicleFilter}
+                  onChange={(e) => {
+                    setRegCompanyVehicleFilter(e.target.value as any);
+                    setRegPage(1);
+                  }}
+                  className="py-1 px-2 rounded-sm border border-purple-300 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                >
+                  <option value="all">{isAmharic ? 'ሁሉም አባላት (All)' : 'All Members'}</option>
+                  <option value="standard">{isAmharic ? 'መደበኛ (Standard)' : 'Standard Members'}</option>
+                  <option value="company">{isAmharic ? '🏢 የኩባንያ (Company)' : 'Company Vehicles'}</option>
+                </select>
+              </div>
+            )}
+
             {/* Sub-City Filter */}
             <div className="flex items-center gap-1">
               <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-semibold hidden sm:inline">
@@ -1099,28 +1114,28 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <span>{isAmharic ? 'ዝርዝር አትም' : 'Print List'}</span>
               </button>
 
-              {/* SuperAdmin Bulk Hide/Unhide */}
+              {/* SuperAdmin Bulk Company Vehicle Toggle */}
               {isSuperAdmin && (
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => executeBulkToggleHide(true)}
                     disabled={isSubmittingBulk}
-                    className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer flex items-center gap-1"
-                    title={isAmharic ? 'ከተጠቃሚዎች ደብቅ' : 'Hide from other users'}
+                    className="px-2.5 py-1.5 rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200 font-semibold text-xs hover:bg-purple-200 dark:hover:bg-purple-900 transition-colors cursor-pointer flex items-center gap-1 border border-purple-300 dark:border-purple-800"
+                    title={isAmharic ? 'እንደ የኩባንያ ተሽከርካሪ ምልክት አድርግ' : 'Mark as Company Vehicle'}
                   >
-                    <Icon className="material-symbols-outlined text-[15px]">visibility_off</Icon>
-                    <span>{isAmharic ? 'ደብቅ' : 'Hide'}</span>
+                    <Icon className="material-symbols-outlined text-[15px]">business</Icon>
+                    <span>{isAmharic ? 'የኩባንያ' : 'Company'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => executeBulkToggleHide(false)}
                     disabled={isSubmittingBulk}
                     className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer flex items-center gap-1"
-                    title={isAmharic ? 'ለሁሉም ግልፅ አድርግ' : 'Show to all users'}
+                    title={isAmharic ? 'እንደ መደበኛ ተሽከርካሪ መልስ' : 'Mark as Standard Vehicle'}
                   >
                     <Icon className="material-symbols-outlined text-[15px]">visibility</Icon>
-                    <span>{isAmharic ? 'ግልፅ አድርግ' : 'Unhide'}</span>
+                    <span>{isAmharic ? 'መደበኛ' : 'Standard'}</span>
                   </button>
                 </div>
               )}

@@ -68,29 +68,9 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
   // Filter logs: verification logs for hidden registrations remain invisible except for privileged roles
   const filteredLogs = useMemo(() => {
-    // Pre-index hidden plates and engines in O(N) Set for O(1) checks
-    const hiddenPlates = new Set<string>();
-    const hiddenEngines = new Set<string>();
-    if (userRole !== 'superadmin' && (userRole as string) !== 'super_admin' && userRole !== 'officer' && userRole !== 'admin') {
-      registrations.forEach((r) => {
-        if (r.hideFromOtherUsers) {
-          if (r.plateNumber && r.plateNumber.trim()) hiddenPlates.add(r.plateNumber.trim().toLowerCase());
-          if (r.engineOrSerialNo && r.engineOrSerialNo.trim()) hiddenEngines.add(r.engineOrSerialNo.trim().toLowerCase());
-        }
-      });
-    }
-
     const searchLower = searchTerm.toLowerCase().trim();
 
     return verificationLogs.filter((log) => {
-      if (hiddenPlates.size > 0 || hiddenEngines.size > 0) {
-        const logPlate = log.plateNumber ? log.plateNumber.trim().toLowerCase() : '';
-        const logEngine = log.engineOrSerialNo ? log.engineOrSerialNo.trim().toLowerCase() : '';
-        if ((logPlate && hiddenPlates.has(logPlate)) || (logEngine && hiddenEngines.has(logEngine))) {
-          return false;
-        }
-      }
-
       const matchesSearch =
         !searchLower ||
         (log.plateNumber || '').toLowerCase().includes(searchLower) ||

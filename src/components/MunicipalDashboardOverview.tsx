@@ -159,12 +159,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
     : 'Central Subcity Patrol Checkpoint Alpha';
 
   // Role-specific scoped registrations for Dashboard KPIs (hidden records excluded except for Super Admin)
-  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const scopedRegs = React.useMemo(() => {
     let list = registrations;
-    if (!isSuperAdmin) {
-      list = list.filter((r) => !r.hideFromOtherUsers);
-    }
     if (userRole === 'clerk') {
       const clerkBadge = (userBadgeId || '').trim().toLowerCase();
       return list.filter((r) => {
@@ -173,7 +169,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       });
     }
     return list;
-  }, [registrations, isSuperAdmin, userRole, userBadgeId]);
+  }, [registrations, userRole, userBadgeId]);
 
   // Scoped payment receipts matching member records and user role permissions
   const scopedPaymentReceipts = React.useMemo(() => {
@@ -432,20 +428,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   // Verification logs for dashboard metrics:
   // - Only logs associated with hidden vehicles are excluded for non-superadmins
   // - All other verification logs are visible across all management and officer dashboards
+  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const scopedVerificationLogs = React.useMemo(() => {
-    let list = verificationLogs;
-    if (!isSuperAdmin) {
-      list = list.filter((log) => {
-        const isHidden = registrations.some((r) => r.hideFromOtherUsers && (
-          (r.plateNumber && r.plateNumber.trim() !== '' && r.plateNumber.toLowerCase() === log.plateNumber?.toLowerCase()) ||
-          (r.engineOrSerialNo && r.engineOrSerialNo.trim() !== '' && r.engineOrSerialNo.toLowerCase() === log.engineOrSerialNo?.toLowerCase()) ||
-          r.id === log.id
-        ));
-        return !isHidden;
-      });
-    }
-    return list;
-  }, [verificationLogs, registrations, userRole]);
+    return verificationLogs;
+  }, [verificationLogs]);
 
   // Use write-side materialized KPI aggregation view (O(1) instant rendering)
   const pendingCount = preAggregatedKpis?.permits.pending ?? scopedRegs.filter((r) => r.status === 'pending_approval').length;
