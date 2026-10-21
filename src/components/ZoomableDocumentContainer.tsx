@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import html2canvas from 'html2canvas';
 import { Icon } from './ui/Icon';
 import { Language, UserRole } from '../types';
 import { triggerDocumentPrint } from '../utils/printUtils';
@@ -10,6 +11,9 @@ interface ZoomableDocumentContainerProps {
   title?: string;
   onClose?: () => void;
   onPrint?: () => void;
+  hidePrint?: boolean;
+  downloadFrontId?: string;
+  downloadBackId?: string;
   requireClerkRequest?: boolean;
   footerActions?: React.ReactNode;
   hideHeader?: boolean;
@@ -22,6 +26,9 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
   title,
   onClose,
   onPrint,
+  hidePrint = false,
+  downloadFrontId,
+  downloadBackId,
   requireClerkRequest = true,
   footerActions,
   hideHeader = false,
@@ -41,6 +48,17 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
   const [clerkAccessGranted, setClerkAccessGranted] = useState<boolean>(
     requireClerkRequest && isClerk ? false : true
   );
+
+  const handleDownload = async (elementId: string, filename: string) => {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    const canvas = await html2canvas(element, { scale: 2 });
+    const data = canvas.toDataURL('image/jpeg', 1.0);
+    const link = document.createElement('a');
+    link.href = data;
+    link.download = filename;
+    link.click();
+  };
 
   // Touch Pinch state
   const initialTouchDistanceRef = useRef<number | null>(null);
@@ -349,7 +367,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
           </button>
 
           {/* Print ID / Document Button beside Zoom Controls (Icon Only) */}
-          {(onPrint || Boolean(contentRef.current?.querySelector?.('.printable-a4-document, .printable-id-card, .printable-sticker, #a4-permit-document, #sticker-container, #pvc-card-container'))) && (
+          {!hidePrint && (onPrint || Boolean(contentRef.current?.querySelector?.('.printable-a4-document, .printable-id-card, .printable-sticker, #a4-permit-document, #sticker-container, #pvc-card-container'))) && (
             <button
               type="button"
               onClick={() => {
@@ -371,6 +389,27 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               title={isAmharic ? 'አትም' : 'Print Document'}
             >
               <Icon className="material-symbols-outlined text-[18px]">print</Icon>
+            </button>
+          )}
+
+          {downloadFrontId && (
+            <button
+              type="button"
+              onClick={() => handleDownload(downloadFrontId, 'id_front.jpg')}
+              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1"
+              title={isAmharic ? 'የፊት ገጽ አውርድ' : 'Download Front'}
+            >
+              <Icon className="material-symbols-outlined text-[18px]">download</Icon>
+            </button>
+          )}
+          {downloadBackId && (
+            <button
+              type="button"
+              onClick={() => handleDownload(downloadBackId, 'id_back.jpg')}
+              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1"
+              title={isAmharic ? 'የኋላ ገጽ አውርድ' : 'Download Back'}
+            >
+              <Icon className="material-symbols-outlined text-[18px]">download</Icon>
             </button>
           )}
 

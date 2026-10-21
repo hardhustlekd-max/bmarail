@@ -1570,7 +1570,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             userRole={userRole}
             title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
             onClose={() => setSelectedRegForQR(null)}
-            onPrint={() => triggerDocumentPrint('id-card')}
+            hidePrint={true}
+            downloadFrontId="pvc-card-container"
           >
             <QRCodeCard registration={selectedRegForQR} lang={lang} />
           </ZoomableDocumentContainer>

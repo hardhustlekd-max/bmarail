@@ -239,10 +239,10 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
                 <span className="font-mono font-bold text-slate-900 text-[12.5px]">: {issueDate}</span>
               </div>
 
-              {/* Expiry Date */}
+              {/* Expiry Date & Time */}
               <div className="flex items-center gap-1">
-                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">የሚያበቃበት ቀን / Expiry Date</span>
-                <span className="font-mono font-bold text-slate-900 text-[12.5px]">: {expiryDate}</span>
+                <span className="font-extrabold text-[#1e293b] min-w-[130px] shrink-0 text-[12px]">የሚያበቃበት ቀን እና ሰዓት / Expiry Date & Time</span>
+                <span className="font-mono font-bold text-slate-900 text-[12.5px]">: {expiryDate} 12:00 PM</span>
               </div>
             </div>
 
@@ -275,9 +275,14 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             </div>
           </div>
 
-          {/* BOTTOM FOOTER BANNER - Deep Navy Blue */}
-          <div className="bg-[#1e293b] text-white py-1 px-3 text-center text-[10.5px] font-black tracking-wide shrink-0">
-            ይህ መታወቂያ የባህር ዳር ሞተረኞች ማህበር ንብረት ነው።
+          {/* BOTTOM FOOTER BANNER - Warning & Footer */}
+          <div className="bg-[#1e293b] text-white py-1 px-3 flex flex-col gap-0.5 items-center shrink-0">
+            <p className="text-[9px] font-bold text-center leading-tight">
+              ይህ የአባልነት መታወቂያ የባህዳር ሞተረኛች ማህበር አባልነት ማረጋገጫ ብቻ ሲሆን እንደ የአሽከርካሪ መንጃ ፈቃድ የማያገለግል ነው።
+            </p>
+            <div className="text-[10.5px] font-black tracking-wide">
+              ይህ መታወቂያ የባህር ዳር ሞተረኞች ማህበር ንብረት ነው።
+            </div>
           </div>
         </div>
 
