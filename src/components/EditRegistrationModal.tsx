@@ -710,12 +710,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                   <div>
                     <span className="font-bold text-slate-900 dark:text-white block flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-[17px] text-purple-600">business</span>
-                      {isAmharic ? 'እንደ የኩባንያ ተሽከርካሪ መዝግብ (Company Vehicle)' : 'Save as Company Vehicle'}
+                      {isAmharic ? 'እንደ ኩባንያ / የማህበር ተሽከርካሪ መዝግብ' : 'Save as Company / Association Motor'}
                     </span>
                     <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
                       {isAmharic
-                        ? 'ይህ ሲበራ እንደ ኩባንያ ተሽከርካሪ ይመዝገባል (ከሱፐር አድሚን ውጭ ለሌሎች ተጠቃሚዎች በሰንጠረዥና ፍተሻ ላይ አይታይም)።'
-                        : 'When enabled, saved as a company vehicle record (hidden from standard non-admin users).'}
+                        ? 'ይህ ሲበራ እንደ ኩባንያ / የማህበር ተሽከርካሪ ይመዝገባል (ከሱፐር አድሚን ውጭ በሰንጠረዥና በሜትሪክስ ተደብቆ በፍተሻ ውጤት ላይ ብቻ ይታያል)።'
+                        : 'When enabled, saved as an Association / Company motor (hidden from lists & metrics for other users, visible for scanner result).'}
                     </span>
                   </div>
                   <input

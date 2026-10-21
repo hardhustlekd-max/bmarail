@@ -755,7 +755,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
     // Receive notifications for items waiting for their review/approval from Clerks/Officers.
     // =========================================================================
     if (isManager || isSuperAdmin) {
-      const pendingRegs = registrations.filter((r) => r.status === 'pending_approval');
+      const pendingRegs = registrations.filter((r) => r.status === 'pending_approval' && (isSuperAdmin || !r.hideFromOtherUsers));
       if (pendingRegs.length > 1) {
         list.push({
           id: `pending_regs_summary_${pendingRegs.length}`,
@@ -957,7 +957,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
     // =========================================================================
     if (isClerk || isSuperAdmin) {
       // Approved submissions notification for Clerks
-      const approvedRegs = registrations.filter((r) => r.status === 'approved');
+      const approvedRegs = registrations.filter((r) => r.status === 'approved' && (isSuperAdmin || !r.hideFromOtherUsers));
       if (approvedRegs.length > 1) {
         list.push({
           id: `approved_regs_summary_${approvedRegs.length}`,
@@ -1060,7 +1060,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
       });
 
       // Show recent approved permits in officer's subcity so officer can verify active plate numbers
-      const newlyApprovedInSubCity = registrations.filter((r) => r.status === 'approved');
+      const newlyApprovedInSubCity = registrations.filter((r) => r.status === 'approved' && (isSuperAdmin || !r.hideFromOtherUsers));
       if (newlyApprovedInSubCity.length > 0) {
         list.push({
           id: `officer_approved_plates_${newlyApprovedInSubCity.length}`,

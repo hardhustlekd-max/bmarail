@@ -760,7 +760,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 rounded-sm text-xs font-semibold shadow-2xs">
                 <Icon className="material-symbols-outlined text-[16px]">business</Icon>
                 <span>
-                  {isAmharic ? 'የኩባንያ ተሽከርካሪዎች:' : 'Company Vehicles:'}{' '}
+                  {isAmharic ? 'የኩባንያ / ማህበር ተሽከርካሪዎች:' : 'Company / Association Motors:'}{' '}
                   {registrations.filter((r) => r.hideFromOtherUsers).length}
                 </span>
               </div>
@@ -978,7 +978,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 >
                   <option value="all">{isAmharic ? 'ሁሉም አባላት (የተደባለቀ)' : 'All Members (Mixed)'}</option>
                   <option value="standard">{isAmharic ? 'መደበኛ አባላት (Standard)' : 'Standard Members'}</option>
-                  <option value="company">{isAmharic ? '🏢 የኩባንያ ተሽከርካሪዎች' : '🏢 Company Vehicles Only'}</option>
+                  <option value="company">{isAmharic ? '🏢 የኩባንያ / ማህበር ተሽከርካሪዎች' : '🏢 Company / Association Motors'}</option>
                 </select>
               </div>
             )}

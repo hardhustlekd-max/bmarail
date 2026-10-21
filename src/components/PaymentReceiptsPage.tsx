@@ -59,6 +59,31 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const canViewKPIs = getPermissionState(userRole, 17) !== 'deny';
   const canViewTable = getPermissionState(userRole, 16) !== 'deny';
 
+  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
+
+  // Association motors / company vehicles are strictly hidden from non-superadmins in metrics and matrix lists
+  const effectiveRegistrations = useMemo(() => {
+    if (isSuperAdmin) return registrations || [];
+    return (registrations || []).filter((r) => !r.hideFromOtherUsers);
+  }, [registrations, isSuperAdmin]);
+
+  const effectivePaymentReceipts = useMemo(() => {
+    if (isSuperAdmin) return paymentReceipts || [];
+    const hiddenRegIds = new Set(
+      (registrations || []).filter((r) => r.hideFromOtherUsers).map((r) => (r.id || '').trim().toLowerCase())
+    );
+    const hiddenPlates = new Set(
+      (registrations || []).filter((r) => r.hideFromOtherUsers).map((r) => (r.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase()).filter(Boolean)
+    );
+    return (paymentReceipts || []).filter((rc) => {
+      const regId = (rc.ownerRegistrationId || '').trim().toLowerCase();
+      const plate = (rc.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase();
+      if (regId && hiddenRegIds.has(regId)) return false;
+      if (plate && hiddenPlates.has(plate)) return false;
+      return true;
+    });
+  }, [paymentReceipts, registrations, isSuperAdmin]);
+
   // Toggle state for new receipt entry form (Default to OPEN for clerk role when permitted)
   const [isFormOpen, setIsFormOpen] = useState(() => userRole === 'clerk' && canAddReceipt);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -191,7 +216,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   // Combine explicit payment receipts with all member registration records that have payment data
   const combinedReceipts = useMemo<PaymentReceipt[]>(() => {
     const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
-    const list: PaymentReceipt[] = [...(paymentReceipts || [])];
+    const list: PaymentReceipt[] = [...(effectivePaymentReceipts || [])];
     const explicitRegIds = new Set(
       list.map((r) => cleanStr(r.ownerRegistrationId)).filter(Boolean)
     );
@@ -199,8 +224,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       list.map((r) => cleanStr(r.receiptNumber)).filter(Boolean)
     );
 
-    if (Array.isArray(registrations)) {
-      registrations.forEach((reg) => {
+    if (Array.isArray(effectiveRegistrations)) {
+      effectiveRegistrations.forEach((reg) => {
         if (!reg || !reg.id) return;
         const regIdClean = cleanStr(reg.id);
         if (explicitRegIds.has(regIdClean)) return;
@@ -255,14 +280,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     }
 
     return list;
-  }, [paymentReceipts, registrations]);
+  }, [effectivePaymentReceipts, effectiveRegistrations]);
 
   // Auto-calculated registration details, last payment expiration status, and debt
   const selectedRegInfo = useMemo(() => {
     const val = regNumber.trim().toLowerCase();
     if (!val) return null;
 
-    const found = registrations.find(
+    const found = effectiveRegistrations.find(
       (r) =>
         r.id.toLowerCase() === val ||
         (r.plateNumber && r.plateNumber.toLowerCase() === val) ||
@@ -737,7 +762,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     const cleanStr = (s?: string) => (s || '').trim().toLowerCase();
     const cleanPhone = (s?: string) => (s || '').replace(/[^0-9]/g, '');
 
-    const members = Array.isArray(registrations) ? [...registrations] : [];
+    const members = Array.isArray(effectiveRegistrations) ? [...effectiveRegistrations] : [];
 
     // Also include any unique receipt owners with plate numbers not in registrations
     const regIds = new Set(members.map((m) => cleanStr(m.id)));
@@ -944,7 +969,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         currentMonthStatus: periods[`eth_m_${currentEthMonth}`] || 'muted',
       };
     });
-  }, [registrations, combinedReceipts, matrixColumns, currentEthMonth, currentEthYear, isAmharic]);
+  }, [effectiveRegistrations, combinedReceipts, matrixColumns, currentEthMonth, currentEthYear, isAmharic]);
 
   // Filter matrix rows according to search query and status filter
   const filteredMatrixRows = useMemo(() => {
@@ -1041,7 +1066,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   // Matrix member counts according to current month status
   const matrixCounts = useMemo(() => {
-    if (serverFeeStats) {
+    if (isSuperAdmin && serverFeeStats) {
       return {
         all: serverFeeStats.activeBillableCount,
         active: serverFeeStats.paidMembersCount,
@@ -1063,12 +1088,12 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       expiring,
       expired,
     };
-  }, [allMatrixRows, serverFeeStats]);
+  }, [allMatrixRows, serverFeeStats, isSuperAdmin]);
 
   // Ethiopian Monthly Fee Statistics metrics
   const ethiopianMonthlyMetrics = useMemo(() => {
     // If fast server-side statistics are available, return immediately with zero client delay
-    if (serverFeeStats) {
+    if (isSuperAdmin && serverFeeStats) {
       return {
         targetMonth: serverFeeStats.targetMonth,
         targetYear: serverFeeStats.targetYear,
@@ -1582,7 +1607,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               {/* Custom Suggestion Dropdown */}
               {regNumber.length >= 2 && !isAutoFilled && (
                 <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                  {registrations
+                  {effectiveRegistrations
                     .filter(
                       (r) =>
                         r.id.toLowerCase().includes(regNumber.toLowerCase()) ||
@@ -1606,7 +1631,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         </span>
                       </button>
                     ))}
-                  {registrations.filter(
+                  {effectiveRegistrations.filter(
                     (r) =>
                       r.id.toLowerCase().includes(regNumber.toLowerCase()) ||
                       (r.plateNumber && r.plateNumber.toLowerCase().includes(regNumber.toLowerCase())) ||

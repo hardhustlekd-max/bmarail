@@ -590,6 +590,11 @@ export async function dbGetRegistrationsScoped(options: {
       const queryParams: any[] = [];
 
       // 1. Role-based scoping at SQL level
+      const isSuper = scope?.isSuperAdmin || scope?.role === 'superadmin' || (scope?.role as string) === 'super_admin';
+      if (!isSuper) {
+        whereClauses.push('(hide_from_other_users IS NULL OR hide_from_other_users = false)');
+      }
+
       if (scope?.isClerk && scope.badgeId) {
         if (scope.subCity) {
           queryParams.push(scope.badgeId, scope.subCity);
@@ -657,6 +662,11 @@ export async function dbGetRegistrationsScoped(options: {
 
   // Fallback in-memory
   let all = Array.from(memoryStore['motorcycle_registrations']?.values() || []);
+  const isSuperMem = scope?.isSuperAdmin || scope?.role === 'superadmin' || (scope?.role as string) === 'super_admin';
+  if (!isSuperMem) {
+    all = all.filter((r: any) => !r.hideFromOtherUsers && !r.hide_from_other_users);
+  }
+
   if (scope?.isClerk && scope.badgeId) {
     all = all.filter((r: any) =>
       r.registeredBy === scope.badgeId ||
@@ -704,19 +714,27 @@ export async function dbGetRegistrationsScoped(options: {
  * Single vehicle lookup by Plate or QR
  */
 export async function dbFindRegistrationByPlateOrQr(plate?: string, qr?: string): Promise<any | null> {
+  const cleanPlate = (plate || '').replace(/[\s\-_]/g, '').toLowerCase().trim();
+  let cleanQr = (qr || '').trim();
+  let candidateId = cleanQr;
+  if (cleanQr.includes('/verify/')) {
+    const parts = cleanQr.split('/verify/');
+    if (parts[1]) candidateId = parts[1].split('?')[0].trim();
+  }
+
   if (isPostgresConnected && dbPool) {
     try {
-      if (plate) {
+      if (cleanPlate) {
         const res = await dbPool.query(
-          `SELECT * FROM motorcycle_registrations WHERE LOWER(plate_number) = LOWER($1) LIMIT 1`,
-          [plate.trim()]
+          `SELECT * FROM motorcycle_registrations WHERE LOWER(REPLACE(REPLACE(plate_number, ' ', ''), '-', '')) = $1 LIMIT 1`,
+          [cleanPlate]
         );
         if (res.rows.length > 0) return normalizeRowFromPg(res.rows[0]);
       }
-      if (qr) {
+      if (cleanQr) {
         const res = await dbPool.query(
-          `SELECT * FROM motorcycle_registrations WHERE qr_code_data = $1 OR id = $1 LIMIT 1`,
-          [qr.trim()]
+          `SELECT * FROM motorcycle_registrations WHERE qr_code_data = $1 OR id = $1 OR id = $2 LIMIT 1`,
+          [cleanQr, candidateId]
         );
         if (res.rows.length > 0) return normalizeRowFromPg(res.rows[0]);
       }
@@ -726,12 +744,19 @@ export async function dbFindRegistrationByPlateOrQr(plate?: string, qr?: string)
   }
 
   const all = Array.from(memoryStore['motorcycle_registrations']?.values() || []);
-  if (plate) {
-    const found = all.find((r: any) => String(r.plateNumber || '').toLowerCase() === plate.trim().toLowerCase());
+  if (cleanPlate) {
+    const found = all.find((r: any) => {
+      const p = String(r.plateNumber || r.plate_number || '').replace(/[\s\-_]/g, '').toLowerCase();
+      return p === cleanPlate;
+    });
     if (found) return found;
   }
-  if (qr) {
-    const found = all.find((r: any) => r.qrCodeData === qr || r.id === qr);
+  if (cleanQr) {
+    const found = all.find((r: any) => {
+      const q = r.qrCodeData || r.qr_code_data;
+      const id = r.id;
+      return q === cleanQr || id === cleanQr || id === candidateId;
+    });
     if (found) return found;
   }
   return null;
@@ -755,6 +780,15 @@ export async function dbGetPaymentReceiptsScoped(options: {
     try {
       const whereClauses: string[] = [];
       const queryParams: any[] = [];
+
+      const isSuper = scope?.isSuperAdmin || scope?.role === 'superadmin' || (scope?.role as string) === 'super_admin';
+      if (!isSuper) {
+        whereClauses.push(`NOT EXISTS (
+          SELECT 1 FROM motorcycle_registrations mr
+          WHERE (mr.id = payment_receipts.owner_registration_id OR mr.plate_number = payment_receipts.plate_number)
+            AND mr.hide_from_other_users = TRUE
+        )`);
+      }
 
       if (scope?.isClerk && scope.badgeId) {
         queryParams.push(scope.badgeId);
@@ -794,6 +828,25 @@ export async function dbGetPaymentReceiptsScoped(options: {
   }
 
   let all = Array.from(memoryStore['payment_receipts']?.values() || []);
+  const isSuperReceiptsMem = scope?.isSuperAdmin || scope?.role === 'superadmin' || (scope?.role as string) === 'super_admin';
+  if (!isSuperReceiptsMem) {
+    const hiddenRegIds = new Set<string>();
+    const hiddenPlates = new Set<string>();
+    for (const reg of (memoryStore['motorcycle_registrations']?.values() || [])) {
+      if (reg.hideFromOtherUsers || reg.hide_from_other_users) {
+        if (reg.id) hiddenRegIds.add(String(reg.id).toLowerCase());
+        if (reg.plateNumber) hiddenPlates.add(String(reg.plateNumber).toLowerCase().replace(/[\s\-_]/g, ''));
+      }
+    }
+    all = all.filter((r: any) => {
+      const regId = String(r.ownerRegistrationId || r.owner_registration_id || '').toLowerCase();
+      const plate = String(r.plateNumber || r.plate_number || '').toLowerCase().replace(/[\s\-_]/g, '');
+      if (regId && hiddenRegIds.has(regId)) return false;
+      if (plate && hiddenPlates.has(plate)) return false;
+      return true;
+    });
+  }
+
   if (scope?.isClerk && scope.badgeId) {
     all = all.filter(
       (r: any) =>

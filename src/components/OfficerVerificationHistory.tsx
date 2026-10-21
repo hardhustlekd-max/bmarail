@@ -66,11 +66,30 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Filter logs: verification logs for hidden registrations remain invisible except for privileged roles
+  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
+
+  // Filter logs: verification logs for hidden registrations remain strictly invisible except for superadmin
+  const scopedLogs = useMemo(() => {
+    if (isSuperAdmin) return verificationLogs;
+    const hiddenPlates = new Set(
+      registrations.filter((r) => r.hideFromOtherUsers).map((r) => (r.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase()).filter(Boolean)
+    );
+    const hiddenRegIds = new Set(
+      registrations.filter((r) => r.hideFromOtherUsers).map((r) => (r.id || '').toLowerCase()).filter(Boolean)
+    );
+    return verificationLogs.filter((log) => {
+      const p = (log.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase();
+      const rId = ((log as any).registrationId || '').toLowerCase();
+      if (p && hiddenPlates.has(p)) return false;
+      if (rId && hiddenRegIds.has(rId)) return false;
+      return true;
+    });
+  }, [verificationLogs, registrations, isSuperAdmin]);
+
   const filteredLogs = useMemo(() => {
     const searchLower = searchTerm.toLowerCase().trim();
 
-    return verificationLogs.filter((log) => {
+    return scopedLogs.filter((log) => {
       const matchesSearch =
         !searchLower ||
         (log.plateNumber || '').toLowerCase().includes(searchLower) ||
@@ -91,25 +110,25 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
       return matchesSearch && matchesStatus && matchesCategory;
     });
-  }, [verificationLogs, registrations, userRole, searchTerm, statusFilter, categoryFilter]);
+  }, [scopedLogs, searchTerm, statusFilter, categoryFilter]);
 
-  // Tab counts calculated in a single fast pass
+  // Tab counts calculated in a single fast pass from scoped logs
   const statusCounts = useMemo(() => {
     let verified = 0;
     let warning = 0;
     let flagged = 0;
-    verificationLogs.forEach((l) => {
+    scopedLogs.forEach((l) => {
       if (l.verificationStatus === 'verified') verified++;
       else if (l.verificationStatus === 'warning') warning++;
       else if (l.verificationStatus === 'flagged') flagged++;
     });
     return {
-      all: verificationLogs.length,
+      all: scopedLogs.length,
       verified,
       warning,
       flagged,
     };
-  }, [verificationLogs]);
+  }, [scopedLogs]);
 
   // Calculate pagination slices
   const totalItems = filteredLogs.length;

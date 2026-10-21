@@ -1527,7 +1527,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             visibility_off
                           </Icon>
                           <span className="text-xs font-black text-purple-950 dark:text-purple-200">
-                            {isAmharic ? 'የኩባንያ ተሽከርካሪ (Save as Company Vehicle)' : 'Save as Company Vehicle'}
+                            {isAmharic ? 'የኩባንያ / የማህበር ተሽከርካሪ (Company / Association Motor)' : 'Save as Company / Association Motor'}
                           </span>
                           <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                             {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
@@ -1535,8 +1535,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         </div>
                         <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
                           {isAmharic
-                            ? 'ይህ አማራጭ ሲበራ ማመልከቻው እንደ የኩባንያ ተሽከርካሪ ይመዝገባል፤ ከተራ ሰራተኞችና መኮንኖች በሰንጠረዦችና በፍተሻ መዝገብ ላይ ተደብቆ ይቆያል።'
-                            : 'When enabled, this application will be saved as a company vehicle record (hidden from standard non-admin users in municipal tables and enforcement scans).'}
+                            ? 'ይህ አማራጭ ሲበራ ማመልከቻው እንደ ኩባንያ / የማህበር ተሽከርካሪ ይመዝገባል፤ በሰንጠረዦችና በሜትሪክስ ተደብቆ በፍተሻ ውጤት (ስካነር) ላይ ብቻ ይታያል።'
+                            : 'When enabled, this application will be saved as an Association / Company vehicle (hidden from lists & metrics for other users, visible only for scanner results).'}
                         </p>
                       </label>
                     </div>
@@ -2311,7 +2311,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       {isSuperAdmin && (
                         <DataField
                           label={isAmharic ? 'የምዝገባ ሁኔታ:' : 'Record Type:'}
-                          value={hideFromOtherUsers ? (isAmharic ? '🏢 የኩባንያ ተሽከርካሪ' : '🏢 Company Vehicle') : (isAmharic ? 'መደበኛ (ግልጽ)' : 'Standard (Visible)')}
+                          value={hideFromOtherUsers ? (isAmharic ? '🏢 የኩባንያ / የማህበር ተሽከርካሪ' : '🏢 Company / Association Motor') : (isAmharic ? 'መደበኛ (ግልጽ)' : 'Standard (Visible)')}
                           isPrimary={hideFromOtherUsers}
                         />
                       )}
@@ -2397,7 +2397,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                               business
                             </Icon>
                             <span className="text-xs font-black text-purple-950 dark:text-purple-200">
-                              {isAmharic ? 'እንደ የኩባንያ ተሽከርካሪ (Company Vehicle) አስቀምጥ' : 'Save as Company Vehicle'}
+                              {isAmharic ? 'እንደ ኩባንያ / የማህበር ተሽከርካሪ አስቀምጥ' : 'Save as Company / Association Motor'}
                             </span>
                             <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                               {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
@@ -2405,8 +2405,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           </div>
                           <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
                             {isAmharic
-                              ? 'ይህ ሲመረጥ እንደ የኩባንያ ተሽከርካሪ ይመዝገባል (ከአስተዳዳሪዎች ውጭ ለሌሎች ተጠቃሚዎች አይታይም)።'
-                              : 'Saves this registration as a company vehicle record (hidden from standard non-admin users).'}
+                              ? 'ይህ ሲመረጥ እንደ ኩባንያ / የማህበር ተሽከርካሪ ይመዝገባል (በሰንጠረዥና ሜትሪክስ ተደብቆ በፍተሻ ውጤት ላይ ብቻ ይታያል)።'
+                              : 'Saves this registration as an Association / Company vehicle (hidden from lists & metrics, visible for scanner result).'}
                           </p>
                         </div>
                       </label>

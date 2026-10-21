@@ -1360,6 +1360,30 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     </div>
                   )}
 
+                  {/* Association Motor (Company Vehicle) Notice - Visible strictly on scanner results */}
+                  {scannedRegResult.hideFromOtherUsers && (
+                    <div className="bg-purple-50/95 dark:bg-purple-950/80 border-2 border-purple-400 dark:border-purple-600 p-2 sm:p-2.5 rounded-md text-xs flex items-start gap-2 shadow-xs">
+                      <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0 font-black">
+                        <Icon className="material-symbols-outlined text-[19px]">business</Icon>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="font-black text-purple-950 dark:text-purple-100 text-xs">
+                            {isAmharic ? 'የማህበር / የኩባንያ ተሽከርካሪ' : 'ASSOCIATION MOTOR / COMPANY VEHICLE'}
+                          </p>
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-200">
+                            {isAmharic ? 'በፍተሻ ውጤት ብቻ የሚታይ' : 'Scanner Verified Result'}
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-[10.5px] text-purple-900/90 dark:text-purple-200/90 font-medium leading-tight">
+                          {isAmharic
+                            ? 'ይህ ተሽከርካሪ የማህበር / የኩባንያ መዝገብ በመሆኑ በሰንጠረዥና በሜትሪክስ የተደበቀ ሲሆን፣ በፍተሻ ውጤት ላይ ብቻ የሚታይ ነው።'
+                            : 'This motor is registered as an Association / Company vehicle (hidden from general lists & metrics, verified on scanner result).'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* =========================================================
                       CARD 1: OWNER & PRIMARY MOTORCYCLE INFO
                       ========================================================= */}

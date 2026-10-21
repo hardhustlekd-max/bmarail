@@ -200,10 +200,12 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   const currentEthYear = currentEthDate.year;
   const currentEthMonth = currentEthDate.month; // 1 (መስከረም) to 13 (ጳጉሜ)
 
+  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
+
   // Payment Expiration Metrics strictly calculated according to the current Ethiopian calendar month
   const ethiopianMonthlyMetrics = React.useMemo(() => {
-    // If fast server-side statistics are available, return immediately with zero client lag
-    if (serverFeeStats) {
+    // If fast server-side statistics are available, return immediately with zero client lag (SuperAdmin only)
+    if (isSuperAdmin && serverFeeStats) {
       return {
         targetMonth: serverFeeStats.targetMonth,
         targetYear: serverFeeStats.targetYear,
@@ -432,23 +434,46 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   // Verification logs for dashboard metrics:
   // - Only logs associated with hidden vehicles are excluded for non-superadmins
   // - All other verification logs are visible across all management and officer dashboards
-  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const scopedVerificationLogs = React.useMemo(() => {
-    return verificationLogs;
-  }, [verificationLogs]);
+    if (isSuperAdmin) return verificationLogs;
+    const hiddenPlates = new Set(
+      registrations.filter((r) => r.hideFromOtherUsers).map((r) => (r.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase()).filter(Boolean)
+    );
+    const hiddenRegIds = new Set(
+      registrations.filter((r) => r.hideFromOtherUsers).map((r) => (r.id || '').toLowerCase()).filter(Boolean)
+    );
+    return verificationLogs.filter((log) => {
+      const p = (log.plateNumber || '').replace(/[\s\-_]/g, '').toLowerCase();
+      const rId = ((log as any).registrationId || '').toLowerCase();
+      if (p && hiddenPlates.has(p)) return false;
+      if (rId && hiddenRegIds.has(rId)) return false;
+      return true;
+    });
+  }, [verificationLogs, registrations, isSuperAdmin]);
 
-  // Use write-side materialized KPI aggregation view (O(1) instant rendering)
-  const pendingCount = preAggregatedKpis?.permits.pending ?? scopedRegs.filter((r) => r.status === 'pending_approval').length;
-  const approvedCount = preAggregatedKpis?.permits.approved ?? scopedRegs.filter(
-    (r) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print'
-  ).length;
-  const illegalVehiclesCount = preAggregatedKpis?.permits.rejected ?? scopedRegs.filter((r) => r.status === 'rejected').length;
+  // Use write-side materialized KPI aggregation view for SuperAdmin or compute from role-scoped registrations
+  const pendingCount = isSuperAdmin && preAggregatedKpis?.permits.pending !== undefined
+    ? preAggregatedKpis.permits.pending
+    : scopedRegs.filter((r) => r.status === 'pending_approval').length;
+
+  const approvedCount = isSuperAdmin && preAggregatedKpis?.permits.approved !== undefined
+    ? preAggregatedKpis.permits.approved
+    : scopedRegs.filter(
+        (r) => r.status === 'approved' || r.status === 'printed' || r.status === 'ordered_print'
+      ).length;
+
+  const illegalVehiclesCount = isSuperAdmin && preAggregatedKpis?.permits.rejected !== undefined
+    ? preAggregatedKpis.permits.rejected
+    : scopedRegs.filter((r) => r.status === 'rejected').length;
+
   const activeOfficersCount = (preAggregatedKpis as any)?.activeOfficers ?? officers.filter((o) => o.status === 'active').length;
 
   const todayEthStr = getDefaultEthiopianRegistrationDate();
-  const todaySubmissionsCount = (preAggregatedKpis as any)?.todaySubmissions ?? scopedRegs.filter(
-    (r) => normalizeToEthiopianDateStr(r.registrationDate) === todayEthStr
-  ).length;
+  const todaySubmissionsCount = isSuperAdmin && (preAggregatedKpis as any)?.todaySubmissions !== undefined
+    ? (preAggregatedKpis as any).todaySubmissions
+    : scopedRegs.filter(
+        (r) => normalizeToEthiopianDateStr(r.registrationDate) === todayEthStr
+      ).length;
 
   const totalLogsCount = preAggregatedKpis?.verifications.total ?? scopedVerificationLogs.length;
   const verifiedLogsCount = preAggregatedKpis?.verifications.total !== undefined
@@ -499,9 +524,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       roleActions.push({
         key: 'vehicle_directory',
         title: isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory',
-        subtitle: `${registrations.length} ${isAmharic ? 'ጠቅላላ ማህደሮች' : 'system records'}`,
+        subtitle: `${scopedRegs.length} ${isAmharic ? 'ጠቅላላ ማህደሮች' : 'system records'}`,
         icon: 'two_wheeler',
-        badge: `${registrations.length} ${isAmharic ? 'ተሽከርካሪዎች' : 'Motors'}`,
+        badge: `${scopedRegs.length} ${isAmharic ? 'ተሽከርካሪዎች' : 'Motors'}`,
         iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
       });
     }
@@ -947,9 +972,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 </span>
               </div>
               <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
-                {registrations.length > 0
-                  ? approvedCount
-                  : (preAggregatedKpis ? preAggregatedKpis.permits.approved : (isLoading ? '—' : 0))}
+                {approvedCount}
               </p>
             </button>
 

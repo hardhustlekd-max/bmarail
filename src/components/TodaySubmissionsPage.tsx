@@ -887,7 +887,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
-                {registrations.length === 0 ? (
+                {roleFilteredRegs.length === 0 ? (
                   <tr>
                     <td colSpan={canApproveBulk ? 12 : 11} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
