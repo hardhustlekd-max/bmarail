@@ -465,7 +465,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   };
 
   // 1. Role-specific & Submission Correction filtering (contains only rejection corrections and pending approval submissions waiting for approval)
+  const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
   const roleFilteredRegs = registrations.filter((reg) => {
+    // Visibility strictly restricted to SuperAdmin: non-superadmin users never see company vehicles / hidden records
+    if (!isSuperAdmin && reg.hideFromOtherUsers) {
+      return false;
+    }
     // Submission Correction table strictly contains rejection corrections & pending approval records
     const isCorrectionOrPending = reg.status === 'rejected' || reg.status === 'pending_approval' || (reg.status as string) === 'pending';
     if (!isCorrectionOrPending) {

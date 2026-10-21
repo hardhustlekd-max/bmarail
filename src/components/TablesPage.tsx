@@ -202,10 +202,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const getDisplayPhone = (reg: MotorcycleRegistration) => reg.phone || '—';
 
   // Table status filter tab: 'approved' | 'pending' | 'expired'
+  // Table status filter tab: 'approved' | 'pending' | 'expired'
   const [activeTableTab, setActiveTableTab] = useState<'approved' | 'pending' | 'expired'>(initialTableTab || 'approved');
-
-  // Secret trigger state for hiding registrations on the main Motorcycle Registry page
-  const [showHiddenControls, setShowHiddenControls] = useState(false);
 
   // Sync state if initialTableTab prop changes
   React.useEffect(() => {
@@ -238,7 +236,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     setRegPage(1);
   };
 
-  // Role-specific scoped registrations (company vehicles shown mixed with members, with optional SuperAdmin filter)
+  // Role-specific scoped registrations (company vehicles shown mixed with members, with dedicated SuperAdmin filter)
   const scopedRegistrations = React.useMemo(() => {
     let list = registrations;
     if (isSuperAdmin) {
@@ -247,6 +245,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       } else if (regCompanyVehicleFilter === 'company') {
         list = list.filter((r) => r.hideFromOtherUsers);
       }
+      // If 'all', list contains both standard and company vehicles mixed together
+    } else {
+      // Visibility strictly restricted to SuperAdmin: non-superadmin users never see company vehicles / hidden records
+      list = list.filter((r) => !r.hideFromOtherUsers);
     }
     if (userRole === 'clerk') {
       const clerkBadge = (userBadgeId || '').trim().toLowerCase();
@@ -754,11 +756,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {showHiddenControls && isSuperAdmin && (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FB5454]/10 border border-[#FB5454]/20 text-[#FB5454] rounded-sm text-xs font-semibold shadow-2xs">
-                <Icon className="material-symbols-outlined text-[16px]">visibility_off</Icon>
+            {isSuperAdmin && (
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 rounded-sm text-xs font-semibold shadow-2xs">
+                <Icon className="material-symbols-outlined text-[16px]">business</Icon>
                 <span>
-                  {isAmharic ? 'ጠቅላላ የተደበቁ:' : 'Total Hidden:'}{' '}
+                  {isAmharic ? 'የኩባንያ ተሽከርካሪዎች:' : 'Company Vehicles:'}{' '}
                   {registrations.filter((r) => r.hideFromOtherUsers).length}
                 </span>
               </div>
@@ -794,15 +796,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 autoFocus
                 value={regSearchQuery}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  const isSuperUser = isSuperAdmin;
-                  if (isSuperUser && val.toLowerCase().includes('super1212')) {
-                    setShowHiddenControls(true);
-                    const cleaned = val.replace(/super1212/gi, '').trim();
-                    setRegSearchQuery(cleaned);
-                  } else {
-                    setRegSearchQuery(val);
-                  }
+                  setRegSearchQuery(e.target.value);
                   setRegPage(1);
                 }}
                 placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
@@ -894,15 +888,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 type="text"
                 value={regSearchQuery}
                 onChange={(e) => {
-                  const val = e.target.value;
-                  const isSuperUser = isSuperAdmin;
-                  if (isSuperUser && val.toLowerCase().includes('super1212')) {
-                    setShowHiddenControls(true);
-                    const cleaned = val.replace(/super1212/gi, '').trim();
-                    setRegSearchQuery(cleaned);
-                  } else {
-                    setRegSearchQuery(val);
-                  }
+                  setRegSearchQuery(e.target.value);
                   setRegPage(1);
                 }}
                 placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search by name, plate, phone, chasis...'}
@@ -990,9 +976,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   }}
                   className="py-1 px-2 rounded-sm border border-purple-300 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
                 >
-                  <option value="all">{isAmharic ? 'ሁሉም አባላት (All)' : 'All Members'}</option>
-                  <option value="standard">{isAmharic ? 'መደበኛ (Standard)' : 'Standard Members'}</option>
-                  <option value="company">{isAmharic ? '🏢 የኩባንያ (Company)' : 'Company Vehicles'}</option>
+                  <option value="all">{isAmharic ? 'ሁሉም አባላት (የተደባለቀ)' : 'All Members (Mixed)'}</option>
+                  <option value="standard">{isAmharic ? 'መደበኛ አባላት (Standard)' : 'Standard Members'}</option>
+                  <option value="company">{isAmharic ? '🏢 የኩባንያ ተሽከርካሪዎች' : '🏢 Company Vehicles Only'}</option>
                 </select>
               </div>
             )}
@@ -1282,8 +1268,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               >
                                 <span className="truncate">{getDisplayName(reg)}</span>
                                 {reg.hideFromOtherUsers && isSuperAdmin && (
-                                  <span className="px-1 py-0.2 rounded-sm text-[9px] font-bold bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20 shrink-0">
-                                    🔒
+                                  <span
+                                    className="px-1.5 py-0.2 rounded-sm text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0"
+                                    title={isAmharic ? 'የኩባንያ ተሽከርካሪ' : 'Company Vehicle'}
+                                  >
+                                    🏢 {isAmharic ? 'ኩባንያ' : 'Company'}
                                   </span>
                                 )}
                               </button>
@@ -1470,9 +1459,19 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           {/* Header Details */}
                           <div className="min-w-0 flex-1 space-y-0.5">
                             {/* Member Name */}
-                            <h4 className="text-xs sm:text-sm font-bold text-[#1C2434] dark:text-white leading-tight truncate">
-                              {getDisplayName(reg)}
-                            </h4>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h4 className="text-xs sm:text-sm font-bold text-[#1C2434] dark:text-white leading-tight truncate">
+                                {getDisplayName(reg)}
+                              </h4>
+                              {reg.hideFromOtherUsers && isSuperAdmin && (
+                                <span
+                                  className="px-1.5 py-0.2 rounded-sm text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0"
+                                  title={isAmharic ? 'የኩባንያ ተሽከርካሪ' : 'Company Vehicle'}
+                                >
+                                  🏢 {isAmharic ? 'ኩባንያ' : 'Company'}
+                                </span>
+                              )}
+                            </div>
 
                             <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
                               {/* Motor Type Tag */}

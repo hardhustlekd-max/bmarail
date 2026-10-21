@@ -161,6 +161,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
   // Role-specific scoped registrations for Dashboard KPIs (hidden records excluded except for Super Admin)
   const scopedRegs = React.useMemo(() => {
     let list = registrations;
+    const isSuperAdmin = userRole === 'superadmin' || (userRole as string) === 'super_admin';
+    if (!isSuperAdmin) {
+      list = list.filter((r) => !r.hideFromOtherUsers);
+    }
     if (userRole === 'clerk') {
       const clerkBadge = (userBadgeId || '').trim().toLowerCase();
       return list.filter((r) => {
