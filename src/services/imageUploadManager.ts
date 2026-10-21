@@ -28,6 +28,7 @@ interface QueuedUploadTask {
   id: string;
   source: string | File | Blob;
   folder: string;
+  registrationNumber?: string;
   abortController: AbortController;
   onProgress?: UploadListener;
   resolve: (url: string) => void;
@@ -78,6 +79,7 @@ class ImageUploadManager {
     id: string,
     source: string | File | Blob,
     folder: string = 'permits',
+    registrationNumber?: string,
     onProgress?: UploadListener
   ): Promise<{ previewUrl: string; remoteUrlPromise: Promise<string> }> {
     // 1. Abort any previous upload for this slot
@@ -169,6 +171,7 @@ class ImageUploadManager {
         id,
         source: compressed.blob,
         folder,
+        registrationNumber,
         abortController,
         onProgress,
         resolve: (url) => {
@@ -252,9 +255,15 @@ class ImageUploadManager {
 
     const formData = new FormData();
     formData.append('folder', task.folder);
+    if (task.registrationNumber) {
+      formData.append('registrationNumber', task.registrationNumber);
+    }
 
     if (isBlob) {
-      formData.append('file', task.source as Blob, `doc_${Date.now()}.${ext}`);
+      const fileName = task.registrationNumber 
+        ? `${task.registrationNumber}_${Date.now()}.${ext}`
+        : `doc_${Date.now()}.${ext}`;
+      formData.append('file', task.source as Blob, fileName);
     } else {
       formData.append('dataUrl', String(task.source).replace(/\s+/g, ''));
     }

@@ -843,7 +843,8 @@ app.post('/api/storage/upload', uploadMiddleware.single('file') as any, async (r
         req.file.originalname,
         req.file.mimetype,
         folder,
-        uploadedBy
+        uploadedBy,
+        req.body.registrationNumber
       );
       return res.json({ success: true, ...result });
     }

@@ -14,12 +14,13 @@ import { imageUploadManager } from './imageUploadManager';
  */
 export async function uploadDocumentPhoto(
   source: string | File | Blob,
-  folder: string = 'permits'
+  folder: string = 'permits',
+  registrationNumber?: string
 ): Promise<string> {
   if (!source) return '';
 
   const id = `upload_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-  const { remoteUrlPromise } = await imageUploadManager.upload(id, source, folder);
+  const { remoteUrlPromise } = await imageUploadManager.upload(id, source, folder, registrationNumber);
   return remoteUrlPromise;
 }
 

@@ -214,7 +214,8 @@ export async function saveFile(
   fileName: string,
   mimeType: string,
   folder: string = 'permits',
-  uploadedBy: string = 'system'
+  uploadedBy: string = 'system',
+  registrationNumber?: string
 ): Promise<UploadResult> {
   const timestamp = Date.now();
   const randomStr = Math.random().toString(36).substring(2, 9);
@@ -225,8 +226,14 @@ export async function saveFile(
   const detectedExt = magic ? magic.ext : (normalizedMime === 'image/webp' ? '.webp' : normalizedMime === 'image/png' ? '.png' : '.jpg');
   const cleanExt = path.extname(fileName) || detectedExt;
   const safeBaseName = path.basename(fileName, cleanExt).replace(/[^a-zA-Z0-9_-]/g, '_') || 'file';
-  const fileKey = `${folder}/${timestamp}_${randomStr}_${safeBaseName}${detectedExt}`;
-  const fileId = `file_${timestamp}_${randomStr}`;
+  
+  const fileKey = registrationNumber 
+    ? `${folder}/${registrationNumber}_${safeBaseName}${detectedExt}`
+    : `${folder}/${timestamp}_${randomStr}_${safeBaseName}${detectedExt}`;
+  
+  const fileId = registrationNumber 
+    ? `file_${registrationNumber}_${timestamp}`
+    : `file_${timestamp}_${randomStr}`;
 
   let storageType: 's3' | 'local' = 'local';
 
@@ -493,3 +500,79 @@ export async function deleteStoredFile(fileKey: string): Promise<boolean> {
 
   return true;
 }
+
+/**
+ * Automatically renames existing registration documents based on their registration ID.
+ */
+export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Promise<void> {
+  if (!dbPool) return;
+  try {
+    const res = await dbPool.query('SELECT * FROM motorcycle_registrations');
+    for (const reg of res.rows) {
+      const regId = reg.id;
+      if (!regId) continue;
+
+      const fields = [
+        'user_portrait_photo',
+        'national_id_photo',
+        'national_id_back_photo',
+        'driving_license_photo',
+        'driving_permit_photo',
+        'receipt_screenshot'
+      ];
+
+      let updated = false;
+      const updates: Record<string, string> = {};
+
+      for (const field of fields) {
+        const url = reg[field];
+        if (!url || typeof url !== 'string') continue;
+        
+        if (!url.startsWith('/api/storage/file/')) continue;
+
+        const fileKey = url.replace('/api/storage/file/', '');
+        const filename = path.basename(fileKey);
+        if (filename.includes(regId)) {
+          continue;
+        }
+
+        const fileData = await getFileFromStorage(fileKey);
+        let buffer: Buffer | null = null;
+        if (fileData && fileData.buffer) {
+          buffer = fileData.buffer;
+        } else if (fileData && fileData.localPath && fs.existsSync(fileData.localPath)) {
+          try {
+            buffer = fs.readFileSync(fileData.localPath);
+          } catch (e) {}
+        }
+
+        if (buffer && buffer.length > 0) {
+          const folder = path.dirname(fileKey) !== '.' ? path.dirname(fileKey) : 'permits';
+          const mimeType = normalizeImageMimeType('', filename);
+          const saveResult = await saveFile(buffer, filename, mimeType, folder, 'migration_rename', regId);
+          updates[field] = saveResult.url;
+          updated = true;
+        }
+      }
+
+      if (updated) {
+        const setClauses: string[] = [];
+        const values: any[] = [];
+        let idx = 1;
+        for (const [field, newUrl] of Object.entries(updates)) {
+          setClauses.push(`${field} = $${idx++}`);
+          values.push(newUrl);
+        }
+        values.push(regId);
+        await dbPool.query(
+          `UPDATE motorcycle_registrations SET ${setClauses.join(', ')} WHERE id = $${idx}`,
+          values
+        );
+        console.log(`[Storage Migration] Renamed files for registration ${regId}`);
+      }
+    }
+  } catch (err) {
+    console.warn('[Storage Migration] Notice during file rename migration:', err);
+  }
+}
+

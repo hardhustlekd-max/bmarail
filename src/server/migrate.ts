@@ -2,6 +2,7 @@ import pg from 'pg';
 import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
+import { migrateExistingFilesToRegistrationNumbers } from './storage';
 
 dotenv.config({ override: true });
 
@@ -106,7 +107,30 @@ export async function runStandaloneMigration(): Promise<void> {
       if (fs.existsSync(schemaPath)) {
         console.log(`[Database Migration CLI] Executing ${schemaPath}...`);
         const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-        await client.query(schemaSql);
+        
+        // Robustly split SQL statements, respecting $$ blocks
+        const statements: string[] = [];
+        let currentStatement = '';
+        let inDollarQuote = false;
+
+        for (let i = 0; i < schemaSql.length; i++) {
+          currentStatement += schemaSql[i];
+          if (schemaSql.substring(i, i + 2) === '$$') {
+            inDollarQuote = !inDollarQuote;
+            currentStatement += '$'; // consume the second $
+            i++;
+          } else if (schemaSql[i] === ';' && !inDollarQuote) {
+            statements.push(currentStatement);
+            currentStatement = '';
+          }
+        }
+        if (currentStatement.trim()) statements.push(currentStatement);
+
+        for (const stmt of statements) {
+          if (stmt.trim()) {
+            await client.query(stmt);
+          }
+        }
 
         // Auto-detect and alter missing columns
         const parsedTables = parseCreateTableColumns(schemaSql);
@@ -127,6 +151,9 @@ export async function runStandaloneMigration(): Promise<void> {
         }
         console.log(`[Database Migration CLI] Auto-synchronization complete: ${addedCount} new column(s) reconciled.`);
       }
+
+      console.log('[Database Migration CLI] Running document file renaming migration based on registration numbers...');
+      await migrateExistingFilesToRegistrationNumbers(pool);
 
       console.log('[Database Migration CLI] ✅ Database schema is up-to-date and ready for production!');
     } finally {
