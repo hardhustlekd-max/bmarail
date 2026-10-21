@@ -2806,7 +2806,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   {isAmharic ? 'የትራንስፖርትና ደንብ ማስከበር መምሪያ' : 'Transport & Enforcement Department'}
                 </h3>
                 <h2 className="font-extrabold text-base text-blue-900 ">
-                  {isAmharic ? 'የባህር ዳር ሞተር አሽከርካሪዎች ማህበር — የአባላት ማህደር ሪፖርት' : 'Bahir Dar Motorist Association — Members Registry Report'}
+                  {isAmharic ? 'የባህር ዳር ሞተር አሽከርካሪዎች ማህበር' : 'Bahir Dar Motorist Association'}
                 </h2>
                 <div className="flex items-center justify-between text-[11px] text-slate-600 font-mono pt-2 border-t border-slate-300 mt-2">
                   <span>{isAmharic ? 'ቀን:' : 'Date:'} {formatEthiopianDate(new Date().toISOString().split('T')[0], isAmharic ? 'am' : 'en')}</span>
