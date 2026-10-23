@@ -453,7 +453,8 @@ export async function generatePresignedGetUrl(fileKey: string, expiresInSeconds:
 export async function saveBase64Image(
   base64String: string,
   folder: string = 'permits',
-  uploadedBy: string = 'system'
+  uploadedBy: string = 'system',
+  registrationNumber?: string
 ): Promise<UploadResult> {
   let mimeType = 'image/jpeg';
   let rawBase64 = (base64String || '').trim();
@@ -474,7 +475,7 @@ export async function saveBase64Image(
   const ext = magic ? magic.ext : (normalizedMime === 'image/webp' ? '.webp' : normalizedMime === 'image/png' ? '.png' : '.jpg');
   const fileName = `upload_${Date.now()}${ext}`;
 
-  return saveFile(buffer, fileName, normalizedMime, folder, uploadedBy);
+  return saveFile(buffer, fileName, normalizedMime, folder, uploadedBy, registrationNumber);
 }
 
 /**
@@ -507,7 +508,11 @@ export async function deleteStoredFile(fileKey: string): Promise<boolean> {
 export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Promise<void> {
   if (!dbPool) return;
   try {
-    const res = await dbPool.query('SELECT * FROM motorcycle_registrations');
+    const res = await dbPool.query(`
+      SELECT id, user_portrait_photo, national_id_photo, national_id_back_photo,
+             driving_license_photo, driving_permit_photo, receipt_screenshot 
+      FROM motorcycle_registrations
+    `);
     for (const reg of res.rows) {
       const regId = reg.id;
       if (!regId) continue;
@@ -527,6 +532,19 @@ export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Pr
       for (const field of fields) {
         const url = reg[field];
         if (!url || typeof url !== 'string') continue;
+
+        // If it's a raw base64 data string, offload it immediately to S3/disk storage
+        if (url.startsWith('data:image/') || url.startsWith('data:application/') || (url.length > 500 && !url.startsWith('/api/'))) {
+          const folder = field === 'receipt_screenshot' ? 'permits/receipts' : field === 'user_portrait_photo' ? 'permits/portraits' : 'permits/documents';
+          try {
+            const saveRes = await saveBase64Image(url, folder, 'migration_base64', regId);
+            updates[field] = saveRes.url;
+            updated = true;
+            continue;
+          } catch (b64Err) {
+            console.warn(`[Storage Migration] Error offloading base64 for ${regId}.${field}:`, b64Err);
+          }
+        }
         
         if (!url.startsWith('/api/storage/file/')) continue;
 
@@ -574,5 +592,50 @@ export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Pr
   } catch (err) {
     console.warn('[Storage Migration] Notice during file rename migration:', err);
   }
+}
+
+/**
+ * Scan an object (registration or receipt) and offload any embedded base64 images to S3/disk.
+ * Replaces large data URIs with compact /api/storage/file/... URLs before DB insertion.
+ */
+export async function offloadObjectBase64Images<T extends Record<string, any>>(
+  record: T,
+  registrationNumber?: string,
+  uploadedBy?: string
+): Promise<T> {
+  if (!record || typeof record !== 'object') return record;
+  const clone: any = { ...record };
+  const regNo = registrationNumber || clone.plateNumber || clone.plate_number || clone.id || 'reg';
+
+  for (const [key, val] of Object.entries(clone)) {
+    if (typeof val === 'string' && (val.startsWith('data:image/') || val.startsWith('data:application/pdf') || (val.length > 500 && /^[A-Za-z0-9+/=\s]+$/.test(val.slice(0, 200))))) {
+      try {
+        const folder = key.toLowerCase().includes('receipt') ? 'receipts' : key.toLowerCase().includes('report') ? 'reports' : 'permits';
+        const res = await saveBase64Image(val, folder, uploadedBy || 'system', regNo);
+        if (res && res.url) {
+          clone[key] = res.url;
+        }
+      } catch (err) {
+        console.warn(`[Storage Offload] Failed to offload base64 image for field ${key}:`, err);
+      }
+    } else if (Array.isArray(val)) {
+      const newArr = [];
+      for (const item of val) {
+        if (typeof item === 'string' && (item.startsWith('data:image/') || item.startsWith('data:application/pdf'))) {
+          try {
+            const res = await saveBase64Image(item, 'documents', uploadedBy || 'system', regNo);
+            newArr.push(res?.url || item);
+          } catch {
+            newArr.push(item);
+          }
+        } else {
+          newArr.push(item);
+        }
+      }
+      clone[key] = newArr;
+    }
+  }
+
+  return clone as T;
 }
 

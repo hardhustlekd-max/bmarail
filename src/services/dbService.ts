@@ -960,12 +960,12 @@ export function initLiveDbListeners(): () => void {
   // 4. Server-Sent Events (SSE) stream is authoritatively managed by realtimeSync.ts
   // which synchronizes both TanStack Query cache and inMemory state with sequence replay.
 
-  // 5. Periodic background synchronization interval (lightweight active-page sync only)
+  // 5. Periodic background synchronization interval (SSE-first architecture with relaxed 90s backup polling)
   const syncInterval = setInterval(() => {
     if (typeof navigator !== 'undefined' && !navigator.onLine) return;
     const activePage = getStoredActivePage();
     syncActivePageCollection(activePage, false).catch(() => {});
-  }, 15000);
+  }, 90000);
 
   return () => {
     areLiveListenersActive = false;

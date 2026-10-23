@@ -11,6 +11,10 @@ import {
   dbGetById,
   dbGetRegistrationsScoped,
   dbFindRegistrationByPlateOrQr,
+  dbFindRegistrationByPlateOrId,
+  dbFindReceiptsByRegistrationOrPlate,
+  getCachedQuery,
+  setCachedQuery,
   dbGetPaymentReceiptsScoped,
   dbGetVerificationLogsScoped,
   dbUpsert,
@@ -44,6 +48,7 @@ import {
   getS3Client,
   getS3BucketName,
   generatePresignedGetUrl,
+  offloadObjectBase64Images,
 } from './src/server/storage.ts';
 
 dotenv.config({ override: true });
@@ -699,10 +704,25 @@ app.get('/api/statistics/monthly-fee', async (req, res) => {
   }
 });
 
-// Write-side action events query endpoint
+// Write-side action events query endpoint (capped at latest 100 actions with memory cache)
 app.get('/api/actions', async (req, res) => {
   try {
-    const actions = await dbGetAll('actions');
+    const cached = getCachedQuery('actions:latest');
+    if (cached) return res.json({ success: true, actions: cached, fromCache: true });
+
+    let actions: any[] = [];
+    const pool = getDbPool();
+    if (isDatabaseConnected() && pool) {
+      try {
+        const result = await pool.query(`SELECT * FROM actions ORDER BY created_at DESC LIMIT 100`);
+        actions = result.rows;
+      } catch {
+        actions = (await dbGetAll('actions')).slice(0, 100);
+      }
+    } else {
+      actions = (await dbGetAll('actions')).slice(0, 100);
+    }
+    setCachedQuery('actions:latest', actions, ['actions']);
     res.json({ success: true, actions });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || String(err) });
@@ -1058,6 +1078,11 @@ app.delete('/api/storage/file/:key', async (req, res) => {
 app.get('/api/sync', async (req, res) => {
   try {
     const scope = getUserScope(req);
+    const syncCacheKey = `sync:${scope.role || 'all'}:${scope.badgeId || 'all'}:${scope.subCity || 'all'}`;
+    const cachedSync = getCachedQuery(syncCacheKey);
+    if (cachedSync) {
+      return res.json({ ...cachedSync, fromCache: true });
+    }
 
     // Scoped queries according to user role
     const pRegistrations = dbGetRegistrationsScoped({ scope, limit: 2000 }).then((r) => r.rows);
@@ -1079,7 +1104,7 @@ app.get('/api/sync', async (req, res) => {
         pSettings,
       ]);
 
-    res.json({
+    const payload = {
       registrations: registrations || [],
       officers: officers || [],
       printOrders: printOrders || [],
@@ -1094,7 +1119,10 @@ app.get('/api/sync', async (req, res) => {
         badgeId: scope.badgeId || null,
         subCity: scope.subCity || null,
       },
-    });
+    };
+
+    setCachedQuery(syncCacheKey, payload, ['sync']);
+    res.json(payload);
   } catch (err: any) {
     console.error('[PostgreSQL Sync Error]:', err);
     res.status(500).json({
@@ -1168,10 +1196,16 @@ app.get('/api/registrations/lookup', async (req, res) => {
 
 app.post('/api/registrations', async (req, res) => {
   try {
-    const reg = req.body;
+    let reg = req.body;
     if (!reg.id) {
       return res.status(400).json({ success: false, error: 'Missing registration ID' });
     }
+    // Offload any embedded base64 images so PostgreSQL stores only compact URLs
+    reg = await offloadObjectBase64Images(
+      reg,
+      reg.plateNumber || reg.id,
+      (req as any).user?.badgeId || reg.registeredBy
+    );
     await dbUpsert('motorcycle_registrations', reg.id, reg);
     await recordSystemAction({
       actionType: 'REGISTRATION_CREATED',
@@ -1230,8 +1264,16 @@ app.post('/api/registrations/update', async (req, res) => {
       return res.status(400).json({ error: 'Missing registration ID' });
     }
     const existing = await dbGetById('motorcycle_registrations', targetId);
-    const cleanUpdates = updates ? { ...updates } : { ...req.body };
+    let cleanUpdates = updates ? { ...updates } : { ...req.body };
     delete cleanUpdates.id;
+
+    // Offload any embedded base64 images in updates so PostgreSQL stores only compact URLs
+    cleanUpdates = await offloadObjectBase64Images(
+      cleanUpdates,
+      cleanUpdates.plateNumber || existing?.plateNumber || targetId,
+      (req as any).user?.badgeId
+    );
+
     await dbUpdateFields('motorcycle_registrations', targetId, cleanUpdates);
     if (cleanUpdates.status && cleanUpdates.status !== existing?.status) {
       await recordSystemAction({
@@ -1560,10 +1602,13 @@ app.get(['/api/membership-fees', '/api/membership-fee-directory'], async (req, r
 
 app.post('/api/payment-receipts', async (req, res) => {
   try {
-    const receipt = req.body;
+    let receipt = req.body;
     if (!receipt.id) {
       return res.status(400).json({ error: 'Missing receipt ID' });
     }
+    // Offload any embedded base64 receipt images to S3/disk
+    receipt = await offloadObjectBase64Images(receipt, receipt.plateNumber || receipt.ownerRegistrationId || receipt.id, receipt.enteredBy);
+
     // 1. Audit ledger record write
     await dbUpsert('payment_receipts', receipt.id, receipt);
     await recordSystemAction({
@@ -1583,11 +1628,7 @@ app.post('/api/payment-receipts', async (req, res) => {
     // 2. Account Ledger Model: Atomically update vehicle registration's active term & financial status
     let targetRegId = receipt.ownerRegistrationId;
     if (!targetRegId && receipt.plateNumber) {
-      const allRegs = await dbGetAll('motorcycle_registrations');
-      const matched = allRegs.find((r: any) =>
-        (r.plateNumber && r.plateNumber.toLowerCase() === receipt.plateNumber.toLowerCase()) ||
-        (r.id && r.id.toLowerCase() === receipt.plateNumber.toLowerCase())
-      );
+      const matched = await dbFindRegistrationByPlateOrId(receipt.plateNumber);
       if (matched) targetRegId = matched.id;
     }
 
@@ -1638,20 +1679,13 @@ app.delete('/api/payment-receipts/:id', async (req, res) => {
     if (existingReceipt && (existingReceipt.ownerRegistrationId || existingReceipt.plateNumber)) {
       const regId = existingReceipt.ownerRegistrationId;
       const plate = existingReceipt.plateNumber;
-      const allReceipts = await dbGetAll('payment_receipts');
-      
+
       const targetReg = regId
         ? await dbGetById('motorcycle_registrations', regId)
-        : (await dbGetAll('motorcycle_registrations')).find((r: any) =>
-            plate && r.plateNumber && r.plateNumber.toLowerCase() === plate.toLowerCase()
-          );
+        : (plate ? await dbFindRegistrationByPlateOrId(plate) : null);
 
       if (targetReg) {
-        const remaining = allReceipts.filter((r: any) =>
-          r.id !== receiptId &&
-          ((targetReg.id && r.ownerRegistrationId === targetReg.id) ||
-           (targetReg.plateNumber && r.plateNumber && r.plateNumber.toLowerCase() === targetReg.plateNumber.toLowerCase()))
-        );
+        const remaining = await dbFindReceiptsByRegistrationOrPlate(targetReg.id, targetReg.plateNumber, receiptId);
         remaining.sort((a: any, b: any) => new Date(b.expirationDate).getTime() - new Date(a.expirationDate).getTime());
         const latest = remaining[0];
 

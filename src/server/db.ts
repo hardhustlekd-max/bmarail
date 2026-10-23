@@ -131,6 +131,99 @@ function isNetworkError(err: any): boolean {
   );
 }
 
+// ============================================================================
+// SERVER-SIDE IN-MEMORY QUERY CACHE (INSTANT WRITE-INVALIDATION)
+// Slashes PostgreSQL read network egress to near 0 KB for repeated requests.
+// ============================================================================
+interface CacheEntry<T = any> {
+  data: T;
+  timestamp: number;
+  tags: string[];
+}
+
+const memoryQueryCache = new Map<string, CacheEntry>();
+
+export function getCachedQuery<T = any>(key: string): T | null {
+  const entry = memoryQueryCache.get(key);
+  if (!entry) return null;
+  // Maximum safeguard TTL of 5 minutes even if no writes occur
+  if (Date.now() - entry.timestamp > 300000) {
+    memoryQueryCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+export function setCachedQuery<T = any>(key: string, data: T, tags: string[] = []): void {
+  if (memoryQueryCache.size > 1000) {
+    const oldestKey = memoryQueryCache.keys().next().value;
+    if (oldestKey) memoryQueryCache.delete(oldestKey);
+  }
+  memoryQueryCache.set(key, {
+    data,
+    timestamp: Date.now(),
+    tags,
+  });
+}
+
+export function invalidateCacheByTag(tag: string): void {
+  for (const [key, entry] of memoryQueryCache.entries()) {
+    if (entry.tags.includes(tag) || tag === 'all') {
+      memoryQueryCache.delete(key);
+    }
+  }
+}
+
+export function invalidateCacheForTable(tableName: string): void {
+  switch (tableName) {
+    case 'motorcycle_registrations':
+      invalidateCacheByTag('registrations');
+      invalidateCacheByTag('kpis');
+      invalidateCacheByTag('sync');
+      break;
+    case 'payment_receipts':
+      invalidateCacheByTag('payment_receipts');
+      invalidateCacheByTag('registrations');
+      invalidateCacheByTag('kpis');
+      invalidateCacheByTag('sync');
+      break;
+    case 'verification_logs':
+      invalidateCacheByTag('verification_logs');
+      invalidateCacheByTag('kpis');
+      invalidateCacheByTag('sync');
+      break;
+    case 'system_settings':
+      invalidateCacheByTag('settings');
+      invalidateCacheByTag('sync');
+      break;
+    case 'system_users':
+      invalidateCacheByTag('users');
+      invalidateCacheByTag('kpis');
+      break;
+    case 'officer_assignments':
+      invalidateCacheByTag('officers');
+      invalidateCacheByTag('kpis');
+      invalidateCacheByTag('sync');
+      break;
+    case 'print_batch_orders':
+      invalidateCacheByTag('print_orders');
+      invalidateCacheByTag('sync');
+      break;
+    case 'unregistered_vehicle_reports':
+      invalidateCacheByTag('unregistered');
+      invalidateCacheByTag('kpis');
+      invalidateCacheByTag('sync');
+      break;
+    case 'actions':
+      invalidateCacheByTag('actions');
+      invalidateCacheByTag('kpis');
+      break;
+    default:
+      invalidateCacheByTag(tableName);
+      break;
+  }
+}
+
 /**
  * Get or create PostgreSQL pool
  */
@@ -580,6 +673,13 @@ export async function dbGetRegistrationsScoped(options: {
   const pageSize = Math.max(1, limit || (isPaginationRequested ? 25 : 5000));
   const offset = (currentPage - 1) * pageSize;
 
+  const scopeKey = `${scope?.role || 'all'}_${scope?.badgeId || 'all'}_${scope?.subCity || 'all'}`;
+  const cacheKey = `regs:${scopeKey}:p${currentPage}:l${pageSize}:s${status || 'all'}:q${search || ''}`;
+  const cached = getCachedQuery<ScopedQueryResult<any>>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (isPostgresConnected && dbPool) {
     try {
       const whereClauses: string[] = [];
@@ -635,7 +735,7 @@ export async function dbGetRegistrationsScoped(options: {
       const dataRes = await dbPool.query(sql, dataParams);
       const rows = dataRes.rows.map(normalizeRowFromPg);
 
-      return {
+      const result: ScopedQueryResult<any> = {
         rows,
         totalCount,
         pagination: isPaginationRequested
@@ -647,6 +747,9 @@ export async function dbGetRegistrationsScoped(options: {
             }
           : undefined,
       };
+
+      setCachedQuery(cacheKey, result, ['registrations']);
+      return result;
     } catch (err: any) {
       console.warn('[PostgreSQL] Scoped registrations query warning:', err.message);
       if (isNetworkError(err)) {
@@ -759,6 +862,93 @@ export async function dbFindRegistrationByPlateOrQr(plate?: string, qr?: string)
 }
 
 /**
+ * Fast single-row indexed lookup by plate number or ID (zero full-table scanning)
+ */
+export async function dbFindRegistrationByPlateOrId(plateOrId: string): Promise<any | null> {
+  if (!plateOrId) return null;
+  const clean = plateOrId.trim();
+  const cleanNoSpaces = clean.replace(/[\s\-_]/g, '').toLowerCase();
+
+  const cacheKey = `reg_lookup:${cleanNoSpaces}`;
+  const cached = getCachedQuery(cacheKey);
+  if (cached) return cached;
+
+  if (isPostgresConnected && dbPool) {
+    try {
+      const res = await dbPool.query(
+        `SELECT id, plate_number, full_name, phone, vehicle_category, sub_city, status,
+                term_status, active_term_expiration_date, last_payment_date, last_receipt_number,
+                last_payment_amount, hide_from_other_users, created_at, updated_at
+         FROM motorcycle_registrations 
+         WHERE LOWER(id) = $1 
+            OR LOWER(REPLACE(REPLACE(REPLACE(plate_number, ' ', ''), '-', ''), '_', '')) = $2 
+         LIMIT 1`,
+        [clean.toLowerCase(), cleanNoSpaces]
+      );
+      if (res.rows.length > 0) {
+        const item = normalizeRowFromPg(res.rows[0]);
+        setCachedQuery(cacheKey, item, ['registrations']);
+        return item;
+      }
+    } catch (e: any) {
+      if (isNetworkError(e)) {
+        isPostgresConnected = false;
+        scheduleBackgroundReconnect();
+      }
+    }
+  }
+
+  const all = Array.from(memoryStore['motorcycle_registrations']?.values() || []);
+  const matched = all.find((r: any) =>
+    (r.id && r.id.toLowerCase() === clean.toLowerCase()) ||
+    (r.plateNumber && r.plateNumber.replace(/[\s\-_]/g, '').toLowerCase() === cleanNoSpaces) ||
+    (r.plate_number && r.plate_number.replace(/[\s\-_]/g, '').toLowerCase() === cleanNoSpaces)
+  ) || null;
+
+  if (matched) {
+    setCachedQuery(cacheKey, matched, ['registrations']);
+  }
+  return matched;
+}
+
+/**
+ * Targeted lookup for receipts belonging to a registration or plate (avoids full-table scan)
+ */
+export async function dbFindReceiptsByRegistrationOrPlate(regId?: string, plate?: string, excludeReceiptId?: string): Promise<any[]> {
+  const cleanReg = (regId || '').toLowerCase().trim();
+  const cleanPlate = (plate || '').replace(/[\s\-_]/g, '').toLowerCase().trim();
+
+  if (isPostgresConnected && dbPool) {
+    try {
+      const res = await dbPool.query(
+        `SELECT * FROM payment_receipts 
+         WHERE ($1 = '' OR id != $1) 
+           AND (
+             ($2 != '' AND LOWER(owner_registration_id) = $2) OR
+             ($3 != '' AND LOWER(REPLACE(REPLACE(REPLACE(plate_number, ' ', ''), '-', ''), '_', '')) = $3)
+           )
+         ORDER BY created_at DESC`,
+        [excludeReceiptId || '', cleanReg, cleanPlate]
+      );
+      return res.rows.map(normalizeRowFromPg);
+    } catch (err: any) {
+      if (isNetworkError(err)) {
+        isPostgresConnected = false;
+        scheduleBackgroundReconnect();
+      }
+    }
+  }
+
+  const all = Array.from(memoryStore['payment_receipts']?.values() || []);
+  return all.filter((r: any) => {
+    if (excludeReceiptId && r.id === excludeReceiptId) return false;
+    const rReg = String(r.ownerRegistrationId || r.owner_registration_id || '').toLowerCase();
+    const rPlate = String(r.plateNumber || r.plate_number || '').replace(/[\s\-_]/g, '').toLowerCase();
+    return (cleanReg && rReg === cleanReg) || (cleanPlate && rPlate === cleanPlate);
+  });
+}
+
+/**
  * Fetch payment receipts with server-side role scoping
  */
 export async function dbGetPaymentReceiptsScoped(options: {
@@ -771,6 +961,10 @@ export async function dbGetPaymentReceiptsScoped(options: {
   const currentPage = Math.max(1, page || 1);
   const pageSize = Math.max(1, limit || (isPaginationRequested ? 25 : 5000));
   const offset = (currentPage - 1) * pageSize;
+
+  const cacheKey = `receipts_scoped:${scope?.role || 'all'}:${scope?.badgeId || 'all'}:${isPaginationRequested ? `${currentPage}:${pageSize}` : 'all'}`;
+  const cached = getCachedQuery<ScopedQueryResult<any>>(cacheKey);
+  if (cached) return cached;
 
   if (isPostgresConnected && dbPool) {
     try {
@@ -806,7 +1000,7 @@ export async function dbGetPaymentReceiptsScoped(options: {
       const dataRes = await dbPool.query(sql, dataParams);
       const rows = dataRes.rows.map(normalizeRowFromPg);
 
-      return {
+      const result: ScopedQueryResult<any> = {
         rows,
         totalCount,
         pagination: isPaginationRequested
@@ -818,6 +1012,9 @@ export async function dbGetPaymentReceiptsScoped(options: {
             }
           : undefined,
       };
+
+      setCachedQuery(cacheKey, result, ['payment_receipts']);
+      return result;
     } catch (err: any) {
       console.warn('[PostgreSQL] Scoped receipts query warning:', err.message);
     }
@@ -992,6 +1189,7 @@ export async function dbUpsert(tableName: string, id: string, data: Record<strin
   memoryStore[tableName].set(id, merged);
 
   if (!isPostgresConnected || !dbPool) {
+    invalidateCacheForTable(tableName);
     return { success: true, target: 'in-memory' };
   }
 
@@ -999,6 +1197,7 @@ export async function dbUpsert(tableName: string, id: string, data: Record<strin
     const pgData = normalizeRowToPg(tableName, { ...merged, version: newVersion });
     const keys = Object.keys(pgData);
     if (keys.length === 0) {
+      invalidateCacheForTable(tableName);
       return { success: true, target: 'postgresql', rowCount: 0 };
     }
 
@@ -1017,11 +1216,13 @@ export async function dbUpsert(tableName: string, id: string, data: Record<strin
     `;
 
     const res = await dbPool.query(sql, values);
+    invalidateCacheForTable(tableName);
     return { success: true, target: 'postgresql', rowCount: res.rowCount ?? 1 };
   } catch (err: any) {
     if (isNetworkError(err)) {
       isPostgresConnected = false;
       scheduleBackgroundReconnect();
+      invalidateCacheForTable(tableName);
       return { success: true, target: 'in-memory', error: `PostgreSQL connection dropped: ${err.message}` };
     } else {
       console.error(`[PostgreSQL] dbUpsert error on ${tableName}:`, err.message);
@@ -1062,6 +1263,7 @@ export async function dbUpdateFields(tableName: string, id: string, updates: Rec
   memoryStore[tableName].set(id, merged);
 
   if (!isPostgresConnected || !dbPool) {
+    invalidateCacheForTable(tableName);
     return { success: true, target: 'in-memory' };
   }
 
@@ -1080,11 +1282,13 @@ export async function dbUpdateFields(tableName: string, id: string, updates: Rec
     if (res.rowCount === 0) {
       return await dbUpsert(tableName, id, merged);
     }
+    invalidateCacheForTable(tableName);
     return { success: true, target: 'postgresql', rowCount: res.rowCount ?? 1 };
   } catch (err: any) {
     if (isNetworkError(err)) {
       isPostgresConnected = false;
       scheduleBackgroundReconnect();
+      invalidateCacheForTable(tableName);
       return { success: true, target: 'in-memory', error: `PostgreSQL connection dropped: ${err.message}` };
     } else {
       console.error(`[PostgreSQL] dbUpdateFields error on ${tableName}:`, err.message);
@@ -1105,6 +1309,7 @@ export async function dbDelete(tableName: string, id: string): Promise<void> {
   if (memoryStore[tableName]) {
     memoryStore[tableName].delete(id);
   }
+  invalidateCacheForTable(tableName);
 
   if (!isPostgresConnected || !dbPool) return;
 
@@ -1125,6 +1330,7 @@ export async function dbClearTable(tableName: string): Promise<void> {
   if (memoryStore[tableName]) {
     memoryStore[tableName].clear();
   }
+  invalidateCacheForTable(tableName);
 
   if (!isPostgresConnected || !dbPool) return;
 
@@ -1202,6 +1408,11 @@ export async function recordSystemAction(action: {
       }
     }
   }
+
+  // Instant cache invalidation for KPI, sync, and action streams
+  invalidateCacheByTag('kpis');
+  invalidateCacheByTag('actions');
+  invalidateCacheByTag('sync');
 }
 
 /**
@@ -1383,6 +1594,11 @@ function applyActionToInMemoryKPIs(action: any) {
  * Fetch Write-Side Pre-Aggregated KPIs in O(1) time
  */
 export async function getMaterializedKPIs(): Promise<any> {
+  const cached = getCachedQuery('kpis:system_summary');
+  if (cached) {
+    return cached;
+  }
+
   const startMs = performance.now();
   if (isPostgresConnected && dbPool) {
     try {
@@ -1390,7 +1606,9 @@ export async function getMaterializedKPIs(): Promise<any> {
       const durationMs = (performance.now() - startMs).toFixed(2);
       if (res.rows.length > 0) {
         console.log(`[DB Perf] getMaterializedKPIs (PostgreSQL) executed in ${durationMs}ms`);
-        return normalizeRowFromPg(res.rows[0]);
+        const item = normalizeRowFromPg(res.rows[0]);
+        setCachedQuery('kpis:system_summary', item, ['kpis']);
+        return item;
       }
     } catch (err: any) {
       const durationMs = (performance.now() - startMs).toFixed(2);
@@ -1404,6 +1622,9 @@ export async function getMaterializedKPIs(): Promise<any> {
   const memData = memoryStore.kpi_metrics?.get('system_summary') || null;
   const durationMs = (performance.now() - startMs).toFixed(2);
   console.log(`[DB Perf] getMaterializedKPIs (In-Memory) executed in ${durationMs}ms`);
+  if (memData) {
+    setCachedQuery('kpis:system_summary', memData, ['kpis']);
+  }
   return memData;
 }
 
