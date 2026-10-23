@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 import { Icon } from './ui/Icon';
 import { Language, UserRole } from '../types';
 import { triggerDocumentPrint } from '../utils/printUtils';
@@ -39,6 +39,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -51,13 +52,28 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
 
   const handleDownload = async (elementId: string, filename: string) => {
     const element = document.getElementById(elementId);
-    if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const data = canvas.toDataURL('image/jpeg', 1.0);
-    const link = document.createElement('a');
-    link.href = data;
-    link.download = filename;
-    link.click();
+    if (!element || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      });
+      const data = canvas.toDataURL('image/jpeg', 0.95);
+      const link = document.createElement('a');
+      link.href = data;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('[Document Download Error]:', err);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   // Touch Pinch state
@@ -395,21 +411,27 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
           {downloadFrontId && (
             <button
               type="button"
+              disabled={isDownloading}
               onClick={() => handleDownload(downloadFrontId, 'id_front.jpg')}
-              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1"
+              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1 disabled:opacity-50"
               title={isAmharic ? 'የፊት ገጽ አውርድ' : 'Download Front'}
             >
-              <Icon className="material-symbols-outlined text-[18px]">download</Icon>
+              <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
+                {isDownloading ? 'progress_activity' : 'download'}
+              </Icon>
             </button>
           )}
           {downloadBackId && (
             <button
               type="button"
+              disabled={isDownloading}
               onClick={() => handleDownload(downloadBackId, 'id_back.jpg')}
-              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1"
+              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1 disabled:opacity-50"
               title={isAmharic ? 'የኋላ ገጽ አውርድ' : 'Download Back'}
             >
-              <Icon className="material-symbols-outlined text-[18px]">download</Icon>
+              <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
+                {isDownloading ? 'progress_activity' : 'download'}
+              </Icon>
             </button>
           )}
 
