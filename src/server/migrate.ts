@@ -60,10 +60,13 @@ function isNetworkError(err: any): boolean {
     code === 'enotfound' ||
     code === 'econnrefused' ||
     code === 'etimedout' ||
+    code === 'econnreset' ||
+    code === 'econnaborted' ||
     code === '57p01' ||
     msg.includes('getaddrinfo') ||
     msg.includes('connect econnrefused') ||
     msg.includes('timeout') ||
+    msg.includes('econnreset') ||
     msg.includes('connection terminated')
   );
 }
