@@ -1,0 +1,524 @@
+2026-10-21T17:52:34.040994695Z [err]  2026-10-21 17:52:31.225 UTC [239] ERROR:  syntax error at or near "v_user_status" at character 1
+2026-10-21T17:52:34.041042385Z [err]  2026-10-21 17:52:30.430 UTC [239] ERROR:  unterminated dollar-quoted string at or near "$$
+2026-10-21T17:52:34.041047545Z [err]  	DECLARE
+2026-10-21T17:52:34.041052435Z [err]  	CREATE OR REPLACE FUNCTION process_action_kpi_trigger()
+2026-10-21T17:52:34.041052735Z [err]  	    v_amount NUMERIC(14, 2)" at character 300
+2026-10-21T17:52:34.041058095Z [err]  2026-10-21 17:52:30.430 UTC [239] STATEMENT:  -- ----------------------------------------------------------------------------
+2026-10-21T17:52:34.041063785Z [err]  	-- 15. DATABASE TRIGGER: AUTO-UPDATE KPI TABLE ON ACTION INSERT
+2026-10-21T17:52:34.041068935Z [err]  	RETURNS TRIGGER AS $$
+2026-10-21T17:52:34.041069425Z [err]  	-- ----------------------------------------------------------------------------
+2026-10-21T17:52:34.041077334Z [err]  	DECLARE
+2026-10-21T17:52:34.041082894Z [err]  	    v_amount NUMERIC(14, 2)
+2026-10-21T17:52:34.041090324Z [err]  2026-10-21 17:52:30.590 UTC [239] ERROR:  syntax error at or near "v_prev_status" at character 1
+2026-10-21T17:52:34.041096124Z [err]  2026-10-21 17:52:30.590 UTC [239] STATEMENT:  v_prev_status TEXT
+2026-10-21T17:52:34.041101484Z [err]  2026-10-21 17:52:30.748 UTC [239] ERROR:  syntax error at or near "v_new_status" at character 1
+2026-10-21T17:52:34.041110124Z [err]  2026-10-21 17:52:30.748 UTC [239] STATEMENT:  v_new_status TEXT
+2026-10-21T17:52:34.041114414Z [err]  2026-10-21 17:52:30.907 UTC [239] ERROR:  syntax error at or near "v_verif_status" at character 1
+2026-10-21T17:52:34.041119424Z [err]  2026-10-21 17:52:30.907 UTC [239] STATEMENT:  v_verif_status TEXT
+2026-10-21T17:52:34.041124124Z [err]  2026-10-21 17:52:31.066 UTC [239] ERROR:  syntax error at or near "v_role" at character 1
+2026-10-21T17:52:34.041129034Z [err]  2026-10-21 17:52:31.066 UTC [239] STATEMENT:  v_role TEXT
+2026-10-21T17:52:34.044068887Z [err]  2026-10-21 17:52:31.225 UTC [239] STATEMENT:  v_user_status TEXT
+2026-10-21T17:52:34.044075577Z [err]  2026-10-21 17:52:31.383 UTC [239] ERROR:  syntax error at or near "INSERT" at character 66
+2026-10-21T17:52:34.044080147Z [err]  2026-10-21 17:52:31.383 UTC [239] STATEMENT:  BEGIN
+2026-10-21T17:52:34.044085137Z [err]  	    -- Ensure system_summary row exists in kpi_metrics
+2026-10-21T17:52:34.044108847Z [err]  	    INSERT INTO kpi_metrics (id) 
+2026-10-21T17:52:34.044113997Z [err]  	    VALUES ('system_summary') 
+2026-10-21T17:52:34.044118596Z [err]  	    ON CONFLICT (id) DO NOTHING
+2026-10-21T17:52:34.044123346Z [err]  2026-10-21 17:52:31.542 UTC [239] ERROR:  syntax error at or near "v_prev_status" at character 45
+2026-10-21T17:52:34.044127536Z [err]  2026-10-21 17:52:31.542 UTC [239] STATEMENT:  -- Extract common payload values safely
+2026-10-21T17:52:34.044157526Z [err]  	    v_prev_status := NEW.payload->>'previous_status'
+2026-10-21T17:52:34.044161756Z [err]  2026-10-21 17:52:31.701 UTC [239] ERROR:  syntax error at or near "v_new_status" at character 1
+2026-10-21T17:52:34.044166296Z [err]  2026-10-21 17:52:31.701 UTC [239] STATEMENT:  v_new_status := NEW.payload->>'new_status'
+2026-10-21T17:52:34.044192886Z [err]  2026-10-21 17:52:31.860 UTC [239] ERROR:  syntax error at or near "v_verif_status" at character 1
+2026-10-21T17:52:34.044197336Z [err]  2026-10-21 17:52:31.860 UTC [239] STATEMENT:  v_verif_status := NEW.payload->>'verification_status'
+2026-10-21T17:52:34.044218786Z [err]  2026-10-21 17:52:32.018 UTC [239] ERROR:  syntax error at or near "v_role" at character 1
+2026-10-21T17:52:34.044222885Z [err]  2026-10-21 17:52:32.018 UTC [239] STATEMENT:  v_role := NEW.payload->>'role'
+2026-10-21T17:52:34.044227295Z [err]  2026-10-21 17:52:32.177 UTC [239] ERROR:  syntax error at or near "v_user_status" at character 1
+2026-10-21T17:52:34.044231485Z [err]  2026-10-21 17:52:32.177 UTC [239] STATEMENT:  v_user_status := NEW.payload->>'status'
+2026-10-21T17:52:34.046686003Z [err]  2026-10-21 17:52:32.336 UTC [239] ERROR:  syntax error at or near "IF" at character 1
+2026-10-21T17:52:34.046690763Z [err]  2026-10-21 17:52:32.336 UTC [239] STATEMENT:  IF NEW.payload ? 'amount' THEN
+2026-10-21T17:52:34.046693863Z [err]  	        BEGIN
+2026-10-21T17:52:34.046697533Z [err]  	            v_amount := (NEW.payload->>'amount')::NUMERIC(14, 2)
+2026-10-21T17:52:34.046700653Z [err]  2026-10-21 17:52:32.494 UTC [239] ERROR:  syntax error at or near "EXCEPTION" at character 1
+2026-10-21T17:52:34.046703413Z [err]  2026-10-21 17:52:32.494 UTC [239] STATEMENT:  EXCEPTION WHEN OTHERS THEN
+2026-10-21T17:52:34.046706273Z [err]  	            v_amount := 0
+2026-10-21T17:52:34.046709083Z [err]  2026-10-21 17:52:32.653 UTC [239] WARNING:  there is no transaction in progress
+2026-10-21T17:52:34.046711723Z [err]  2026-10-21 17:52:32.812 UTC [239] ERROR:  syntax error at or near "ELSE" at character 1
+2026-10-21T17:52:34.046714603Z [err]  2026-10-21 17:52:32.812 UTC [239] STATEMENT:  ELSE
+2026-10-21T17:52:34.046717823Z [err]  	        v_amount := 0
+2026-10-21T17:52:34.046720603Z [err]  2026-10-21 17:52:32.970 UTC [239] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:52:34.046723373Z [err]  2026-10-21 17:52:32.970 UTC [239] STATEMENT:  END IF
+2026-10-21T17:52:34.046726283Z [err]  2026-10-21 17:52:33.129 UTC [239] ERROR:  syntax error at or near "IF" at character 54
+2026-10-21T17:52:34.046728953Z [err]  2026-10-21 17:52:33.129 UTC [239] STATEMENT:  -- Update KPI metrics table based on action_type
+2026-10-21T17:52:34.046731923Z [err]  	    IF NEW.action_type = 'REGISTRATION_CREATED' THEN
+2026-10-21T17:52:34.046734653Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:34.046737573Z [err]  	        SET total_permits = total_permits + 1,
+2026-10-21T17:52:34.046740902Z [err]  	            pending_permits = pending_permits + 1,
+2026-10-21T17:52:34.046743752Z [err]  	            today_submissions = today_submissions + 1,
+2026-10-21T17:52:34.048282869Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:34.048287139Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.048290519Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:34.048293829Z [err]  2026-10-21 17:52:33.288 UTC [239] ERROR:  missing FROM-clause entry for table "new" at character 372
+2026-10-21T17:52:34.048296979Z [err]  2026-10-21 17:52:33.288 UTC [239] STATEMENT:  -- Materialize notification for pending approval
+2026-10-21T17:52:34.048302019Z [err]  	        INSERT INTO materialized_notifications (
+2026-10-21T17:52:34.048305149Z [err]  	            id, type, title_am, title_en, description_am, description_en,
+2026-10-21T17:52:34.048308189Z [err]  	            action_page, action_tab, entity_id, icon, icon_bg,
+2026-10-21T17:52:34.048311878Z [err]  	            badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+2026-10-21T17:52:34.048316228Z [err]  	        ) VALUES (
+2026-10-21T17:52:34.048320578Z [err]  	            'notif-reg-' || NEW.entity_id,
+2026-10-21T17:52:34.048630225Z [err]  	            'pending_approval',
+2026-10-21T17:52:34.048634665Z [err]  	            'አዲስ ማመልከቻ: ' || COALESCE(NEW.payload->>'full_name', NEW.entity_id),
+2026-10-21T17:52:34.048638975Z [err]  	            'New Submission: ' || COALESCE(NEW.payload->>'full_name', NEW.entity_id),
+2026-10-21T17:52:34.048643235Z [err]  	            'ማመልከቻው የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።',
+2026-10-21T17:52:34.048648535Z [err]  	            'Application awaiting manager review.',
+2026-10-21T17:52:34.048652395Z [err]  	            'tables', 'pending', NEW.entity_id, 'how_to_reg',
+2026-10-21T17:52:34.048656775Z [err]  	            'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
+2026-10-21T17:52:34.048660735Z [err]  	            'ማፅደቂያ', 'Approval Needed', 'bg-slate-200 dark:bg-slate-700',
+2026-10-21T17:52:34.050729886Z [err]  	            'text-slate-800 dark:text-slate-200', 'admin', TRUE
+2026-10-21T17:52:34.050902255Z [err]  	        ) ON CONFLICT (id) DO UPDATE SET
+2026-10-21T17:52:34.050913755Z [err]  	            is_active = TRUE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.050922155Z [err]  2026-10-21 17:52:33.447 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:34.050930945Z [err]  2026-10-21 17:52:33.447 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'REGISTRATION_STATUS_CHANGED' THEN
+2026-10-21T17:52:34.050940814Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:34.050950354Z [err]  	        SET pending_permits = GREATEST(0, pending_permits - CASE WHEN v_prev_status = 'pending_approval' THEN 1 ELSE 0 END)
+2026-10-21T17:52:34.050958684Z [err]  	                              + CASE WHEN v_new_status = 'pending_approval' THEN 1 ELSE 0 END,
+2026-10-21T17:52:34.050967204Z [err]  	            approved_permits = GREATEST(0, approved_permits - CASE WHEN v_prev_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END)
+2026-10-21T17:52:34.050975854Z [err]  	                               + CASE WHEN v_new_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END,
+2026-10-21T17:52:34.050983854Z [err]  	            printed_permits = GREATEST(0, printed_permits - CASE WHEN v_prev_status = 'printed' THEN 1 ELSE 0 END)
+2026-10-21T17:52:34.050992394Z [err]  	                              + CASE WHEN v_new_status = 'printed' THEN 1 ELSE 0 END,
+2026-10-21T17:52:34.051001204Z [err]  	            rejected_permits = GREATEST(0, rejected_permits - CASE WHEN v_prev_status = 'rejected' THEN 1 ELSE 0 END)
+2026-10-21T17:52:34.051009054Z [err]  	                               + CASE WHEN v_new_status = 'rejected' THEN 1 ELSE 0 END,
+2026-10-21T17:52:34.051023014Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:34.051032334Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.055867199Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:34.055879849Z [err]  2026-10-21 17:52:33.606 UTC [239] ERROR:  syntax error at or near "IF" at character 1
+2026-10-21T17:52:34.055886849Z [err]  2026-10-21 17:52:33.606 UTC [239] STATEMENT:  IF v_new_status IN ('approved', 'rejected', 'printed', 'ordered_print') THEN
+2026-10-21T17:52:34.055891599Z [err]  	            UPDATE materialized_notifications
+2026-10-21T17:52:34.055897299Z [err]  	            SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.055902879Z [err]  	            WHERE entity_id = NEW.entity_id AND type = 'pending_approval'
+2026-10-21T17:52:34.055907459Z [err]  2026-10-21 17:52:33.765 UTC [239] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:52:34.055911819Z [err]  2026-10-21 17:52:33.765 UTC [239] STATEMENT:  END IF
+2026-10-21T17:52:34.055916429Z [err]  2026-10-21 17:52:33.924 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:34.055921509Z [err]  2026-10-21 17:52:33.924 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'REGISTRATION_DELETED' THEN
+2026-10-21T17:52:34.055926589Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:34.055931279Z [err]  	        SET total_permits = GREATEST(0, total_permits - 1),
+2026-10-21T17:52:34.055935519Z [err]  	            pending_permits = GREATEST(0, pending_permits - CASE WHEN v_prev_status = 'pending_approval' THEN 1 ELSE 0 END),
+2026-10-21T17:52:34.055940219Z [err]  	            approved_permits = GREATEST(0, approved_permits - CASE WHEN v_prev_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END),
+2026-10-21T17:52:34.055945269Z [err]  	            rejected_permits = GREATEST(0, rejected_permits - CASE WHEN v_prev_status = 'rejected' THEN 1 ELSE 0 END),
+2026-10-21T17:52:34.055949929Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:34.055965139Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.057055398Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:34.086876785Z [err]  2026-10-21 17:52:34.084 UTC [239] ERROR:  missing FROM-clause entry for table "new" at character 123
+2026-10-21T17:52:34.086882245Z [err]  2026-10-21 17:52:34.084 UTC [239] STATEMENT:  UPDATE materialized_notifications
+2026-10-21T17:52:34.086885895Z [err]  	        SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.086889105Z [err]  	        WHERE entity_id = NEW.entity_id
+2026-10-21T17:52:34.248325909Z [err]  2026-10-21 17:52:34.243 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:34.248331799Z [err]  2026-10-21 17:52:34.243 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'PAYMENT_RECEIVED' THEN
+2026-10-21T17:52:34.248337209Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:34.248341669Z [err]  	        SET total_receipts = total_receipts + 1,
+2026-10-21T17:52:34.248345289Z [err]  	            total_revenue = total_revenue + COALESCE(v_amount, 0),
+2026-10-21T17:52:34.248348609Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:34.248352519Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.248356139Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:34.406943078Z [err]  2026-10-21 17:52:34.402 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:34.406947968Z [err]  2026-10-21 17:52:34.402 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'PAYMENT_DELETED' THEN
+2026-10-21T17:52:34.406951228Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:34.406953808Z [err]  	        SET total_receipts = GREATEST(0, total_receipts - 1),
+2026-10-21T17:52:34.406956598Z [err]  	            total_revenue = GREATEST(0, total_revenue - COALESCE(v_amount, 0)),
+2026-10-21T17:52:34.406959318Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:34.406961728Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.406964308Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:34.850896677Z [err]  2026-10-21 17:52:34.561 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:34.850900117Z [err]  2026-10-21 17:52:34.561 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'VERIFICATION_LOGGED' THEN
+2026-10-21T17:52:34.850903097Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:34.850906737Z [err]  	        SET total_verifications = total_verifications + 1,
+2026-10-21T17:52:34.850909597Z [err]  	            verified_logs = verified_logs + CASE WHEN v_verif_status = 'verified' THEN 1 ELSE 0 END,
+2026-10-21T17:52:34.850916516Z [err]  	            warning_verifications = warning_verifications + CASE WHEN v_verif_status = 'warning' THEN 1 ELSE 0 END,
+2026-10-21T17:52:34.850919676Z [err]  	            illegal_verifications = illegal_verifications + CASE WHEN v_verif_status IN ('flagged', 'illegal', 'unregistered') THEN 1 ELSE 0 END,
+2026-10-21T17:52:34.850922296Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:34.850925696Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.850935706Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:34.850938646Z [err]  2026-10-21 17:52:34.725 UTC [239] ERROR:  syntax error at or near "IF" at character 1
+2026-10-21T17:52:34.850941476Z [err]  2026-10-21 17:52:34.725 UTC [239] STATEMENT:  IF v_verif_status IN ('flagged', 'warning') THEN
+2026-10-21T17:52:34.850944236Z [err]  	            INSERT INTO materialized_notifications (
+2026-10-21T17:52:34.850946916Z [err]  	                id, type, title_am, title_en, description_am, description_en,
+2026-10-21T17:52:34.850949546Z [err]  	                action_page, action_tab, entity_id, icon, icon_bg,
+2026-10-21T17:52:34.850951916Z [err]  	                badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+2026-10-21T17:52:34.850954876Z [err]  	            ) VALUES (
+2026-10-21T17:52:34.850957706Z [err]  	                'notif-verif-' || NEW.entity_id,
+2026-10-21T17:52:34.855112128Z [err]  	                'flagged_inspection',
+2026-10-21T17:52:34.855118538Z [err]  	                'የፍተሻ ጥሰት ሪፖርት: ' || COALESCE(NEW.payload->>'plate_number', NEW.entity_id),
+2026-10-21T17:52:34.855122848Z [err]  	                'Inspection Violation: ' || COALESCE(NEW.payload->>'plate_number', NEW.entity_id),
+2026-10-21T17:52:34.855126448Z [err]  	                'በኦፊሰር የተመዘገበ ጥሰት: ' || COALESCE(NEW.payload->>'notes', 'የሰነድ ጉድለት'),
+2026-10-21T17:52:34.855130708Z [err]  	                'Patrol violation reported: ' || COALESCE(NEW.payload->>'notes', 'Violation found'),
+2026-10-21T17:52:34.855134918Z [err]  	                'inspection_report', 'history', NEW.entity_id, 'warning',
+2026-10-21T17:52:34.855139658Z [err]  	                'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+2026-10-21T17:52:34.855143028Z [err]  	                'የጥሰት ሪፖርት', 'Violation Report', 'bg-rose-500/20',
+2026-10-21T17:52:34.855147028Z [err]  	                'text-rose-700 dark:text-rose-300', 'all', TRUE
+2026-10-21T17:52:34.855151878Z [err]  	            ) ON CONFLICT (id) DO UPDATE SET
+2026-10-21T17:52:34.855155818Z [err]  	                is_active = TRUE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:34.886922878Z [err]  2026-10-21 17:52:34.884 UTC [239] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:52:34.886929148Z [err]  2026-10-21 17:52:34.884 UTC [239] STATEMENT:  END IF
+2026-10-21T17:52:35.044555216Z [err]  2026-10-21 17:52:35.042 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:35.044555226Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:35.044561186Z [err]  2026-10-21 17:52:35.042 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'UNREGISTERED_REPORT_FILED' THEN
+2026-10-21T17:52:35.044565836Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:35.044569736Z [err]  	        SET total_unregistered = total_unregistered + 1,
+2026-10-21T17:52:35.044573376Z [err]  	            pending_unregistered = pending_unregistered + 1,
+2026-10-21T17:52:35.044578136Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:35.044581595Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:35.208558406Z [err]  2026-10-21 17:52:35.201 UTC [239] ERROR:  missing FROM-clause entry for table "new" at character 317
+2026-10-21T17:52:35.208564156Z [err]  2026-10-21 17:52:35.201 UTC [239] STATEMENT:  INSERT INTO materialized_notifications (
+2026-10-21T17:52:35.208568256Z [err]  	            id, type, title_am, title_en, description_am, description_en,
+2026-10-21T17:52:35.208572045Z [err]  	            action_page, action_tab, entity_id, icon, icon_bg,
+2026-10-21T17:52:35.208575615Z [err]  	            badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+2026-10-21T17:52:35.208579345Z [err]  	        ) VALUES (
+2026-10-21T17:52:35.208582365Z [err]  	            'notif-unreg-' || NEW.entity_id,
+2026-10-21T17:52:35.208585405Z [err]  	            'unregistered_alert',
+2026-10-21T17:52:35.208588825Z [err]  	            'ያልተመዘገበ ሞተር ጥቆማ: ' || COALESCE(NEW.payload->>'driver_name', 'ያልታወቀ'),
+2026-10-21T17:52:35.208592565Z [err]  	            'Unregistered Motor Report: ' || COALESCE(NEW.payload->>'driver_name', 'Unknown'),
+2026-10-21T17:52:35.208596075Z [err]  	            'የቻሲስ ቁጥር: ' || COALESCE(NEW.payload->>'chassis_number', 'N/A'),
+2026-10-21T17:52:35.208599915Z [err]  	            'Chassis No: ' || COALESCE(NEW.payload->>'chassis_number', 'N/A'),
+2026-10-21T17:52:35.208603085Z [err]  	            'unregistered_list', 'list', NEW.entity_id, 'no_crash',
+2026-10-21T17:52:35.208606475Z [err]  	            'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+2026-10-21T17:52:35.208610125Z [err]  	            'ያልተመዘገበ', 'Unregistered Alert', 'bg-amber-500/20',
+2026-10-21T17:52:35.208613535Z [err]  	            'text-amber-800 dark:text-amber-300', 'all', TRUE
+2026-10-21T17:52:35.208616925Z [err]  	        ) ON CONFLICT (id) DO UPDATE SET
+2026-10-21T17:52:35.208620085Z [err]  	            is_active = TRUE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:35.409157990Z [err]  2026-10-21 17:52:35.361 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:35.409165220Z [err]  2026-10-21 17:52:35.361 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'UNREGISTERED_REPORT_RESOLVED' THEN
+2026-10-21T17:52:35.409173630Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:35.409178690Z [err]  	        SET pending_unregistered = GREATEST(0, pending_unregistered - 1),
+2026-10-21T17:52:35.409183720Z [err]  	            resolved_unregistered = resolved_unregistered + 1,
+2026-10-21T17:52:35.409189100Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:35.409195110Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:35.409200030Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:35.521837489Z [err]  2026-10-21 17:52:35.519 UTC [239] ERROR:  missing FROM-clause entry for table "new" at character 123
+2026-10-21T17:52:35.521845889Z [err]  2026-10-21 17:52:35.519 UTC [239] STATEMENT:  UPDATE materialized_notifications
+2026-10-21T17:52:35.521850389Z [err]  	        SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:35.521855279Z [err]  	        WHERE entity_id = NEW.entity_id AND type = 'unregistered_alert'
+2026-10-21T17:52:35.847729668Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:35.847735908Z [err]  	        SET total_users = total_users + 1,
+2026-10-21T17:52:35.847740038Z [err]  	            admin_users = admin_users + CASE WHEN v_role IN ('admin', 'superadmin') THEN 1 ELSE 0 END,
+2026-10-21T17:52:35.847744528Z [err]  	            active_users = active_users + 1,
+2026-10-21T17:52:35.847748988Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:35.847753398Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:35.847758488Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:35.847762967Z [err]  2026-10-21 17:52:35.836 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:35.847797177Z [err]  2026-10-21 17:52:35.678 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:35.847802817Z [err]  2026-10-21 17:52:35.678 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'USER_CREATED' THEN
+2026-10-21T17:52:35.847842007Z [err]  	                             + CASE WHEN v_user_status = 'disabled' THEN 1 ELSE 0 END,
+2026-10-21T17:52:35.847842147Z [err]  2026-10-21 17:52:35.836 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'USER_STATUS_CHANGED' THEN
+2026-10-21T17:52:35.847846627Z [err]  	            active_users = GREATEST(0, active_users - CASE WHEN v_prev_status = 'active' THEN 1 ELSE 0 END)
+2026-10-21T17:52:35.847849817Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:35.847850657Z [err]  	                           + CASE WHEN v_user_status = 'active' THEN 1 ELSE 0 END,
+2026-10-21T17:52:35.847854057Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:35.847854437Z [err]  	        SET disabled_users = GREATEST(0, disabled_users - CASE WHEN v_prev_status = 'disabled' THEN 1 ELSE 0 END)
+2026-10-21T17:52:35.847857417Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:35.847860787Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:36.013002566Z [err]  2026-10-21 17:52:35.995 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:36.013023706Z [err]  2026-10-21 17:52:35.995 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'USER_DELETED' THEN
+2026-10-21T17:52:36.013031176Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:36.013057746Z [err]  	        SET total_users = GREATEST(0, total_users - 1),
+2026-10-21T17:52:36.013067255Z [err]  	            admin_users = GREATEST(0, admin_users - CASE WHEN v_role IN ('admin', 'superadmin') THEN 1 ELSE 0 END),
+2026-10-21T17:52:36.013074645Z [err]  	            active_users = GREATEST(0, active_users - CASE WHEN v_user_status = 'active' THEN 1 ELSE 0 END),
+2026-10-21T17:52:36.013080155Z [err]  	            disabled_users = GREATEST(0, disabled_users - CASE WHEN v_user_status = 'disabled' THEN 1 ELSE 0 END),
+2026-10-21T17:52:36.013085055Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:36.013091205Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:36.013097145Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:36.157437894Z [err]  2026-10-21 17:52:36.154 UTC [239] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:52:36.157443194Z [err]  2026-10-21 17:52:36.154 UTC [239] STATEMENT:  ELSIF NEW.action_type = 'OFFICER_STATUS_CHANGED' THEN
+2026-10-21T17:52:36.157447214Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:52:36.157449964Z [err]  	        SET active_officers = (SELECT COUNT(*) FROM officer_assignments WHERE status = 'active'),
+2026-10-21T17:52:36.157452734Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:52:36.157455684Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:52:36.157458544Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:52:36.319905539Z [err]  2026-10-21 17:52:36.315 UTC [239] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:52:36.319914729Z [err]  2026-10-21 17:52:36.315 UTC [239] STATEMENT:  END IF
+2026-10-21T17:52:36.568701132Z [err]  2026-10-21 17:52:36.561 UTC [239] ERROR:  syntax error at or near "RETURN" at character 1
+2026-10-21T17:52:36.568708862Z [err]  2026-10-21 17:52:36.561 UTC [239] STATEMENT:  RETURN NEW
+2026-10-21T17:52:36.893553270Z [err]  2026-10-21 17:52:36.721 UTC [239] WARNING:  there is no transaction in progress
+2026-10-21T17:52:36.893573810Z [err]  2026-10-21 17:52:36.886 UTC [239] ERROR:  unterminated dollar-quoted string at or near "$$ LANGUAGE plpgsql" at character 1
+2026-10-21T17:52:36.893578870Z [err]  2026-10-21 17:52:36.886 UTC [239] STATEMENT:  $$ LANGUAGE plpgsql
+2026-10-21T17:52:37.242759815Z [err]  2026-10-21 17:52:37.204 UTC [239] ERROR:  function process_action_kpi_trigger() does not exist
+2026-10-21T17:52:37.242766835Z [err]  2026-10-21 17:52:37.204 UTC [239] STATEMENT:  CREATE TRIGGER trg_actions_insert
+2026-10-21T17:52:37.242771785Z [err]  	AFTER INSERT ON actions
+2026-10-21T17:52:37.242776025Z [err]  	FOR EACH ROW
+2026-10-21T17:52:37.242780755Z [err]  	EXECUTE FUNCTION process_action_kpi_trigger()
+2026-10-21T17:53:17.528395249Z [err]  2026-10-21 17:53:13.479 UTC [241] LOG:  SSL error: unexpected eof while reading
+2026-10-21T17:53:17.528401218Z [err]  2026-10-21 17:53:13.479 UTC [241] LOG:  could not receive data from client: Connection reset by peer
+2026-10-21T17:53:17.528405428Z [err]  2026-10-21 17:53:13.480 UTC [242] LOG:  SSL error: unexpected eof while reading
+2026-10-21T17:53:17.528408938Z [err]  2026-10-21 17:53:13.480 UTC [242] LOG:  could not receive data from client: Connection reset by peer
+2026-10-21T17:53:17.528412628Z [err]  2026-10-21 17:53:13.482 UTC [239] LOG:  SSL error: unexpected eof while reading
+2026-10-21T17:53:17.528416138Z [err]  2026-10-21 17:53:13.482 UTC [239] LOG:  could not receive data from client: Connection reset by peer
+2026-10-21T17:53:27.049195668Z [err]  2026-10-21 17:53:27.039 UTC [246] STATEMENT:  -- ----------------------------------------------------------------------------
+2026-10-21T17:53:27.049202008Z [err]  	-- 15. DATABASE TRIGGER: AUTO-UPDATE KPI TABLE ON ACTION INSERT
+2026-10-21T17:53:27.049206648Z [err]  	-- ----------------------------------------------------------------------------
+2026-10-21T17:53:27.049211778Z [err]  	CREATE OR REPLACE FUNCTION process_action_kpi_trigger()
+2026-10-21T17:53:27.049212948Z [err]  2026-10-21 17:53:27.039 UTC [246] ERROR:  unterminated dollar-quoted string at or near "$$
+2026-10-21T17:53:27.049216668Z [err]  	RETURNS TRIGGER AS $$
+2026-10-21T17:53:27.049221268Z [err]  	DECLARE
+2026-10-21T17:53:27.049226298Z [err]  	DECLARE
+2026-10-21T17:53:27.049232658Z [err]  	    v_amount NUMERIC(14, 2)" at character 300
+2026-10-21T17:53:27.049236148Z [err]  	    v_amount NUMERIC(14, 2)
+2026-10-21T17:53:27.199763134Z [err]  2026-10-21 17:53:27.197 UTC [246] ERROR:  syntax error at or near "v_prev_status" at character 1
+2026-10-21T17:53:27.199771144Z [err]  2026-10-21 17:53:27.197 UTC [246] STATEMENT:  v_prev_status TEXT
+2026-10-21T17:53:27.367941888Z [err]  2026-10-21 17:53:27.355 UTC [246] ERROR:  syntax error at or near "v_new_status" at character 1
+2026-10-21T17:53:27.367949118Z [err]  2026-10-21 17:53:27.355 UTC [246] STATEMENT:  v_new_status TEXT
+2026-10-21T17:53:27.516462023Z [err]  2026-10-21 17:53:27.513 UTC [246] ERROR:  syntax error at or near "v_verif_status" at character 1
+2026-10-21T17:53:27.516466803Z [err]  2026-10-21 17:53:27.513 UTC [246] STATEMENT:  v_verif_status TEXT
+2026-10-21T17:53:27.768814944Z [err]  2026-10-21 17:53:27.670 UTC [246] ERROR:  syntax error at or near "v_role" at character 1
+2026-10-21T17:53:27.768830344Z [err]  2026-10-21 17:53:27.670 UTC [246] STATEMENT:  v_role TEXT
+2026-10-21T17:53:27.832899465Z [err]  2026-10-21 17:53:27.828 UTC [246] ERROR:  syntax error at or near "v_user_status" at character 1
+2026-10-21T17:53:27.832913655Z [err]  2026-10-21 17:53:27.828 UTC [246] STATEMENT:  v_user_status TEXT
+2026-10-21T17:53:27.987283476Z [err]  2026-10-21 17:53:27.985 UTC [246] ERROR:  syntax error at or near "INSERT" at character 66
+2026-10-21T17:53:27.987288116Z [err]  2026-10-21 17:53:27.985 UTC [246] STATEMENT:  BEGIN
+2026-10-21T17:53:27.987291246Z [err]  	    -- Ensure system_summary row exists in kpi_metrics
+2026-10-21T17:53:27.987294506Z [err]  	    INSERT INTO kpi_metrics (id) 
+2026-10-21T17:53:27.987298546Z [err]  	    VALUES ('system_summary') 
+2026-10-21T17:53:27.987301556Z [err]  	    ON CONFLICT (id) DO NOTHING
+2026-10-21T17:53:28.172314796Z [err]  2026-10-21 17:53:28.143 UTC [246] ERROR:  syntax error at or near "v_prev_status" at character 45
+2026-10-21T17:53:28.172321366Z [err]  2026-10-21 17:53:28.143 UTC [246] STATEMENT:  -- Extract common payload values safely
+2026-10-21T17:53:28.172325396Z [err]  	    v_prev_status := NEW.payload->>'previous_status'
+2026-10-21T17:53:28.314989264Z [err]  2026-10-21 17:53:28.300 UTC [246] ERROR:  syntax error at or near "v_new_status" at character 1
+2026-10-21T17:53:28.314995874Z [err]  2026-10-21 17:53:28.300 UTC [246] STATEMENT:  v_new_status := NEW.payload->>'new_status'
+2026-10-21T17:53:28.478143355Z [err]  2026-10-21 17:53:28.462 UTC [246] ERROR:  syntax error at or near "v_verif_status" at character 1
+2026-10-21T17:53:28.478148865Z [err]  2026-10-21 17:53:28.462 UTC [246] STATEMENT:  v_verif_status := NEW.payload->>'verification_status'
+2026-10-21T17:53:28.789431914Z [err]  2026-10-21 17:53:28.620 UTC [246] ERROR:  syntax error at or near "v_role" at character 1
+2026-10-21T17:53:28.789434724Z [err]  2026-10-21 17:53:28.620 UTC [246] STATEMENT:  v_role := NEW.payload->>'role'
+2026-10-21T17:53:28.789437334Z [err]  2026-10-21 17:53:28.779 UTC [246] ERROR:  syntax error at or near "v_user_status" at character 1
+2026-10-21T17:53:28.789439804Z [err]  2026-10-21 17:53:28.779 UTC [246] STATEMENT:  v_user_status := NEW.payload->>'status'
+2026-10-21T17:53:28.939021909Z [err]  2026-10-21 17:53:28.936 UTC [246] ERROR:  syntax error at or near "IF" at character 1
+2026-10-21T17:53:28.939025979Z [err]  2026-10-21 17:53:28.936 UTC [246] STATEMENT:  IF NEW.payload ? 'amount' THEN
+2026-10-21T17:53:28.939029569Z [err]  	        BEGIN
+2026-10-21T17:53:28.939032819Z [err]  	            v_amount := (NEW.payload->>'amount')::NUMERIC(14, 2)
+2026-10-21T17:53:29.222364485Z [err]  2026-10-21 17:53:29.094 UTC [246] ERROR:  syntax error at or near "EXCEPTION" at character 1
+2026-10-21T17:53:29.222367355Z [err]  2026-10-21 17:53:29.094 UTC [246] STATEMENT:  EXCEPTION WHEN OTHERS THEN
+2026-10-21T17:53:29.222370195Z [err]  	            v_amount := 0
+2026-10-21T17:53:29.267526550Z [err]  2026-10-21 17:53:29.251 UTC [246] WARNING:  there is no transaction in progress
+2026-10-21T17:53:29.438220021Z [err]  2026-10-21 17:53:29.409 UTC [246] ERROR:  syntax error at or near "ELSE" at character 1
+2026-10-21T17:53:29.438227840Z [err]  2026-10-21 17:53:29.409 UTC [246] STATEMENT:  ELSE
+2026-10-21T17:53:29.438235070Z [err]  	        v_amount := 0
+2026-10-21T17:53:29.900029406Z [err]  	            id, type, title_am, title_en, description_am, description_en,
+2026-10-21T17:53:29.900029896Z [err]  	            'notif-reg-' || NEW.entity_id,
+2026-10-21T17:53:29.900039216Z [err]  2026-10-21 17:53:29.724 UTC [246] ERROR:  syntax error at or near "IF" at character 54
+2026-10-21T17:53:29.900044266Z [err]  	            action_page, action_tab, entity_id, icon, icon_bg,
+2026-10-21T17:53:29.900046456Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:29.900047356Z [err]  	        SET total_permits = total_permits + 1,
+2026-10-21T17:53:29.900052316Z [err]  2026-10-21 17:53:29.724 UTC [246] STATEMENT:  -- Update KPI metrics table based on action_type
+2026-10-21T17:53:29.900055446Z [err]  	            badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+2026-10-21T17:53:29.900063116Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:29.900065436Z [err]  	        ) VALUES (
+2026-10-21T17:53:29.900066346Z [err]  	    IF NEW.action_type = 'REGISTRATION_CREATED' THEN
+2026-10-21T17:53:29.900071366Z [err]  	            pending_permits = pending_permits + 1,
+2026-10-21T17:53:29.900075736Z [err]  2026-10-21 17:53:29.566 UTC [246] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:53:29.900075856Z [err]  2026-10-21 17:53:29.883 UTC [246] ERROR:  missing FROM-clause entry for table "new" at character 372
+2026-10-21T17:53:29.900080466Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:29.900086195Z [err]  2026-10-21 17:53:29.883 UTC [246] STATEMENT:  -- Materialize notification for pending approval
+2026-10-21T17:53:29.900086725Z [err]  2026-10-21 17:53:29.566 UTC [246] STATEMENT:  END IF
+2026-10-21T17:53:29.900092785Z [err]  	            today_submissions = today_submissions + 1,
+2026-10-21T17:53:29.900095265Z [err]  	        INSERT INTO materialized_notifications (
+2026-10-21T17:53:29.900111995Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:29.900318313Z [err]  	            'pending_approval',
+2026-10-21T17:53:29.900321673Z [err]  	            'አዲስ ማመልከቻ: ' || COALESCE(NEW.payload->>'full_name', NEW.entity_id),
+2026-10-21T17:53:29.900325113Z [err]  	            'New Submission: ' || COALESCE(NEW.payload->>'full_name', NEW.entity_id),
+2026-10-21T17:53:29.900329573Z [err]  	            'ማመልከቻው የስራ አስኪያጅ ውሳኔ በመጠባበቅ ላይ ይገኛል።',
+2026-10-21T17:53:29.900332863Z [err]  	            'Application awaiting manager review.',
+2026-10-21T17:53:29.900336253Z [err]  	            'tables', 'pending', NEW.entity_id, 'how_to_reg',
+2026-10-21T17:53:29.900339643Z [err]  	            'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200',
+2026-10-21T17:53:29.900343183Z [err]  	            'ማፅደቂያ', 'Approval Needed', 'bg-slate-200 dark:bg-slate-700',
+2026-10-21T17:53:29.900346313Z [err]  	            'text-slate-800 dark:text-slate-200', 'admin', TRUE
+2026-10-21T17:53:29.900349553Z [err]  	        ) ON CONFLICT (id) DO UPDATE SET
+2026-10-21T17:53:29.900353653Z [err]  	            is_active = TRUE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:30.058735087Z [err]  2026-10-21 17:53:30.054 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:30.058745007Z [err]  2026-10-21 17:53:30.054 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'REGISTRATION_STATUS_CHANGED' THEN
+2026-10-21T17:53:30.058749157Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:30.058753497Z [err]  	        SET pending_permits = GREATEST(0, pending_permits - CASE WHEN v_prev_status = 'pending_approval' THEN 1 ELSE 0 END)
+2026-10-21T17:53:30.058759067Z [err]  	                              + CASE WHEN v_new_status = 'pending_approval' THEN 1 ELSE 0 END,
+2026-10-21T17:53:30.058764917Z [err]  	            approved_permits = GREATEST(0, approved_permits - CASE WHEN v_prev_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END)
+2026-10-21T17:53:30.058769957Z [err]  	                               + CASE WHEN v_new_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END,
+2026-10-21T17:53:30.058774187Z [err]  	            printed_permits = GREATEST(0, printed_permits - CASE WHEN v_prev_status = 'printed' THEN 1 ELSE 0 END)
+2026-10-21T17:53:30.058777567Z [err]  	                              + CASE WHEN v_new_status = 'printed' THEN 1 ELSE 0 END,
+2026-10-21T17:53:30.058781577Z [err]  	            rejected_permits = GREATEST(0, rejected_permits - CASE WHEN v_prev_status = 'rejected' THEN 1 ELSE 0 END)
+2026-10-21T17:53:30.058785027Z [err]  	                               + CASE WHEN v_new_status = 'rejected' THEN 1 ELSE 0 END,
+2026-10-21T17:53:30.058788287Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:30.058792726Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:30.058797896Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:30.223665980Z [err]  2026-10-21 17:53:30.211 UTC [246] ERROR:  syntax error at or near "IF" at character 1
+2026-10-21T17:53:30.223677120Z [err]  2026-10-21 17:53:30.211 UTC [246] STATEMENT:  IF v_new_status IN ('approved', 'rejected', 'printed', 'ordered_print') THEN
+2026-10-21T17:53:30.223862329Z [err]  	            UPDATE materialized_notifications
+2026-10-21T17:53:30.223874228Z [err]  	            SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:30.223879208Z [err]  	            WHERE entity_id = NEW.entity_id AND type = 'pending_approval'
+2026-10-21T17:53:30.380053383Z [err]  2026-10-21 17:53:30.369 UTC [246] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:53:30.380069273Z [err]  2026-10-21 17:53:30.369 UTC [246] STATEMENT:  END IF
+2026-10-21T17:53:30.539560777Z [err]  	            rejected_permits = GREATEST(0, rejected_permits - CASE WHEN v_prev_status = 'rejected' THEN 1 ELSE 0 END),
+2026-10-21T17:53:30.539568627Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:30.539572717Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:30.539575617Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:30.539679216Z [err]  2026-10-21 17:53:30.527 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:30.539684326Z [err]  2026-10-21 17:53:30.527 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'REGISTRATION_DELETED' THEN
+2026-10-21T17:53:30.539689046Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:30.539692676Z [err]  	        SET total_permits = GREATEST(0, total_permits - 1),
+2026-10-21T17:53:30.539696396Z [err]  	            pending_permits = GREATEST(0, pending_permits - CASE WHEN v_prev_status = 'pending_approval' THEN 1 ELSE 0 END),
+2026-10-21T17:53:30.539700606Z [err]  	            approved_permits = GREATEST(0, approved_permits - CASE WHEN v_prev_status IN ('approved', 'ordered_print', 'printed') THEN 1 ELSE 0 END),
+2026-10-21T17:53:30.844450904Z [err]  2026-10-21 17:53:30.685 UTC [246] ERROR:  missing FROM-clause entry for table "new" at character 123
+2026-10-21T17:53:30.844490784Z [err]  2026-10-21 17:53:30.685 UTC [246] STATEMENT:  UPDATE materialized_notifications
+2026-10-21T17:53:30.844495364Z [err]  	        SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:30.844499284Z [err]  	        WHERE entity_id = NEW.entity_id
+2026-10-21T17:53:30.845259337Z [err]  2026-10-21 17:53:30.842 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:30.845264827Z [err]  2026-10-21 17:53:30.842 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'PAYMENT_RECEIVED' THEN
+2026-10-21T17:53:30.845267837Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:30.845270866Z [err]  	        SET total_receipts = total_receipts + 1,
+2026-10-21T17:53:30.845273636Z [err]  	            total_revenue = total_revenue + COALESCE(v_amount, 0),
+2026-10-21T17:53:30.845276796Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:30.845279466Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:30.845281936Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:31.049596439Z [err]  2026-10-21 17:53:31.001 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:31.049605609Z [err]  2026-10-21 17:53:31.001 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'PAYMENT_DELETED' THEN
+2026-10-21T17:53:31.049614269Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:31.049618769Z [err]  	        SET total_receipts = GREATEST(0, total_receipts - 1),
+2026-10-21T17:53:31.049623149Z [err]  	            total_revenue = GREATEST(0, total_revenue - COALESCE(v_amount, 0)),
+2026-10-21T17:53:31.049631958Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:31.049635748Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:31.049639308Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:31.163074535Z [err]  2026-10-21 17:53:31.159 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:31.163080885Z [err]  2026-10-21 17:53:31.159 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'VERIFICATION_LOGGED' THEN
+2026-10-21T17:53:31.163086405Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:31.163091235Z [err]  	        SET total_verifications = total_verifications + 1,
+2026-10-21T17:53:31.163095405Z [err]  	            verified_logs = verified_logs + CASE WHEN v_verif_status = 'verified' THEN 1 ELSE 0 END,
+2026-10-21T17:53:31.163100195Z [err]  	            warning_verifications = warning_verifications + CASE WHEN v_verif_status = 'warning' THEN 1 ELSE 0 END,
+2026-10-21T17:53:31.163104314Z [err]  	            illegal_verifications = illegal_verifications + CASE WHEN v_verif_status IN ('flagged', 'illegal', 'unregistered') THEN 1 ELSE 0 END,
+2026-10-21T17:53:31.163108504Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:31.163112764Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:31.163116934Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:31.332569406Z [err]  	                'text-rose-700 dark:text-rose-300', 'all', TRUE
+2026-10-21T17:53:31.332581956Z [err]  	            ) VALUES (
+2026-10-21T17:53:31.332590086Z [err]  	                'notif-verif-' || NEW.entity_id,
+2026-10-21T17:53:31.332591456Z [err]  2026-10-21 17:53:31.317 UTC [246] ERROR:  syntax error at or near "IF" at character 1
+2026-10-21T17:53:31.332596446Z [err]  	                'flagged_inspection',
+2026-10-21T17:53:31.332600976Z [err]  	                'የፍተሻ ጥሰት ሪፖርት: ' || COALESCE(NEW.payload->>'plate_number', NEW.entity_id),
+2026-10-21T17:53:31.332606976Z [err]  2026-10-21 17:53:31.317 UTC [246] STATEMENT:  IF v_verif_status IN ('flagged', 'warning') THEN
+2026-10-21T17:53:31.332607916Z [err]  	                'Inspection Violation: ' || COALESCE(NEW.payload->>'plate_number', NEW.entity_id),
+2026-10-21T17:53:31.332615646Z [err]  	                'በኦፊሰር የተመዘገበ ጥሰት: ' || COALESCE(NEW.payload->>'notes', 'የሰነድ ጉድለት'),
+2026-10-21T17:53:31.332616156Z [err]  	            INSERT INTO materialized_notifications (
+2026-10-21T17:53:31.332616286Z [err]  	                'inspection_report', 'history', NEW.entity_id, 'warning',
+2026-10-21T17:53:31.332622396Z [err]  	                'Patrol violation reported: ' || COALESCE(NEW.payload->>'notes', 'Violation found'),
+2026-10-21T17:53:31.332624876Z [err]  	                id, type, title_am, title_en, description_am, description_en,
+2026-10-21T17:53:31.332631626Z [err]  	                action_page, action_tab, entity_id, icon, icon_bg,
+2026-10-21T17:53:31.332633886Z [err]  	                'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+2026-10-21T17:53:31.332640596Z [err]  	                badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+2026-10-21T17:53:31.332642406Z [err]  	                'የጥሰት ሪፖርት', 'Violation Report', 'bg-rose-500/20',
+2026-10-21T17:53:31.333626877Z [err]  	            ) ON CONFLICT (id) DO UPDATE SET
+2026-10-21T17:53:31.333633377Z [err]  	                is_active = TRUE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:31.478316526Z [err]  2026-10-21 17:53:31.474 UTC [246] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:53:31.478331086Z [err]  2026-10-21 17:53:31.474 UTC [246] STATEMENT:  END IF
+2026-10-21T17:53:31.807668219Z [err]  2026-10-21 17:53:31.632 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:31.807672569Z [err]  2026-10-21 17:53:31.632 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'UNREGISTERED_REPORT_FILED' THEN
+2026-10-21T17:53:31.807676219Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:31.807679959Z [err]  	        SET total_unregistered = total_unregistered + 1,
+2026-10-21T17:53:31.807683729Z [err]  	            pending_unregistered = pending_unregistered + 1,
+2026-10-21T17:53:31.807687449Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:31.807690889Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:31.807694419Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:31.807697989Z [err]  2026-10-21 17:53:31.789 UTC [246] ERROR:  missing FROM-clause entry for table "new" at character 317
+2026-10-21T17:53:31.807701229Z [err]  2026-10-21 17:53:31.789 UTC [246] STATEMENT:  INSERT INTO materialized_notifications (
+2026-10-21T17:53:31.807705059Z [err]  	            id, type, title_am, title_en, description_am, description_en,
+2026-10-21T17:53:31.807708769Z [err]  	            action_page, action_tab, entity_id, icon, icon_bg,
+2026-10-21T17:53:31.807712109Z [err]  	            badge_label_am, badge_label_en, badge_bg, badge_text, target_role, is_active
+2026-10-21T17:53:31.807715619Z [err]  	        ) VALUES (
+2026-10-21T17:53:31.807719228Z [err]  	            'notif-unreg-' || NEW.entity_id,
+2026-10-21T17:53:31.807722618Z [err]  	            'unregistered_alert',
+2026-10-21T17:53:31.807725838Z [err]  	            'ያልተመዘገበ ሞተር ጥቆማ: ' || COALESCE(NEW.payload->>'driver_name', 'ያልታወቀ'),
+2026-10-21T17:53:31.807729248Z [err]  	            'Unregistered Motor Report: ' || COALESCE(NEW.payload->>'driver_name', 'Unknown'),
+2026-10-21T17:53:31.807732488Z [err]  	            'የቻሲስ ቁጥር: ' || COALESCE(NEW.payload->>'chassis_number', 'N/A'),
+2026-10-21T17:53:31.808274433Z [err]  	            'Chassis No: ' || COALESCE(NEW.payload->>'chassis_number', 'N/A'),
+2026-10-21T17:53:31.808279093Z [err]  	            'unregistered_list', 'list', NEW.entity_id, 'no_crash',
+2026-10-21T17:53:31.808283163Z [err]  	            'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+2026-10-21T17:53:31.808286643Z [err]  	            'ያልተመዘገበ', 'Unregistered Alert', 'bg-amber-500/20',
+2026-10-21T17:53:31.808289773Z [err]  	            'text-amber-800 dark:text-amber-300', 'all', TRUE
+2026-10-21T17:53:31.808293393Z [err]  	        ) ON CONFLICT (id) DO UPDATE SET
+2026-10-21T17:53:31.808303703Z [err]  	            is_active = TRUE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:31.962252618Z [err]  2026-10-21 17:53:31.947 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:31.962266378Z [err]  2026-10-21 17:53:31.947 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'UNREGISTERED_REPORT_RESOLVED' THEN
+2026-10-21T17:53:31.962273838Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:31.962279958Z [err]  	        SET pending_unregistered = GREATEST(0, pending_unregistered - 1),
+2026-10-21T17:53:31.962284678Z [err]  	            resolved_unregistered = resolved_unregistered + 1,
+2026-10-21T17:53:31.962288828Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:31.962293058Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:31.962296638Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:32.110860412Z [err]  2026-10-21 17:53:32.105 UTC [246] ERROR:  missing FROM-clause entry for table "new" at character 123
+2026-10-21T17:53:32.110879562Z [err]  2026-10-21 17:53:32.105 UTC [246] STATEMENT:  UPDATE materialized_notifications
+2026-10-21T17:53:32.110887682Z [err]  	        SET is_active = FALSE, updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:32.110893391Z [err]  	        WHERE entity_id = NEW.entity_id AND type = 'unregistered_alert'
+2026-10-21T17:53:32.267481562Z [err]  2026-10-21 17:53:32.265 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:32.267490812Z [err]  2026-10-21 17:53:32.265 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'USER_CREATED' THEN
+2026-10-21T17:53:32.267499562Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:32.267504722Z [err]  	        SET total_users = total_users + 1,
+2026-10-21T17:53:32.267516491Z [err]  	            admin_users = admin_users + CASE WHEN v_role IN ('admin', 'superadmin') THEN 1 ELSE 0 END,
+2026-10-21T17:53:32.267522021Z [err]  	            active_users = active_users + 1,
+2026-10-21T17:53:32.267526671Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:32.267531351Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:32.267535771Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:32.424895704Z [err]  2026-10-21 17:53:32.422 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:32.424899884Z [err]  2026-10-21 17:53:32.422 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'USER_STATUS_CHANGED' THEN
+2026-10-21T17:53:32.424903684Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:32.424906344Z [err]  	        SET disabled_users = GREATEST(0, disabled_users - CASE WHEN v_prev_status = 'disabled' THEN 1 ELSE 0 END)
+2026-10-21T17:53:32.424908904Z [err]  	                             + CASE WHEN v_user_status = 'disabled' THEN 1 ELSE 0 END,
+2026-10-21T17:53:32.424911604Z [err]  	            active_users = GREATEST(0, active_users - CASE WHEN v_prev_status = 'active' THEN 1 ELSE 0 END)
+2026-10-21T17:53:32.424914514Z [err]  	                           + CASE WHEN v_user_status = 'active' THEN 1 ELSE 0 END,
+2026-10-21T17:53:32.424917554Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:32.424920184Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:32.424923164Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:32.835290471Z [err]  	        SET active_officers = (SELECT COUNT(*) FROM officer_assignments WHERE status = 'active'),
+2026-10-21T17:53:32.835296971Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:32.835301121Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:32.835304911Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:32.835312611Z [err]  2026-10-21 17:53:32.580 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:32.835315971Z [err]  2026-10-21 17:53:32.580 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'USER_DELETED' THEN
+2026-10-21T17:53:32.835319771Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:32.835323251Z [err]  	        SET total_users = GREATEST(0, total_users - 1),
+2026-10-21T17:53:32.835327411Z [err]  	            admin_users = GREATEST(0, admin_users - CASE WHEN v_role IN ('admin', 'superadmin') THEN 1 ELSE 0 END),
+2026-10-21T17:53:32.835330901Z [err]  	            active_users = GREATEST(0, active_users - CASE WHEN v_user_status = 'active' THEN 1 ELSE 0 END),
+2026-10-21T17:53:32.835334231Z [err]  	            disabled_users = GREATEST(0, disabled_users - CASE WHEN v_user_status = 'disabled' THEN 1 ELSE 0 END),
+2026-10-21T17:53:32.835338041Z [err]  	            last_action_id = NEW.id,
+2026-10-21T17:53:32.835341481Z [err]  	            updated_at = CURRENT_TIMESTAMP
+2026-10-21T17:53:32.835344620Z [err]  	        WHERE id = 'system_summary'
+2026-10-21T17:53:32.835348730Z [err]  2026-10-21 17:53:32.737 UTC [246] ERROR:  syntax error at or near "ELSIF" at character 1
+2026-10-21T17:53:32.835352290Z [err]  2026-10-21 17:53:32.737 UTC [246] STATEMENT:  ELSIF NEW.action_type = 'OFFICER_STATUS_CHANGED' THEN
+2026-10-21T17:53:32.835355800Z [err]  	        UPDATE kpi_metrics
+2026-10-21T17:53:32.915154557Z [err]  2026-10-21 17:53:32.895 UTC [246] ERROR:  syntax error at or near "IF" at character 5
+2026-10-21T17:53:32.915165147Z [err]  2026-10-21 17:53:32.895 UTC [246] STATEMENT:  END IF
+2026-10-21T17:53:33.094806255Z [err]  2026-10-21 17:53:33.053 UTC [246] ERROR:  syntax error at or near "RETURN" at character 1
+2026-10-21T17:53:33.094812785Z [err]  2026-10-21 17:53:33.053 UTC [246] STATEMENT:  RETURN NEW
+2026-10-21T17:53:33.223771959Z [err]  2026-10-21 17:53:33.210 UTC [246] WARNING:  there is no transaction in progress
+2026-10-21T17:53:33.372049675Z [err]  2026-10-21 17:53:33.368 UTC [246] ERROR:  unterminated dollar-quoted string at or near "$$ LANGUAGE plpgsql" at character 1
+2026-10-21T17:53:33.372057285Z [err]  2026-10-21 17:53:33.368 UTC [246] STATEMENT:  $$ LANGUAGE plpgsql
+2026-10-21T17:53:33.822088097Z [err]  2026-10-21 17:53:33.683 UTC [246] ERROR:  function process_action_kpi_trigger() does not exist
+2026-10-21T17:53:33.822093807Z [err]  2026-10-21 17:53:33.683 UTC [246] STATEMENT:  CREATE TRIGGER trg_actions_insert
+2026-10-21T17:53:33.822098047Z [err]  	AFTER INSERT ON actions
+2026-10-21T17:53:33.822103236Z [err]  	FOR EACH ROW
+2026-10-21T17:53:33.822107646Z [err]  	EXECUTE FUNCTION process_action_kpi_trigger()
+2026-10-21T17:56:05.359513908Z [err]  2026-10-21 17:56:02.689 UTC [61] LOG:  checkpoint starting: time
+2026-10-21T17:56:05.359523807Z [err]  2026-10-21 17:56:03.458 UTC [61] LOG:  checkpoint complete: wrote 7 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.706 s, sync=0.018 s, total=0.769 s; sync files=8, longest=0.015 s, average=0.003 s; distance=43 kB, estimate=96 kB; lsn=0/54FF6E0, redo lsn=0/54FF688
+2026-10-21T17:57:01.091463356Z [inf]  Starting Container
+2026-10-21T17:57:01.303970939Z [inf]  ◇ injected env (0) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+2026-10-21T17:57:01.303973819Z [inf]  [Storage] S3 bucket client initialized. Endpoint: https://t3.storageapi.dev, Bucket: "systematic-pierogi-m9xjsn", Region: "sjc". Authenticated proxy active.
+2026-10-21T17:57:01.303977279Z [inf]  ◇ injected env (0) from .env // tip: ⌘ enable debugging { debug: true }
+2026-10-21T17:57:01.303980949Z [err]  API key should be set when using the Gemini API.
+2026-10-21T17:57:01.303983719Z [err]  API key should be set when using the Gemini API.
+2026-10-21T17:57:01.303986569Z [err]  (node:1) Warning: NodeVersionSupportWarning: The AWS SDK for JavaScript (v3)
+2026-10-21T17:57:01.303989749Z [err]  versions published after the first week of January 2027
+2026-10-21T17:57:01.303992659Z [err]  will require node >=22. You are running node v20.20.2.
+2026-10-21T17:57:01.303995689Z [err]  
+2026-10-21T17:57:01.303998719Z [err]  To continue receiving updates to AWS services, bug fixes,
+2026-10-21T17:57:01.304001699Z [err]  and security updates please upgrade to node >=22.
+2026-10-21T17:57:01.304004939Z [err]  
+2026-10-21T17:57:01.304007909Z [err]  More information can be found at: https://a.co/c895JFp
+2026-10-21T17:57:01.304011178Z [err]  (Use `node --trace-warnings ...` to show where the warning was created)
+2026-10-21T17:57:01.304014168Z [inf]  [Railway Backend] Full-stack application running on port 8080
+2026-10-21T17:57:01.766309721Z [inf]  [PostgreSQL] Connected to PostgreSQL database.
+2026-10-21T17:57:04.858195984Z [inf]  [PostgreSQL] Database schema verified & synchronized successfully.
+2026-10-21T17:57:04.996094147Z [inf]  [PostgreSQL] Refreshed live column whitelists from information_schema.
+2026-10-21T17:57:07.654823249Z [err]  [Auth] Password check notice for SUPER-ADMIN-01
+2026-10-21T18:01:08.490176313Z [err]  2026-10-21 18:01:02.557 UTC [61] LOG:  checkpoint starting: time
+2026-10-21T18:01:08.490184533Z [err]  2026-10-21 18:01:03.504 UTC [61] LOG:  checkpoint complete: wrote 8 buffers (0.0%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.828 s, sync=0.039 s, total=0.947 s; sync files=9, longest=0.027 s, average=0.005 s; distance=37 kB, estimate=90 kB; lsn=0/5508C38, redo lsn=0/5508BE0

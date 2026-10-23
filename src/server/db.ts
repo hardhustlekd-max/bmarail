@@ -275,21 +275,14 @@ function parseCreateTableColumns(schemaSql: string): Map<string, Array<{ name: s
  */
 async function runSchemaMigrations(client: pg.PoolClient) {
   try {
-    // 1. Execute schema.sql definition file statement by statement
+    // 1. Execute schema.sql definition file as a single script
     const schemaPath = path.join(process.cwd(), 'database', 'schema.sql');
     if (fs.existsSync(schemaPath)) {
       const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-      const statements = schemaSql
-        .split(';')
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0);
-
-      for (const stmt of statements) {
-        try {
-          await client.query(stmt);
-        } catch (stmtErr: any) {
-          // Ignore non-fatal statement errors (e.g. relation or extension already exists)
-        }
+      try {
+        await client.query(schemaSql);
+      } catch (schemaErr: any) {
+        console.warn('[PostgreSQL] Notice during schema execution:', schemaErr.message);
       }
     }
 
