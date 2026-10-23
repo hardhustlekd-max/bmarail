@@ -328,15 +328,15 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
   }
 
   return (
-    <div data-zoomable-container="true" className="flex flex-col w-full max-w-4xl mx-auto bg-surface-container-lowest border border-outline-variant/80 rounded-lg shadow-2xl overflow-hidden space-y-0 my-auto">
+    <div data-zoomable-container="true" className="fixed inset-0 z-[999999] w-screen h-[100dvh] max-w-none max-h-none bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden">
       
       {/* STATIONARY HEADER BAR WITH ZOOM CONTROLS */}
-      <div className="no-print bg-surface-container/90 border-b border-outline-variant/80 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-xs text-xs shrink-0">
+      <div className="no-print bg-black/95 border-b border-white/10 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-xl text-xs shrink-0 h-14 z-30">
         {!hideHeader ? (
-          <div className="flex items-center gap-2 font-bold text-on-surface">
-            <Icon className="material-symbols-outlined text-primary text-[20px]">preview</Icon>
-            <span className="truncate max-w-[200px] sm:max-w-xs">{title || (isAmharic ? 'የሰነድ ማጉያ' : 'Interactive Preview')}</span>
-            <span className="hidden md:inline-block text-[10px] text-secondary font-mono bg-surface border border-outline-variant px-2 py-0.5 rounded">
+          <div className="flex items-center gap-2 font-bold text-white">
+            <Icon className="material-symbols-outlined text-primary text-[22px]">preview</Icon>
+            <span className="truncate max-w-[220px] sm:max-w-md text-sm">{title || (isAmharic ? 'የሰነድ ማጉያ' : 'Interactive Preview')}</span>
+            <span className="hidden md:inline-block text-[10px] text-slate-300 font-mono bg-white/10 border border-white/15 px-2 py-0.5 rounded">
               {isAmharic ? 'በጣት ቀርበህ አጉላ' : 'Pinch or controls to zoom'}
             </span>
           </div>
@@ -350,14 +350,14 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             type="button"
             onClick={handleZoomOut}
             disabled={scale <= 0.05}
-            className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high disabled:opacity-30 transition-all cursor-pointer"
+            className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 disabled:opacity-30 transition-all cursor-pointer"
             title="Zoom Out (Min 5%)"
           >
             <Icon className="material-symbols-outlined text-[18px]">zoom_out</Icon>
           </button>
 
           {/* Scale Indicator (Shows percentage down to 5%) */}
-          <span className="font-mono text-xs font-bold text-primary min-w-[48px] text-center bg-surface border border-outline-variant px-1.5 py-1 rounded-lg">
+          <span className="font-mono text-xs font-bold text-amber-300 min-w-[48px] text-center bg-white/10 border border-white/20 px-1.5 py-1 rounded-lg">
             {Math.round(scale * 100)}%
           </span>
 
@@ -366,7 +366,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             type="button"
             onClick={handleZoomIn}
             disabled={scale >= 4.0}
-            className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high disabled:opacity-30 transition-all cursor-pointer"
+            className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 disabled:opacity-30 transition-all cursor-pointer"
             title="Zoom In (Max 400%)"
           >
             <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
@@ -376,14 +376,14 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
           <button
             type="button"
             onClick={handleResetZoom}
-            className="h-9 px-3 bg-surface border border-outline-variant rounded-lg font-bold text-xs text-secondary hover:text-on-surface hover:bg-surface-container-high transition-all cursor-pointer"
+            className="h-9 px-3 bg-white/10 border border-white/20 rounded-lg font-bold text-xs text-slate-300 hover:text-white hover:bg-white/20 transition-all cursor-pointer"
             title="Reset Zoom to 100%"
           >
             {isAmharic ? 'መደበኛ' : 'Reset'}
           </button>
 
           {/* Print ID / Document Button beside Zoom Controls (Icon Only) */}
-          {!hidePrint && (onPrint || Boolean(contentRef.current?.querySelector?.('.printable-a4-document, .printable-id-card, .printable-sticker, #a4-permit-document, #sticker-container, #pvc-card-container'))) && (
+          {!hidePrint && (onPrint || Boolean(contentRef.current?.querySelector?.('.printable-a4-document, .printable-id-card, .printable-sticker, #a4-permit-document, #sticker-container, #pvc-card-container, #pvc-card-front, #pvc-card-back'))) && (
             <button
               type="button"
               onClick={() => {
@@ -395,7 +395,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
                   triggerDocumentPrint('a4');
                 } else if (contentRef.current?.querySelector('.printable-sticker, #sticker-container')) {
                   triggerDocumentPrint('sticker');
-                } else if (contentRef.current?.querySelector('.printable-id-card, #pvc-card-container')) {
+                } else if (contentRef.current?.querySelector('.printable-id-card, #pvc-card-container, #pvc-card-front, #pvc-card-back')) {
                   triggerDocumentPrint('id-card');
                 } else {
                   triggerDocumentPrint('a4');
@@ -413,12 +413,13 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               type="button"
               disabled={isDownloading}
               onClick={() => handleDownload(downloadFrontId, 'id_front.jpg')}
-              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1 disabled:opacity-50"
+              className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
               title={isAmharic ? 'የፊት ገጽ አውርድ' : 'Download Front'}
             >
               <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
                 {isDownloading ? 'progress_activity' : 'download'}
               </Icon>
+              <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የፊት' : 'Front'}</span>
             </button>
           )}
           {downloadBackId && (
@@ -426,12 +427,13 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               type="button"
               disabled={isDownloading}
               onClick={() => handleDownload(downloadBackId, 'id_back.jpg')}
-              className="h-9 px-3 flex items-center justify-center bg-surface border border-outline-variant rounded-lg font-bold text-on-surface hover:bg-surface-container-high transition-all cursor-pointer ml-1 disabled:opacity-50"
+              className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
               title={isAmharic ? 'የኋላ ገጽ አውርድ' : 'Download Back'}
             >
               <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
                 {isDownloading ? 'progress_activity' : 'download'}
               </Icon>
+              <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የኋላ' : 'Back'}</span>
             </button>
           )}
 
@@ -439,7 +441,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             <button
               type="button"
               onClick={onClose}
-              className="h-9 px-3 flex items-center justify-center bg-surface-container-high border border-outline-variant rounded-lg text-secondary hover:text-on-surface transition-colors cursor-pointer ml-1"
+              className="h-9 px-3 flex items-center justify-center bg-rose-600/80 hover:bg-rose-600 text-white border border-rose-500 rounded-lg transition-colors cursor-pointer ml-2 shadow-md"
               title="Close"
             >
               <Icon className="material-symbols-outlined text-[18px]">close</Icon>
@@ -451,7 +453,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
       {/* INTERACTIVE DOCUMENT CANVAS VIEWPORT WITH PINCH TO ZOOM & DRAG PAN */}
       <div
         ref={containerRef}
-        className="relative w-full h-[58vh] sm:h-[68vh] min-h-[350px] max-h-[720px] bg-slate-900/80 dark:bg-black/90 overflow-hidden flex items-center justify-center select-none touch-none"
+        className="relative flex-1 w-full h-full bg-black/90 overflow-hidden flex items-center justify-center select-none touch-none"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

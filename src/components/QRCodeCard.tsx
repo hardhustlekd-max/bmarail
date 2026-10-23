@@ -132,7 +132,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
         >
         
         {/* Replica of Member ID Card matching professional municipal ID standards */}
-        <div id="pvc-card-container" className="printable-id-card w-[580px] h-[366px] bg-gradient-to-br from-slate-50 via-white to-sky-50/30 rounded-xl shadow-2xl border border-slate-300/80 overflow-hidden text-slate-900 relative shrink-0 select-none font-sans flex flex-col justify-between">
+        <div id="pvc-card-front" className="printable-id-card w-[580px] h-[366px] bg-gradient-to-br from-slate-50 via-white to-sky-50/30 rounded-xl shadow-2xl border border-slate-300/80 overflow-hidden text-slate-900 relative shrink-0 select-none font-sans flex flex-col justify-between">
           
           {/* TOP HEADER BANNER - Deep Rich Navy Blue with Gold Accent Border */}
           <div className="bg-gradient-to-r from-slate-900 via-[#1e293b] to-slate-900 text-white px-4 py-2 flex items-center justify-between relative min-h-[92px] shrink-0 border-b-2 border-amber-400 shadow-md">
