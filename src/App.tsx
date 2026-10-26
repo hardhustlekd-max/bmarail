@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ColdStartLoader } from './components/ColdStartLoader';
 import { LoginPage } from './components/LoginPage';
 import { HomePage } from './components/HomePage';
 import { CrashNotificationModal } from './components/CrashNotificationModal';
@@ -32,8 +33,27 @@ import {
 } from './services/dbService';
 
 export default function App() {
+  const [isBackendReady, setIsBackendReady] = useState<boolean>(false);
   const [lang, setLang] = useState<Language>(() => getStoredLang());
   const [theme, setTheme] = useState<'light' | 'dark'>(() => getStoredTheme());
+
+  useEffect(() => {
+    async function checkHealth() {
+      let retries = 5;
+      while (retries > 0) {
+        try {
+          const res = await fetch('/api/health');
+          if (res.ok) {
+            setIsBackendReady(true);
+            return;
+          }
+        } catch (e) {}
+        retries--;
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    }
+    checkHealth();
+  }, []);
 
   // Listen to DB settings to apply theme globally in real-time across devices/tabs
   useEffect(() => {
@@ -202,6 +222,7 @@ export default function App() {
       lang={lang}
       data-system-lang={lang}
     >
+      {!isBackendReady && <ColdStartLoader />}
       {isLoggedIn ? (
         <>
           <HomePage

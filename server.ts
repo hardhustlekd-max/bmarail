@@ -1947,7 +1947,7 @@ app.get('/api/cheki/banks', async (req, res) => {
 
 app.get('/api/cheki/health', async (req, res) => {
   try {
-    const resp = await fetch('https://cheki.et/api/health');
+    const resp = await fetch('https://cheki.et/health');
     const data = await resp.json();
     return res.json(data);
   } catch (err: any) {
@@ -1955,6 +1955,21 @@ app.get('/api/cheki/health', async (req, res) => {
     return res.status(500).json({ success: false, error: err?.message || 'Failed to check Cheki API health' });
   }
 });
+
+// Serverless activator: Keep-alive endpoint
+app.get('/api/keep-alive', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Periodically ping itself to prevent idle timeout
+setInterval(async () => {
+  const port = process.env.PORT || 3000;
+  try {
+    await fetch(`http://localhost:${port}/api/keep-alive`);
+  } catch (err) {
+    // Fail silently
+  }
+}, 300000); // 5 minutes
 
 // 404 handler for unmatched /api endpoints
 app.use('/api/*', (req, res) => {
