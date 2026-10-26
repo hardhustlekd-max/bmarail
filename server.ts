@@ -49,6 +49,8 @@ import {
   getS3BucketName,
   generatePresignedGetUrl,
   offloadObjectBase64Images,
+  migrateExistingFilesToRegistrationNumbers,
+  cleanupOrphanedFiles,
 } from './src/server/storage.ts';
 
 dotenv.config({ override: true });
@@ -1067,6 +1069,18 @@ app.delete('/api/storage/file/:key', async (req, res) => {
     const fileKey = decodeURIComponent(req.params.key);
     await deleteStoredFile(fileKey);
     res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
+// POST /api/storage/maintenance
+app.post('/api/storage/maintenance', async (req, res) => {
+  try {
+    const pool = getDbPool();
+    await migrateExistingFilesToRegistrationNumbers(pool);
+    const { deletedCount } = await cleanupOrphanedFiles(pool);
+    res.json({ success: true, deletedCount });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || String(err) });
   }

@@ -874,8 +874,6 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
     setValidationError('');
 
     try {
-      const registrationId = `REG-${Date.now()}`;
-
       // Ensure all document photos are uploaded to Cloud Storage
       const [
         upPortrait,
@@ -885,12 +883,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         upPermit,
         upReceipt,
       ] = await Promise.all([
-        userPortraitPhoto ? uploadDocumentPhoto(userPortraitPhoto, 'permits/portraits', registrationId) : Promise.resolve(''),
-        nationalIdPhoto ? uploadDocumentPhoto(nationalIdPhoto, 'permits/national_ids', registrationId) : Promise.resolve(''),
-        nationalIdBackPhoto ? uploadDocumentPhoto(nationalIdBackPhoto, 'permits/national_ids', registrationId) : Promise.resolve(''),
-        drivingLicensePhoto ? uploadDocumentPhoto(drivingLicensePhoto, 'permits/licenses', registrationId) : Promise.resolve(''),
-        drivingPermitPhoto ? uploadDocumentPhoto(drivingPermitPhoto, 'permits/police_permits', registrationId) : Promise.resolve(''),
-        receiptScreenshot ? uploadDocumentPhoto(receiptScreenshot, 'permits/receipts', registrationId) : Promise.resolve(''),
+        userPortraitPhoto ? uploadDocumentPhoto(userPortraitPhoto, 'permits/portraits', newId) : Promise.resolve(''),
+        nationalIdPhoto ? uploadDocumentPhoto(nationalIdPhoto, 'permits/national_ids', newId) : Promise.resolve(''),
+        nationalIdBackPhoto ? uploadDocumentPhoto(nationalIdBackPhoto, 'permits/national_ids', newId) : Promise.resolve(''),
+        drivingLicensePhoto ? uploadDocumentPhoto(drivingLicensePhoto, 'permits/licenses', newId) : Promise.resolve(''),
+        drivingPermitPhoto ? uploadDocumentPhoto(drivingPermitPhoto, 'permits/police_permits', newId) : Promise.resolve(''),
+        receiptScreenshot ? uploadDocumentPhoto(receiptScreenshot, 'permits/receipts', newId) : Promise.resolve(''),
       ]);
 
       // Clear local base64 cache immediately after upload

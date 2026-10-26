@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import fs from 'fs';
 import path from 'path';
@@ -637,5 +637,60 @@ export async function offloadObjectBase64Images<T extends Record<string, any>>(
   }
 
   return clone as T;
+}
+
+/**
+ * Cleanup orphaned files that are not referenced in the database.
+ * Only cleans up local disk storage to be safe.
+ */
+export async function cleanupOrphanedFiles(dbPool: any): Promise<{ deletedCount: number }> {
+  if (!dbPool) return { deletedCount: 0 };
+  try {
+    const res = await dbPool.query(`
+      SELECT user_portrait_photo, national_id_photo, national_id_back_photo,
+             driving_license_photo, driving_permit_photo, receipt_screenshot,
+             evidence_photo
+      FROM motorcycle_registrations
+      UNION
+      SELECT receipt_screenshot, NULL, NULL, NULL, NULL, NULL, NULL
+      FROM payment_receipts
+      UNION
+      SELECT evidence_photo, NULL, NULL, NULL, NULL, NULL, NULL
+      FROM unregistered_vehicle_reports
+    `);
+    const validKeys = new Set<string>();
+    for (const row of res.rows) {
+      for (const val of Object.values(row)) {
+        if (typeof val === 'string' && val.startsWith('/api/storage/file/')) {
+          validKeys.add(val.replace('/api/storage/file/', ''));
+        }
+      }
+    }
+
+    let deletedCount = 0;
+    const walkSync = (dir: string) => {
+      const files = fs.readdirSync(dir);
+      for (const file of files) {
+        const fullPath = path.join(dir, file);
+        if (fs.statSync(fullPath).isDirectory()) {
+          walkSync(fullPath);
+        } else {
+          const relativePath = path.relative(LOCAL_UPLOADS_DIR, fullPath);
+          if (!validKeys.has(relativePath)) {
+            // Only delete files that look like they were uploaded by our system
+            if (relativePath.includes('upload_') || relativePath.startsWith('permits/')) {
+              fs.unlinkSync(fullPath);
+              deletedCount++;
+            }
+          }
+        }
+      }
+    };
+    walkSync(LOCAL_UPLOADS_DIR);
+    return { deletedCount };
+  } catch (err) {
+    console.error('[Storage Maintenance] Error cleaning orphaned files:', err);
+    return { deletedCount: 0 };
+  }
 }
 
