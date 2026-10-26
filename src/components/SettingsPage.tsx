@@ -734,6 +734,57 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               </div>
             </div>
 
+            {/* Super Admin Maintenance Section */}
+            {userRole === 'superadmin' && (
+              <div className="bg-surface-container-lowest border-2 border-dashed border-purple-500 rounded-xl p-4 shadow-xs space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-300 dark:border-purple-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <Icon className="material-symbols-outlined text-[20px]">build</Icon>
+                    </div>
+                    <div>
+                      <span className="text-xs font-black text-on-surface block">
+                        {isAmharic ? 'የሱፐር አድሚን ጥገና' : 'Super Admin Maintenance'}
+                      </span>
+                      <span className="text-[11px] text-outline block mt-0.5 leading-relaxed">
+                        {isAmharic
+                          ? 'የፋይል ስም መስተካከያና ጥቅም የሌላቸው ፋይሎች ማጽጃ'
+                          : 'Trigger file renaming migration and cleanup of orphaned storage files.'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-purple-200 dark:border-purple-800 flex items-center justify-end">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsLoading(true);
+                      setFeedback(null);
+                      try {
+                        const res = await fetch('/api/storage/maintenance', { method: 'POST' });
+                        const data = await res.json();
+                        setIsLoading(false);
+                        if (data.success) {
+                          setFeedback({ type: 'success', message: `Maintenance successful! ${data.deletedCount} orphaned files removed.` });
+                        } else {
+                          setFeedback({ type: 'error', message: data.error || 'Maintenance failed' });
+                        }
+                      } catch (err: any) {
+                        setIsLoading(false);
+                        setFeedback({ type: 'error', message: err.message || 'Error triggering maintenance' });
+                      }
+                    }}
+                    disabled={isLoading}
+                    className="px-3 py-1.5 rounded-lg text-xs font-black bg-purple-600 hover:bg-purple-700 text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {isLoading ? <Icon className="material-symbols-outlined text-[16px] animate-spin">sync</Icon> : <Icon className="material-symbols-outlined text-[16px]">play_circle</Icon>}
+                    <span>{isAmharic ? 'ጥገናውን አስጀምር' : 'Run Maintenance'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Quick Logout Card (Using non-red theme) */}
             {onLogoutClick && (
               <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs flex items-center justify-between">
