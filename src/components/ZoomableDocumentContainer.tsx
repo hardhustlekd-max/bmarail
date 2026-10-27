@@ -84,7 +84,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
 
       // 3. Render high-resolution 2x JPEG using browser's native SVG foreignObject rasterizer
       let dataUrl = '';
-      const bg = element.id === 'pvc-card-back' ? '#0f172a' : '#ffffff';
+      const bg = element.id === 'pvc-card-back' ? '#052317' : '#ffffff';
 
       try {
         dataUrl = await toJpeg(element, {
