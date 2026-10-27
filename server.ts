@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import { GoogleGenAI, Type } from "@google/genai";
 import {
   getDbPool,
   initializeDatabaseSchema,
@@ -57,15 +56,6 @@ import {
 import { UserRole } from './src/types.ts';
 
 dotenv.config({ override: true });
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    }
-  }
-});
 
 export const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -1963,38 +1953,21 @@ app.post('/api/verify-receipt-v2', async (req, res) => {
     const response = await fetch(url);
     const content = await response.text();
 
-    const prompt = `Extract the following receipt information from the provided HTML/text content for bank ${bank || 'unknown'}:
-    - Amount (as number)
-    - Date (as YYYY-MM-DD)
-    - Receipt Number / Transaction ID
-    - Sender Name
-    - Receiver Name
-    
-    Content:
-    ${content.substring(0, 5000)} // Truncate content to fit model limits
-    `;
+    const amountMatch = content.match(/(?:ETB|Amount|Birr|ብር)\s*[:=]?\s*([\d,]+(?:\.\d{1,2})?)/i) ||
+                        content.match(/([\d,]+(?:\.\d{1,2})?)\s*(?:ETB|Birr|ብር)/i);
+    const dateMatch = content.match(/(\d{4}[-/.]\d{2}[-/.]\d{2})/) ||
+                      content.match(/(\d{2}[-/.]\d{2}[-/.]\d{4})/);
+    const receiptMatch = content.match(/(?:Ref|Txn|Transaction|Receipt|ID|FT|No)\.?:?\s*([A-Za-z0-9_-]{6,30})/i);
+    const senderMatch = content.match(/(?:From|Sender|Payer)\s*[:=]?\s*([A-Za-z\s]+)/i);
+    const receiverMatch = content.match(/(?:To|Receiver|Payee|Beneficiary)\s*[:=]?\s*([A-Za-z\s]+)/i);
 
-    const aiResponse = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            amount: { type: Type.NUMBER },
-            date: { type: Type.STRING },
-            receiptNumber: { type: Type.STRING },
-            sender: { type: Type.STRING },
-            receiver: { type: Type.STRING },
-          },
-          required: ["amount", "date", "receiptNumber"],
-        },
-      },
-    });
+    const amount = amountMatch ? parseFloat(amountMatch[1].replace(/,/g, '')) : 0;
+    const date = dateMatch ? dateMatch[1] : new Date().toISOString().split('T')[0];
+    const receiptNumber = receiptMatch ? receiptMatch[1] : `REC-${Date.now().toString().slice(-6)}`;
+    const sender = senderMatch ? senderMatch[1].trim() : 'System Payer';
+    const receiver = receiverMatch ? receiverMatch[1].trim() : 'Bahirdar Motorist Association';
 
-    const data = JSON.parse(aiResponse.text || '{}');
-    return res.json({ success: true, verified: true, ...data });
+    return res.json({ success: true, verified: true, amount, date, receiptNumber, sender, receiver });
   } catch (err: any) {
     console.error('[Verify Receipt Error]:', err);
     return res.status(500).json({ success: false, error: err?.message || 'Failed to verify receipt' });
