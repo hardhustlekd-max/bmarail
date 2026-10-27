@@ -138,12 +138,9 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           <div className="bg-gradient-to-r from-slate-900 via-[#1e293b] to-slate-900 text-white px-4 py-2 flex items-center justify-between relative min-h-[92px] shrink-0 border-b-2 border-amber-400 shadow-md">
             
             {/* Left Emblem Logo */}
-            <div className="flex flex-col items-center shrink-0 z-10 w-[72px]">
-              <div className="w-13 h-13 rounded-full bg-white shadow-lg flex items-center justify-center relative overflow-hidden ring-2 ring-amber-400/80">
+            <div className="flex flex-col items-center justify-center shrink-0 z-10 w-[72px]">
+              <div className="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center relative overflow-hidden ring-2 ring-amber-400/80">
                 <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
-              </div>
-              <div className="bg-amber-400 text-slate-950 font-extrabold text-[7.5px] px-2 py-0.5 rounded-full mt-1 whitespace-nowrap shadow-xs uppercase tracking-tight">
-                ማህበራዊ አገልግሎት
               </div>
             </div>
 
@@ -163,21 +160,15 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               </div>
             </div>
 
-            {/* Right Column: Flag + Moto Slogan */}
-            <div className="flex flex-col items-end text-right shrink-0 z-10 w-[115px]">
-              <div className="flex items-center gap-1.5">
-                <div className="w-11 h-6 rounded-sm overflow-hidden border border-white/90 shadow-sm shrink-0 relative bg-black/20">
-                  <img
-                    src={APP_FLAG}
-                    alt="Ethiopian Flag"
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-1 flex justify-end text-amber-300">
-                <Icon className="material-symbols-outlined text-[30px] drop-shadow-md">two_wheeler</Icon>
+            {/* Right Column: Flag */}
+            <div className="flex flex-col items-end justify-center shrink-0 z-10 w-[72px]">
+              <div className="w-13 h-7.5 rounded-sm overflow-hidden border border-white/90 shadow-sm shrink-0 relative bg-black/20">
+                <img
+                  src={APP_FLAG}
+                  alt="Ethiopian Flag"
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
             </div>
           </div>
@@ -218,7 +209,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               {/* Plate No */}
               <div className="flex items-center gap-1">
                 <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">የምዝገባ ሰሌዳ / Plate No.</span>
-                <span className="font-mono font-black text-indigo-900 text-[13.5px] bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">: {plateNo}</span>
+                <span className="font-mono font-black text-slate-900 text-[13.5px]">: {plateNo}</span>
               </div>
 
               {/* Blood Group */}
@@ -291,7 +282,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
            ========================================================================= */}
         <div id="pvc-card-back" className="printable-id-card w-[580px] h-[366px] bg-gradient-to-br from-slate-900 via-[#1e293b] to-slate-900 rounded-xl shadow-2xl border-2 border-amber-400/80 overflow-hidden text-white relative shrink-0 select-none font-sans flex flex-col justify-between p-5 mt-4">
           
-          {/* Backside Header: Association Badge & Notice */}
+          {/* Backside Header: Association Badge */}
           <div className="flex items-center justify-between border-b border-white/15 pb-3">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center p-0.5 shadow-md shrink-0">
@@ -301,9 +292,6 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
                 <h3 className="text-xs font-black text-amber-300 tracking-wide">ባህር ዳር ሞተረኞች ማህበር</h3>
                 <p className="text-[9px] font-bold text-slate-300 tracking-wider">BAHIRDAR MOTORIST ASSOCIATION</p>
               </div>
-            </div>
-            <div className="bg-amber-400 text-slate-950 px-3 py-1 rounded-full text-[9px] font-extrabold uppercase tracking-wider shadow-sm">
-              Official Authority Backside
             </div>
           </div>
 
@@ -320,16 +308,11 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               </ul>
             </div>
 
-            {/* Backside Security Seal / Hologram Emblem */}
+            {/* Backside Large QR Code */}
             <div className="col-span-1 flex flex-col items-center justify-center">
-              <div className="w-24 h-24 rounded-full border-2 border-amber-400/70 p-1 flex items-center justify-center relative bg-white/5 backdrop-blur-xs shadow-inner">
-                <div className="w-full h-full rounded-full border border-dashed border-amber-400/50 flex flex-col items-center justify-center p-1 text-[7px] font-black text-amber-300 text-center">
-                  <span className="text-[6.5px]">BAHIRDAR</span>
-                  <Icon className="material-symbols-outlined text-[20px] text-amber-400 my-0.5">verified</Icon>
-                  <span className="text-[6.5px]">SECURE ID</span>
-                </div>
+              <div className="bg-white p-2 rounded-xl shadow-lg border-2 border-amber-400/80 flex items-center justify-center">
+                <QRCodeSVG value={qrVal} size={112} level="M" />
               </div>
-              <span className="text-[8px] font-mono font-bold text-amber-300 mt-1">SEC-AUTH-2026</span>
             </div>
           </div>
 
