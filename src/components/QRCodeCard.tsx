@@ -183,15 +183,15 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           </div>
 
           {/* MAIN CARD BODY - CSS Grid Alignment with Zero Vertical Padding & Centered Watermark Stamp */}
-          <div className="px-4 py-0 bg-white flex-1 grid grid-cols-[124px_1fr_120px] items-center gap-3 relative z-10 overflow-hidden">
+          <div className="px-4 py-0 bg-white flex-1 grid grid-cols-[124px_1fr_120px] items-center gap-3 relative overflow-hidden z-10">
             
             {/* Centered Security Watermark Stamp - Restricted Strictly to Card Body */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-15 flex items-center justify-center">
-              <div className="w-34 h-34 rounded-full border-4 border-double border-neutral-900 p-1 flex items-center justify-center">
+            <div className="absolute inset-0 pointer-events-none z-0 opacity-15 flex items-center justify-center">
+              <div className="w-44 h-44 rounded-full border-4 border-double border-neutral-900 p-1 flex items-center justify-center">
                 <div className="w-full h-full rounded-full border-2 border-dashed border-neutral-800 flex flex-col items-center justify-center p-1.5 text-center text-neutral-900 font-black">
-                  <span className="text-[10px] tracking-wide">ባህር ዳር ሞተረኞች</span>
-                  <Icon className="material-symbols-outlined text-[28px] text-neutral-900 my-0.5">two_wheeler</Icon>
-                  <span className="text-[10px] tracking-wide">ማህበር</span>
+                  <span className="text-[11px] tracking-wide">ባህር ዳር ሞተረኞች</span>
+                  <Icon className="material-symbols-outlined text-[32px] text-neutral-900 my-0.5">two_wheeler</Icon>
+                  <span className="text-[11px] tracking-wide">ማህበር</span>
                 </div>
               </div>
             </div>

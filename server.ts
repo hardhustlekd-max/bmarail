@@ -27,6 +27,7 @@ import {
   getMaterializedNotifications,
   getMonthlyFeeStatisticsServerSide,
   dbGetMembershipFeeDirectoryScoped,
+  invalidateCacheForTable,
 } from './src/server/db.ts';
 import {
   authenticateToken,
@@ -51,6 +52,7 @@ import {
   offloadObjectBase64Images,
   migrateExistingFilesToRegistrationNumbers,
   cleanupOrphanedFiles,
+  getFallbackImageSvg,
 } from './src/server/storage.ts';
 
 dotenv.config({ override: true });
@@ -136,11 +138,18 @@ app.get('/uploads/*', async (req, res) => {
       }
     }
 
-    console.warn(`[Storage Server /uploads 404] File "${fileKey}" not found in bucket or local cache.`);
-    return res.status(404).json({ error: 'Image file not found in storage bucket or local cache' });
+    console.warn(`[Storage Server /uploads 404] File "${fileKey}" not found in bucket or local cache. Serving SVG fallback.`);
+    const fallbackSvg = getFallbackImageSvg(fileKey);
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.status(200).send(fallbackSvg);
   } catch (err: any) {
-    console.error('[Storage Server /uploads Error]:', err);
-    return res.status(500).json({ error: 'Failed to retrieve image from storage' });
+    console.warn('[Storage Server /uploads Notice]:', err);
+    const fallbackSvg = getFallbackImageSvg(req.params[0] || 'fallback');
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(200).send(fallbackSvg);
   }
 });
 
@@ -895,34 +904,32 @@ app.get('/api/storage/file/*', async (req, res) => {
       return res.status(400).json({ error: 'File key is required' });
     }
 
-    console.log(`[Storage File Route] Requested key: "${fileKey}"`);
     const fileInfo = await getFileFromStorage(fileKey);
-    if (!fileInfo) {
-      console.warn(`[Storage File Route 404] Key "${fileKey}" could not be retrieved from S3 bucket or cache.`);
-      return res.status(404).json({ error: 'File not found in storage bucket or cache' });
+    if (fileInfo) {
+      res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      if (fileInfo.buffer) {
+        res.setHeader('Content-Length', fileInfo.buffer.length);
+        return res.send(fileInfo.buffer);
+      }
+      if (fileInfo.localPath) {
+        return res.sendFile(fileInfo.localPath);
+      }
     }
 
-    res.setHeader('Content-Type', fileInfo.contentType || 'image/jpeg');
+    console.warn(`[Storage File Route 404] Key "${fileKey}" not found in storage. Serving SVG fallback.`);
+    const fallbackSvg = getFallbackImageSvg(fileKey);
+    res.setHeader('Content-Type', 'image/svg+xml');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-
-    // 1. If buffer is retrieved (e.g. from authenticated S3)
-    if (fileInfo.buffer) {
-      res.setHeader('Content-Length', fileInfo.buffer.length);
-      console.log(`[Storage File Route 200] Served S3 binary stream for "${fileKey}" (${fileInfo.buffer.length} bytes, ${fileInfo.contentType})`);
-      return res.send(fileInfo.buffer);
-    }
-
-    // 2. If local disk file exists
-    if (fileInfo.localPath) {
-      console.log(`[Storage File Route 200] Served local disk cache for "${fileKey}" (${fileInfo.contentType})`);
-      return res.sendFile(fileInfo.localPath);
-    }
-
-    res.status(404).json({ error: 'File data unavailable' });
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.status(200).send(fallbackSvg);
   } catch (err: any) {
-    console.error('[Storage Error] File fetch failed:', err);
-    res.status(500).json({ error: 'Failed to retrieve file' });
+    console.warn('[Storage Notice] File fetch exception, serving fallback SVG:', err?.message || err);
+    const fallbackSvg = getFallbackImageSvg('fallback');
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(200).send(fallbackSvg);
   }
 });
 
@@ -931,7 +938,10 @@ app.get('/api/storage/proxy', async (req, res) => {
   try {
     const targetUrl = (req.query.url as string) || (req.query.src as string) || (req.query.key as string);
     if (!targetUrl) {
-      return res.status(400).json({ error: 'Target URL or key is required' });
+      const fallbackSvg = getFallbackImageSvg('default');
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      return res.status(200).send(fallbackSvg);
     }
 
     console.log(`[Storage Proxy] Incoming proxy request for: "${targetUrl}"`);
@@ -984,35 +994,44 @@ app.get('/api/storage/proxy', async (req, res) => {
 
     // 3. Fallback: if targetUrl is an external HTTP/HTTPS URL, fetch and stream safely
     if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
-      const remoteRes = await fetch(targetUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-        },
-      });
+      try {
+        const remoteRes = await fetch(targetUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            Accept: 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+          },
+        });
 
-      if (remoteRes.ok) {
-        const arrayBuf = await remoteRes.arrayBuffer();
-        const buffer = Buffer.from(arrayBuf);
-        const magic = detectImageMagicBytes(buffer);
-        const contentType = magic ? magic.mime : remoteRes.headers.get('content-type') || 'image/jpeg';
+        if (remoteRes.ok) {
+          const arrayBuf = await remoteRes.arrayBuffer();
+          const buffer = Buffer.from(arrayBuf);
+          const magic = detectImageMagicBytes(buffer);
+          const contentType = magic ? magic.mime : remoteRes.headers.get('content-type') || 'image/jpeg';
 
-        res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Length', buffer.length);
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Cache-Control', 'public, max-age=86400');
-        console.log(`[Storage Proxy 200] Streamed remote image: "${targetUrl}" (${buffer.length} bytes, ${contentType})`);
-        return res.send(buffer);
-      } else {
-        console.warn(`[Storage Proxy] Remote fetch failed with status ${remoteRes.status} for "${targetUrl}".`);
-      }
+          res.setHeader('Content-Type', contentType);
+          res.setHeader('Content-Length', buffer.length);
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Cache-Control', 'public, max-age=86400');
+          console.log(`[Storage Proxy 200] Streamed remote image: "${targetUrl}" (${buffer.length} bytes, ${contentType})`);
+          return res.send(buffer);
+        } else {
+          console.warn(`[Storage Proxy] Remote fetch failed with status ${remoteRes.status} for "${targetUrl}".`);
+        }
+      } catch (e) {}
     }
 
-    console.warn(`[Storage Proxy 404] Could not find or proxy image: "${targetUrl}"`);
-    res.status(404).json({ error: 'Could not proxy image' });
+    console.warn(`[Storage Proxy 404] Could not find or proxy image: "${targetUrl}". Serving SVG fallback.`);
+    const fallbackSvg = getFallbackImageSvg(targetUrl);
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    return res.status(200).send(fallbackSvg);
   } catch (err: any) {
-    console.error('[Storage Proxy Error]:', err);
-    res.status(500).json({ error: 'Proxy request failed' });
+    console.warn('[Storage Proxy Notice]:', err?.message || err);
+    const fallbackSvg = getFallbackImageSvg('fallback');
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    return res.status(200).send(fallbackSvg);
   }
 });
 
@@ -1078,9 +1097,11 @@ app.delete('/api/storage/file/:key', async (req, res) => {
 app.post('/api/storage/maintenance', async (req, res) => {
   try {
     const pool = getDbPool();
-    await migrateExistingFilesToRegistrationNumbers(pool);
+    const updatedMembersCount = await migrateExistingFilesToRegistrationNumbers(pool);
     const { deletedCount } = await cleanupOrphanedFiles(pool);
-    res.json({ success: true, deletedCount });
+    collectionVersions.motorcycle_registrations = (collectionVersions.motorcycle_registrations || 1) + 1;
+    invalidateCacheForTable('motorcycle_registrations');
+    res.json({ success: true, updatedMembersCount, deletedCount });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message || String(err) });
   }

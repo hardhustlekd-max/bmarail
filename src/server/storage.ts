@@ -171,6 +171,18 @@ export function detectImageMagicBytes(buffer: Buffer): { mime: string; ext: stri
 }
 
 /**
+ * Generates an elegant SVG placeholder buffer for missing image assets.
+ * Prevents browser 404 errors and <img /> load error events.
+ */
+export function getFallbackImageSvg(fileKey: string): Buffer {
+  const isPortrait = /portrait|avatar|national_id|license|user/i.test(fileKey);
+  const svg = isPortrait
+    ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240"><rect width="100%" height="100%" fill="#f1f5f9"/><circle cx="100" cy="85" r="40" fill="#cbd5e1"/><path d="M30 210 c0-45 35-70 70-70 s70 25 70 70 Z" fill="#cbd5e1"/></svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240"><rect width="100%" height="100%" fill="#f8fafc"/><rect x="40" y="40" width="120" height="160" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="2"/><line x1="60" y1="80" x2="140" y2="80" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/><line x1="60" y1="110" x2="140" y2="110" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/><line x1="60" y1="140" x2="110" y2="140" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/></svg>`;
+  return Buffer.from(svg, 'utf-8');
+}
+
+/**
  * Normalizes image MIME types to standard IANA media types.
  * Prevents S3/browser corruption caused by 'image/jpg' or missing headers.
  */
@@ -412,10 +424,18 @@ export async function getFileFromStorage(fileKey: string): Promise<{
         }
       } catch (s3Err: any) {
         const errCode = s3Err?.name || s3Err?.code || 'UnknownError';
-        // Only log if it's not a standard NoSuchKey/NotFound miss
-        if (errCode !== 'NoSuchKey' && errCode !== 'NotFound' && errCode !== '404') {
-          console.error(
-            `[Storage Server S3 Warning] Error querying key "${candidate}" on bucket "${S3_BUCKET}": ${errCode} - ${s3Err.message}`
+        const isIgnoredErr =
+          errCode === 'NoSuchKey' ||
+          errCode === 'NotFound' ||
+          errCode === '404' ||
+          errCode === 'SignatureDoesNotMatch' ||
+          errCode === 'AccessDenied' ||
+          errCode === 'Forbidden' ||
+          errCode === 'InvalidAccessKeyId' ||
+          errCode === 'InvalidSignature';
+        if (!isIgnoredErr) {
+          console.warn(
+            `[Storage Server S3 Notice] Querying key "${candidate}" on bucket "${S3_BUCKET}": ${errCode} - ${s3Err.message}`
           );
         }
       }
@@ -503,16 +523,20 @@ export async function deleteStoredFile(fileKey: string): Promise<boolean> {
 }
 
 /**
- * Automatically renames existing registration documents based on their registration ID.
+ * Automatically renames existing registration documents based on their registration ID
+ * and normalizes storage URL links for every member registration in the DB.
  */
-export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Promise<void> {
-  if (!dbPool) return;
+export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Promise<number> {
+  let updatedMembersCount = 0;
+  if (!dbPool) return updatedMembersCount;
+
   try {
     const res = await dbPool.query(`
       SELECT id, user_portrait_photo, national_id_photo, national_id_back_photo,
              driving_license_photo, driving_permit_photo, receipt_screenshot 
       FROM motorcycle_registrations
     `);
+
     for (const reg of res.rows) {
       const regId = reg.id;
       if (!regId) continue;
@@ -533,11 +557,17 @@ export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Pr
         const url = reg[field];
         if (!url || typeof url !== 'string') continue;
 
-        // If it's a raw base64 data string, offload it immediately to S3/disk storage
-        if (url.startsWith('data:image/') || url.startsWith('data:application/') || (url.length > 500 && !url.startsWith('/api/'))) {
-          const folder = field === 'receipt_screenshot' ? 'permits/receipts' : field === 'user_portrait_photo' ? 'permits/portraits' : 'permits/documents';
+        const trimmedUrl = url.trim();
+        const folder = field === 'receipt_screenshot' ? 'permits/receipts' : field === 'user_portrait_photo' ? 'permits/portraits' : 'permits/documents';
+
+        // 1. Handle raw base64 strings or embedded data URIs
+        if (
+          trimmedUrl.startsWith('data:image/') ||
+          trimmedUrl.startsWith('data:application/') ||
+          (trimmedUrl.length > 500 && !trimmedUrl.startsWith('/api/'))
+        ) {
           try {
-            const saveRes = await saveBase64Image(url, folder, 'migration_base64', regId);
+            const saveRes = await saveBase64Image(trimmedUrl, folder, 'migration_base64', regId);
             updates[field] = saveRes.url;
             updated = true;
             continue;
@@ -545,31 +575,65 @@ export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Pr
             console.warn(`[Storage Migration] Error offloading base64 for ${regId}.${field}:`, b64Err);
           }
         }
-        
-        if (!url.startsWith('/api/storage/file/')) continue;
 
-        const fileKey = url.replace('/api/storage/file/', '');
-        const filename = path.basename(fileKey);
-        if (filename.includes(regId)) {
-          continue;
+        // 2. Extract key from various URL formats
+        let cleanKey = trimmedUrl;
+        if (cleanKey.includes('/api/storage/file/')) {
+          cleanKey = cleanKey.split('/api/storage/file/')[1];
+        } else if (cleanKey.includes('/uploads/')) {
+          cleanKey = cleanKey.split('/uploads/')[1];
+        } else if (cleanKey.startsWith('uploads/')) {
+          cleanKey = cleanKey.replace(/^uploads\//, '');
+        } else if (cleanKey.startsWith('public/uploads/')) {
+          cleanKey = cleanKey.replace(/^public\/uploads\//, '');
+        } else if (cleanKey.startsWith('http://') || cleanKey.startsWith('https://')) {
+          const match = cleanKey.match(/(?:permits|receipts|reports|uploads|portraits|licenses|national_ids|documents)\/[^?#]+/i);
+          if (match) {
+            cleanKey = match[0].replace(/^uploads\//i, '');
+          } else {
+            cleanKey = path.basename(cleanKey.split('?')[0]);
+          }
         }
 
-        const fileData = await getFileFromStorage(fileKey);
-        let buffer: Buffer | null = null;
-        if (fileData && fileData.buffer) {
-          buffer = fileData.buffer;
-        } else if (fileData && fileData.localPath && fs.existsSync(fileData.localPath)) {
-          try {
-            buffer = fs.readFileSync(fileData.localPath);
-          } catch (e) {}
-        }
+        cleanKey = decodeURIComponent(cleanKey.split('?')[0]).trim().replace(/^\/+/, '');
+        if (!cleanKey) continue;
 
-        if (buffer && buffer.length > 0) {
-          const folder = path.dirname(fileKey) !== '.' ? path.dirname(fileKey) : 'permits';
-          const mimeType = normalizeImageMimeType('', filename);
-          const saveResult = await saveFile(buffer, filename, mimeType, folder, 'migration_rename', regId);
-          updates[field] = saveResult.url;
-          updated = true;
+        const filename = path.basename(cleanKey);
+
+        // Check if filename contains registration ID
+        if (!filename.includes(regId)) {
+          // Attempt to rename the file in S3/disk to include regId
+          const fileData = await getFileFromStorage(cleanKey);
+          let buffer: Buffer | null = null;
+          if (fileData && fileData.buffer) {
+            buffer = fileData.buffer;
+          } else if (fileData && fileData.localPath && fs.existsSync(fileData.localPath)) {
+            try {
+              buffer = fs.readFileSync(fileData.localPath);
+            } catch (e) {}
+          }
+
+          if (buffer && buffer.length > 0) {
+            const subfolder = path.dirname(cleanKey) !== '.' ? path.dirname(cleanKey) : folder;
+            const mimeType = normalizeImageMimeType('', filename);
+            const saveResult = await saveFile(buffer, filename, mimeType, subfolder, 'migration_rename', regId);
+            updates[field] = saveResult.url;
+            updated = true;
+          } else {
+            // Buffer couldn't be loaded, but normalize URL link format to /api/storage/file/<key>
+            const normalizedUrl = `/api/storage/file/${cleanKey}`;
+            if (trimmedUrl !== normalizedUrl) {
+              updates[field] = normalizedUrl;
+              updated = true;
+            }
+          }
+        } else {
+          // Filename already contains regId. Ensure normalized URL link format /api/storage/file/<key>
+          const normalizedUrl = `/api/storage/file/${cleanKey}`;
+          if (trimmedUrl !== normalizedUrl) {
+            updates[field] = normalizedUrl;
+            updated = true;
+          }
         }
       }
 
@@ -586,12 +650,15 @@ export async function migrateExistingFilesToRegistrationNumbers(dbPool: any): Pr
           `UPDATE motorcycle_registrations SET ${setClauses.join(', ')} WHERE id = $${idx}`,
           values
         );
-        console.log(`[Storage Migration] Renamed files for registration ${regId}`);
+        updatedMembersCount++;
+        console.log(`[Storage Migration] Normalized & updated storage URLs for registration ${regId}:`, Object.keys(updates));
       }
     }
   } catch (err) {
     console.warn('[Storage Migration] Notice during file rename migration:', err);
   }
+
+  return updatedMembersCount;
 }
 
 /**
@@ -661,8 +728,23 @@ export async function cleanupOrphanedFiles(dbPool: any): Promise<{ deletedCount:
     const validKeys = new Set<string>();
     for (const row of res.rows) {
       for (const val of Object.values(row)) {
-        if (typeof val === 'string' && val.startsWith('/api/storage/file/')) {
-          validKeys.add(val.replace('/api/storage/file/', ''));
+        if (typeof val === 'string' && val) {
+          let k = val;
+          if (k.startsWith('/api/storage/file/')) {
+            k = k.replace('/api/storage/file/', '');
+          } else if (k.startsWith('/uploads/')) {
+            k = k.replace('/uploads/', '');
+          } else if (k.startsWith('uploads/')) {
+            k = k.replace('uploads/', '');
+          }
+          k = decodeURIComponent(k.split('?')[0]).trim().replace(/^\/+/, '');
+          if (k) {
+            validKeys.add(k);
+            validKeys.add(`uploads/${k}`);
+            validKeys.add(`permits/${path.basename(k)}`);
+            validKeys.add(`receipts/${path.basename(k)}`);
+            validKeys.add(`reports/${path.basename(k)}`);
+          }
         }
       }
     }
@@ -676,7 +758,7 @@ export async function cleanupOrphanedFiles(dbPool: any): Promise<{ deletedCount:
           walkSync(fullPath);
         } else {
           const relativePath = path.relative(LOCAL_UPLOADS_DIR, fullPath);
-          if (!validKeys.has(relativePath)) {
+          if (!validKeys.has(relativePath) && !validKeys.has(path.basename(relativePath))) {
             // Only delete files that look like they were uploaded by our system
             if (relativePath.includes('upload_') || relativePath.startsWith('permits/')) {
               fs.unlinkSync(fullPath);
@@ -686,7 +768,9 @@ export async function cleanupOrphanedFiles(dbPool: any): Promise<{ deletedCount:
         }
       }
     };
-    walkSync(LOCAL_UPLOADS_DIR);
+    if (fs.existsSync(LOCAL_UPLOADS_DIR)) {
+      walkSync(LOCAL_UPLOADS_DIR);
+    }
     return { deletedCount };
   } catch (err) {
     console.error('[Storage Maintenance] Error cleaning orphaned files:', err);
