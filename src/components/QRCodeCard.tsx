@@ -135,7 +135,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
         <div id="pvc-card-front" className="printable-id-card w-[580px] h-[366px] bg-gradient-to-br from-slate-50 via-white to-sky-50/30 rounded-xl shadow-2xl border border-slate-300/80 overflow-hidden text-slate-900 relative shrink-0 select-none font-sans flex flex-col justify-between">
           
           {/* TOP HEADER BANNER - Deep Rich Navy Blue with Gold Accent Border */}
-          <div className="bg-gradient-to-r from-slate-900 via-[#1e293b] to-slate-900 text-white px-4 py-2 flex items-center justify-between relative min-h-[92px] shrink-0 border-b-2 border-amber-400 shadow-md">
+          <div className="bg-gradient-to-r from-slate-900 via-[#1e293b] to-slate-900 text-white px-4 py-2 flex items-center justify-between relative z-20 overflow-visible min-h-[82px] h-[82px] shrink-0 border-b-[3px] border-amber-400 shadow-md">
             
             {/* Left Emblem Logo */}
             <div className="flex flex-col items-center justify-center shrink-0 z-10 w-[72px]">
@@ -168,14 +168,23 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             </div>
 
             {/* Hovering Orange Member ID Badge between Header and Middle Container */}
-            <div className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 z-20 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 px-6 py-0.5 rounded-full shadow-md border border-amber-200 ring-2 ring-slate-900/10 flex flex-col items-center select-none whitespace-nowrap">
-              <span className="text-[11.5px] font-black leading-tight">የአባል መታወቂያ</span>
-              <span className="text-[9px] font-extrabold tracking-wider leading-tight">MEMBER ID CARD</span>
+            <div
+              style={{
+                position: 'absolute',
+                left: '50%',
+                bottom: 0,
+                transform: 'translate(-50%, 50%)',
+                zIndex: 30,
+              }}
+              className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 px-6 py-1 rounded-full shadow-lg border-2 border-white ring-1 ring-slate-900/20 flex flex-col items-center select-none whitespace-nowrap pointer-events-none"
+            >
+              <span className="text-[12px] font-black leading-tight tracking-tight">የአባል መታወቂያ</span>
+              <span className="text-[9px] font-black tracking-wider leading-tight">MEMBER ID CARD</span>
             </div>
           </div>
 
           {/* MAIN CARD BODY - Clean White Area with Prominent Photo & High-Contrast Typography */}
-          <div className="px-4 pt-5 pb-2.5 bg-white flex-1 flex items-center justify-between gap-3 relative">
+          <div className="px-4 pt-6 pb-2.5 bg-white flex-1 flex items-center justify-between gap-3 relative z-10">
             
             {/* Left Column: ENLARGED Portrait Photo with Professional Double Border */}
             <div className="w-[125px] shrink-0 flex flex-col items-center">
