@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enforce strict class-based dark mode (.dark) so system-wide device dark mode does NOT auto-toggle theme */
+@variant dark (&:where(.dark, .dark *));
+
 /* Abyssinica SIL Amharic Font Setup - strictly scoped to Ethiopic Unicode range so English/Latin text is NEVER affected */
 @font-face {
   font-family: 'Abyssinica SIL';
