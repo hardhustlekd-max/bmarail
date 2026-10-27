@@ -140,7 +140,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             {/* Left Emblem Logo */}
             <div className="flex flex-col items-center justify-center shrink-0 z-10 w-[72px]">
               <div className="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center relative overflow-hidden ring-2 ring-amber-400/80">
-                <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
+                <img src={APP_LOGO} alt="Logo" crossOrigin="anonymous" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
               </div>
             </div>
 
@@ -166,6 +166,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
                 <img
                   src={APP_FLAG}
                   alt="Ethiopian Flag"
+                  crossOrigin="anonymous"
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -174,7 +175,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           </div>
 
           {/* MAIN CARD BODY - Clean White Area with Prominent Photo & High-Contrast Typography */}
-          <div className="px-4 py-2.5 bg-white/95 flex-1 flex items-center justify-between gap-3 relative">
+          <div className="px-4 py-2.5 bg-white flex-1 flex items-center justify-between gap-3 relative">
             
             {/* Left Column: ENLARGED Portrait Photo with Professional Double Border */}
             <div className="w-[125px] shrink-0 flex flex-col items-center">
@@ -189,51 +190,65 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             </div>
 
             {/* Center Column: Table Details with Refined Typography */}
-            <div className="flex-1 min-w-0 pr-1 space-y-1.5 text-[12.5px] font-sans">
+            <div className="flex-1 min-w-0 pr-1 space-y-1.5 text-[12px] font-sans">
               
               {/* Full Name */}
-              <div className="flex items-start gap-1">
-                <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">ሙሉ ስም / Full Name</span>
-                <div className="font-black text-slate-900 text-[13.5px] leading-tight">
+              <div className="flex items-start gap-1 leading-normal">
+                <span className="font-extrabold text-slate-700 min-w-[145px] shrink-0 text-[11px] whitespace-nowrap">
+                  <span>ሙሉ ስም</span> <span className="text-slate-400">/</span> <span className="text-slate-600">Full Name</span>
+                </span>
+                <div className="font-black text-slate-900 text-[13px] leading-tight min-w-0 flex-1">
                   <p>: {nameParts.am}</p>
-                  {nameParts.en && <p className="ml-2 font-bold text-slate-700 text-[11px]">{nameParts.en}</p>}
+                  {nameParts.en && <p className="ml-2 font-bold text-slate-700 text-[10.5px]">{nameParts.en}</p>}
                 </div>
               </div>
 
               {/* ID No */}
-              <div className="flex items-center gap-1">
-                <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">የአባል መለያ ቁጥር / ID No.</span>
-                <span className="font-mono font-black text-slate-900 text-[13px]">: {idNo}</span>
+              <div className="flex items-center gap-1 leading-normal">
+                <span className="font-extrabold text-slate-700 min-w-[145px] shrink-0 text-[11px] whitespace-nowrap">
+                  <span>የአባል መለያ ቁጥር</span> <span className="text-slate-400">/</span> <span className="text-slate-600">ID No.</span>
+                </span>
+                <span className="font-mono font-black text-slate-900 text-[13px] min-w-0 flex-1 truncate">: {idNo}</span>
               </div>
 
               {/* Plate No */}
-              <div className="flex items-center gap-1">
-                <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">የምዝገባ ሰሌዳ / Plate No.</span>
-                <span className="font-mono font-black text-slate-900 text-[13.5px]">: {plateNo}</span>
+              <div className="flex items-center gap-1 leading-normal">
+                <span className="font-extrabold text-slate-700 min-w-[145px] shrink-0 text-[11px] whitespace-nowrap">
+                  <span>የምዝገባ ሰሌዳ</span> <span className="text-slate-400">/</span> <span className="text-slate-600">Plate No.</span>
+                </span>
+                <span className="font-mono font-black text-slate-900 text-[13px] min-w-0 flex-1 truncate">: {plateNo}</span>
               </div>
 
               {/* Blood Group */}
-              <div className="flex items-center gap-1">
-                <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">የደም አይነት / Blood Group</span>
-                <span className="font-black text-rose-600 text-[13px]">: {bloodGroup}</span>
+              <div className="flex items-center gap-1 leading-normal">
+                <span className="font-extrabold text-slate-700 min-w-[145px] shrink-0 text-[11px] whitespace-nowrap">
+                  <span>የደም አይነት</span> <span className="text-slate-400">/</span> <span className="text-slate-600">Blood Group</span>
+                </span>
+                <span className="font-black text-rose-600 text-[13px] min-w-0 flex-1">: {bloodGroup}</span>
               </div>
 
               {/* Phone */}
-              <div className="flex items-center gap-1">
-                <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">ስልክ / Phone</span>
-                <span className="font-mono font-bold text-slate-900 text-[12px]">: {phone}</span>
+              <div className="flex items-center gap-1 leading-normal">
+                <span className="font-extrabold text-slate-700 min-w-[145px] shrink-0 text-[11px] whitespace-nowrap">
+                  <span>ስልክ</span> <span className="text-slate-400">/</span> <span className="text-slate-600">Phone</span>
+                </span>
+                <span className="font-mono font-bold text-slate-900 text-[12px] min-w-0 flex-1 truncate">: {phone}</span>
               </div>
 
               {/* Issue Date */}
-              <div className="flex items-center gap-1">
-                <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">የተሰጠበት ቀን / Issue Date</span>
-                <span className="font-mono font-bold text-slate-900 text-[12px]">: {issueDate}</span>
+              <div className="flex items-center gap-1 leading-normal">
+                <span className="font-extrabold text-slate-700 min-w-[145px] shrink-0 text-[11px] whitespace-nowrap">
+                  <span>የተሰጠበት ቀን</span> <span className="text-slate-400">/</span> <span className="text-slate-600">Issue Date</span>
+                </span>
+                <span className="font-mono font-bold text-slate-900 text-[12px] min-w-0 flex-1 truncate">: {issueDate}</span>
               </div>
 
               {/* Expiry Date & Time */}
-              <div className="flex items-center gap-1">
-                <span className="font-extrabold text-slate-700 min-w-[130px] shrink-0 text-[11.5px]">የሚያበቃበት ቀን እና ሰዓት / Expiry</span>
-                <span className="font-mono font-bold text-slate-900 text-[12px]">: {expiryDate} 12:00 PM</span>
+              <div className="flex items-center gap-1 leading-normal">
+                <span className="font-extrabold text-slate-700 min-w-[145px] shrink-0 text-[11px] whitespace-nowrap">
+                  <span>የሚያበቃበት ቀን</span> <span className="text-slate-400">/</span> <span className="text-slate-600">Expiry</span>
+                </span>
+                <span className="font-mono font-bold text-slate-900 text-[11.5px] min-w-0 flex-1 truncate">: {expiryDate} 12:00 PM</span>
               </div>
             </div>
 
@@ -286,7 +301,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           <div className="flex items-center justify-between border-b border-white/15 pb-3">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center p-0.5 shadow-md shrink-0">
-                <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
+                <img src={APP_LOGO} alt="Logo" crossOrigin="anonymous" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
               </div>
               <div>
                 <h3 className="text-xs font-black text-amber-300 tracking-wide">ባህር ዳር ሞተረኞች ማህበር</h3>
@@ -300,7 +315,9 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             
             {/* Terms & Conditions (Amharic) */}
             <div className="col-span-2 space-y-2 text-[10px] font-medium text-slate-200 leading-relaxed bg-black/25 p-3 rounded-lg border border-white/10">
-              <p className="font-extrabold text-amber-300 text-[10.5px] mb-1">የአጠቃቀም ደንቦች እና ማሳሰቢያ / Terms & Conditions:</p>
+              <p className="font-extrabold text-amber-300 text-[10.5px] mb-1">
+                <span>የአጠቃቀም ደንቦች እና ማሳሰቢያ</span> <span className="text-amber-100 font-bold">/</span> <span>Terms & Conditions:</span>
+              </p>
               <ul className="space-y-1 list-disc list-inside text-[9.5px]">
                 <li>ይህ መታወቂያ ሲጠፋ ለህግ አስከባሪ አካል ወዲያውኑ ሪፖርት መደረግ አለበት።</li>
                 <li>በከተማ ውስጥ ሲንቀሳቀሱ ይህንን መታወቂያ ሁልጊዜ ከእርስዎ ጋር ይያዙ።</li>
@@ -322,7 +339,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>Online Verification: https://enforcement.gov.et</span>
             </div>
-            <div className="text-right font-bold text-amber-300">
+            <div className="text-right font-bold text-amber-300 whitespace-nowrap">
               Bahirdar, Ethiopia
             </div>
           </div>

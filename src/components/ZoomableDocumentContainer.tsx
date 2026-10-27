@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import html2canvas from 'html2canvas-pro';
+import { toJpeg } from 'html-to-image';
 import { Icon } from './ui/Icon';
 import { Language, UserRole } from '../types';
 import { triggerDocumentPrint } from '../utils/printUtils';
@@ -55,16 +55,78 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
     if (!element || isDownloading) return;
     setIsDownloading(true);
     try {
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-      });
-      const data = canvas.toDataURL('image/jpeg', 0.95);
+      // 1. Ensure all custom fonts are ready
+      if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch {}
+      }
+
+      const isIdCard =
+        element.id === 'pvc-card-front' ||
+        element.id === 'pvc-card-back' ||
+        element.classList.contains('printable-id-card');
+      const targetWidth = isIdCard ? 580 : element.offsetWidth || 580;
+      const targetHeight = isIdCard ? 366 : element.offsetHeight || 366;
+
+      // 2. Ensure all nested images have loaded
+      const images = Array.from(element.querySelectorAll('img'));
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+          return new Promise<void>((resolve) => {
+            img.addEventListener('load', () => resolve(), { once: true });
+            img.addEventListener('error', () => resolve(), { once: true });
+            setTimeout(resolve, 800);
+          });
+        })
+      );
+
+      // 3. Render high-resolution 2x JPEG using browser's native SVG foreignObject rasterizer
+      let dataUrl = '';
+      const bg = element.id === 'pvc-card-back' ? '#0f172a' : '#ffffff';
+
+      try {
+        dataUrl = await toJpeg(element, {
+          quality: 0.98,
+          pixelRatio: 2,
+          width: targetWidth,
+          height: targetHeight,
+          canvasWidth: targetWidth * 2,
+          canvasHeight: targetHeight * 2,
+          style: {
+            transform: 'none',
+            margin: '0',
+            left: '0',
+            top: '0',
+          },
+          backgroundColor: bg,
+          cacheBust: true,
+        });
+      } catch (errWithFonts) {
+        console.warn('[html-to-image: falling back to skipFonts]', errWithFonts);
+        dataUrl = await toJpeg(element, {
+          quality: 0.98,
+          pixelRatio: 2,
+          width: targetWidth,
+          height: targetHeight,
+          canvasWidth: targetWidth * 2,
+          canvasHeight: targetHeight * 2,
+          style: {
+            transform: 'none',
+            margin: '0',
+          },
+          backgroundColor: bg,
+          skipFonts: true,
+        });
+      }
+
+      if (!dataUrl) {
+        throw new Error('Image export failed to produce a data URL');
+      }
+
       const link = document.createElement('a');
-      link.href = data;
+      link.href = dataUrl;
       link.download = filename;
       document.body.appendChild(link);
       link.click();

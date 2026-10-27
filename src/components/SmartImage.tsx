@@ -187,6 +187,7 @@ export const SmartImage: React.FC<SmartImageProps> = ({
         ref={imgRef}
         src={currentSrc}
         alt={alt}
+        crossOrigin="anonymous"
         loading="lazy"
         decoding="async"
         onLoad={handleLoad}

@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-/* Abyssinica SIL Amharic Font Setup - scoped strictly to Ethiopic Unicode range so English text is never affected */
+/* Abyssinica SIL Amharic Font Setup - strictly scoped to Ethiopic Unicode range so English/Latin text is NEVER affected */
 @font-face {
   font-family: 'Abyssinica SIL';
   src: url('/AbyssinicaSIL-Regular.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F;
+  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FE;
 }
 
 @font-face {
@@ -16,7 +16,7 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F;
+  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FE;
 }
 
 @font-face {
@@ -25,7 +25,7 @@
   font-weight: bold;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F;
+  unicode-range: U+1200-137F, U+1380-139F, U+2D80-2DDF, U+AB00-AB2F, U+1E7E0-1E7FE;
 }
 
 /* Material Symbols & SVG Icon Rules */
@@ -193,8 +193,9 @@ html.dark {
 }
 
 @theme {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-ethiopic: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Abyssinica SIL', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-ethiopic: 'Abyssinica SIL', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Abyssinica SIL', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
   /* Charcoal Design Tokens */
   --color-text-primary: var(--color-text-primary);
@@ -276,10 +277,16 @@ input[type="checkbox"]:checked {
   accent-color: var(--assoc-accent) !important;
 }
 
-/* Base default body and system typography: clean English sans-serif */
+/* Base default body and system typography:
+   'Abyssinica SIL' is strictly bound to the Ethiopic unicode range.
+   Therefore, Amharic characters anywhere in the UI ALWAYS render using Abyssinica SIL
+   regardless of whether the active UI language is English or Amharic.
+   English / Latin characters, numbers, and symbols are outside that unicode range
+   and automatically fall through to Inter / system sans-serif. */
 body,
-html {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+html,
+#root {
+  font-family: 'Abyssinica SIL', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
@@ -304,36 +311,19 @@ input,
 optgroup,
 select,
 textarea {
-  font-family: inherit;
+  font-family: 'Abyssinica SIL', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Abyssinica SIL is applied ONLY when Amharic language is set as the system language, or on Amharic text */
-html[lang="am"],
-html.system-lang-am,
-html.lang-am,
-body.system-lang-am,
-body.lang-am,
-[data-system-lang="am"],
+/* Explicit language utility classes (unified to standard font stack) */
+.font-ethiopic,
 .system-lang-am,
 .lang-am,
-.font-ethiopic,
+[data-system-lang="am"],
 [lang="am"],
 :lang(am),
 .amharic,
 [data-lang="am"] {
-  font-family: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Inside Amharic mode, buttons and inputs use the Amharic font stack */
-html.system-lang-am button,
-html.system-lang-am input,
-html.system-lang-am select,
-html.system-lang-am textarea,
-body.system-lang-am button,
-body.system-lang-am input,
-body.system-lang-am select,
-body.system-lang-am textarea {
-  font-family: 'Abyssinica SIL', 'Inter', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Abyssinica SIL', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* =========================================================================
