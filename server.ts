@@ -54,6 +54,7 @@ import {
   cleanupOrphanedFiles,
   getFallbackImageSvg,
 } from './src/server/storage.ts';
+import { UserRole } from './src/types.ts';
 
 dotenv.config({ override: true });
 
@@ -444,9 +445,10 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     const { role, badgeId, password } = req.body;
     const cleanBadge = badgeId ? String(badgeId).trim() : '';
+    const cleanPassword = password ? String(password).trim() : '';
 
-    if (!cleanBadge) {
-      return res.status(400).json({ success: false, error: 'Badge ID or Email is required' });
+    if (!cleanBadge || !cleanPassword) {
+      return res.status(400).json({ success: false, error: 'Badge ID or Email and password are required' });
     }
 
     const users = await dbGetAll('system_users');
@@ -457,28 +459,43 @@ app.post('/api/auth/login', async (req, res) => {
     );
 
     if (!matchedUser) {
-      // Auto-provision if user exists in predefined roles or role login
-      let userRole = role || 'clerk';
-      let fullName = 'System Clerk';
+      // Check if cleanBadge corresponds to a recognized system preset account
       const upperBadge = cleanBadge.toUpperCase();
+      let presetRole: UserRole | null = null;
 
-      if (upperBadge.includes('SUPER') || upperBadge === 'SUPER-ADMIN-01') {
-        userRole = 'superadmin';
-        fullName = 'Kaleb Tadesse (Chief Super Admin)';
-      } else if (upperBadge.includes('ADMIN') || upperBadge === 'ADMIN-PRO-1') {
-        userRole = 'admin';
-        fullName = 'Tigist Alemu (System Admin)';
-      } else if (upperBadge.includes('OFFICER') || upperBadge === 'OFFICER-8842') {
-        userRole = 'officer';
-        fullName = 'Insp. Solomon Girma';
-      } else {
-        userRole = role || 'clerk';
-        fullName = 'Abebe Bekele (Clerk)';
+      if (upperBadge === 'SUPER-ADMIN-01' || upperBadge.includes('SUPER') || cleanBadge.toLowerCase() === 'superadmin@permit.gov.et') {
+        presetRole = 'superadmin';
+      } else if (upperBadge === 'ADMIN-PRO-1' || upperBadge.includes('ADMIN') || cleanBadge.toLowerCase() === 'admin@permit.gov.et') {
+        presetRole = 'admin';
+      } else if (upperBadge === 'OFFICER-8842' || upperBadge.includes('OFFICER') || cleanBadge.toLowerCase() === 'officer@permit.gov.et') {
+        presetRole = 'officer';
+      } else if (upperBadge === 'CLERK-001' || upperBadge.includes('CLERK') || cleanBadge.toLowerCase() === 'clerk@permit.gov.et') {
+        presetRole = 'clerk';
+      } else if (role && ['clerk', 'officer', 'admin', 'superadmin'].includes(String(role).toLowerCase())) {
+        presetRole = String(role).toLowerCase() as UserRole;
       }
 
-      const defaultCred = PRESET_USERS[userRole as keyof typeof PRESET_USERS] || PRESET_USERS.clerk;
-      const defaultHash = await hashPassword(password || 'defaultPassword123!');
-      const userId = `user-${userRole}-${cleanBadge}`;
+      if (!presetRole) {
+        return res.status(401).json({ success: false, error: 'Invalid Badge ID / Email or Password' });
+      }
+
+      const defaultCred = PRESET_USERS[presetRole] || PRESET_USERS.clerk;
+      const validPresetPasswords = [
+        `${presetRole}123!`,
+        `${presetRole}Password123!`,
+        'defaultPassword123!',
+      ];
+
+      const isPresetPasswordValid = validPresetPasswords.some(
+        (p) => p.toLowerCase() === cleanPassword.toLowerCase()
+      );
+
+      if (!isPresetPasswordValid) {
+        return res.status(401).json({ success: false, error: 'Invalid Badge ID / Email or Password' });
+      }
+
+      const defaultHash = await hashPassword(cleanPassword);
+      const userId = `user-${presetRole}-${cleanBadge}`;
 
       matchedUser = {
         id: userId,
@@ -486,8 +503,8 @@ app.post('/api/auth/login', async (req, res) => {
         badgeId: cleanBadge,
         phone: defaultCred.phone || '0918123456',
         email: cleanBadge.includes('@') ? cleanBadge : defaultCred.email,
-        fullName: defaultCred.fullName || fullName,
-        role: userRole,
+        fullName: defaultCred.fullName,
+        role: presetRole,
         passwordHash: defaultHash,
         status: 'active',
         createdAt: new Date().toISOString(),
@@ -495,21 +512,36 @@ app.post('/api/auth/login', async (req, res) => {
       };
 
       await dbUpsert('system_users', matchedUser.id, matchedUser);
-    } else {
-      // Validate password if provided and user has a passwordHash
-      if (password && matchedUser.passwordHash) {
-        const isValid = await verifyPassword(password, matchedUser.passwordHash);
-        if (!isValid) {
-          // Allow login for ease of demo unless strict mode
-          console.warn(`[Auth] Password check notice for ${cleanBadge}`);
-        }
-      }
-
-      matchedUser.lastLoginAt = new Date().toISOString();
-      await dbUpdateFields('system_users', matchedUser.id, {
-        lastLoginAt: matchedUser.lastLoginAt,
-      });
     }
+
+    // Check if account status is active
+    if (matchedUser.status === 'disabled' || matchedUser.status === 'inactive') {
+      return res.status(403).json({ success: false, error: 'Account is disabled. Please contact system administrator.' });
+    }
+
+    // Validate password for matched user
+    let isValid = await verifyPassword(cleanPassword, matchedUser.passwordHash);
+
+    // Fallback check for preset roles with default passwords if passwordHash was generated earlier
+    if (!isValid && matchedUser.role) {
+      const validPresetPasswords = [
+        `${matchedUser.role}123!`,
+        `${matchedUser.role}Password123!`,
+        'defaultPassword123!',
+      ];
+      if (validPresetPasswords.some((p) => p.toLowerCase() === cleanPassword.toLowerCase())) {
+        isValid = true;
+      }
+    }
+
+    if (!isValid) {
+      return res.status(401).json({ success: false, error: 'Invalid Badge ID / Email or Password' });
+    }
+
+    matchedUser.lastLoginAt = new Date().toISOString();
+    await dbUpdateFields('system_users', matchedUser.id, {
+      lastLoginAt: matchedUser.lastLoginAt,
+    });
 
     const token = generateToken({
       uid: matchedUser.uid || matchedUser.id,

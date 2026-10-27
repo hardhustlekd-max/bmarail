@@ -58,8 +58,12 @@ export async function hashPassword(plainText: string): Promise<string> {
  * Verify a plain text password against a bcrypt hash
  */
 export async function verifyPassword(plainText: string, hash: string): Promise<boolean> {
-  if (!hash) return true; // Graceful fallback if user had no password set
-  return bcrypt.compare(plainText, hash);
+  if (!plainText || !hash) return false;
+  try {
+    return await bcrypt.compare(plainText, hash);
+  } catch (err) {
+    return false;
+  }
 }
 
 /**
@@ -115,16 +119,24 @@ export function requireRole(...allowedRoles: UserRole[]) {
 }
 
 /**
- * Ensure default system role users are seeded
+ * Ensure default system role users are seeded into database
  */
 export async function ensureDefaultUsers(): Promise<void> {
   try {
     const existingUsers = await dbGetAll('system_users');
-    if (!existingUsers || existingUsers.length === 0) {
-      console.log('[Auth] Seeding default system users into PostgreSQL...');
-      for (const [roleKey, cred] of Object.entries(PRESET_USERS)) {
-        const defaultHash = await hashPassword(`${cred.role}123!`);
-        const userId = `user-${cred.role}-${cred.badgeId}`;
+    for (const [roleKey, cred] of Object.entries(PRESET_USERS)) {
+      const roleName = cred.role;
+      const exists = (existingUsers || []).some(
+        (u: any) =>
+          (u.badgeId && u.badgeId.toLowerCase() === cred.badgeId.toLowerCase()) ||
+          (u.email && u.email.toLowerCase() === cred.email.toLowerCase())
+      );
+
+      if (!exists) {
+        // Seed default password (e.g. clerk123!)
+        const defaultPassword = `${roleName}123!`;
+        const defaultHash = await hashPassword(defaultPassword);
+        const userId = `user-${roleName}-${cred.badgeId}`;
         const userRecord = {
           id: userId,
           uid: userId,
@@ -132,13 +144,14 @@ export async function ensureDefaultUsers(): Promise<void> {
           phone: cred.phone,
           email: cred.email,
           passwordHash: defaultHash,
-          role: cred.role,
+          role: roleName,
           fullName: cred.fullName,
           status: 'active',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
         await dbUpsert('system_users', userId, userRecord);
+        console.log(`[Auth] Seeded default system user: ${cred.badgeId} (${roleName})`);
       }
     }
   } catch (err) {

@@ -187,11 +187,11 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             
             {/* Centered Security Watermark Stamp - Restricted Strictly to Card Body */}
             <div className="absolute inset-0 pointer-events-none z-0 opacity-15 flex items-center justify-center">
-              <div className="w-44 h-44 rounded-full border-4 border-double border-neutral-900 p-1 flex items-center justify-center">
-                <div className="w-full h-full rounded-full border-2 border-dashed border-neutral-800 flex flex-col items-center justify-center p-1.5 text-center text-neutral-900 font-black">
-                  <span className="text-[11px] tracking-wide">ባህር ዳር ሞተረኞች</span>
-                  <Icon className="material-symbols-outlined text-[32px] text-neutral-900 my-0.5">two_wheeler</Icon>
-                  <span className="text-[11px] tracking-wide">ማህበር</span>
+              <div className="w-54 h-54 w-[216px] h-[216px] rounded-full border-4 border-double border-neutral-900 p-1 flex items-center justify-center">
+                <div className="w-full h-full rounded-full border-2 border-dashed border-neutral-800 flex flex-col items-center justify-center p-2 text-center text-neutral-900 font-black">
+                  <span className="text-[12px] tracking-wide">ባህር ዳር ሞተረኞች</span>
+                  <Icon className="material-symbols-outlined text-[36px] text-neutral-900 my-0.5">two_wheeler</Icon>
+                  <span className="text-[12px] tracking-wide">ማህበር</span>
                 </div>
               </div>
             </div>

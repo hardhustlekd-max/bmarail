@@ -106,45 +106,55 @@ export async function loginOnlineUser(
     password = inputPassword;
   }
 
+  const cleanBadge = (badgeId || '').trim();
+  const cleanPass = (password || '').trim();
+
+  if (!cleanBadge || !cleanPass) {
+    return { success: false, user: null as any, error: 'Badge ID or Email and password are required' };
+  }
+
   try {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        badgeId,
-        password: password || 'defaultPassword123!',
+        badgeId: cleanBadge,
+        password: cleanPass,
       }),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success && data.user) {
-        currentAuthUser = data.user;
-        if (typeof localStorage !== 'undefined') {
-          if (data.token) localStorage.setItem('token', data.token);
-          localStorage.setItem('system_user', JSON.stringify(data.user));
-        }
-        authChangeListeners.forEach((cb) => {
-          try {
-            cb(data.user);
-          } catch (e) {}
-        });
-        return { success: true, user: data.user };
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.success) {
+      return {
+        success: false,
+        user: null as any,
+        error: data.error || 'Invalid ID or password',
+      };
+    }
+
+    if (data.success && data.user) {
+      currentAuthUser = data.user;
+      if (typeof localStorage !== 'undefined') {
+        if (data.token) localStorage.setItem('token', data.token);
+        localStorage.setItem('system_user', JSON.stringify(data.user));
       }
-      if (data.error) {
-        return { success: false, user: null as any, error: data.error };
-      }
+      authChangeListeners.forEach((cb) => {
+        try {
+          cb(data.user);
+        } catch (e) {}
+      });
+      return { success: true, user: data.user };
     }
   } catch (err) {
     console.warn('[authService] Backend login call notice, using local auth fallback:', err);
   }
 
-  // Fallback local auth model if network offline
-  const trimmedId = (badgeId || '').trim();
+  // Fallback local auth model only if network server unreachable
   let detectedRole: UserRole = 'clerk';
   let fullName = 'System Clerk';
 
-  const upperId = trimmedId.toUpperCase();
+  const upperId = cleanBadge.toUpperCase();
   if (upperId.includes('SUPER') || upperId === 'SUPER-ADMIN-01') {
     detectedRole = 'superadmin';
     fullName = 'Kaleb Tadesse (Chief Super Admin)';
@@ -159,12 +169,28 @@ export async function loginOnlineUser(
     fullName = 'Abebe Bekele (Clerk)';
   }
 
-  const email = trimmedId.includes('@') ? trimmedId : `${trimmedId.toLowerCase() || 'user'}@permit.gov.et`;
+  const preset = SYSTEM_ROLE_CREDENTIALS[detectedRole];
+  const validPasswords = [
+    preset?.password,
+    `${detectedRole}123!`,
+    `${detectedRole}Password123!`,
+    'defaultPassword123!',
+  ].filter(Boolean);
+
+  const isPasswordCorrect = validPasswords.some(
+    (p) => p?.toLowerCase() === cleanPass.toLowerCase()
+  );
+
+  if (!isPasswordCorrect) {
+    return { success: false, user: null as any, error: 'Invalid ID or password' };
+  }
+
+  const email = cleanBadge.includes('@') ? cleanBadge : `${cleanBadge.toLowerCase() || 'user'}@permit.gov.et`;
   const now = new Date().toISOString();
 
   const userProfile: SystemUser = {
-    uid: `user-${detectedRole}-${trimmedId || 'default'}`,
-    badgeId: trimmedId || 'CLERK-001',
+    uid: `user-${detectedRole}-${cleanBadge || 'default'}`,
+    badgeId: cleanBadge || 'CLERK-001',
     phone: SYSTEM_ROLE_CREDENTIALS[detectedRole]?.phone || '0918123456',
     email,
     role: detectedRole,
