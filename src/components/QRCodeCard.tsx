@@ -145,19 +145,13 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             </div>
 
             {/* Center Association Title */}
-            <div className="flex flex-col items-center text-center flex-1 mx-2 z-10">
-              <h2 className="text-[12.5px] font-black text-white tracking-tight leading-tight drop-shadow-xs">
+            <div className="flex flex-col items-center justify-center text-center flex-1 mx-2 z-10 pb-2">
+              <h2 className="text-[13px] font-black text-white tracking-tight leading-tight drop-shadow-xs">
                 ባህር ዳር ሞተረኞች ማህበር
               </h2>
-              <h1 className="text-[12px] font-black text-amber-300 tracking-wider leading-tight mt-0.5 drop-shadow-xs">
+              <h1 className="text-[11.5px] font-black text-amber-300 tracking-wider leading-tight mt-0.5 drop-shadow-xs">
                 BAHIRDAR MOTORIST ASSOCIATION
               </h1>
-
-              {/* Center Gold Pill Badge */}
-              <div className="mt-1 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 px-6 py-0.5 rounded-full shadow-md border border-amber-200 flex flex-col items-center">
-                <span className="text-[11.5px] font-black leading-tight">የአባል መታወቂያ</span>
-                <span className="text-[9.5px] font-extrabold tracking-wider leading-tight">MEMBER ID CARD</span>
-              </div>
             </div>
 
             {/* Right Column: Flag */}
@@ -172,10 +166,16 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
                 />
               </div>
             </div>
+
+            {/* Hovering Orange Member ID Badge between Header and Middle Container */}
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-1/2 z-20 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 px-6 py-0.5 rounded-full shadow-md border border-amber-200 ring-2 ring-slate-900/10 flex flex-col items-center select-none whitespace-nowrap">
+              <span className="text-[11.5px] font-black leading-tight">የአባል መታወቂያ</span>
+              <span className="text-[9px] font-extrabold tracking-wider leading-tight">MEMBER ID CARD</span>
+            </div>
           </div>
 
           {/* MAIN CARD BODY - Clean White Area with Prominent Photo & High-Contrast Typography */}
-          <div className="px-4 py-2.5 bg-white flex-1 flex items-center justify-between gap-3 relative">
+          <div className="px-4 pt-5 pb-2.5 bg-white flex-1 flex items-center justify-between gap-3 relative">
             
             {/* Left Column: ENLARGED Portrait Photo with Professional Double Border */}
             <div className="w-[125px] shrink-0 flex flex-col items-center">
