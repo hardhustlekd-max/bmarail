@@ -101,23 +101,23 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             top: '0',
           },
           backgroundColor: bg,
-          cacheBust: true,
+          skipFonts: true,
+          fontEmbedCSS: '',
         });
       } catch (errWithFonts) {
-        console.warn('[html-to-image: falling back to skipFonts]', errWithFonts);
+        console.warn('[html-to-image: falling back to standard render]', errWithFonts);
         dataUrl = await toJpeg(element, {
-          quality: 0.98,
-          pixelRatio: 2,
+          quality: 0.95,
+          pixelRatio: 1.5,
           width: targetWidth,
           height: targetHeight,
-          canvasWidth: targetWidth * 2,
-          canvasHeight: targetHeight * 2,
           style: {
             transform: 'none',
             margin: '0',
           },
           backgroundColor: bg,
           skipFonts: true,
+          fontEmbedCSS: '',
         });
       }
 

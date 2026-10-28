@@ -2535,6 +2535,8 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
     } catch {}
     const regPeriodIndex = regEth ? regEth.year * 13 + regEth.month : 0;
 
+    const currentPeriodIndex = currentEth.year * 13 + currentEth.month;
+
     for (let m = 1; m <= 13; m++) {
       const colKey = `eth_m_${m}`;
       const colYear = targetYear;
@@ -2547,24 +2549,42 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
         continue;
       }
 
+      if (!hasAnyPaymentRecord) {
+        periods[colKey] = 'muted';
+        continue;
+      }
+
       const directMonthMatches = memberItems.filter(
         (item) => item.payEth && item.payEth.year === colYear && item.payEth.month === colMonth
       );
 
-      const directMatch = directMonthMatches[0];
+      // Check coverage across receipts (both direct month and advance coverage range)
+      const activeCoverageReceipt = memberItems.find(
+        (item) => item.payIndex && item.expIndex && colPeriodIndex >= item.payIndex && colPeriodIndex < item.expIndex
+      ) || directMonthMatches[0];
 
-      if (directMatch) {
-        if (isColCurrentMonth && directMatch.status === 'expiring_soon') {
+      if (activeCoverageReceipt) {
+        if (
+          (colPeriodIndex === currentPeriodIndex || colPeriodIndex === activeCoverageReceipt.expIndex - 1) &&
+          activeCoverageReceipt.daysRemaining <= 5 &&
+          activeCoverageReceipt.daysRemaining >= 0
+        ) {
           periods[colKey] = 'pending';
         } else {
           periods[colKey] = 'paid';
         }
-      } else {
-        if (isColCurrentMonth && (reg.termStatus === 'DUE' || reg.term_status === 'DUE')) {
+      } else if (colPeriodIndex === currentPeriodIndex) {
+        if (reg.termStatus === 'DUE' || reg.term_status === 'DUE' || memberItems.some((r) => r.status === 'expiring_soon')) {
           periods[colKey] = 'pending';
         } else {
           periods[colKey] = 'unpaid';
         }
+      } else if (colPeriodIndex < currentPeriodIndex) {
+        // Past month with no payment coverage
+        periods[colKey] = 'unpaid';
+      } else {
+        // Upcoming / future months without payment coverage -> 'muted' (No Record)
+        periods[colKey] = 'muted';
       }
     }
 

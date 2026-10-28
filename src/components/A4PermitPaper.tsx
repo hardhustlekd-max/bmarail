@@ -138,22 +138,22 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
             top: '0',
           },
           backgroundColor: bg,
-          cacheBust: true,
+          skipFonts: true,
+          fontEmbedCSS: '',
         });
       } catch (errWithFonts) {
         dataUrl = await toJpeg(element, {
-          quality: 0.98,
-          pixelRatio: 2,
+          quality: 0.95,
+          pixelRatio: 1.5,
           width: targetWidth,
           height: targetHeight,
-          canvasWidth: targetWidth * 2,
-          canvasHeight: targetHeight * 2,
           style: {
             transform: 'none',
             margin: '0',
           },
           backgroundColor: bg,
           skipFonts: true,
+          fontEmbedCSS: '',
         });
       }
 
@@ -206,138 +206,105 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
             {/* Content Wrap */}
             <div className="relative z-20 space-y-3">
               
-              {/* Top Banner with Permit Type Tag and QR Code on Top Right */}
-              <div className="flex justify-between items-center border-b border-black pb-2">
-                <div className="flex items-center gap-2">
-                  <span className="border border-black px-2 py-0.5 text-[10px] font-bold bg-slate-100">
-                    [ኦፊሴላዊ ፈቃድ]
-                  </span>
-                  <span className="font-bold text-xs tracking-wide">
-                    የሞተር ሳይክል መንቀሳቀሻ ፈቃድ (ክፍል-ሀ)
-                  </span>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-mono border border-black px-2 py-0.5 bg-slate-50 font-bold">
-                    አዲስ / እድሳት
-                  </span>
-                  <div className="w-16 h-16 bg-white p-0.5 border border-black">
-                    <QRCodeSVG value={qrVal} size={60} level="M" />
-                  </div>
-                </div>
-              </div>
-
               {/* Department Header */}
-              <div className="text-center space-y-0.5 border-b-2 border-black pb-2">
-                <div className="flex justify-center items-center gap-2 mb-1">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-xs overflow-hidden">
+              <div className="text-center space-y-1 border-b-2 border-black pb-3">
+                <div className="flex justify-center items-center gap-2 mb-1.5">
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center bg-white shadow-xs overflow-hidden ring-2 ring-black/10">
                     <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
                   </div>
                 </div>
-                <h1 className="text-xs font-black text-black tracking-wider">
+                <h1 className="text-lg font-black text-black tracking-wider leading-tight">
                   ባህር ዳር ሞተረኞች ማህበር
                 </h1>
-                <h2 className="text-[11px] font-bold text-black tracking-wide">
-                  Bahir Dar Motorist Association
-                </h2>
-                <div className="text-[11px] font-bold text-black pt-0.5">
+                <div className="text-sm font-black text-black tracking-wide pt-0.5">
                   የሞተርሳይክል ምዝገባ እና ፈቃድ ሰርተፍኬት
                 </div>
-              </div>
-
-              {/* Permit Title Banner */}
-              <div className="text-center py-1.5 border border-black bg-slate-100 tracking-widest font-black text-xs">
-                Permit in Respect of Motorcycle Movement Permit
-              </div>
-
-              <div className="text-center font-bold text-xs tracking-widest border-b border-black pb-1.5">
-                Part-A (ክፍል - ሀ)
               </div>
 
               {/* Section 1: Two-Column Form Details */}
               <div className="space-y-1.5 text-[11px] pt-1">
                 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
-                  <div className="col-span-5 font-extrabold text-black">1. ፈቃድ ቁጥር (Permit No)</div>
+                  <div className="col-span-5 font-extrabold text-black">1. ፈቃድ ቁጥር</div>
                   <div className="col-span-7 font-mono font-black text-black">{regId}</div>
                 </div>
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
-                  <div className="col-span-5 font-black text-black text-[12px]">2. የባለቤቱ ሙሉ ስም (Name Of Holder)</div>
+                  <div className="col-span-5 font-black text-black text-[12px]">2. የባለቤቱ ሙሉ ስም</div>
                   <div className="col-span-7 font-black text-black text-[12px]  tracking-wide">{name}</div>
                 </div>
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
-                  <div className="col-span-5 font-extrabold text-black">3. ስልክ ቁጥር (Phone Number)</div>
+                  <div className="col-span-5 font-extrabold text-black">3. ስልክ ቁጥር</div>
                   <div className="col-span-7 font-mono font-bold text-black">{phone}</div>
                 </div>
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
-                  <div className="col-span-5 font-extrabold text-black">4. አድራሻ (Permanent Address)</div>
+                  <div className="col-span-5 font-extrabold text-black">4. አድራሻ</div>
                   <div className="col-span-7 font-bold text-black">ባህር ዳር, ቀበሌ 14 • ባህር ዳር ሞተረኞች ማህበር</div>
                 </div>
 
                 {/* 5. Registration Details block */}
                 <div className="border-b border-dotted border-black/60 pb-1 space-y-1">
-                  <div className="font-extrabold text-black">5. የተሽከርካሪ ምዝገባ ዝርዝር (Registration Details)</div>
+                  <div className="font-extrabold text-black">5. የተሽከርካሪ ምዝገባ ዝርዝር</div>
                   
                   <div className="pl-4 space-y-1">
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(ሀ) የሰሌዳ ቁጥር (Registration Mark)</div>
+                      <div className="col-span-5 text-slate-700">(ሀ) የሰሌዳ ቁጥር</div>
                       <div className="col-span-7 font-mono font-black text-black">{plate}</div>
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(ለ) የተመዘገበበት ቀን (Date of Registration)</div>
+                      <div className="col-span-5 text-slate-700">(ለ) የተመዘገበበት ቀን</div>
                       <div className="col-span-7 font-mono font-bold text-black">{issueDate}</div>
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(ሐ) የሞተር ምርት እና ሞዴል (Make / Model)</div>
+                      <div className="col-span-5 text-slate-700">(ሐ) የሞተር ምርት እና ሞዴል</div>
                       <div className="col-span-7 font-bold text-black">{motorBrand} {motorModel}</div>
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">{isAmharic ? '(መ) የቻሲስ ቁጥር (Chasis)' : '(D) Chasis Number (Chasis)'}</div>
+                      <div className="col-span-5 text-slate-700">(መ) የቻሲስ ቁጥር</div>
                       <div className="col-span-7 font-mono font-bold text-black">{chassis}</div>
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(ሠ) የተሽከርካሪ ዓይነት (Class of Vehicle)</div>
+                      <div className="col-span-5 text-slate-700">(ሠ) የተሽከርካሪ ዓይነት</div>
                       <div className="col-span-7 font-bold text-black">{category}</div>
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(ረ) የሚጫነው ሰው ብዛት (Seating Capacity)</div>
+                      <div className="col-span-5 text-slate-700">(ረ) የሚጫነው ሰው ብዛት</div>
                       <div className="col-span-7 font-bold text-black">1 (ሹፌር ብቻ)</div>
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(ሰ) የተመረተበት ዓመተ ምህረት (Manufacturing Year)</div>
+                      <div className="col-span-5 text-slate-700">(ሰ) የተመረተበት ዓመተ ምህረት</div>
                       <div className="col-span-7 font-bold text-black">2026</div>
                     </div>
 
                     <div className="grid grid-cols-12">
-                      <div className="col-span-5 text-slate-700">(ሸ) የአገልግሎት ዓይነት (Service Type)</div>
+                      <div className="col-span-5 text-slate-700">(ሸ) የአገልግሎት ዓይነት</div>
                       <div className="col-span-7 font-bold text-black">የንግድ መንቀሳቀሻ ፈቃድ</div>
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
-                  <div className="col-span-5 font-extrabold text-black">6. ፈቃዱ የሚጸናበት አካባቢ/መስመር (Valid Route)</div>
+                  <div className="col-span-5 font-extrabold text-black">6. ፈቃዱ የሚጸናበት አካባቢ/መስመር</div>
                   <div className="col-span-7 font-bold text-black">ባህር ዳር እና አካባቢው ብቻ</div>
                 </div>
 
                 <div className="grid grid-cols-12 border-b border-dotted border-black/60 pb-1">
-                  <div className="col-span-5 font-extrabold text-black">7. የፈቃዱ ሁኔታዎች እና ደንቦች (Conditions)</div>
+                  <div className="col-span-5 font-extrabold text-black">7. የፈቃዱ ሁኔታዎች እና ደንቦች</div>
                   <div className="col-span-7 font-bold text-black">የተረጋገጠ እና ህጋዊ</div>
                 </div>
 
               </div>
 
-              {/* Holder Portrait Photo Inline Box */}
-              <div className="flex justify-between items-center bg-slate-50 border border-black p-2 my-2">
+              {/* Holder Portrait Photo Inline Box & Body QR Code */}
+              <div className="flex justify-between items-center bg-slate-50 border border-black p-2.5 my-2">
                 <div className="flex items-center gap-3">
                   <div className="w-14 h-18 bg-slate-200 border border-black overflow-hidden flex items-center justify-center shrink-0">
                     <SmartImage
@@ -349,25 +316,27 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                     />
                   </div>
                   <div>
-                    <p className="font-black text-xs text-black">የባለቤቱ ፓስፖርት ፎቶ (Holder Passport Photo)</p>
+                    <p className="font-black text-xs text-black">የባለቤቱ ፓስፖርት ፎቶ</p>
                     <p className="text-[10px] text-slate-600 font-mono">{name} • {plate}</p>
                   </div>
                 </div>
-                <div className="text-right font-mono text-[10px] font-bold border border-black px-2 py-1 bg-white">
-                  VERIFIED ID
-                </div>
-              </div>
 
-              {/* Conditions / Notice text as seen in reference image */}
-              <div className="text-[9px] text-black italic border-t border-black pt-1 leading-tight">
-                Conditions other than specified in item(1) to (7) above and those under section 84 and sub-section (10) of section 88 of the Motor Vehicle Act 1988. Note.—See the conditions overleaf.
+                {/* QR Code in Body Section */}
+                <div className="flex items-center gap-3">
+                  <div className="bg-white p-1 border-2 border-black shrink-0">
+                    <QRCodeSVG value={qrVal} size={68} level="M" />
+                  </div>
+                  <div className="text-right font-mono text-[10px] font-bold border border-black px-2 py-1 bg-white">
+                    የተረጋገጠ መታወቂያ
+                  </div>
+                </div>
               </div>
 
               {/* Bottom Footer Signatures & Date */}
               <div className="pt-3 border-t-2 border-black flex justify-between items-end">
                 <div className="text-[10px] font-mono text-black font-bold">
-                  <div>ቀን / Date: <span className="font-extrabold">{formatEthiopianDate(issueDate, isAmharic ? 'am' : 'en')}</span></div>
-                  <div className="text-[9px] text-slate-800 font-semibold mt-0.5">Bahir Dar City Transport Authority</div>
+                  <div>ቀን: <span className="font-extrabold">{formatEthiopianDate(issueDate, 'am')}</span></div>
+                  <div className="text-[9px] text-slate-800 font-semibold mt-0.5">የባህር ዳር ከተማ ትራንስፖርት ባለስልጣን</div>
                 </div>
 
                 <div className="flex items-end gap-6">
@@ -380,10 +349,10 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                       </svg>
                     </div>
                     <div className="border-t border-black pt-0.5 text-[10px] font-bold text-black">
-                      Secretary / Authorized Officer
+                      ዋና ፀሐፊ / የተፈቀደለት ኃላፊ
                     </div>
                     <div className="text-[9px] text-slate-700">
-                      State/Regional Transport Authority
+                      የክልል ትራንስፖርት ባለስልጣን
                     </div>
                   </div>
                 </div>
@@ -391,59 +360,6 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
 
             </div>
           </div>
-
-        {/* Modal Action Footer Bar (No-Print) */}
-        <div className="no-print flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/60">
-          <div className="text-[11px] font-semibold text-secondary flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>{isAmharic ? 'የተረጋገጠ ኦፊሴላዊ ሰነድ' : 'Official Validated Document'}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-3.5 py-2 rounded-md text-xs font-bold bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors cursor-pointer"
-              >
-                {isAmharic ? 'ዝጋ' : 'Close'}
-              </button>
-            )}
-
-            {(registration.status === 'approved' || registration.status === 'printed' || registration.status === 'ordered_print') ? (
-              <div className="flex items-center gap-2">
-                <button
-                  id="download-permit-btn"
-                  type="button"
-                  onClick={handleDownload}
-                  disabled={isDownloading}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3.5 rounded-md text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                  title={isAmharic ? 'ሰነዱን አውርድ' : 'Download Document'}
-                >
-                  <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
-                    {isDownloading ? 'progress_activity' : 'download'}
-                  </Icon>
-                  <span>{isAmharic ? 'ሰነዱን አውርድ' : 'Download Document'}</span>
-                </button>
-
-                <button
-                  id="print-permit-btn"
-                  type="button"
-                  onClick={handlePrint}
-                  className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded-md text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
-                >
-                  <Icon className="material-symbols-outlined text-[18px]">print</Icon>
-                  <span>{isAmharic ? 'ሰነዱን አትም' : 'Print Document'}</span>
-                </button>
-              </div>
-            ) : (
-              <div className="bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[18px]">lock</Icon>
-                <span>{isAmharic ? 'የሥራ አስኪያጅ ማፅደቅ ይጠበቃል' : 'Print Disabled — Awaiting Manager Approval'}</span>
-              </div>
-            )}
-          </div>
-        </div>
 
         </div>
       </div>

@@ -11,10 +11,11 @@ import { DocumentUploadInput } from './DocumentUploadInput';
 import { SmartImage } from './SmartImage';
 import { uploadDocumentPhoto } from '../services/storageService';
 import { savePaymentReceiptToDb } from '../services/dbService';
-import { calculateOneMonthExpiration } from '../utils/paymentUtils';
-import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
+import { calculateOneMonthExpiration, calculateRegistrationPayment, calculateNMonthsExpiration } from '../utils/paymentUtils';
+import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, formatEthiopianDate } from '../utils/ethiopianCalendar';
 import { SectionCard, DataField } from './ui/StreamlinedUI';
 import { Icon } from './ui/Icon';
+import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
 
 import {
   validateFullName,
@@ -280,13 +281,27 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
   // 1 = Owner, 2 = Motor (Specs), 3 = Documents (Scans), 4 = Payment (Receipt), 5 = Confirm (Review & Submit)
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
-  // Step 4: Payment State (Receipt Number, Amount Paid, Screenshot)
+  // Step 4: Payment State (Registration Date, Advance Months, Receipt Number, Amount Paid, Screenshot)
+  const [registrationPaymentDate, setRegistrationPaymentDate] = useState<string>(
+    () => getDefaultEthiopianRegistrationDate()
+  );
+  const [advanceMonths, setAdvanceMonths] = useState<number>(0);
   const [receiptNumber, setReceiptNumber] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('500');
   const [receiptScreenshot, setReceiptScreenshot] = useState('');
   const [receiptNumberError, setReceiptNumberError] = useState('');
   const [paymentAmountError, setPaymentAmountError] = useState('');
   const [receiptScreenshotError, setReceiptScreenshotError] = useState(false);
+
+  // Live Pro-Rated Calculation for Registration Payment
+  const livePaymentCalc = React.useMemo(() => {
+    return calculateRegistrationPayment(registrationPaymentDate, 500, advanceMonths);
+  }, [registrationPaymentDate, advanceMonths]);
+
+  // Keep paymentAmount synced when pro-rated calculation or advance selection changes
+  React.useEffect(() => {
+    setPaymentAmount(String(livePaymentCalc.totalAmount));
+  }, [livePaymentCalc.totalAmount]);
 
   // Step 4: Cheki Verifier State
   const [chekiBank, setChekiBank] = useState('');
@@ -899,15 +914,15 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
       if (drivingPermitPhoto) setDrivingPermitPhoto('');
       if (receiptScreenshot) setReceiptScreenshot('');
 
-      // Save payment receipt to DB
-      const todayStr = getDefaultEthiopianRegistrationDate();
-      const expDateStr = calculateOneMonthExpiration(todayStr);
+      // Save payment receipt to DB with exact pro-rated date and advance months
+      const payDateStr = registrationPaymentDate || getDefaultEthiopianRegistrationDate();
+      const expDateStr = calculateNMonthsExpiration(payDateStr, 1 + advanceMonths);
       const autoReceiptNo = receiptNumber.trim() || `REC-${newId}`;
-      const defaultAmount = vehicleCategory === 'electric' ? '50' : '100';
-      const actualAmount = paymentAmount.trim() || defaultAmount;
+      const actualAmount = paymentAmount.trim() || String(livePaymentCalc.totalAmount);
 
       newRegistration = {
         ...newRegistration,
+        registrationDate: payDateStr,
         userPortraitPhoto: upPortrait || userPortraitPhoto,
         nationalIdPhoto: upNatIdFront || nationalIdPhoto,
         nationalIdBackPhoto: upNatIdBack || nationalIdBackPhoto,
@@ -918,7 +933,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         receiptScreenshot: upReceipt || receiptScreenshot || undefined,
         termStatus: 'CURRENT',
         activeTermExpirationDate: expDateStr,
-        lastPaymentDate: todayStr,
+        lastPaymentDate: payDateStr,
         lastReceiptNumber: autoReceiptNo,
         lastPaymentAmount: actualAmount,
         hideFromOtherUsers: isSuperAdmin ? hideFromOtherUsers : undefined,
@@ -931,7 +946,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         ownerName: fullName.trim(),
         plateNumber: plateNumber.trim().toUpperCase() || undefined,
         phone: phone.trim() || undefined,
-        paymentDate: todayStr,
+        paymentDate: payDateStr,
         expirationDate: expDateStr,
         amount: `${actualAmount} ETB`,
         vehicleCategory,
@@ -2027,6 +2042,100 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <span>{isAmharic ? '4. የክፍያ መረጃ' : 'Step 4: Payment Details'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">4 of 5</span>
+                  </div>
+
+                  {/* PRO-RATED REGISTRATION & ADVANCE MONTHS CALCULATION BOX */}
+                  <div className="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/80 rounded-xl p-3.5 space-y-3 shadow-2xs">
+                    <div className="flex items-center justify-between border-b border-emerald-200 dark:border-emerald-800/60 pb-2">
+                      <span className="text-xs font-black text-emerald-950 dark:text-emerald-200 flex items-center gap-1.5">
+                        <Icon className="material-symbols-outlined text-[18px] text-emerald-700 dark:text-emerald-400">payments</Icon>
+                        <span>{isAmharic ? 'የምዝገባ ክፍያ እና የቅድመ ክፍያ ስሌት' : 'Registration Pro-Rata & Advance Fee Calculation'}</span>
+                      </span>
+                      <span className="text-[10px] font-bold bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded">
+                        500 ETB / {isAmharic ? 'ወር' : 'month'}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Registration Payment Date */}
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                          {isAmharic ? 'የተመዘገበበት ቀን (ኢትዮጵያ)' : 'Registration Date (Eth Calendar)'}
+                        </label>
+                        <EthiopianDatePickerPopover
+                          value={registrationPaymentDate}
+                          onChange={setRegistrationPaymentDate}
+                          lang={isAmharic ? 'am' : 'en'}
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Advance Months Selection Dropdown */}
+                      <div className="space-y-1">
+                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                          {isAmharic ? 'የቅድመ ክፍያ ወራት (ለቀጣይ ወራት)' : 'Advance Months Payment'}
+                        </label>
+                        <select
+                          value={advanceMonths}
+                          onChange={(e) => setAdvanceMonths(Number(e.target.value))}
+                          className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-900 dark:text-white cursor-pointer"
+                        >
+                          <option value={0}>{isAmharic ? '0 ወር (የምዝገባ ወር ብቻ)' : '0 Months (Current month only)'}</option>
+                          <option value={1}>{isAmharic ? '+1 ወር ቅድመ ክፍያ (+500 ETB)' : '+1 Month Advance (+500 ETB)'}</option>
+                          <option value={2}>{isAmharic ? '+2 ወራት ቅድመ ክፍያ (+1,000 ETB)' : '+2 Months Advance (+1,000 ETB)'}</option>
+                          <option value={3}>{isAmharic ? '+3 ወራት ቅድመ ክፍያ (+1,500 ETB)' : '+3 Months Advance (+1,500 ETB)'}</option>
+                          <option value={6}>{isAmharic ? '+6 ወራት ቅድመ ክፍያ (+3,000 ETB)' : '+6 Months Advance (+3,000 ETB)'}</option>
+                          <option value={12}>{isAmharic ? '+12 ወራት (የ1 ዓመት) ቅድመ ክፍያ (+6,000 ETB)' : '+12 Months (1 Year) Advance (+6,000 ETB)'}</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Pro-Rata Fee Itemized Summary Box */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] pt-1">
+                      <div className="bg-white/80 dark:bg-slate-900/80 p-2 rounded-lg border border-emerald-500/20">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-bold">
+                          {isAmharic ? 'የምዝገባ ወር ክፍያ' : 'Current Month Fee'}
+                        </span>
+                        <span className="font-mono font-black text-emerald-800 dark:text-emerald-300 text-xs">
+                          {livePaymentCalc.proRatedFee} ETB
+                        </span>
+                        <span className="text-[9px] text-slate-500 block truncate">
+                          {livePaymentCalc.isFullMonth
+                            ? (isAmharic ? 'ሙሉ ወር (ቀን 1)' : 'Full Month (Day 1)')
+                            : `${livePaymentCalc.remainingDays}/${livePaymentCalc.daysInMonth} ${isAmharic ? 'ቀናት ቀርተዋል' : 'days left'}`}
+                        </span>
+                      </div>
+
+                      <div className="bg-white/80 dark:bg-slate-900/80 p-2 rounded-lg border border-emerald-500/20">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-bold">
+                          {isAmharic ? 'የቅድመ ክፍያ' : 'Advance Fee'}
+                        </span>
+                        <span className="font-mono font-black text-emerald-800 dark:text-emerald-300 text-xs">
+                          {livePaymentCalc.advanceFee} ETB
+                        </span>
+                        <span className="text-[9px] text-slate-500 block truncate">
+                          {livePaymentCalc.advanceMonths} {isAmharic ? 'ወራት' : 'advance months'}
+                        </span>
+                      </div>
+
+                      <div className="bg-emerald-600 text-white p-2 rounded-lg font-bold shadow-2xs">
+                        <span className="text-[10px] opacity-90 block font-bold">
+                          {isAmharic ? 'ጠቅላላ የሚከፈል' : 'Total Amount'}
+                        </span>
+                        <span className="font-mono font-black text-sm block">
+                          {livePaymentCalc.totalAmount} ETB
+                        </span>
+                      </div>
+
+                      <div className="bg-white/80 dark:bg-slate-900/80 p-2 rounded-lg border border-emerald-500/20">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-bold">
+                          {isAmharic ? 'ክፍያው የሚያበቃበት' : 'Coverage Expiration'}
+                        </span>
+                        <span className="font-mono font-black text-emerald-700 dark:text-emerald-400 text-xs block truncate">
+                          {formatEthiopianDate(livePaymentCalc.expirationDate, isAmharic ? 'am' : 'en')}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

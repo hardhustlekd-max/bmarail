@@ -1,5 +1,6 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { Icon } from './Icon';
+import { ETHIOPIAN_MONTHS } from '../../utils/ethiopianCalendar';
 
 // ============================================================================
 // 1. ATOMS (Design Primitives, Controls, Badges, Dots)
@@ -747,7 +748,7 @@ export interface MatrixRowItem {
 }
 
 export interface MonthlyMatrixLedgerProps {
-  columns: Array<{ key: string; label: string; title?: string }>;
+  columns: Array<{ key: string; label: string; fullLabel?: string; title?: string }>;
   rows: MatrixRowItem[];
   onRowClick?: (row: MatrixRowItem) => void;
   className?: string;
@@ -759,6 +760,9 @@ export interface MonthlyMatrixLedgerProps {
   emptyMessage?: string;
   isAmharic?: boolean;
   expandableMobile?: boolean;
+  renderActions?: (row: MatrixRowItem, isMobile?: boolean) => React.ReactNode;
+  renderMobileQuickAction?: (row: MatrixRowItem) => React.ReactNode;
+  actionsHeaderLabel?: string;
 }
 
 export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
@@ -774,9 +778,26 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
   emptyMessage = 'No ledger records available.',
   isAmharic = true,
   expandableMobile = true,
+  renderActions,
+  renderMobileQuickAction,
+  actionsHeaderLabel = 'Actions',
 }) => {
   const hasPlate = showPlateColumn || rows.some((r) => Boolean(r.plateNumber));
   const [expandedMobileRowIds, setExpandedMobileRowIds] = useState<Set<string | number>>(new Set());
+
+  // Helper to resolve the full Ethiopian month name for mobile breakdown view
+  const getFullMonthLabel = (col: { key: string; label: string; fullLabel?: string; title?: string }) => {
+    if (col.fullLabel) return col.fullLabel;
+    const match = col.key.match(/\d+/);
+    if (match) {
+      const monthNum = parseInt(match[0], 10);
+      const found = ETHIOPIAN_MONTHS.find((m) => m.id === monthNum);
+      if (found) {
+        return isAmharic ? found.am : found.en;
+      }
+    }
+    return col.label;
+  };
 
   const toggleRow = (id: string | number) => {
     setExpandedMobileRowIds((prev) => {
@@ -807,23 +828,33 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
     }
   };
 
-  const totalCols = columns.length + (hasPlate ? 1 : 0) + (showNumbering ? 1 : 0) + 1 + (expandableMobile ? 1 : 0);
+  // Dedicated column counts for mobile vs desktop to prevent colSpan mismatch layout thrashing
+  const mobileCols = (showNumbering ? 1 : 0) + 1 + (hasPlate ? 1 : 0) + (expandableMobile ? 1 : 0);
+  const desktopCols = (showNumbering ? 1 : 0) + 1 + (hasPlate ? 1 : 0) + columns.length + (renderActions ? 1 : 0);
 
   return (
-    <div className="w-full max-w-full overflow-x-auto min-w-0">
-      <table className={`w-full border-collapse text-left ${className}`}>
+    <div className="w-full max-w-full overflow-x-hidden md:overflow-x-auto min-w-0">
+      <table className={`w-full border-collapse text-left table-fixed md:table-auto ${className}`}>
+        {/* Rigid column definition on mobile to lock widths and prevent any resizing jumps when rows expand */}
+        <colgroup className="md:hidden">
+          {showNumbering && <col style={{ width: '38px' }} />}
+          <col style={{ width: 'auto' }} />
+          {hasPlate && <col style={{ width: '96px' }} />}
+          {expandableMobile && <col style={{ width: '40px' }} />}
+        </colgroup>
+
         <thead>
           <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F7F9FC] dark:bg-[#24303F]">
             {showNumbering && (
-              <th className="py-3 px-2 sm:px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-8 sm:w-12 font-mono">
+              <th className="py-3 px-1.5 sm:px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-[38px] font-mono">
                 {numberHeaderLabel}
               </th>
             )}
-            <th className="py-3 px-2.5 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap min-w-[110px] sm:min-w-[170px]">
+            <th className="py-3 px-2 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left min-w-0 sm:min-w-[170px]">
               {memberHeaderLabel}
             </th>
             {hasPlate && (
-              <th className="py-3 px-2 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono min-w-[80px] sm:min-w-[110px]">
+              <th className="py-3 px-1.5 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono w-[96px] sm:w-28 sm:min-w-[110px]">
                 {plateHeaderLabel}
               </th>
             )}
@@ -836,8 +867,13 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                 {col.label}
               </th>
             ))}
+            {renderActions && (
+              <th className="hidden md:table-cell py-3 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[140px]">
+                {actionsHeaderLabel}
+              </th>
+            )}
             {expandableMobile && (
-              <th className="py-3 px-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-8 sm:w-10 md:hidden">
+              <th className="py-3 px-1 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-10 md:hidden">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -849,7 +885,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                 >
                   <Icon
                     name={expandedMobileRowIds.size === rows.length ? 'unfold_less' : 'unfold_more'}
-                    size={18}
+                    size={16}
                   />
                 </button>
               </th>
@@ -869,20 +905,22 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                   }`}
                 >
                   {showNumbering && (
-                    <td className="py-3.5 px-2 sm:px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap">
+                    <td className="py-3 px-1.5 sm:px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap w-[38px]">
                       {index + 1}
                     </td>
                   )}
-                  <td className="py-3.5 px-2.5 sm:px-4 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
-                    <div className="font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[130px] sm:max-w-none">{row.title}</div>
+                  <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 min-w-0 overflow-hidden">
+                    <div className="font-semibold text-slate-800 dark:text-slate-100 truncate">{row.title}</div>
                     {row.subtitle && (
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[130px] sm:max-w-none">{row.subtitle}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{row.subtitle}</div>
                     )}
                   </td>
                   {hasPlate && (
-                    <td className="py-3.5 px-2 sm:px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200">
+                    <td className="py-3 px-1.5 sm:px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200 w-[96px] sm:w-28">
                       {row.plateNumber ? (
-                        <span className="truncate max-w-[85px] sm:max-w-none inline-block">{row.plateNumber}</span>
+                        <span className="truncate inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[11px] font-bold max-w-full">
+                          {row.plateNumber}
+                        </span>
                       ) : (
                         <span className="text-slate-400 dark:text-slate-600 font-normal italic">—</span>
                       )}
@@ -900,16 +938,25 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                     </td>
                   );
                 })}
+                {renderActions && (
+                  <td
+                    className="hidden md:table-cell py-2.5 px-3 text-center whitespace-nowrap"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {renderActions(row, false)}
+                  </td>
+                )}
                 {expandableMobile && (
-                  <td className="py-3.5 px-2 text-center w-10 md:hidden">
+                  <td className="py-2.5 px-1 text-center w-10 whitespace-nowrap md:hidden">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleRow(row.id);
                       }}
-                      className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer transition-colors"
+                      className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                       title={isExpanded ? (isAmharic ? 'ሰብስብ' : 'Collapse') : (isAmharic ? 'ዘርጋ' : 'Expand')}
+                      aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
                     >
                       <Icon
                         name={isExpanded ? 'expand_less' : 'expand_more'}
@@ -923,22 +970,17 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
 
               {/* Collapsible/Expandable Monthly Drawer - ONLY rendered in Mobile View Mode */}
               {expandableMobile && isExpanded && (
-                <tr className="md:hidden bg-slate-50/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800">
-                  <td colSpan={totalCols} className="p-3 sm:p-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between text-xs pb-1.5 border-b border-slate-200 dark:border-slate-700 font-bold text-slate-800 dark:text-slate-200">
-                        <div className="flex items-center gap-1.5">
-                          <Icon name="event_note" size={16} className="text-primary" />
-                          <span>{isAmharic ? 'የወርሃዊ ክፍያዎች ዝርዝር' : 'Monthly Dues Breakdown'}</span>
-                        </div>
-                        {row.plateNumber && (
-                          <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold">
-                            {row.plateNumber}
-                          </span>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <tr className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                  <td
+                    colSpan={mobileCols}
+                    className="p-3 sm:p-4 max-w-full min-w-0 overflow-hidden box-border bg-white dark:bg-slate-900"
+                    style={{ maxWidth: '100%', minWidth: 0 }}
+                  >
+                    <div className="w-full max-w-full min-w-0 overflow-hidden space-y-3.5">
+                      {/* Redesigned Month List as Desktop-Style Gridboxes with Full Month Name */}
+                      <div className="grid grid-cols-3 min-[440px]:grid-cols-4 min-[620px]:grid-cols-5 gap-1.5 sm:gap-2 w-full max-w-full min-w-0">
                         {columns.map((col) => {
+                          const monthFullName = getFullMonthLabel(col);
                           const status = row.periods[col.key] || 'muted';
                           const statusText =
                             status === 'paid'
@@ -951,42 +993,64 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
 
                           const statusBadgeClass =
                             status === 'paid'
-                              ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
+                              ? 'bg-emerald-50/80 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60 shadow-2xs'
                               : status === 'pending'
-                              ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                              ? 'bg-amber-50/80 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300 border-amber-200 dark:border-amber-800/60 shadow-2xs'
                               : status === 'unpaid'
-                              ? 'bg-rose-50 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300 border-rose-200 dark:border-rose-800'
-                              : 'bg-slate-100 text-slate-600 dark:bg-slate-800/80 dark:text-slate-400 border-slate-200 dark:border-slate-700';
+                              ? 'bg-rose-50/80 text-rose-800 dark:bg-rose-950/30 dark:text-rose-300 border-rose-200 dark:border-rose-800/60 shadow-2xs'
+                              : 'bg-slate-50/80 text-slate-500 dark:bg-slate-800/40 dark:text-slate-400 border-slate-200 dark:border-slate-700/60';
 
                           return (
                             <div
                               key={col.key}
-                              className={`flex items-center justify-between p-2 rounded-md border text-xs ${statusBadgeClass}`}
+                              className={`flex flex-col items-center justify-center py-2 px-1.5 rounded-lg border text-center transition-all min-w-0 ${statusBadgeClass}`}
+                              title={`${monthFullName}: ${statusText}`}
                             >
-                              <span className="font-bold text-[11px] truncate">{col.label}</span>
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <StatusDot status={status} size={8} />
-                                <span className="text-[10px] font-medium">{statusText}</span>
+                              <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-100 truncate max-w-full mb-1 leading-tight tracking-tight">
+                                {monthFullName}
+                              </span>
+                              <div className="flex items-center justify-center gap-1 max-w-full">
+                                <StatusDot status={status} size={9} />
+                                <span className="text-[9px] sm:text-[10px] font-medium opacity-85 truncate leading-none">
+                                  {statusText}
+                                </span>
                               </div>
                             </div>
                           );
                         })}
                       </div>
 
-                      {/* Explicit Action to Open Member Full Information Drawer */}
-                      {onRowClick && (
-                        <div className="pt-2 flex items-center justify-end border-t border-slate-200 dark:border-slate-700/60">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onRowClick(row);
-                            }}
-                            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-primary hover:bg-primary-hover active:scale-98 text-white shadow-xs transition-all cursor-pointer"
+                      {/* Mobile Action Toolbar - Displayed Upfront */}
+                      {(renderActions || onRowClick) && (
+                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2 w-full max-w-full min-w-0">
+                          <div className="flex items-center px-0.5">
+                            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                              <Icon name="build" size={14} className="text-primary" />
+                              <span>{isAmharic ? 'የአባል ተግባራት' : 'Action Toolbar'}</span>
+                            </span>
+                          </div>
+
+                          <div
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full max-w-full min-w-0 p-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60"
                           >
-                            <Icon name="badge" size={16} />
-                            <span>{isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Full Information'}</span>
-                          </button>
+                            <div className="grid grid-cols-2 gap-2 w-full max-w-full min-w-0">
+                              {renderActions && renderActions(row, true)}
+                              {onRowClick && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRowClick(row);
+                                  }}
+                                  className="w-full min-h-[38px] px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover active:scale-95 text-white shadow-2xs transition-all cursor-pointer"
+                                >
+                                  <Icon name="badge" size={16} />
+                                  <span className="truncate">{isAmharic ? 'ሙሉ መረጃ' : 'Full Profile'}</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -999,8 +1063,14 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
         {rows.length === 0 && (
           <tr>
             <td
-              colSpan={totalCols}
-              className="py-8 text-center text-sm text-slate-400 dark:text-slate-500"
+              colSpan={desktopCols}
+              className="hidden md:table-cell py-8 text-center text-sm text-slate-400 dark:text-slate-500"
+            >
+              {emptyMessage}
+            </td>
+            <td
+              colSpan={mobileCols}
+              className="md:hidden py-8 text-center text-sm text-slate-400 dark:text-slate-500"
             >
               {emptyMessage}
             </td>
@@ -1321,8 +1391,12 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
               {/* Collapsible details drawer for mobile viewports */}
               {isExpanded && renderMobileExpandedContent && (
                 <tr className="md:hidden bg-slate-50/80 dark:bg-slate-800/80">
-                  <td colSpan={columns.length + 1} className="p-4 border-b border-slate-200 dark:border-slate-700">
-                    <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 animate-fadeIn">
+                  <td
+                    colSpan={columns.filter((c) => !c.hideOnMobile).length + 1}
+                    className="p-4 border-b border-slate-200 dark:border-slate-700 max-w-full min-w-0 overflow-hidden box-border"
+                    style={{ maxWidth: '100%', minWidth: 0 }}
+                  >
+                    <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 animate-fadeIn max-w-full min-w-0 overflow-hidden">
                       {renderMobileExpandedContent(item)}
                     </div>
                   </td>

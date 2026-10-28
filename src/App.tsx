@@ -216,6 +216,7 @@ export default function App() {
 
   return (
     <div
+      id="app-root-container"
       className={`h-screen h-[100dvh] max-h-screen max-h-[100dvh] overflow-hidden bg-surface text-on-surface flex flex-col ${
         lang === 'am' ? 'system-lang-am lang-am font-ethiopic' : 'system-lang-en lang-en font-sans'
       }`}

@@ -531,14 +531,14 @@ html.dark .printable-a4-document,
 
 @media print {
   @page {
-    size: auto;
+    size: portrait;
     margin: 0;
   }
 
   html, body {
     background-color: #ffffff !important;
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #000000 !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
@@ -549,70 +549,63 @@ html.dark .printable-a4-document,
     print-color-adjust: exact !important;
   }
 
+  /* Force hide all non-print elements, buttons, nav, app bars, sidebars, modals action bars */
   .no-print,
-  button:not(.printable-a4-document *):not(.printable-id-card *):not(.printable-sticker *),
+  button,
   nav,
   header,
   aside,
+  footer,
+  [role="tooltip"],
   [data-no-print="true"] {
     display: none !important;
   }
 
-  /* When printing an isolated document, hide background application and isolate the document */
-  body[data-print-target] #app-root-container,
-  body.is-printing-doc #app-root-container {
-    visibility: hidden !important;
-    background: transparent !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  /* When printing a standalone document modal, hide the main app root completely */
+  body.is-printing-doc #app-root-container,
+  body[data-print-target] #app-root-container {
+    display: none !important;
+  }
+
+  /* Reset zoomable interactive containers for print rendering */
+  [data-zoomable-container="true"] {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100% !important;
     height: auto !important;
     min-height: 100% !important;
-    overflow: visible !important;
-  }
-
-  /* Make sure modal overlays are transparent so no dark backdrop prints */
-  body[data-print-target] .fixed,
-  body[data-print-target] .backdrop-blur-md,
-  body[data-print-target] .backdrop-blur,
-  body[data-print-target] [class*="bg-black"],
-  body[data-print-target] [class*="bg-slate-950"],
-  body.is-printing-doc .fixed,
-  body.is-printing-doc .backdrop-blur-md,
-  body.is-printing-doc .backdrop-blur,
-  body.is-printing-doc [class*="bg-black"],
-  body.is-printing-doc [class*="bg-slate-950"] {
-    background-color: transparent !important;
-    background: transparent !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
     border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
   }
 
-  /* Reset zoom transforms applied by interactive preview containers */
-  body[data-print-target] [data-zoomable-container="true"],
-  body[data-print-target] [data-zoomable-container="true"] > div,
-  body.is-printing-doc [data-zoomable-container="true"],
-  body.is-printing-doc [data-zoomable-container="true"] > div {
+  [data-zoomable-container="true"] * {
     transform: none !important;
     zoom: 1 !important;
   }
 
-  /* Make the printable document and all its inner elements visible */
-  body[data-print-target] .printable-a4-document,
-  body[data-print-target] .printable-id-card,
-  body[data-print-target] .printable-sticker,
-  body.is-printing-doc .printable-a4-document,
-  body.is-printing-doc .printable-id-card,
-  body.is-printing-doc .printable-sticker {
+  /* Isolate printable document targets */
+  .printable-a4-document,
+  .printable-id-card,
+  .printable-sticker,
+  #a4-permit-document,
+  #pvc-card-container,
+  #sticker-container {
+    display: block !important;
     visibility: visible !important;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     margin: 0 auto !important;
-    z-index: 9999999 !important;
+    z-index: 99999999 !important;
     box-shadow: none !important;
     background-color: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
@@ -621,20 +614,20 @@ html.dark .printable-a4-document,
     break-inside: avoid !important;
   }
 
-  body[data-print-target] .printable-a4-document *,
-  body[data-print-target] .printable-id-card *,
-  body[data-print-target] .printable-sticker *,
-  body.is-printing-doc .printable-a4-document *,
-  body.is-printing-doc .printable-id-card *,
-  body.is-printing-doc .printable-sticker * {
+  .printable-a4-document *,
+  .printable-id-card *,
+  .printable-sticker *,
+  #a4-permit-document *,
+  #pvc-card-container *,
+  #sticker-container * {
     visibility: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Specific document formats for print preview */
-  body[data-print-target="a4"] .printable-a4-document,
-  body.is-printing-doc .printable-a4-document {
+  /* Specific document formats for print rendering */
+  .printable-a4-document,
+  #a4-permit-document {
     width: 210mm !important;
     max-width: 210mm !important;
     min-height: 297mm !important;
@@ -642,25 +635,28 @@ html.dark .printable-a4-document,
     border: 3px double #000000 !important;
     padding: 8mm 10mm !important;
     box-sizing: border-box !important;
+    margin: 0 auto !important;
   }
 
-  body[data-print-target="id-card"] .printable-id-card,
-  body.is-printing-doc .printable-id-card {
+  .printable-id-card,
+  #pvc-card-container {
     width: 580px !important;
     max-width: 580px !important;
     height: 366px !important;
-    top: 15mm !important;
+    top: 10mm !important;
     border: 1px solid #cbd5e1 !important;
     box-sizing: border-box !important;
+    margin: 0 auto !important;
   }
 
-  body[data-print-target="sticker"] .printable-sticker,
-  body.is-printing-doc .printable-sticker {
+  .printable-sticker,
+  #sticker-container {
     width: 380px !important;
     max-width: 380px !important;
     height: 380px !important;
-    top: 15mm !important;
+    top: 10mm !important;
     box-sizing: border-box !important;
+    margin: 0 auto !important;
   }
 }
 

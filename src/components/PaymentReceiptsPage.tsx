@@ -124,6 +124,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [reconcileVerifyStatus, setReconcileVerifyStatus] = useState<'idle' | 'matched' | 'mismatch'>('idle');
   const [reconcileCopiedField, setReconcileCopiedField] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [editingReceipt, setEditingReceipt] = useState<PaymentReceipt | null>(null);
+  const [editFormAmount, setEditFormAmount] = useState('');
+  const [editFormNotes, setEditFormNotes] = useState('');
+  const [editFormPaymentDate, setEditFormPaymentDate] = useState('');
+  const [editFormExpDate, setEditFormExpDate] = useState('');
 
   // Server-Side Monthly Fee Statistics for instant zero-lag rendering
   const [serverFeeStats, setServerFeeStats] = useState<ServerMonthlyFeeStatistics | null>(getCachedServerMonthlyFeeStatistics());
@@ -686,6 +691,92 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     }
   };
 
+  const handlePrintReceipt = (rc: PaymentReceipt) => {
+    if (!rc) return;
+    const printWin = window.open('', '_blank');
+    if (!printWin) {
+      if (onShowToast) onShowToast(isAmharic ? 'የህትመት መስኮት መክፈት አልተቻለም' : 'Could not open print window', 'error');
+      return;
+    }
+    const ethDate = formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en');
+    const expEthDate = formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en');
+    printWin.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Receipt #${rc.receiptNumber}</title>
+          <style>
+            body { font-family: sans-serif; padding: 24px; max-width: 550px; margin: auto; background: #fff; color: #0f172a; }
+            .header { text-align: center; border-bottom: 2px solid #24963e; padding-bottom: 12px; margin-bottom: 20px; }
+            .title { font-size: 18px; font-weight: 900; color: #0f172a; }
+            .subtitle { font-size: 12px; color: #24963e; font-weight: bold; margin-top: 4px; }
+            .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+            .label { color: #64748b; font-weight: bold; }
+            .val { font-weight: bold; color: #0f172a; }
+            .total { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 8px; margin-top: 16px; font-size: 15px; font-weight: 900; display: flex; justify-content: space-between; }
+            .footer { text-align: center; margin-top: 24px; font-size: 11px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="title">ባህር ዳር ሞተር ቢስክሌት አሶሴሽን</div>
+            <div class="subtitle">Bahir Dar Motorcycle Association — Official Receipt</div>
+          </div>
+          <div class="row"><span class="label">Receipt Number / የደረሰኝ ቁጥር:</span><span class="val">#${rc.receiptNumber}</span></div>
+          <div class="row"><span class="label">Member Name / የባለቤት ስም:</span><span class="val">${rc.ownerName}</span></div>
+          <div class="row"><span class="label">Plate Number / የሰሌዳ ቁጥር:</span><span class="val">${rc.plateNumber || 'N/A'}</span></div>
+          <div class="row"><span class="label">Payment Date / የተከፈለበት ቀን:</span><span class="val">${ethDate}</span></div>
+          <div class="row"><span class="label">Valid Until / የሚያበቃበት ቀን:</span><span class="val" style="color:#24963e">${expEthDate}</span></div>
+          <div class="row"><span class="label">Clerk / የመዘገበው ሰራተኛ:</span><span class="val">${rc.enteredBy}</span></div>
+          <div class="total">
+            <span>Total Amount Paid / የተከፈለ መጠን:</span>
+            <span style="color:#166534">${rc.amount || '500 ETB'}</span>
+          </div>
+          <div class="footer">Verified Official System Receipt — ${new Date().toLocaleDateString()}</div>
+          <script>window.onload = function() { window.print(); };</script>
+        </body>
+      </html>
+    `);
+    printWin.document.close();
+  };
+
+  const handleOpenEditTransaction = (rc: PaymentReceipt) => {
+    setEditingReceipt(rc);
+    setEditFormAmount(String(rc.amount || '500').replace(/[^0-9.]/g, ''));
+    setEditFormNotes(rc.notes || '');
+    setEditFormPaymentDate(rc.paymentDate || '');
+    setEditFormExpDate(rc.expirationDate || '');
+  };
+
+  const handleSaveEditedTransaction = async () => {
+    if (!editingReceipt) return;
+    try {
+      const updatedReceipt: PaymentReceipt = {
+        ...editingReceipt,
+        amount: `${editFormAmount.trim() || '500'} ETB`,
+        notes: editFormNotes.trim() || undefined,
+        paymentDate: editFormPaymentDate || editingReceipt.paymentDate,
+        expirationDate: editFormExpDate || editingReceipt.expirationDate,
+      };
+      if (onSaveReceipt) {
+        await onSaveReceipt(updatedReceipt);
+      } else {
+        await savePaymentReceiptToDb(updatedReceipt);
+      }
+      if (onShowToast) {
+        onShowToast(
+          isAmharic ? 'የክፍያ መረጃው በተሳካ ሁኔታ ተሻሽሏል' : 'Transaction updated successfully',
+          'success'
+        );
+      }
+      setEditingReceipt(null);
+    } catch (err: any) {
+      if (onShowToast) {
+        onShowToast(isAmharic ? 'ማሻሻል አልተሳካም' : 'Failed to update transaction', 'error');
+      }
+    }
+  };
+
   // Filtered Receipts for table & cards
   const filteredReceipts = useMemo(() => {
     return combinedReceipts.filter((rc) => {
@@ -745,11 +836,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const matrixColumns = useMemo(() => {
     return ETHIOPIAN_MONTHS.map((monthObj) => {
       const label = isAmharic ? monthObj.shortAm : monthObj.shortEn;
+      const fullLabel = isAmharic ? monthObj.am : monthObj.en;
       const fullTitle = isAmharic ? `${monthObj.am} (${monthObj.en})` : `${monthObj.en} - ${monthObj.am}`;
       return {
         key: `eth_m_${monthObj.id}`,
         monthNum: monthObj.id,
         label,
+        fullLabel,
         title: fullTitle,
         year: currentEthYear,
       };
@@ -909,13 +1002,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         };
       });
 
-      // Map each column month to its status
+      // Map each column month to its status (including advance payment coverage & 5-day due-soon threshold)
       const periods: Record<string, 'paid' | 'unpaid' | 'pending' | 'muted'> = {};
 
       matrixColumns.forEach((col) => {
         const targetMonth = col.monthNum;
         const targetYear = col.year;
-        const isCurrentMonth = targetMonth === currentEthMonth && targetYear === currentEthYear;
+        const targetIndex = targetYear * 13 + targetMonth;
+        const currentIndex = currentEthYear * 13 + currentEthMonth;
 
         // If member has no payment records whatsoever in the DB, show muted dot
         if (!hasAnyPaymentRecord) {
@@ -923,36 +1017,35 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           return;
         }
 
-        // A. Check if any receipt was paid specifically in this Ethiopian month/year
-        const directMonthMatches = parsedReceipts.filter(
-          (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
+        // Check if any payment receipt actively covers targetIndex (from payIndex up to expIndex - 1)
+        const activeCoverageReceipt = parsedReceipts.find(
+          (item) => item.payIndex && item.expIndex && targetIndex >= item.payIndex && targetIndex < item.expIndex
         );
 
-        if (isCurrentMonth) {
-          // For current month: evaluate status based on direct payments in this month
-          const directMatch = directMonthMatches[0];
-
-          if (directMatch) {
-            if (directMatch.status === 'expiring_soon') {
-              periods[col.key] = 'pending';
-            } else {
-              periods[col.key] = 'paid';
-            }
-          } else if (parsedReceipts.some((r) => r.status === 'expiring_soon')) {
+        if (activeCoverageReceipt) {
+          // If in active coverage range: evaluate whether it's expiring soon (<= 5 days remaining)
+          if (
+            (targetIndex === currentIndex || targetIndex === activeCoverageReceipt.expIndex - 1) &&
+            activeCoverageReceipt.daysRemaining <= 5 &&
+            activeCoverageReceipt.daysRemaining >= 0
+          ) {
             periods[col.key] = 'pending';
-          } else if (parsedReceipts.some((r) => r.status === 'expired')) {
-            periods[col.key] = 'unpaid';
           } else {
-            periods[col.key] = 'muted';
-          }
-        } else {
-          // For other months: show paid if payment record exists in that specific month, otherwise grey dot (muted)
-          if (directMonthMatches.length > 0) {
             periods[col.key] = 'paid';
-          } else {
-            // No payment data for this column -> grey dot
-            periods[col.key] = 'muted';
           }
+        } else if (targetIndex === currentIndex) {
+          // Current month with no active coverage
+          if (parsedReceipts.some((r) => r.status === 'expiring_soon')) {
+            periods[col.key] = 'pending';
+          } else {
+            periods[col.key] = 'unpaid';
+          }
+        } else if (targetIndex < currentIndex) {
+          // Past month with no payment coverage
+          periods[col.key] = 'unpaid';
+        } else {
+          // Future month with no advance payment -> muted grey dot
+          periods[col.key] = 'muted';
         }
       });
 
@@ -1904,9 +1997,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     setSearchQuery('');
                     setPage(1);
                   }}
-                  className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer font-bold text-xs"
+                  className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                  title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
                 >
-                  ✕
+                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
                 </button>
               )}
             </div>
@@ -1972,8 +2066,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             </div>
           </div>
 
-          {/* MONTHLY MATRIX LEDGER TABLE (RESPONSIVE HORIZONTAL SCROLL & COLLAPSIBLE ROWS) */}
-          <div className="overflow-x-auto bg-white dark:bg-[#1C2434] w-full max-w-full min-w-0">
+          {/* MONTHLY MATRIX LEDGER TABLE */}
+          <div className="overflow-x-hidden md:overflow-x-auto bg-white dark:bg-[#1C2434] w-full max-w-full min-w-0">
             <MonthlyMatrixLedger
               columns={matrixColumns}
               rows={displayMatrixRows}
@@ -1985,6 +2079,164 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               isAmharic={isAmharic}
               expandableMobile={true}
               emptyMessage={isAmharic ? 'ምንም የወርሃዊ መዋጮ መረጃ አልተገኘም።' : 'No ledger records available.'}
+              actionsHeaderLabel={isAmharic ? 'ተግባራት' : 'Actions'}
+              renderActions={(row, isMobile) => {
+                const latestRc = (row as any).allReceipts?.[0] || null;
+
+                if (isMobile) {
+                  return (
+                    <React.Fragment>
+                      {/* 1. Record Payment */}
+                      {(isSuperAdmin || canAddReceipt) && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const plate = row.plateNumber || String(row.id);
+                            handleRegNumberChange(plate);
+                            setIsFormOpen(true);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white shadow-2xs transition-all cursor-pointer"
+                        >
+                          <Icon name="add_card" size={16} />
+                          <span className="truncate">{isAmharic ? 'ክፍያ መዝግብ' : 'Record Payment'}</span>
+                        </button>
+                      )}
+
+                      {/* 2. View Ledger */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const memberReg =
+                            registrations.find((r) => String(r.id) === String(row.id)) ||
+                            registrations.find((r) => r.plateNumber && row.plateNumber && r.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
+                            null;
+                          const memberReceipts = combinedReceipts.filter(
+                            (rc) =>
+                              (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                              (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase())
+                          );
+                          setSelectedMemberDetail({ row, member: memberReg, receipts: memberReceipts });
+                        }}
+                        className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-650 active:scale-95 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-600 shadow-2xs transition-all cursor-pointer"
+                      >
+                        <Icon name="visibility" size={16} />
+                        <span className="truncate">{isAmharic ? 'የሂሳብ መዝገብ' : 'View Ledger'}</span>
+                      </button>
+
+                      {/* 3. Print Receipt */}
+                      {latestRc && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePrintReceipt(latestRc);
+                          }}
+                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-sky-50 dark:bg-sky-950/80 hover:bg-sky-100 dark:hover:bg-sky-900 active:scale-95 text-sky-800 dark:text-sky-200 border border-sky-300 dark:border-sky-800 shadow-2xs transition-all cursor-pointer"
+                        >
+                          <Icon name="print" size={16} />
+                          <span className="truncate">{isAmharic ? 'ደረሰኝ አትም' : 'Print Receipt'}</span>
+                        </button>
+                      )}
+
+                      {/* 4. Edit Transaction */}
+                      {isSuperAdmin && latestRc && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenEditTransaction(latestRc);
+                          }}
+                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-amber-50 dark:bg-amber-950/80 hover:bg-amber-100 dark:hover:bg-amber-900 active:scale-95 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 shadow-2xs transition-all cursor-pointer"
+                        >
+                          <Icon name="edit" size={16} />
+                          <span className="truncate">{isAmharic ? 'ክፍያ አርትዕ' : 'Edit Transaction'}</span>
+                        </button>
+                      )}
+                    </React.Fragment>
+                  );
+                }
+
+                return (
+                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 flex-nowrap">
+                    {/* 1. Record Payment */}
+                    {(isSuperAdmin || canAddReceipt) && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const plate = row.plateNumber || String(row.id);
+                          handleRegNumberChange(plate);
+                          setIsFormOpen(true);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs transition-all active:scale-95 cursor-pointer"
+                        title={isAmharic ? 'አዲስ ክፍያ መዝግብ' : 'Record New Payment'}
+                      >
+                        <Icon name="add_card" size={13} />
+                        <span>{isAmharic ? 'ክፍያ' : 'Pay'}</span>
+                      </button>
+                    )}
+
+                    {/* 2. View Ledger */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const memberReg =
+                          registrations.find((r) => String(r.id) === String(row.id)) ||
+                          registrations.find((r) => r.plateNumber && row.plateNumber && r.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
+                          null;
+                        const memberReceipts = combinedReceipts.filter(
+                          (rc) =>
+                            (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                            (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase())
+                        );
+                        setSelectedMemberDetail({ row, member: memberReg, receipts: memberReceipts });
+                      }}
+                      className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
+                      title={isAmharic ? 'የአባል ሂሳብ መዝገብ እይ' : 'View Member Ledger'}
+                    >
+                      <Icon name="visibility" size={13} />
+                      <span>{isAmharic ? 'ሂሳብ' : 'Ledger'}</span>
+                    </button>
+
+                    {/* 3. Print Receipt */}
+                    {latestRc && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrintReceipt(latestRc);
+                        }}
+                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/80 hover:bg-sky-100 dark:hover:bg-sky-900 text-sky-800 dark:text-sky-200 border border-sky-300 dark:border-sky-800 transition-all active:scale-95 cursor-pointer"
+                        title={isAmharic ? 'የመጨረሻውን ደረሰኝ አትም' : 'Print Latest Receipt'}
+                      >
+                        <Icon name="print" size={13} />
+                        <span>{isAmharic ? 'ሕትመት' : 'Print'}</span>
+                      </button>
+                    )}
+
+                    {/* 4. Edit Transaction */}
+                    {isSuperAdmin && latestRc && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenEditTransaction(latestRc);
+                        }}
+                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-950/80 hover:bg-amber-100 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 transition-all active:scale-95 cursor-pointer"
+                        title={isAmharic ? 'የክፍያ ዝርዝር አርትዕ (SuperAdmin)' : 'Edit Transaction (SuperAdmin)'}
+                      >
+                        <Icon name="edit" size={13} />
+                        <span>{isAmharic ? 'አርትዕ' : 'Edit'}</span>
+                      </button>
+                    )}
+                  </div>
+                );
+              }}
               onRowClick={(row) => {
                 const memberReg =
                   registrations.find((r) => String(r.id) === String(row.id)) ||
@@ -2612,6 +2864,103 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-black transition-all cursor-pointer shadow-xs"
               >
                 {isAmharic ? 'አዎ ሰርዝ' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT TRANSACTION MODAL (SUPERADMIN ONLY) */}
+      {editingReceipt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+              <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <Icon name="edit" size={18} className="text-amber-500" />
+                <span>{isAmharic ? 'የክፍያ ዝርዝር አርትዕ' : 'Edit Transaction'}</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingReceipt(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-1 rounded-md"
+                title={isAmharic ? 'ዝጋ' : 'Close'}
+              >
+                <Icon name="close" size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt Number'}
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value={editingReceipt.receiptNumber}
+                  className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold text-slate-500 dark:text-slate-400"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {isAmharic ? 'የተከፈለ መጠን (ብር)' : 'Amount Paid (ETB)'}
+                </label>
+                <input
+                  type="number"
+                  value={editFormAmount}
+                  onChange={(e) => setEditFormAmount(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {isAmharic ? 'የተከፈለበት ቀን (E.C.)' : 'Payment Date (E.C.)'}
+                </label>
+                <EthiopianDatePickerPopover
+                  value={editFormPaymentDate}
+                  onChange={(newDate) => {
+                    setEditFormPaymentDate(newDate);
+                    setEditFormExpDate(calculateOneMonthExpiration(newDate));
+                  }}
+                  lang={isAmharic ? 'am' : 'en'}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-lg text-xs font-bold text-emerald-900 dark:text-emerald-300 flex items-center justify-between shadow-2xs">
+                <span>{isAmharic ? 'የማብቂያ ቀን (ኢትዮጵያ):' : 'Calculated Expiry (Eth):'}</span>
+                <span className="font-mono">{formatEthiopianDate(editFormExpDate || editingReceipt.expirationDate, isAmharic ? 'am' : 'en')}</span>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {isAmharic ? 'ማስታወሻ / ዝርዝር' : 'Notes / Description'}
+                </label>
+                <input
+                  type="text"
+                  value={editFormNotes}
+                  onChange={(e) => setEditFormNotes(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setEditingReceipt(null)}
+                className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer"
+              >
+                {isAmharic ? 'ሰርዝ' : 'Cancel'}
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEditedTransaction}
+                className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-black shadow-xs cursor-pointer"
+              >
+                {isAmharic ? 'አስቀምጥ' : 'Save Changes'}
               </button>
             </div>
           </div>

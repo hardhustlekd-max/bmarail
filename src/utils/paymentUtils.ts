@@ -49,24 +49,100 @@ export function calculateTermStatus(expirationDateStr?: string): TermStatus {
   }
 }
 
-/**
- * Calculates expiration date 1 Ethiopian month (30 days) from payment date in standard Ethiopian calendar (YYYY-MM-DD).
- */
-export function calculateOneMonthExpiration(paymentDateStr: string): string {
-  if (!paymentDateStr) return '';
+export interface ProRatedPaymentCalc {
+  registrationDate: string;
+  monthlyFee: number;
+  daysInMonth: number;
+  dayOfMonth: number;
+  remainingDays: number;
+  dailyRate: number;
+  proRatedFee: number;
+  advanceMonths: number;
+  advanceFee: number;
+  totalAmount: number;
+  expirationDate: string;
+  isFullMonth: boolean;
+}
 
-  // 1. Calculate strictly according to the Ethiopian calendar (30 days per month)
+/**
+ * Calculates exact daily pro-rated payment for the registration month
+ * plus optional advance months (0 to 12).
+ */
+export function calculateRegistrationPayment(
+  registrationDateStr: string,
+  monthlyFee: number = 500,
+  advanceMonths: number = 0
+): ProRatedPaymentCalc {
+  const defaultFee = typeof monthlyFee === 'number' && monthlyFee > 0 ? monthlyFee : 500;
+  const adv = Math.max(0, Math.floor(advanceMonths || 0));
+
+  let dayOfMonth = 1;
+  let daysInMonth = 30;
+
+  if (registrationDateStr) {
+    try {
+      const eth = toEthiopianDate(registrationDateStr);
+      if (eth && eth.day && eth.month) {
+        dayOfMonth = eth.day;
+        daysInMonth = eth.month === 13 ? (eth.isPagume ? 5 : 6) : 30;
+      } else {
+        const dateObj = new Date(registrationDateStr);
+        if (!isNaN(dateObj.getTime())) {
+          dayOfMonth = dateObj.getDate();
+          const yr = dateObj.getFullYear();
+          const mo = dateObj.getMonth() + 1;
+          daysInMonth = new Date(yr, mo, 0).getDate();
+        }
+      }
+    } catch {
+      // default 1 and 30
+    }
+  }
+
+  // Ensure dayOfMonth within bounds
+  if (dayOfMonth < 1) dayOfMonth = 1;
+  if (dayOfMonth > daysInMonth) dayOfMonth = daysInMonth;
+
+  const isFullMonth = dayOfMonth === 1;
+  const remainingDays = daysInMonth - dayOfMonth + 1; // inclusive of registration day
+  const dailyRate = defaultFee / daysInMonth;
+  const proRatedFee = isFullMonth ? defaultFee : Math.round(remainingDays * dailyRate);
+  const advanceFee = adv * defaultFee;
+  const totalAmount = proRatedFee + advanceFee;
+
+  // Expiration calculation:
+  // Current month coverage + advanceMonths full months
+  const expirationDate = calculateNMonthsExpiration(registrationDateStr, 1 + adv);
+
+  return {
+    registrationDate: registrationDateStr,
+    monthlyFee: defaultFee,
+    daysInMonth,
+    dayOfMonth,
+    remainingDays,
+    dailyRate,
+    proRatedFee,
+    advanceMonths: adv,
+    advanceFee,
+    totalAmount,
+    expirationDate,
+    isFullMonth,
+  };
+}
+
+/**
+ * Calculates expiration date N Ethiopian months from payment date in standard Ethiopian calendar (YYYY-MM-DD).
+ */
+export function calculateNMonthsExpiration(startDateStr: string, monthsCount: number = 1): string {
+  if (!startDateStr) return '';
+  const count = Math.max(1, monthsCount);
   try {
-    const eth = toEthiopianDate(paymentDateStr);
+    const eth = toEthiopianDate(startDateStr);
     if (eth && eth.year && eth.month) {
       let nextYear = eth.year;
-      let nextMonth = eth.month + 1;
-      if (nextMonth > 13) {
-        nextMonth = 1;
-        nextYear += 1;
-      } else if (nextMonth === 13) {
-        // Month 13 is Pagume (5 or 6 days). In Ethiopian monthly billing, 1 month after Nehase is Meskerem of next year
-        nextMonth = 1;
+      let nextMonth = eth.month + count;
+      while (nextMonth > 12) {
+        nextMonth -= 12;
         nextYear += 1;
       }
       const nextDay = Math.min(eth.day, 30);
@@ -77,18 +153,20 @@ export function calculateOneMonthExpiration(paymentDateStr: string): string {
     // Fallback below
   }
 
-  // 2. Gregorian fallback if parsing failed
-  const dateObj = new Date(paymentDateStr);
-  if (isNaN(dateObj.getTime())) return paymentDateStr;
-
-  const targetMonth = dateObj.getMonth() + 1;
-  dateObj.setMonth(targetMonth);
-
+  const dateObj = new Date(startDateStr);
+  if (isNaN(dateObj.getTime())) return startDateStr;
+  dateObj.setMonth(dateObj.getMonth() + count);
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
   const day = String(dateObj.getDate()).padStart(2, '0');
-
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Calculates expiration date 1 Ethiopian month (30 days) from payment date in standard Ethiopian calendar (YYYY-MM-DD).
+ */
+export function calculateOneMonthExpiration(paymentDateStr: string): string {
+  return calculateNMonthsExpiration(paymentDateStr, 1);
 }
 
 /**
@@ -123,3 +201,4 @@ export function getPaymentReceiptStatus(expirationDateStr: string): PaymentStatu
     return { status: 'active', daysRemaining: diffDays };
   }
 }
+

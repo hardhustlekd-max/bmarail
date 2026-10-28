@@ -111,31 +111,31 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
             {/* Outer Silver Security Pattern Border Background */}
             <div className="absolute inset-0 bg-[radial-gradient(#d1d5db_1px,transparent_1px)] [background-size:6px_6px] rounded-[32px] opacity-70 pointer-events-none" />
 
-            {/* Main Navy Inner Frame Container */}
-            <div className="relative z-10 w-full h-full bg-white rounded-[24px] border-[5px] border-[#133072] flex flex-col justify-between overflow-hidden shadow-inner">
+            {/* Main Corporate Green Inner Frame Container (Matching ID Card Theme) */}
+            <div className="relative z-10 w-full h-full bg-white rounded-[24px] border-[5px] border-[#24963e] flex flex-col justify-between overflow-hidden shadow-inner">
               
-              {/* Top Yellow Header Section */}
-              <div className="bg-[#ffdd00] border-b-[3px] border-[#133072] px-3 py-2 flex items-center gap-2.5 text-black shrink-0">
+              {/* Top Corporate Green Header Section */}
+              <div className="bg-gradient-to-r from-[#24963e] via-[#2ea44f] to-[#24963e] border-b-[3px] border-[#1f7a33] px-3.5 py-2.5 flex items-center gap-3 text-white shrink-0 shadow-sm">
                 
                 {/* System Seal Emblem */}
-                <div className="w-13 h-13 rounded-full bg-white flex items-center justify-center shrink-0 shadow-sm relative overflow-hidden">
+                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shrink-0 shadow-md relative overflow-hidden ring-2 ring-white/90">
                   <img src={APP_LOGO} alt="Logo" className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
                 </div>
 
                 {/* Header System Title Text Block */}
-                <div className="flex-1 text-center font-sans leading-none text-[#000000]">
-                  <div className="text-[12px] font-black tracking-tight mb-1 font-sans">
+                <div className="flex-1 text-center font-sans leading-none text-white">
+                  <div className="text-[16px] font-black tracking-wide font-sans text-white drop-shadow-sm leading-tight">
                     ባህር ዳር ሞተረኞች ማህበር
                   </div>
-                  <div className="text-[10px] font-extrabold tracking-tight text-black">
-                    Bahir Dar Motorist Association
+                  <div className="text-[12px] font-black tracking-wider text-emerald-50 leading-tight mt-1">
+                    BAHIR DAR MOTORIST ASSOCIATION
                   </div>
                 </div>
               </div>
 
               {/* Middle Area: Centered QR Code */}
               <div className="flex-1 bg-white flex flex-col items-center justify-center p-2 relative">
-                <div className="bg-white p-2 rounded-lg">
+                <div className="bg-white p-2.5 rounded-xl border-2 border-[#24963e] shadow-xs">
                   <QRCodeSVG 
                     value={qrVal} 
                     size={175} 
@@ -158,16 +158,16 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
                   {userRegNo}
                 </div>
 
-                {/* Bottom Corner Red Security Triangles */}
+                {/* Bottom Corner Green Security Triangles (Matching ID Card Theme) */}
                 {/* Left Bottom Corner Triangle */}
                 <div 
-                  className="absolute bottom-0 left-0 w-12 h-12 bg-[#dc2626] pointer-events-none z-10"
+                  className="absolute bottom-0 left-0 w-12 h-12 bg-[#24963e] pointer-events-none z-10"
                   style={{ clipPath: 'polygon(0 100%, 0 0, 100% 100%)' }}
                 />
 
                 {/* Right Bottom Corner Triangle */}
                 <div 
-                  className="absolute bottom-0 right-0 w-12 h-12 bg-[#dc2626] pointer-events-none z-10"
+                  className="absolute bottom-0 right-0 w-12 h-12 bg-[#24963e] pointer-events-none z-10"
                   style={{ clipPath: 'polygon(100% 100%, 100% 0, 0 100%)' }}
                 />
               </div>
@@ -176,42 +176,7 @@ export const VehicleQRSticker: React.FC<VehicleQRStickerProps> = ({
           </div>
         </div>
 
-        {/* Modal Action Footer Bar (No-Print) */}
-        <div className="no-print flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/60">
-          <div className="text-[11px] font-semibold text-secondary flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>{isAmharic ? 'የተረጋገጠ ኦፊሴላዊ ተለጣፊ' : 'Official Validated Sticker'}</span>
-          </div>
 
-          <div className="flex items-center gap-2">
-            {onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-3.5 py-2 rounded-md text-xs font-bold bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors cursor-pointer"
-              >
-                {isAmharic ? 'ዝጋ' : 'Close'}
-              </button>
-            )}
-
-            {(registration.status === 'approved' || registration.status === 'printed' || registration.status === 'ordered_print') ? (
-              <button
-                id="print-sticker-btn"
-                type="button"
-                onClick={handlePrint}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded-md text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[18px]">print</Icon>
-                <span>{isAmharic ? 'ስቲከሩን አትም' : 'Print Sticker'}</span>
-              </button>
-            ) : (
-              <div className="bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 shadow-2xs">
-                <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[18px]">lock</Icon>
-                <span>{isAmharic ? 'የሥራ አስኪያጅ ማፅደቅ ይጠበቃል' : 'Print Disabled — Awaiting Manager Approval'}</span>
-              </div>
-            )}
-          </div>
-        </div>
 
         </div>
       </div>

@@ -279,7 +279,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             <div className="flex flex-col items-center justify-between h-[178px] z-10">
               
               {/* QR Code */}
-              <div className="bg-white p-1 rounded-lg border border-neutral-300 shadow-sm">
+              <div className="bg-white p-1 rounded-lg border-2 border-[#24963e] shadow-xs">
                 <QRCodeSVG value={qrVal} size={82} level="M" />
               </div>
 
@@ -373,7 +373,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             </div>
 
             {/* Backside Extra Large QR Code - Maximum Prominence */}
-            <div className="h-full flex flex-col items-center justify-center bg-white p-2.5 rounded-xl shadow-sm border border-neutral-300">
+            <div className="h-full flex flex-col items-center justify-center bg-white p-2.5 rounded-xl shadow-xs border-2 border-[#24963e]">
               <QRCodeSVG value={qrVal} size={175} level="M" />
               <span className="text-[9.5px] font-mono font-extrabold text-neutral-800 mt-1.5 text-center tracking-wider">
                 SCAN TO VERIFY
