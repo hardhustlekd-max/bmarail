@@ -2800,15 +2800,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
                 </div>
-                <h4 className="font-extrabold text-xs tracking-wider text-slate-800 ">
-                  {isAmharic ? 'የአማራ ብሔራዊ ክልላዊ መንግሥት የባህር ዳር ከተማ አስተዳደር' : 'Amhara National Regional State Bahir Dar City Administration'}
-                </h4>
-                <h3 className="font-black text-sm tracking-wide text-slate-900 ">
-                  {isAmharic ? 'የትራንስፖርትና ደንብ ማስከበር መምሪያ' : 'Transport & Enforcement Department'}
-                </h3>
-                <h2 className="font-extrabold text-base text-blue-900 ">
-                  {isAmharic ? 'የባህር ዳር ሞተር አሽከርካሪዎች ማህበር' : 'Bahir Dar Motorist Association'}
+                <h2 className="font-black text-base sm:text-lg tracking-wide text-slate-900">
+                  {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahir Dar Motorist Association'}
                 </h2>
+                <h3 className="font-extrabold text-xs sm:text-sm tracking-wide text-slate-800">
+                  {isAmharic ? 'የሞተርሳይክል ምዝገባ እና ፈቃድ ሰርተፍኬት' : 'Motorcycle Registration & License Certificate'}
+                </h3>
                 <div className="flex items-center justify-between text-[11px] text-slate-600 font-mono pt-2 border-t border-slate-300 mt-2">
                   <span>{isAmharic ? 'ቀን:' : 'Date:'} {formatEthiopianDate(new Date().toISOString().split('T')[0], isAmharic ? 'am' : 'en')}</span>
                   <span>{isAmharic ? 'ጠቅላላ የተመረጡ አባላት:' : 'Total Members:'} <strong>{selectedRegsList.length}</strong></span>

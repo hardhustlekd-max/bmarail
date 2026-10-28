@@ -498,6 +498,30 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የኋላ' : 'Back'}</span>
             </button>
           )}
+          {!downloadFrontId && !downloadBackId && (Boolean(contentRef.current?.querySelector?.('.printable-a4-document, #a4-permit-document, .printable-sticker, #sticker-container'))) && (
+            <button
+              type="button"
+              disabled={isDownloading}
+              onClick={() => {
+                const a4El = contentRef.current?.querySelector('#a4-permit-document, .printable-a4-document');
+                if (a4El) {
+                  handleDownload(a4El.id || 'a4-permit-document', 'permit_certificate.jpg');
+                  return;
+                }
+                const stickerEl = contentRef.current?.querySelector('#sticker-container, .printable-sticker');
+                if (stickerEl) {
+                  handleDownload(stickerEl.id || 'sticker-container', 'vehicle_sticker.jpg');
+                }
+              }}
+              className="h-9 px-3 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold transition-all cursor-pointer ml-1 disabled:opacity-50 shadow-xs"
+              title={isAmharic ? 'ሰነዱን አውርድ (Download)' : 'Download Document'}
+            >
+              <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
+                {isDownloading ? 'progress_activity' : 'download'}
+              </Icon>
+              <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'አውርድ' : 'Download'}</span>
+            </button>
+          )}
 
           {onClose && (
             <button

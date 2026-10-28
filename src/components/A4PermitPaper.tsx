@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { toJpeg } from 'html-to-image';
 import { Icon } from './ui/Icon';
 import { QRCodeSVG } from 'qrcode.react';
 import { formatEthiopianDate } from '../utils/ethiopianCalendar';
@@ -79,6 +80,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
   const registeredBy = registration.registeredBy || '—';
 
   const qrVal = registration.qrCodeData || `https://enforcement.gov.et/verify/${regId || plate}`;
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
   const handlePrint = (e?: React.MouseEvent) => {
     if (e) {
@@ -86,6 +88,89 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
       e.stopPropagation();
     }
     triggerDocumentPrint('a4');
+  };
+
+  const handleDownload = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    const element = document.getElementById('a4-permit-document');
+    if (!element || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch {}
+      }
+
+      const targetWidth = element.offsetWidth || 794;
+      const targetHeight = element.offsetHeight || 1050;
+
+      const images = Array.from(element.querySelectorAll('img'));
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+          return new Promise<void>((resolve) => {
+            img.addEventListener('load', () => resolve(), { once: true });
+            img.addEventListener('error', () => resolve(), { once: true });
+            setTimeout(resolve, 800);
+          });
+        })
+      );
+
+      let dataUrl = '';
+      const bg = '#ffffff';
+
+      try {
+        dataUrl = await toJpeg(element, {
+          quality: 0.98,
+          pixelRatio: 2,
+          width: targetWidth,
+          height: targetHeight,
+          canvasWidth: targetWidth * 2,
+          canvasHeight: targetHeight * 2,
+          style: {
+            transform: 'none',
+            margin: '0',
+            left: '0',
+            top: '0',
+          },
+          backgroundColor: bg,
+          cacheBust: true,
+        });
+      } catch (errWithFonts) {
+        dataUrl = await toJpeg(element, {
+          quality: 0.98,
+          pixelRatio: 2,
+          width: targetWidth,
+          height: targetHeight,
+          canvasWidth: targetWidth * 2,
+          canvasHeight: targetHeight * 2,
+          style: {
+            transform: 'none',
+            margin: '0',
+          },
+          backgroundColor: bg,
+          skipFonts: true,
+        });
+      }
+
+      if (dataUrl) {
+        const link = document.createElement('a');
+        const filename = `permit_${registration.plateNumber || registration.id || 'certificate'}.jpg`;
+        link.href = dataUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (err) {
+      console.error('[Permit Download Error]:', err);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -109,14 +194,13 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
         >
         <div id="a4-permit-document" className="printable-a4-document shrink-0 w-[794px] min-h-[1050px] bg-white text-black p-8 shadow-2xl rounded-sm border-4 border-double border-black relative font-sans text-xs leading-normal select-text overflow-hidden">
             
-            {/* Large Background Watermark Emblem */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-[0.05] pointer-events-none select-none z-0">
-              <div className="w-[500px] h-[500px] rounded-full border-[16px] border-black flex items-center justify-center p-8">
-                <div className="w-full h-full rounded-full border-4 border-dashed border-black flex flex-col items-center justify-center text-center p-4 relative overflow-hidden">
-                  <span className="text-4xl font-black tracking-widest text-black">Bahir Dar Transport</span>
-                  <span className="text-2xl font-bold mt-2 text-black">Official Permit Certificate</span>
-                </div>
-              </div>
+            {/* Background Watermark Header Logo */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none select-none z-0">
+              <img
+                src={APP_LOGO}
+                alt="Watermark Logo"
+                className="w-[260px] h-[260px] object-contain grayscale"
+              />
             </div>
 
             {/* Content Wrap */}
@@ -157,7 +241,7 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                   Bahir Dar Motorist Association
                 </h2>
                 <div className="text-[11px] font-bold text-black pt-0.5">
-                  የተሽከርካሪ ምዝገባ እና ፈቃድ ክፍል (Bahir Dar Motorist Association)
+                  የሞተርሳይክል ምዝገባ እና ፈቃድ ሰርተፍኬት
                 </div>
               </div>
 
@@ -287,15 +371,6 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
                 </div>
 
                 <div className="flex items-end gap-6">
-                  {/* Official Stamp Seal */}
-                  <div className="w-20 h-20 rounded-full border-4 border-double border-black p-0.5 flex items-center justify-center relative rotate-[-10deg] opacity-95 bg-white shadow-xs">
-                    <div className="w-full h-full rounded-full border border-black flex flex-col items-center justify-center text-center text-[7px] font-black text-black leading-tight p-0.5 bg-white">
-                      <span> ባህር ዳር ትራፊክ </span>
-                      <span className="my-0.5 text-[8px] font-black border-y border-black py-0.5 bg-black text-white">APPROVED</span>
-                      <span>ማኔጅመንት</span>
-                    </div>
-                  </div>
-
                   {/* Officer Signature */}
                   <div className="space-y-1 text-center">
                     <div className="h-8 flex items-center justify-center">
@@ -336,15 +411,31 @@ export const A4PermitPaper: React.FC<A4PermitPaperProps> = ({ registration, lang
             )}
 
             {(registration.status === 'approved' || registration.status === 'printed' || registration.status === 'ordered_print') ? (
-              <button
-                id="print-permit-btn"
-                type="button"
-                onClick={handlePrint}
-                className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded-md text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[18px]">print</Icon>
-                <span>{isAmharic ? 'ሰነዱን አትም' : 'Print Document'}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  id="download-permit-btn"
+                  type="button"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3.5 rounded-md text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                  title={isAmharic ? 'ሰነዱን አውርድ' : 'Download Document'}
+                >
+                  <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
+                    {isDownloading ? 'progress_activity' : 'download'}
+                  </Icon>
+                  <span>{isAmharic ? 'ሰነዱን አውርድ' : 'Download Document'}</span>
+                </button>
+
+                <button
+                  id="print-permit-btn"
+                  type="button"
+                  onClick={handlePrint}
+                  className="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded-md text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[18px]">print</Icon>
+                  <span>{isAmharic ? 'ሰነዱን አትም' : 'Print Document'}</span>
+                </button>
+              </div>
             ) : (
               <div className="bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1.5 shadow-2xs">
                 <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[18px]">lock</Icon>
