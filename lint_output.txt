@@ -1,0 +1,9 @@
+
+> react-example@0.0.0 lint
+> tsc --noEmit
+
+src/components/TablesPage.tsx(741,8): error TS17008: JSX element 'UnifiedWorkspaceCard' has no corresponding closing tag.
+src/components/TablesPage.tsx(2816,7): error TS1128: Declaration or statement expected.
+src/components/TablesPage.tsx(2817,5): error TS1109: Expression expected.
+src/components/TablesPage.tsx(2818,3): error TS1109: Expression expected.
+src/components/TablesPage.tsx(2819,1): error TS1128: Declaration or statement expected.

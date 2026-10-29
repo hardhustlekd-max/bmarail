@@ -1243,106 +1243,113 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-12 w-full max-w-full min-w-0 overflow-x-hidden">
-      {/* HEADER SECTION: Minimized, sleek, matching other tables in the app */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-4 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs w-full max-w-full min-w-0">
-        <div>
-          <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
-            <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">
-              payments
-            </Icon>
-            <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {canAddReceipt ? (
-            <button
-              type="button"
-              onClick={() => setIsFormOpen((prev) => !prev)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
-            >
-              <Icon className="material-symbols-outlined text-[16px]">
-                {isFormOpen ? 'close' : 'add'}
-              </Icon>
-              <span>
-                {isFormOpen
-                  ? isAmharic ? 'ቅጹን ዝጋ' : 'Close Form'
-                  : isAmharic ? 'አዲስ ክፍያ' : 'New payment'}
-              </span>
-            </button>
-          ) : (
-            <div className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-bold flex items-center gap-1.5">
-              <Icon className="material-symbols-outlined text-[15px]">lock</Icon>
-              <span>{isAmharic ? 'የደረሰኝ መመዝገቢያ ተገድቧል' : 'Receipt Entry Restricted'}</span>
+    <div className="pb-3 w-full max-w-full min-w-0 overflow-x-hidden">
+      {/* UNIFIED WORKSPACE CARD SHELL (HOUSING INTEGRATED HEADER, FLUSH TABS, FILTERS & VIEW) */}
+      <div className="rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] w-full max-w-full min-w-0">
+        {/* 1. INTEGRATED TITLE BAR / HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-5 w-full max-w-full min-w-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
             </div>
-          )}
-        </div>
-      </div>
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
+                <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
+              </h2>
+              <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
+                {isAmharic ? 'የወርሃዊ መዋጮ ማትሪክስ ሰንጠረዥ እና ገቢ ስታቲስቲክስ' : 'Monthly dues matrix ledger & revenue statistics'}
+              </p>
+            </div>
+          </div>
 
-      {/* TOP-LEVEL VIEW TABS: SEPARATE TABS FOR TABLE AND METRICS */}
-      {canViewTable && canViewKPIs && (
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] rounded-sm px-2 sm:px-4 pt-1 shadow-2xs w-full max-w-full overflow-hidden">
-          <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-none -mb-[1px] w-full min-w-0">
-            <button
-              type="button"
-              onClick={() => setActiveMainTab('table')}
-              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                currentTab === 'table'
-                  ? 'border-primary text-primary dark:text-primary dark:border-primary'
-                  : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
-              }`}
-            >
-              <Icon className="material-symbols-outlined text-[18px]">table_chart</Icon>
-              <span>{isAmharic ? 'የደረሰኞች ዝርዝር ሰንጠረዥ' : 'Receipts Table'}</span>
-              <span
-                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            {canAddReceipt ? (
+              <button
+                type="button"
+                onClick={() => setIsFormOpen((prev) => !prev)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">
+                  {isFormOpen ? 'close' : 'add'}
+                </Icon>
+                <span>
+                  {isFormOpen
+                    ? isAmharic ? 'ቅጹን ዝጋ' : 'Close Form'
+                    : isAmharic ? 'አዲስ ክፍያ' : 'New payment'}
+                </span>
+              </button>
+            ) : (
+              <div className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-bold flex items-center gap-1.5">
+                <Icon className="material-symbols-outlined text-[15px]">lock</Icon>
+                <span>{isAmharic ? 'የደረሰኝ መመዝገቢያ ተገድቧል' : 'Receipt Entry Restricted'}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 2. FLUSH WORKSPACE TABS (ATTACHED DIRECTLY UNDERNEATH TITLE BAR, ZERO GAP) */}
+        {canViewTable && canViewKPIs && (
+          <div className="flex items-center justify-between bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-1.5 overflow-hidden w-full max-w-full">
+            <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-none -mb-[1px] w-full min-w-0">
+              <button
+                type="button"
+                onClick={() => setActiveMainTab('table')}
+                className={`group relative flex items-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   currentTab === 'table'
-                    ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary'
-                    : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                    ? 'border-primary text-primary dark:text-primary dark:border-primary bg-white dark:bg-[#1C2434] rounded-t-md shadow-2xs'
+                    : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
                 }`}
               >
-                {totalEntries}
-              </span>
-            </button>
+                <Icon className="material-symbols-outlined text-[18px]">table_chart</Icon>
+                <span>{isAmharic ? 'የደረሰኞች ዝርዝር ሰንጠረዥ' : 'Receipts Table'}</span>
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                    currentTab === 'table'
+                      ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary'
+                      : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                  }`}
+                >
+                  {totalEntries}
+                </span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setActiveMainTab('metrics')}
-              className={`group relative flex items-center gap-2 py-3 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                currentTab === 'metrics'
-                  ? 'border-primary text-primary dark:text-primary dark:border-primary'
-                  : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
-              }`}
-            >
-              <Icon className="material-symbols-outlined text-[18px]">payments</Icon>
-              <span>{isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}</span>
-              <span
-                className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+              <button
+                type="button"
+                onClick={() => setActiveMainTab('metrics')}
+                className={`group relative flex items-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                   currentTab === 'metrics'
-                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
-                    : 'bg-[#F1F5F9] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                    ? 'border-primary text-primary dark:text-primary dark:border-primary bg-white dark:bg-[#1C2434] rounded-t-md shadow-2xs'
+                    : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
                 }`}
               >
-                {isLoading ? '—' : `${ethiopianMonthlyMetrics.totalRevenue.toLocaleString()} ETB`}
-              </span>
-            </button>
+                <Icon className="material-symbols-outlined text-[18px]">payments</Icon>
+                <span>{isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}</span>
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                    currentTab === 'metrics'
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
+                      : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                  }`}
+                >
+                  {isLoading ? '—' : `${ethiopianMonthlyMetrics.totalRevenue.toLocaleString()} ETB`}
+                </span>
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* TAB 1: MONTHLY FEE STATISTICS VIEW (STANDALONE DEDICATED TAB) */}
-      {currentTab === 'metrics' && canViewKPIs && (
-        <div className="space-y-4 w-full max-w-full min-w-0">
-          {/* Date Filter Card for Metrics (Kept per User Request) */}
-          <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative w-full max-w-full overflow-hidden">
-            {renderDateRangePicker()}
-          </div>
+        {/* TAB 1: MONTHLY FEE STATISTICS VIEW (INTEGRATED FLUSH VIEW) */}
+        {currentTab === 'metrics' && canViewKPIs && (
+          <div className="w-full max-w-full min-w-0 divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
+            {/* Integrated Date Filter for Metrics */}
+            <div className="w-full max-w-full overflow-hidden">
+              {renderDateRangePicker()}
+            </div>
 
-          {/* MONTHLY FEE STATISTICS CONTAINER */}
-          <div className="p-3.5 sm:p-5 space-y-4 bg-white dark:bg-[#1C2434] rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] shadow-default w-full max-w-full overflow-hidden">
-            {/* Header with Ethiopian Month Title */}
-            <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+            {/* Integrated Statistics Container */}
+            <div className="p-3.5 sm:p-5 space-y-4 bg-white dark:bg-[#1C2434] w-full max-w-full overflow-hidden">
+              {/* Header with Ethiopian Month Title */}
+              <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               {/* Title */}
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
@@ -1963,18 +1970,20 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         </div>
       )}
 
-      {/* TAB 2: TABLE SECTION (STANDALONE DEDICATED TAB) */}
+      {/* TAB 2: TABLE SECTION (INTEGRATED FLUSH VIEW) */}
       {currentTab === 'table' && canViewTable && (
-        <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] relative w-full max-w-full overflow-hidden">
-          {/* NATIVE DATE RANGE PICKER (TAILWIND STYLED) */}
-          {renderDateRangePicker()}
+        <div className="w-full max-w-full min-w-0 divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
+          {/* Integrated Native Date Range Picker */}
+          <div className="w-full max-w-full overflow-hidden">
+            {renderDateRangePicker()}
+          </div>
 
           {/* SEARCH & STATUS FILTER TOOLBAR (TAILADMIN DESIGN) */}
-          <div className="p-3 sm:p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] w-full max-w-full min-w-0">
+          <div className="px-3 sm:px-4 py-2 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center gap-2 w-full max-w-full border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             {/* Search Bar */}
-            <div className="relative flex-1 min-w-0 max-w-md w-full">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-                <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+            <div className="relative flex-1 min-w-[200px] max-w-xs md:max-w-sm shrink-0 sm:shrink">
+              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+                <Icon className="material-symbols-outlined text-[17px]">search</Icon>
               </div>
               <input
                 type="text"
@@ -1986,9 +1995,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 placeholder={
                   isAmharic
                     ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
-                    : 'Search receipt #, owner name, or plate...'
+                    : 'Search receipt #, owner name, plate...'
                 }
-                className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
+                className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
               />
               {searchQuery && (
                 <button
@@ -1997,7 +2006,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     setSearchQuery('');
                     setPage(1);
                   }}
-                  className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                  className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
                   title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
                 >
                   <Icon className="material-symbols-outlined text-[16px]">close</Icon>
@@ -2005,13 +2014,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               )}
             </div>
 
-            {/* Status Tabs with Counts in Underline Tabs Style */}
-            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap w-full sm:w-auto min-w-0 max-w-full -mb-[1px]">
+            {/* Status Segmented Pill Tabs (Never overlaps or hangs) */}
+            <div className="inline-flex items-center p-0.5 rounded-md bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0 overflow-x-auto scrollbar-none sm:ms-auto">
               {[
                 { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
                 { key: 'active' as const, label: isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid', count: matrixCounts.active },
                 { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: matrixCounts.expiring },
-                { key: 'expired' as const, label: isAmharic ? 'ያልተከፈለባቸው' : 'Over due', count: matrixCounts.expired },
+                { key: 'expired' as const, label: isAmharic ? 'ያልተከፈለባቸው' : 'Overdue', count: matrixCounts.expired },
               ].map((tab) => {
                 const isActive = statusFilter === tab.key;
                 return (
@@ -2022,18 +2031,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       setStatusFilter(tab.key);
                       setPage(1);
                     }}
-                    className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                    className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
                       isActive
-                        ? 'border-primary text-primary dark:text-primary dark:border-primary font-bold'
-                        : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
+                        ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
+                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                     }`}
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                      className={`text-[10px] px-1 rounded-full font-mono font-bold ${
                         isActive
-                          ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-primary'
-                          : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
+                          ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
+                          : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >
                       {tab.count}
@@ -2045,7 +2054,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* MATRIX STATUS LEGEND */}
-          <div className="px-3 sm:px-4 md:px-6 py-2 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between sm:justify-end gap-2 w-full max-w-full flex-wrap">
+          <div className="px-3 sm:px-4 py-1.5 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between sm:justify-end gap-2 w-full max-w-full flex-wrap">
             <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-400 flex-wrap">
               <span className="inline-flex items-center gap-1.5">
                 <StatusDot status="paid" size={10} />
@@ -2319,6 +2328,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
         </div>
       )}
+
+      {/* CLOSE UNIFIED WORKSPACE CARD SHELL */}
+      </div>
 
       {/* MEMBER FULL INFORMATION DRAWER (Slide-Over Side-Sheet) */}
       {selectedMemberDetail && (

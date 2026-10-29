@@ -2948,7 +2948,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
         <main className={
           activePage === 'scan'
             ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
-            : "flex-1 overflow-y-auto overflow-x-hidden w-full max-w-full px-3 sm:px-5 md:px-7 pt-2 sm:pt-3 pb-8 min-h-0 flex flex-col"
+            : "flex-1 overflow-y-auto overflow-x-hidden w-full max-w-full px-2.5 sm:px-4 md:px-5 pt-1.5 sm:pt-2 pb-3 min-h-0 flex flex-col"
         }>
           {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (
@@ -3055,7 +3055,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
           {/* Modern, elegant system footer */}
           {activePage !== 'scan' && (
-            <footer className="app-grounded-footer w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-4 flex items-center justify-center mt-8 rounded-lg">
+            <footer className="app-grounded-footer w-full border-t border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md px-4 sm:px-6 py-2.5 flex items-center justify-center mt-3 rounded-lg">
               <div className="text-slate-400 dark:text-slate-500 text-[11px] font-medium text-center">
                 {isAmharic ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።' : '© 2026 Bahirdar Motorist Association Permit Governance System. All rights reserved.'}
               </div>

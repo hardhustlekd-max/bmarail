@@ -285,7 +285,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
   return (
     <div className={`relative bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47] w-full max-w-full min-w-0 overflow-visible ${className}`}>
       {/* Top Toolbar Row: Presets + Active Range Badge */}
-      <div className="p-2 sm:p-2.5 sm:px-4 flex flex-wrap items-center justify-between gap-2 w-full max-w-full min-w-0">
+      <div className="py-1.5 px-3 sm:px-4 flex flex-wrap items-center justify-between gap-1.5 w-full max-w-full min-w-0">
         {/* Preset Pills - Wrapping cleanly on mobile, zero overflow */}
         <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
           <div className="flex flex-wrap items-center gap-1 p-0.5 rounded-lg bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47]">

@@ -775,7 +775,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   ];
 
   return (
-    <div className="space-y-6 pb-12 font-sans text-on-surface">
+    <div className="space-y-3 pb-3 font-sans text-on-surface">
       {/* Container with header with icon and header text */}
       <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
         {/* Header with Icon and Text */}
@@ -852,14 +852,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
         </div>
 
         {/* Body Container holding page content */}
-        <div className="p-4 sm:p-5">
+        <div className="p-3 sm:p-4">
 
       {/* ================= TAB 1: STANDALONE SYSTEM USER MANAGEMENT ================= */}
       {activeTab === 'users' && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Controls & Search Bar */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pb-2">
-            <div className="flex-1 flex flex-col sm:flex-row items-center gap-2.5">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 pb-1.5">
+            <div className="flex-1 flex flex-col sm:flex-row items-center gap-2">
               <div className="relative w-full sm:w-80">
                 <input
                   type="text"
@@ -870,10 +870,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       ? 'በስም፣ መታወቂያ ወይም ስልክ ቁጥር ፈልግ...'
                       : 'Search by name, badge ID, or phone...'
                   }
-                  className="w-full bg-surface-container border border-outline-variant rounded-md pl-9 pr-4 py-2 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
+                  className="w-full h-8 bg-surface-container border border-outline-variant rounded-md pl-8 pr-3 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
                 />
                 <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
-                  <Icon className="material-symbols-outlined text-[18px]">
+                  <Icon className="material-symbols-outlined text-[16px]">
                     search
                   </Icon>
                 </div>
@@ -882,7 +882,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="w-full sm:w-48 bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                className="w-full sm:w-48 h-8 bg-surface-container border border-outline-variant rounded-md px-2.5 py-0 text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
               >
                 <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
                 <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
@@ -892,20 +892,20 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </select>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5">
               <button
                 onClick={() => setActiveTab('roles')}
-                className="w-full sm:w-auto px-3.5 py-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto h-8 px-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <Icon className="material-symbols-outlined text-[18px]">shield_person</Icon>
+                <Icon className="material-symbols-outlined text-[16px]">shield_person</Icon>
                 <span>{isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}</span>
               </button>
 
               <button
                 onClick={() => setShowAddUserModal(true)}
-                className="w-full sm:w-auto px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 shrink-0 cursor-pointer"
+                className="w-full sm:w-auto h-8 px-3.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 shrink-0 cursor-pointer"
               >
-                <Icon className="material-symbols-outlined text-[18px]">person_add</Icon>
+                <Icon className="material-symbols-outlined text-[16px]">person_add</Icon>
                 <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
               </button>
             </div>
@@ -1636,10 +1636,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </div>
 
             {/* Audit Filters */}
-            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+            <div className="flex flex-col sm:flex-row gap-2 items-center justify-between">
               <div className="w-full sm:w-72 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
-                  <Icon className="material-symbols-outlined text-[18px]">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                  <Icon className="material-symbols-outlined text-[16px]">
                     search
                   </Icon>
                 </div>
@@ -1648,17 +1648,17 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   value={auditSearch}
                   onChange={(e) => setAuditSearch(e.target.value)}
                   placeholder={isAmharic ? 'በመታወቂያ ወይም በድርጊት ፈልግ...' : 'Search by badge, action, details...'}
-                  className="w-full pl-9 pr-3 py-2 bg-surface-container border border-outline-variant rounded-md text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
+                  className="w-full h-8 pl-8 pr-3 py-0 bg-surface-container border border-outline-variant rounded-md text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
                 />
               </div>
 
-              <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto flex-nowrap scrollbar-none max-w-full">
+              <div className="flex items-center gap-1 w-full sm:w-auto overflow-x-auto flex-nowrap scrollbar-none max-w-full">
                 {(['all', 'info', 'warning', 'critical'] as const).map((sev) => (
                   <button
                     key={sev}
                     type="button"
                     onClick={() => setAuditSeverityFilter(sev)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                    className={`h-8 px-2.5 rounded-md text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center ${
                       auditSeverityFilter === sev
                         ? 'bg-[#1e293b] text-white shadow-xs'
                         : 'bg-surface-container text-on-surface hover:bg-surface-container-high'

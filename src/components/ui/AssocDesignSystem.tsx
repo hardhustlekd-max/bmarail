@@ -463,7 +463,7 @@ export interface TabListProps<T extends string = string> {
   tabs: TabItem<T>[];
   activeTab: T;
   onChange: (tabId: T) => void;
-  variant?: 'underline' | 'pill';
+  variant?: 'underline' | 'pill' | 'flush';
   className?: string;
 }
 
@@ -474,6 +474,42 @@ export const TabList = <T extends string>({
   variant = 'underline',
   className = '',
 }: TabListProps<T>) => {
+  if (variant === 'flush') {
+    return (
+      <div className={`flex items-center gap-2 sm:gap-6 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-1.5 overflow-x-auto scrollbar-none -mb-[1px] ${className}`}>
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => onChange(tab.id)}
+              className={`group relative flex items-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                isActive
+                  ? 'border-primary text-primary dark:text-primary dark:border-primary bg-white dark:bg-[#1C2434] rounded-t-md shadow-2xs'
+                  : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
+              }`}
+            >
+              {tab.icon && <Icon name={tab.icon} size={18} />}
+              <span>{tab.label}</span>
+              {typeof tab.count === 'number' && (
+                <span
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                    isActive
+                      ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary'
+                      : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
   if (variant === 'pill') {
     return (
       <div className={`flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg ${className}`}>
@@ -732,6 +768,42 @@ export const TableContainer: React.FC<{
     )}
     {filterBar && <div className="flex items-center gap-3">{filterBar}</div>}
     <div className="w-full overflow-x-auto">{children}</div>
+  </div>
+);
+
+/**
+ * UnifiedWorkspaceCard:
+ * A single contiguous container shell that unites page headers, flush tabs,
+ * filters/toolbars, and tables or detail content into a single cohesive card with zero gaps.
+ */
+export interface UnifiedWorkspaceCardProps {
+  header?: ReactNode;
+  tabs?: ReactNode;
+  toolbar?: ReactNode;
+  legend?: ReactNode;
+  children: ReactNode;
+  footer?: ReactNode;
+  className?: string;
+}
+
+export const UnifiedWorkspaceCard: React.FC<UnifiedWorkspaceCardProps> = ({
+  header,
+  tabs,
+  toolbar,
+  legend,
+  children,
+  footer,
+  className = '',
+}) => (
+  <div
+    className={`rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] w-full max-w-full min-w-0 ${className}`}
+  >
+    {header && <div className="w-full">{header}</div>}
+    {tabs && <div className="w-full bg-[#F8FAFC] dark:bg-[#1E293B]/70">{tabs}</div>}
+    {toolbar && <div className="w-full">{toolbar}</div>}
+    {legend && <div className="w-full">{legend}</div>}
+    <div className="w-full min-w-0 overflow-x-hidden md:overflow-x-auto">{children}</div>
+    {footer && <div className="w-full">{footer}</div>}
   </div>
 );
 

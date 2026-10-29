@@ -700,51 +700,53 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
         </div>
       </div>
 
-      {/* Header & Role Bar */}
-      <div className="rounded-xl border border-outline-variant/60 bg-surface-container-lowest p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Icon className="material-symbols-outlined text-[22px] text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
-          <div>
-            <span className="text-[11px] font-bold text-secondary block">
-              {isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance'}
-            </span>
-            <span className="text-sm font-black text-on-surface">
-              {selectedRole.titleAm} — {selectedRole.titleEn}
-            </span>
+      {/* UNIFIED ROLE PERMISSIONS CONSOLE SHELL */}
+      <div className="rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] w-full max-w-full min-w-0">
+        {/* Header & Role Bar */}
+        <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#1C2434]">
+          <div className="flex items-center gap-3">
+            <Icon className="material-symbols-outlined text-[22px] text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
+            <div>
+              <span className="text-[11px] font-bold text-secondary block">
+                {isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance'}
+              </span>
+              <span className="text-sm font-black text-on-surface">
+                {selectedRole.titleAm} — {selectedRole.titleEn}
+              </span>
+            </div>
+          </div>
+
+          {/* Legend Bar */}
+          <div className="flex items-center gap-4 text-xs font-bold shrink-0">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-emerald-800 dark:text-emerald-300">{isAmharic ? 'ፈቃድ' : 'Allow'}</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
+              <span className="text-amber-800 dark:text-amber-300">{isAmharic ? 'ማየት ብቻ' : 'View Only'}</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
+              <span className="text-rose-800 dark:text-rose-300">{isAmharic ? 'ከልክል' : 'Deny'}</span>
+            </div>
+
+            {onOpenUsersTable && (
+              <button
+                type="button"
+                onClick={onOpenUsersTable}
+                className="text-xs font-black text-[#0f172a] dark:text-blue-400 hover:underline cursor-pointer ml-2"
+              >
+                {isAmharic ? 'ሰራተኞች' : 'Users List'}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Legend Bar */}
-        <div className="flex items-center gap-4 text-xs font-bold shrink-0">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-            <span className="text-emerald-800 dark:text-emerald-300">{isAmharic ? 'ፈቃድ' : 'Allow'}</span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
-            <span className="text-amber-800 dark:text-amber-300">{isAmharic ? 'ማየት ብቻ' : 'View Only'}</span>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
-            <span className="text-rose-800 dark:text-rose-300">{isAmharic ? 'ከልክል' : 'Deny'}</span>
-          </div>
-
-          {onOpenUsersTable && (
-            <button
-              type="button"
-              onClick={onOpenUsersTable}
-              className="text-xs font-black text-[#0f172a] dark:text-blue-400 hover:underline cursor-pointer ml-2"
-            >
-              {isAmharic ? 'ሰራተኞች' : 'Users List'}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Clean Flat Modules List */}
-      <div className="space-y-4">
+        {/* Clean Modules List with Continuous Hairline Dividers */}
+        <div className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
         {SYSTEM_MODULES.map((moduleObj) => {
           const masterState = getModuleMasterState(moduleObj);
 
@@ -865,26 +867,27 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             </div>
           );
         })}
-      </div>
+        </div>
 
-      {/* Action Footer Bar */}
-      <div className="p-3.5 rounded-xl border border-outline-variant/60 bg-surface-container-lowest flex items-center justify-end gap-2.5">
-        <button
-          type="button"
-          onClick={handleResetPermissions}
-          className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-lg transition-all cursor-pointer"
-        >
-          {isAmharic ? 'ዳግም አስጀምር' : 'Reset Defaults'}
-        </button>
+        {/* Action Footer Bar */}
+        <div className="p-3.5 sm:px-5 bg-white dark:bg-[#1C2434] flex items-center justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={handleResetPermissions}
+            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-lg transition-all cursor-pointer"
+          >
+            {isAmharic ? 'ዳግም አስጀምር' : 'Reset Defaults'}
+          </button>
 
-        <button
-          type="button"
-          onClick={handleSavePermissions}
-          className="px-5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white font-black text-xs rounded-lg transition-all cursor-pointer flex items-center gap-1.5"
-        >
-          <Icon className="material-symbols-outlined text-[16px]">save</Icon>
-          <span>{isAmharic ? 'ፈቃዶች አስቀምጥ' : 'Save Permissions'}</span>
-        </button>
+          <button
+            type="button"
+            onClick={handleSavePermissions}
+            className="px-5 py-2 bg-primary hover:bg-primary-hover text-white font-black text-xs rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+          >
+            <Icon className="material-symbols-outlined text-[16px]">save</Icon>
+            <span>{isAmharic ? 'ፈቃዶች አስቀምጥ' : 'Save Permissions'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Modal for Creating Custom Role */}

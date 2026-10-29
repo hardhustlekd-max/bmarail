@@ -390,71 +390,76 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
   };
 
   return (
-    <div className="space-y-4 pb-12 w-full max-w-full min-w-0 overflow-x-hidden">
-      {/* HEADER SECTION: Matching other tables in the app */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-4 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs w-full max-w-full min-w-0">
-        <div>
-          <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
-            <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">
-              analytics
-            </Icon>
-            <span>{isAmharic ? 'የትራፊክ ፍተሻና የመስክ ቁጥጥር ሪፖርት' : 'Traffic Enforcement Inspection Report'}</span>
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          {!showInlineScanner && (
-            <button
-              type="button"
-              onClick={() => setShowInlineScanner(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
-            >
-              <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
-              <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch Scanner'}</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* INLINE LIVE SCANNER CONTAINER */}
-      {showInlineScanner && (
-        <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm p-4 shadow-default space-y-3 animate-in slide-in-from-top-4 duration-200">
-          <div className="flex justify-between items-center pb-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-            <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-primary text-[20px]">qr_code_scanner</Icon>
-              <h3 className="font-bold text-sm text-[#1C2434] dark:text-white">
-                {isAmharic ? 'የቀጥታ ማረጋገጫ ፍተሻ ካሜራ' : 'Live Checkpoint Verification Scanner'}
-              </h3>
+    <div className="pb-3 w-full max-w-full min-w-0 overflow-x-hidden">
+      {/* SINGLE UNIFIED WORKSPACE CARD SHELL */}
+      <div className="rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] w-full max-w-full min-w-0">
+        {/* 1. INTEGRATED TITLE BAR / HEADER */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-5 w-full max-w-full min-w-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowInlineScanner(false)}
-              className="text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#24303F] text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-              <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
-            </button>
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
+                <span>{isAmharic ? 'የትራፊክ ፍተሻና የመስክ ቁጥጥር ሪፖርት' : 'Traffic Enforcement Inspection Report'}</span>
+              </h2>
+              <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
+                {isAmharic ? 'የመንገድ ላይ የፍተሻ ታሪክ እና የኦፊሰሮች ማረጋገጫ መዝገብ' : 'Roadside checkpoint inspection history & officer log'}
+              </p>
+            </div>
           </div>
-          <SharedScannerModal
-            isOpen={true}
-            onClose={() => setShowInlineScanner(false)}
-            lang={lang}
-            registrations={registrations}
-            userBadgeId={userBadgeId || 'OFF-8842'}
-            onAddVerificationLog={onAddVerificationLog || (() => {})}
-            isPage={true}
-          />
-        </div>
-      )}
 
-      {/* MAIN DATA TABLE CARD (MATCHING TABLES PAGE & TODAY SUBMISSIONS DESIGN) */}
-      <div className="rounded-sm border border-[#E2E8F0] bg-white shadow-default dark:border-[#2E3A47] dark:bg-[#1C2434] overflow-hidden w-full max-w-full min-w-0">
-        {/* SEARCH & STATUS FILTER TOOLBAR (TAILADMIN STANDARD) */}
-        <div className="p-3 sm:p-4 md:px-6 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] w-full max-w-full min-w-0">
+          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            {!showInlineScanner && (
+              <button
+                type="button"
+                onClick={() => setShowInlineScanner(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+              >
+                <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
+                <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch Scanner'}</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* 2. INLINE LIVE SCANNER CONTAINER (IF EXPANDED) */}
+        {showInlineScanner && (
+          <div className="bg-white dark:bg-[#1C2434] p-4 space-y-3 animate-in slide-in-from-top-4 duration-200">
+            <div className="flex justify-between items-center pb-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+              <div className="flex items-center gap-2">
+                <Icon className="material-symbols-outlined text-primary text-[20px]">qr_code_scanner</Icon>
+                <h3 className="font-bold text-sm text-[#1C2434] dark:text-white">
+                  {isAmharic ? 'የቀጥታ ማረጋገጫ ፍተሻ ካሜራ' : 'Live Checkpoint Verification Scanner'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowInlineScanner(false)}
+                className="text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#24303F] text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
+              </button>
+            </div>
+            <SharedScannerModal
+              isOpen={true}
+              onClose={() => setShowInlineScanner(false)}
+              lang={lang}
+              registrations={registrations}
+              userBadgeId={userBadgeId || 'OFF-8842'}
+              onAddVerificationLog={onAddVerificationLog || (() => {})}
+              isPage={true}
+            />
+          </div>
+        )}
+
+        {/* 3. SEARCH & STATUS FILTER TOOLBAR */}
+        <div className="px-3 sm:px-4 py-2 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center gap-2 w-full max-w-full border-b border-[#E2E8F0] dark:border-[#2E3A47]">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-0 max-w-md w-full">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+          <div className="relative flex-1 min-w-[200px] max-w-xs md:max-w-sm shrink-0 sm:shrink">
+            <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+              <Icon className="material-symbols-outlined text-[17px]">search</Icon>
             </div>
             <input
               type="text"
@@ -464,7 +469,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                 setCurrentPage(1);
               }}
               placeholder={isAmharic ? 'በሰሌዳ፣ በስም፣ በስልክ፣ ወይም በማስታወሻ ፈልግ...' : 'Search plate, owner name, phone, notes...'}
-              className="w-full rounded-sm border border-[#E2E8F0] bg-white py-2 pl-9 pr-8 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
+              className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
             />
             {searchTerm && (
               <button
@@ -473,32 +478,33 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   setSearchTerm('');
                   setCurrentPage(1);
                 }}
-                className="absolute inset-y-0 right-2.5 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer font-bold text-xs"
+                className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
               >
-                ✕
+                <Icon className="material-symbols-outlined text-[16px]">close</Icon>
               </button>
             )}
           </div>
 
-          {/* Vehicle Category & Status Filter Tabs */}
-          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto flex-nowrap scrollbar-none">
+          {/* Vehicle Category & Status Filter Tabs (pushed to right on wide screens) */}
+          <div className="flex items-center gap-2 flex-wrap shrink-0 sm:ms-auto">
             {/* Category Dropdown */}
             <div className="shrink-0">
-              <SelectField
+              <select
                 value={categoryFilter}
                 onChange={(e) => {
                   setCategoryFilter(e.target.value);
                   setCurrentPage(1);
                 }}
+                className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary outline-none cursor-pointer shadow-2xs"
               >
                 <option value="all">{isAmharic ? 'ሁሉም አይነቶች' : 'All Vehicle Types'}</option>
                 <option value="electric">{isAmharic ? 'ኤሌክትሪክ (EV)' : 'Electric (EV)'}</option>
                 <option value="gasoline">{isAmharic ? 'ቤንዚን (Gas)' : 'Gasoline'}</option>
-              </SelectField>
+              </select>
             </div>
 
-            {/* Status Filter Tabs with Counts */}
-            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none flex-nowrap shrink-0 max-w-full -mb-[1px]">
+            {/* Status Segmented Pill Tabs (Never overlaps) */}
+            <div className="inline-flex items-center p-0.5 rounded-md bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0 overflow-x-auto scrollbar-none">
               {[
                 { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: statusCounts.all },
                 { id: 'verified' as const, label: isAmharic ? 'የተረጋገጡ' : 'Verified', count: statusCounts.verified },
@@ -514,18 +520,18 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                       setStatusFilter(tab.id);
                       setCurrentPage(1);
                     }}
-                    className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                    className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
                       isActive
-                        ? 'border-primary text-primary dark:text-primary dark:border-primary font-bold'
-                        : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155]'
+                        ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
+                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                     }`}
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                      className={`text-[10px] px-1 rounded-full font-mono font-bold ${
                         isActive
-                          ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-primary'
-                          : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
+                          ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
+                          : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
                       }`}
                     >
                       {tab.count}
