@@ -1071,21 +1071,17 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
                   <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                     <th className="py-2.5 px-3 text-center min-w-[75px] align-middle font-medium">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <label
-                          className="inline-flex items-center gap-1 cursor-pointer select-none"
+                      <div className="flex items-center justify-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={isAllPageSelected}
+                          onChange={toggleSelectAllPage}
+                          className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer"
                           title={isAmharic ? 'በዚህ ገጽ ያሉትን ሁሉንም ምረጥ/ሰርዝ' : 'Select/Deselect All on Page'}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isAllPageSelected}
-                            onChange={toggleSelectAllPage}
-                            className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer"
-                          />
-                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white ">
-                            {isAmharic ? 'ሁሉም' : 'All'}
-                          </span>
-                        </label>
+                        />
+                        <span className="text-[11px] font-mono font-bold text-[#1C2434] dark:text-white">
+                          #
+                        </span>
                       </div>
                     </th>
                     <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
@@ -1339,18 +1335,23 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                          {/* Checkbox for selection */}
-                          <input
-                            type="checkbox"
-                            checked={isCardSelected}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              toggleSelectRow(reg.id);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer shrink-0"
-                            title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
-                          />
+                          {/* Checkbox for selection + Serial Number */}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <input
+                              type="checkbox"
+                              checked={isCardSelected}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                toggleSelectRow(reg.id);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer shrink-0"
+                              title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
+                            />
+                            <span className="font-mono text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                              #{regStartIndex + index + 1}
+                            </span>
+                          </div>
 
                           {/* Clean Portrait Avatar without status-border */}
                           <div className="w-10 h-13 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
