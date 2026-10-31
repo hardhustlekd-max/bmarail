@@ -67,7 +67,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
       return (
         <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-950 text-slate-100">
-          <div className="w-full max-w-xl bg-slate-900 border-2 border-rose-600/60 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+          <div className="w-full max-w-xl bg-slate-900 border border-rose-600/60 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-500 shrink-0">
                 <Icon className="material-symbols-outlined text-[36px]">error</Icon>

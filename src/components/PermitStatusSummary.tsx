@@ -116,10 +116,10 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
             <div
               key={card.key}
               onClick={() => onSelectStatusFilter && onSelectStatusFilter(card.key)}
-              className={`p-2 sm:p-3 rounded-lg ${card.bg} hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none`}
+              className={`p-2 sm:p-3 rounded-xl ${card.bg} shadow-kpi shadow-kpi-hover active:scale-98 border border-slate-200/50 dark:border-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none`}
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-primary transition-colors">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-primary transition-colors">
                   {card.label}
                 </span>
               </div>

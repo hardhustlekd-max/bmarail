@@ -1019,7 +1019,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         });
                       }
                     }}
-                    className="relative w-16 h-20 rounded-md overflow-hidden border-2 border-primary/40 shadow-xs shrink-0 bg-slate-200 dark:bg-slate-700 cursor-pointer group hover:opacity-90 transition-all"
+                    className="relative w-16 h-20 rounded-md overflow-hidden border border-primary/40 shadow-xs shrink-0 bg-slate-200 dark:bg-slate-700 cursor-pointer group hover:opacity-90 transition-all"
                     title={isAmharic ? 'ለማጉላት ይጫኑ' : 'Click to Zoom Photo'}
                   >
                     <SmartImage

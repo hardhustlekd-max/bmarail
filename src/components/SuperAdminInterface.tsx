@@ -91,6 +91,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [isDangerExecuting, setIsDangerExecuting] = useState(false);
   const [isSyncingLiveDb, setIsSyncingLiveDb] = useState(false);
   const [isRestoringBackup, setIsRestoringBackup] = useState(false);
+  const [isStorageMaintenanceRunning, setIsStorageMaintenanceRunning] = useState(false);
 
   // Audit Logs Filter & Search
   const [auditSearch, setAuditSearch] = useState('');
@@ -335,6 +336,27 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     e.preventDefault();
     if (!editingUser) return;
 
+    const trimmedBadgeId = (editingUser.badgeId || '').trim().toUpperCase();
+    if (!trimmedBadgeId) {
+      const err = isAmharic ? 'እባክዎ የመታወቂያ ቁጥር (Badge ID) ያስገቡ' : 'Please provide a Badge ID';
+      if (onShowToast) onShowToast(err, 'warning');
+      return;
+    }
+
+    // Check if new badgeId is already taken by another user
+    const existingConflict = users.find(
+      (u) =>
+        (u.uid !== editingUser.uid && (u.id !== (editingUser as any).id || !(editingUser as any).id)) &&
+        (u.badgeId || '').trim().toUpperCase() === trimmedBadgeId
+    );
+    if (existingConflict) {
+      const err = isAmharic
+        ? `ይህ የመታወቂያ ቁጥር (${trimmedBadgeId}) በሌላ ተጠቃሚ ተይዟል`
+        : `Badge ID "${trimmedBadgeId}" is already assigned to another user`;
+      if (onShowToast) onShowToast(err, 'warning');
+      return;
+    }
+
     if (editPassword || editConfirmPassword) {
       if (editPassword !== editConfirmPassword) {
         const err = isAmharic ? 'የይለፍ ቃሎች አይዛመዱም' : 'Passwords do not match';
@@ -352,17 +374,28 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
     const payload: Partial<SystemUser> & { password?: string } = {
       ...editingUser,
+      badgeId: trimmedBadgeId,
     };
     if (editPassword) {
       payload.password = editPassword;
     }
 
-    await updateSystemUserInDb(editingUser.uid, payload);
+    const targetUserIdentifier = editingUser.uid || (editingUser as any).id || editingUser.badgeId;
+    await updateSystemUserInDb(targetUserIdentifier, payload);
+
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.uid === editingUser.uid || (u.id && (u.id === (editingUser as any).id || u.id === editingUser.uid))
+          ? { ...u, ...payload }
+          : u
+      )
+    );
+
     await addAuditLogToDb({
       actorBadgeId: currentUserBadgeId || 'SUPER-ADMIN-01',
       actorRole: 'superadmin',
       action: 'USER_UPDATED',
-      details: `Updated user profile for ${editingUser.fullName} (${editingUser.badgeId})${editPassword ? ' (password updated)' : ''}`,
+      details: `Updated user profile for ${editingUser.fullName} (${trimmedBadgeId})${editPassword ? ' (password updated)' : ''}`,
       severity: 'info',
     });
 
@@ -776,6 +809,28 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       }
     } finally {
       setIsSyncingLiveDb(false);
+    }
+  };
+
+  const handleRunStorageMaintenance = async () => {
+    setIsStorageMaintenanceRunning(true);
+    try {
+      const res = await fetch('/api/storage/maintenance', { method: 'POST' });
+      const data = await res.json();
+      setIsStorageMaintenanceRunning(false);
+      if (data.success) {
+        const msg = isAmharic
+          ? `የጥገና ተግባር ተጠናቋል! ${data.deletedCount || 0} ያልተገናኙ ፋይሎች ተወግደዋል።`
+          : `Maintenance successful! ${data.deletedCount || 0} orphaned files removed.`;
+        if (onShowToast) onShowToast(msg, 'success');
+      } else {
+        const err = data.error || (isAmharic ? 'የጥገና ተግባር አልተሳካም' : 'Maintenance failed');
+        if (onShowToast) onShowToast(err, 'warning');
+      }
+    } catch (err: any) {
+      setIsStorageMaintenanceRunning(false);
+      const msg = err.message || (isAmharic ? 'የጥገና ስህተት አጋጥሟል' : 'Error triggering maintenance');
+      if (onShowToast) onShowToast(msg, 'warning');
     }
   };
 
@@ -1312,7 +1367,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           <div className="pb-4 border-b border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-indigo-600 dark:text-indigo-400 text-[22px]">location_city</Icon>
+                <Icon className="material-symbols-outlined text-primary text-[22px]">location_city</Icon>
                 <h3 className="font-black text-base text-on-surface">
                   {isAmharic ? 'የባህር ዳር ክፍለ ከተሞች አስተዳደር እና ቁጥጥር' : 'Bahir Dar Sub-City Governance & Permit Freeze'}
                 </h3>
@@ -1771,10 +1826,43 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </div>
           </div>
 
+          {/* Section: Super Admin Storage & File Maintenance */}
+          <div className="space-y-4 pb-6 border-b border-outline-variant/60">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
+              <div>
+                <h3 className="font-black text-base text-on-surface flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-primary text-[22px]">cleaning_services</Icon>
+                  {isAmharic ? 'የሱፐር አድሚን ፋይልና ስቶሬጅ ጥገና' : 'Super Admin Storage & File Maintenance'}
+                </h3>
+                <p className="text-xs text-outline mt-0.5">
+                  {isAmharic
+                    ? 'የፋይል ስም መስተካከያና ጥቅም የሌላቸው/የተተዉ ፋይሎች ማጽጃ'
+                    : 'Trigger file renaming migration and cleanup of orphaned storage files.'}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleRunStorageMaintenance}
+                disabled={isStorageMaintenanceRunning}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-md text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Icon className={`material-symbols-outlined text-[18px] ${isStorageMaintenanceRunning ? 'animate-spin' : ''}`}>
+                  {isStorageMaintenanceRunning ? 'sync' : 'play_circle'}
+                </Icon>
+                <span>
+                  {isStorageMaintenanceRunning
+                    ? isAmharic ? 'ጥገና በመካሄድ ላይ...' : 'Running Maintenance...'
+                    : isAmharic ? 'ጥገናውን አስጀምር' : 'Run Storage Maintenance'}
+                </span>
+              </button>
+            </div>
+          </div>
+
           {/* Section 2: Backup & Restoration Center */}
           <div className="space-y-4 pb-6 border-b border-outline-variant/60">
             <h3 className="font-black text-base text-on-surface flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-emerald-600 text-[22px]">backup</Icon>
+              <Icon className="material-symbols-outlined text-primary text-[22px]">backup</Icon>
               {isAmharic ? 'የዳታቤዝ ባክአፕና መልሶ ማግኛ' : 'System Backup & Restoration'}
             </h3>
             <p className="text-xs text-outline">
@@ -1788,7 +1876,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               <div className="p-4 rounded-lg border border-outline-variant bg-surface-container/40 flex flex-col justify-between space-y-3">
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-emerald-600 text-[20px]">download</Icon>
+                    <Icon className="material-symbols-outlined text-primary text-[20px]">download</Icon>
                     <h4 className="font-bold text-sm text-on-surface">
                       {isAmharic ? 'ሙሉ ዳታቤዝ ባክአፕ አውርድ (Export)' : 'Export Full Database (.JSON)'}
                     </h4>
@@ -1852,7 +1940,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
               <div>
                 <h3 className="font-black text-base text-on-surface flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-amber-600 text-[22px]">history_edu</Icon>
+                  <Icon className="material-symbols-outlined text-primary text-[22px]">history_edu</Icon>
                   {isAmharic ? 'የሲስተም አጠቃቀም የኦዲት ማህደር' : 'System Audit Trail'}
                 </h3>
                 <p className="text-xs text-outline mt-0.5">
@@ -1868,7 +1956,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   onClick={handleExportAuditTrail}
                   className="px-3 py-1.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant text-on-surface rounded-md text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
                 >
-                  <Icon className="material-symbols-outlined text-[16px] text-emerald-600">table_chart</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] text-primary">table_chart</Icon>
                   <span>{isAmharic ? 'CSV አውርድ' : 'Export CSV'}</span>
                 </button>
 
@@ -2028,7 +2116,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant pb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[22px] text-indigo-700 dark:text-indigo-400 shrink-0">palette</Icon>
+                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">palette</Icon>
                   <h3 className="font-black text-base text-on-surface">
                     {isAmharic ? 'የስካነር ውጤት ገጽ ገጽታ መምረጫ (Scanner Result Themes)' : 'Scanner Result Page Theme Settings'}
                   </h3>
@@ -2062,7 +2150,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 return (
                   <div
                     key={themeKey}
-                    className={`rounded-xl border-2 transition-all p-4 flex flex-col justify-between space-y-3 relative overflow-hidden ${
+                    className={`rounded-xl border transition-all p-4 flex flex-col justify-between space-y-3 relative overflow-hidden ${
                       isSelected
                         ? 'border-indigo-600 bg-indigo-50/20 dark:bg-indigo-950/20 ring-2 ring-indigo-500/20 shadow-md'
                         : 'border-outline-variant/70 hover:border-outline bg-surface-container/30 hover:shadow-xs'
@@ -2172,7 +2260,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           </div>
 
           {/* Section 5: DANGER ZONE */}
-          <div className="bg-red-50/40 border-2 border-red-300 rounded-lg p-5 space-y-4">
+          <div className="bg-red-50/40 border border-red-300 rounded-lg p-5 space-y-4">
             <div className="flex items-center gap-2.5 border-b border-red-200 pb-3">
               <div className="w-8 h-8 rounded-full bg-red-100 text-red-700 flex items-center justify-center shrink-0">
                 <Icon className="material-symbols-outlined text-[20px]">warning</Icon>
@@ -2281,7 +2369,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-2xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-outline-variant pb-3">
               <h3 className="font-black text-base text-on-surface flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-purple-600 text-[20px]">person_add</Icon>
+                <Icon className="material-symbols-outlined text-primary text-[20px]">person_add</Icon>
                 {isAmharic ? 'አዲስ የሲስተም ተጠቃሚ መመዝገቢያ' : 'Register New System User'}
               </h3>
               <button
@@ -2485,12 +2573,16 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">{isAmharic ? 'መታወቂያ' : 'Badge ID'}</label>
+                  <label className="block text-xs font-bold text-on-surface mb-1">
+                    {isAmharic ? 'መታወቂያ (Badge ID)' : 'Badge ID'}
+                  </label>
                   <input
                     type="text"
-                    disabled
-                    value={editingUser.badgeId}
-                    className="w-full bg-surface-container/60 border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold text-outline cursor-not-allowed"
+                    required
+                    value={editingUser.badgeId || ''}
+                    onChange={(e) => setEditingUser({ ...editingUser, badgeId: e.target.value.toUpperCase() })}
+                    placeholder={isAmharic ? 'መታወቂያ ቁጥር' : 'e.g. CLERK-001'}
+                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
                   />
                 </div>
 
@@ -2652,7 +2744,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {/* ================= MODAL: DANGER ZONE CONFIRMATION ================= */}
       {dangerActionType && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-lg border-2 border-red-400 shadow-2xl p-6 space-y-4">
+          <div className="bg-white w-full max-w-md rounded-lg border border-red-400 shadow-2xl p-6 space-y-4">
             <div className="flex items-center gap-3 border-b border-red-100 pb-3">
               <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
                 <Icon className="material-symbols-outlined text-[24px]">warning</Icon>

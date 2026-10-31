@@ -613,8 +613,8 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-5 shadow-xs transition-all ${
-        onClick ? 'cursor-pointer hover:border-slate-300 dark:hover:border-slate-700' : ''
+      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-5 shadow-kpi transition-all ${
+        onClick ? 'cursor-pointer shadow-kpi-hover hover:border-slate-300 dark:hover:border-slate-700' : ''
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-1.5">
@@ -685,11 +685,11 @@ export const MetricStatCard: React.FC<MetricStatCardProps> = ({
       onClick={onClick}
       className={`p-3.5 rounded-xl bg-white dark:bg-slate-900 border ${
         isActive
-          ? 'border-primary dark:border-primary ring-1 ring-primary/20'
-          : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
-      } shadow-xs hover:shadow-sm active:scale-98 transition-all duration-200 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
-        onClick ? 'cursor-pointer group' : ''
-      } ${className}`}
+          ? 'border-primary dark:border-primary shadow-kpi-active'
+          : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-kpi'
+      } ${
+        onClick ? 'cursor-pointer group shadow-kpi-hover active:scale-98' : ''
+      } transition-all duration-200 min-w-0 overflow-hidden select-none flex flex-col justify-between ${className}`}
     >
       <div className="flex items-center justify-between gap-1 mb-1">
         <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 truncate block">

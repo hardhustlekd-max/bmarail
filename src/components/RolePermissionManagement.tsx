@@ -155,15 +155,15 @@ export const SYSTEM_MODULES: SystemModule[] = [
   },
   {
     id: 'print_production',
-    titleAm: '3. የPVC ካርድ ህትመትና ባች ትዕዛዝ ሞጁል',
-    titleEn: 'PVC Card Production & Batch Orders Module',
-    descriptionAm: 'የPVC ካርድ ህትመት ወረፋ፣ የባች ማዘዣዎች እና ኤክስፖርት',
-    descriptionEn: 'PVC card printing queues, batch printing orders, and export.',
+    titleAm: '3. የካርድ ህትመትና ባች ትዕዛዝ ሞጁል',
+    titleEn: 'Card Production & Batch Orders Module',
+    descriptionAm: 'የካርድ ህትመት ወረፋ፣ የባች ማዘዣዎች እና ኤክስፖርት',
+    descriptionEn: 'Card printing queues, batch printing orders, and export.',
     icon: 'print',
     badgeBg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-2xs',
     governedComponents: {
-      sideMenuAm: 'የPVC ህትመት ወረፋ፣ የባች ትዕዛዞች',
-      sideMenuEn: 'PVC Print Queue, Batch Orders',
+      sideMenuAm: 'የህትመት ወረፋ፣ የባች ትዕዛዞች',
+      sideMenuEn: 'Print Queue, Batch Orders',
       metricsAm: 'በህትመት ላይ ያሉ ባቾች፣ የተጠናቀቁ ካርዶች',
       metricsEn: 'Pending Print Batches, Cards In-Printing, Completed Prints',
       quickMenusAm: 'የባች ህትመት ማዘዣ፣ ኤክስፖርት',
@@ -175,8 +175,8 @@ export const SYSTEM_MODULES: SystemModule[] = [
       {
         id: 9,
         icon: 'inventory_2',
-        titleAm: 'የPVC ካርድ ህትመትና የባች ትዕዛዝ ማኔጅመንት',
-        titleEn: 'PVC Card Printing Queue & Batch Orders',
+        titleAm: 'የካርድ ህትመትና የባች ትዕዛዝ ማኔጅመንት',
+        titleEn: 'Card Printing Queue & Batch Orders',
         descriptionAm: 'የጸደቁ ፈቃዶችን ወደ ህትመት ማስተላለፍና የባች ትዕዛዝ ማዘዝ',
         descriptionEn: 'Process approved permits into print batch orders.',
       },
@@ -758,7 +758,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               {/* Module Header Bar */}
               <div className="p-3.5 px-4 border-b border-outline-variant/40 bg-surface-container/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <Icon className="material-symbols-outlined text-[22px] text-[#0f172a] dark:text-blue-400 shrink-0">{moduleObj.icon}</Icon>
+                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">{moduleObj.icon}</Icon>
                   <div className="min-w-0">
                     <h3 className="text-xs font-black text-on-surface  tracking-wider">
                       {isAmharic ? moduleObj.titleAm : moduleObj.titleEn}

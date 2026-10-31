@@ -4,11 +4,6 @@ import { Language, UserRole, APP_LOGO } from '../types';
 import { changeOnlineUserPassword, SYSTEM_ROLE_CREDENTIALS } from '../services/authService';
 import { updateSystemUserInDb, saveSettingsToDb, subscribeSettings } from '../services/dbService';
 import {
-  recordCrash,
-  getSavedCrashReports,
-  clearSavedCrashReports,
-} from '../utils/crashReporter';
-import {
   extendSessionManually,
   triggerInactivityPromptPreview,
 } from './AutoLogoutManager';
@@ -202,18 +197,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider shadow-2xs ${
-              userRole === 'superadmin'
-                ? 'bg-purple-100 text-purple-900 dark:bg-purple-950/80 dark:text-purple-300 border border-purple-300 dark:border-purple-700'
-                : userRole === 'admin'
-                ? 'bg-blue-100 text-blue-900 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-300 dark:border-blue-700'
-                : userRole === 'officer'
-                ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
-                : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700'
-            }`}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider bg-primary/10 text-primary border border-primary/20 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
             <span>
               {userRole === 'superadmin'
                 ? 'Super Admin'
@@ -236,23 +221,23 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             {/* User Profile Card */}
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
               <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
-                <Icon className="material-symbols-outlined text-[#1e293b] dark:text-yellow-400 text-[22px]">account_circle</Icon>
+                <Icon className="material-symbols-outlined text-primary text-[22px]">account_circle</Icon>
                 <h2 className="text-sm font-black text-on-surface">
                   {isAmharic ? 'የተጠቃሚ መገለጫ' : 'User Profile Details'}
                 </h2>
               </div>
 
               <div className="flex items-center gap-3.5">
-                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-yellow-500 flex items-center justify-center text-xl font-black text-[#1e293b] dark:text-yellow-400 shrink-0 overflow-hidden shadow-xs">
+                <div className="w-14 h-14 rounded-full bg-surface-container border border-outline-variant flex items-center justify-center text-xl font-black text-on-surface shrink-0 overflow-hidden shadow-xs">
                   <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="font-extrabold text-sm text-on-surface truncate">{displayName}</h3>
-                  <p className="font-mono text-xs font-bold text-[#1e293b] dark:text-yellow-400 bg-surface-container px-2 py-0.5 rounded inline-block mt-0.5">
+                  <p className="font-mono text-xs font-bold text-on-surface bg-surface-container border border-outline-variant/60 px-2 py-0.5 rounded inline-block mt-0.5">
                     {userBadgeId || creds.badgeId}
                   </p>
-                  <div className="flex items-center gap-1.5 mt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <div className="flex items-center gap-1.5 mt-1 text-[11px] text-primary font-bold">
+                    <span className="w-2 h-2 rounded-full bg-primary"></span>
                     <span>{isAmharic ? 'ንቁ መለያ (Active Session)' : 'Active Session'}</span>
                   </div>
                 </div>
@@ -274,7 +259,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-outline-variant pb-3">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[#1e293b] dark:text-yellow-400 text-[22px]">tune</Icon>
+                  <Icon className="material-symbols-outlined text-primary text-[22px]">tune</Icon>
                   <h2 className="text-sm font-black text-on-surface">
                     {isAmharic ? 'የስርዓት ምርጫዎች' : 'System Preferences'}
                   </h2>
@@ -364,11 +349,11 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     type="button"
                     onClick={() => setSoundAlerts(!soundAlerts)}
                     className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                      soundAlerts ? 'bg-[#1e293b] dark:bg-yellow-500' : 'bg-slate-300 dark:bg-slate-700'
+                      soundAlerts ? 'bg-[#1e293b] dark:bg-slate-200' : 'bg-surface-container-high'
                     }`}
                   >
                     <div
-                      className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                      className={`bg-white dark:bg-slate-900 w-4 h-4 rounded-full shadow-md transform transition-transform ${
                         soundAlerts ? 'translate-x-4' : 'translate-x-0'
                       }`}
                     ></div>
@@ -392,7 +377,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     )}
                   </button>
                   {savedPreferenceMsg && (
-                    <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 text-center mt-1.5 animate-in fade-in">
+                    <p className="text-[11px] font-bold text-primary text-center mt-1.5 animate-in fade-in">
                       {isAmharic ? 'ምርጫዎችዎ ተቀምጠዋል!' : 'Preferences saved!'}
                     </p>
                   )}
@@ -409,7 +394,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               
               <div className="border-b border-outline-variant pb-4">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[22px] text-amber-600 dark:text-amber-400 shrink-0">lock_reset</Icon>
+                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">lock_reset</Icon>
                   <div>
                     <h2 className="text-base font-black text-on-surface">
                       {isAmharic ? 'የይለፍ ቃል መቀየሪያ' : 'Change Password'}
@@ -428,7 +413,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 <div
                   className={`p-3.5 rounded-lg text-xs font-bold border flex items-start gap-2.5 animate-in fade-in shadow-2xs ${
                     feedback.type === 'success'
-                      ? 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-100'
+                      ? 'bg-primary/10 border-primary/30 text-primary'
                       : 'bg-rose-50 dark:bg-rose-950/80 border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-100'
                   }`}
                 >
@@ -548,7 +533,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   {confirmPassword && newPassword && (
                     <div className="flex items-center gap-1.5 text-[11px] pt-0.5">
                       {confirmPassword === newPassword ? (
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                        <span className="text-primary font-bold flex items-center gap-1">
                           <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
                           {isAmharic ? 'የይለፍ ቃሎቹ ይጣጣማሉ' : 'Passwords match'}
                         </span>
@@ -569,19 +554,19 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[10px]">
                     <span className="flex items-center gap-1">
-                      <Icon className="material-symbols-outlined text-[13px] text-yellow-500">check</Icon>
+                      <Icon className="material-symbols-outlined text-[13px] text-primary">check</Icon>
                       {isAmharic ? 'ቢያንስ 6 ፊደላት' : 'Min 6 characters'}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Icon className="material-symbols-outlined text-[13px] text-yellow-500">check</Icon>
+                      <Icon className="material-symbols-outlined text-[13px] text-primary">check</Icon>
                       {isAmharic ? 'ትላልቅና ትናንሽ ፊደላት' : 'Upper & lowercase'}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Icon className="material-symbols-outlined text-[13px] text-yellow-500">check</Icon>
+                      <Icon className="material-symbols-outlined text-[13px] text-primary">check</Icon>
                       {isAmharic ? 'ቁጥሮች (0-9)' : 'Numbers (0-9)'}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Icon className="material-symbols-outlined text-[13px] text-yellow-500">check</Icon>
+                      <Icon className="material-symbols-outlined text-[13px] text-primary">check</Icon>
                       {isAmharic ? 'ልዩ ምልክቶች (@, #, $)' : 'Symbols (!, @, #)'}
                     </span>
                   </div>
@@ -611,89 +596,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
             </div>
 
-            {/* System Diagnostics & Crash Reporting Card */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 sm:p-5 shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[22px] text-rose-600 dark:text-rose-400 shrink-0">monitor_heart</Icon>
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-black text-on-surface">
-                      {isAmharic ? 'የሲስተም ጤናና የስህተት ሪፖርት' : 'System Health & Crash Diagnostics'}
-                    </h3>
-                    <p className="text-[11px] text-outline">
-                      {isAmharic
-                        ? 'የስርዓት ስህተቶችን መቆጣጠሪያና ሪፖርት ማውጫ'
-                        : 'Real-time crash capture, memory tracking, and telemetry'}
-                    </p>
-                  </div>
-                </div>
 
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                  {isAmharic ? 'ንቁ (Active)' : 'Active Monitor'}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const reports = getSavedCrashReports();
-                    if (reports.length > 0) {
-                      recordCrash(
-                        new Error(
-                          isAmharic
-                            ? `የቅርብ ጊዜ የስህተት ሪፖርት ፍተሻ (${reports.length} ተመዝግቧል)`
-                            : `Diagnostic Review: ${reports.length} recorded crash logs`
-                        ),
-                        { type: 'manual_report' }
-                      );
-                    } else {
-                      recordCrash(
-                        new Error(
-                          isAmharic
-                            ? 'የሲስተም ጤና መደበኛ ነው (ምንም ስህተት አልተገኘም)'
-                            : 'System Health Check: All runtime monitors nominal'
-                        ),
-                        { type: 'manual_report' }
-                      );
-                    }
-                  }}
-                  className="min-h-[42px] px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 touch-manipulation"
-                >
-                  <Icon className="material-symbols-outlined text-[16px] text-primary">
-                    bug_report
-                  </Icon>
-                  <span>{isAmharic ? 'የስህተት ሪፖርት ክፈት' : 'View Crash Diagnostics'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Test simulated exception to verify real-time popup capture
-                    recordCrash(
-                      new Error(
-                        isAmharic
-                          ? 'የሙከራ የስርዓት ስህተት ማሳወቂያ (Test Exception Notification)'
-                          : 'Test Simulated Runtime Exception (Diagnostics Verified)'
-                      ),
-                      { type: 'manual_report' }
-                    );
-                  }}
-                  className="min-h-[42px] px-3 py-2 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-bold border border-rose-200 dark:border-rose-900/60 flex items-center justify-center gap-1.5 transition-all cursor-pointer active:scale-95 touch-manipulation"
-                >
-                  <Icon className="material-symbols-outlined text-[16px] text-rose-500">
-                    notifications_active
-                  </Icon>
-                  <span>{isAmharic ? 'ማሳወቂያውን ሞክር (Test Popup)' : 'Test Crash Popup'}</span>
-                </button>
-              </div>
-            </div>
 
             {/* Auto-Logout Inactivity Policy Card */}
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-8 h-8 rounded-lg bg-surface-container text-primary border border-outline-variant flex items-center justify-center shrink-0 mt-0.5">
                     <Icon className="material-symbols-outlined text-[20px]">alarm</Icon>
                   </div>
                   <div>
@@ -707,7 +616,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     </span>
                   </div>
                 </div>
-                <span className="px-2.5 py-1 rounded-md text-[11px] font-black bg-emerald-100 text-emerald-900 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 whitespace-nowrap shrink-0 shadow-2xs">
+                <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-surface-container text-on-surface border border-outline-variant whitespace-nowrap shrink-0 shadow-2xs">
                   15 {isAmharic ? 'ደቂቃ' : 'min'}
                 </span>
               </div>
@@ -717,16 +626,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 <button
                   type="button"
                   onClick={() => triggerInactivityPromptPreview()}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:bg-surface-container border border-outline-variant transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container border border-outline-variant transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <Icon className="material-symbols-outlined text-[16px] text-amber-500">preview</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] text-primary">preview</Icon>
                   <span>{isAmharic ? 'ማስጠንቀቂያውን ሞክር (Preview Prompt)' : 'Preview Prompt'}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => extendSessionManually()}
-                  className="px-3 py-1.5 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e293b] hover:bg-[#112D6C] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">lock_reset</Icon>
                   <span>{isAmharic ? 'ክፍለ ጊዜውን አራዝም (+15 ደቂቃ)' : 'Extend Session (+15 min)'}</span>
@@ -734,56 +643,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               </div>
             </div>
 
-            {/* Super Admin Maintenance Section */}
-            {userRole === 'superadmin' && (
-              <div className="bg-surface-container-lowest border-2 border-dashed border-purple-500 rounded-xl p-4 shadow-xs space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-300 dark:border-purple-700 flex items-center justify-center shrink-0 mt-0.5">
-                      <Icon className="material-symbols-outlined text-[20px]">build</Icon>
-                    </div>
-                    <div>
-                      <span className="text-xs font-black text-on-surface block">
-                        {isAmharic ? 'የሱፐር አድሚን ጥገና' : 'Super Admin Maintenance'}
-                      </span>
-                      <span className="text-[11px] text-outline block mt-0.5 leading-relaxed">
-                        {isAmharic
-                          ? 'የፋይል ስም መስተካከያና ጥቅም የሌላቸው ፋይሎች ማጽጃ'
-                          : 'Trigger file renaming migration and cleanup of orphaned storage files.'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="pt-2 border-t border-purple-200 dark:border-purple-800 flex items-center justify-end">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      setIsLoading(true);
-                      setFeedback(null);
-                      try {
-                        const res = await fetch('/api/storage/maintenance', { method: 'POST' });
-                        const data = await res.json();
-                        setIsLoading(false);
-                        if (data.success) {
-                          setFeedback({ type: 'success', message: `Maintenance successful! ${data.deletedCount} orphaned files removed.` });
-                        } else {
-                          setFeedback({ type: 'error', message: data.error || 'Maintenance failed' });
-                        }
-                      } catch (err: any) {
-                        setIsLoading(false);
-                        setFeedback({ type: 'error', message: err.message || 'Error triggering maintenance' });
-                      }
-                    }}
-                    disabled={isLoading}
-                    className="px-3 py-1.5 rounded-lg text-xs font-black bg-purple-600 hover:bg-purple-700 text-white shadow-xs transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
-                  >
-                    {isLoading ? <Icon className="material-symbols-outlined text-[16px] animate-spin">sync</Icon> : <Icon className="material-symbols-outlined text-[16px]">play_circle</Icon>}
-                    <span>{isAmharic ? 'ጥገናውን አስጀምር' : 'Run Maintenance'}</span>
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* Quick Logout Card (Using non-red theme) */}
             {onLogoutClick && (
@@ -801,7 +661,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   onClick={onLogoutClick}
                   className="px-4 py-2 rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white text-xs font-black border border-[#2A4E9B] shadow-2xs transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
                 >
-                  <Icon className="material-symbols-outlined text-[16px] text-amber-400">logout</Icon>
+                  <Icon className="material-symbols-outlined text-[16px] text-white">logout</Icon>
                   <span>{isAmharic ? 'ውጣ' : 'Logout'}</span>
                 </button>
               </div>

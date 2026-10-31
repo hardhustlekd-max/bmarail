@@ -3122,7 +3122,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 }}
                 className="px-5 py-2.5 rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] text-xs font-black shadow-sm transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
               >
-                <Icon className="material-symbols-outlined text-[16px] text-amber-400">logout</Icon>
+                <Icon className="material-symbols-outlined text-[16px] text-white">logout</Icon>
                 <span>{isAmharic ? 'አዎ፣ ውጣ' : 'Yes, Sign Out'}</span>
               </button>
             </div>

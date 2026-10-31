@@ -288,7 +288,9 @@ export function mapPaymentReceiptToDb(receipt: PaymentReceipt) {
     phone: receipt.phone || null,
     paymentDate: receipt.paymentDate ? normalizeToEthiopianDateStr(receipt.paymentDate) : getDefaultEthiopianRegistrationDate(),
     expirationDate: receipt.expirationDate ? normalizeToEthiopianDateStr(receipt.expirationDate) : getDefaultEthiopianRegistrationDate(),
-    amount: receipt.amount || 0,
+    amount: typeof receipt.amount === 'string'
+      ? (parseFloat((receipt.amount as string).replace(/[^0-9.-]/g, '')) || 0)
+      : (Number(receipt.amount) || 0),
     vehicleCategory: receipt.vehicleCategory || null,
     receiptScreenshot: receipt.receiptScreenshot || null,
     notes: receipt.notes || null,

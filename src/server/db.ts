@@ -1965,6 +1965,7 @@ const SPECIAL_CAMEL_TO_SNAKE: Record<string, string> = {
   badgeText: 'badge_text',
   targetRole: 'target_role',
   targetSubcity: 'target_subcity',
+  badgeId: 'badge_id',
   isActive: 'is_active',
   autoPrintQR: 'auto_print_qr',
   autoPrintQr: 'auto_print_qr',
@@ -2026,6 +2027,7 @@ const SPECIAL_SNAKE_TO_CAMEL: Record<string, string> = {
   engine_or_serial_no: 'engineOrSerialNo',
   plate_or_engine_no: 'plateOrEngineNo',
   officer_badge_id: 'officerBadgeId',
+  badge_id: 'badgeId',
   owner_registration_id: 'ownerRegistrationId',
   receipt_screenshot: 'receiptScreenshot',
   hide_from_other_users: 'hideFromOtherUsers',
@@ -2072,6 +2074,50 @@ function normalizeRowToPg(tableName: string, data: Record<string, any>): Record<
 
     // If table has a known whitelist, only include existing columns
     if (validCols && !validCols.has(colName)) {
+      continue;
+    }
+
+    // 1. Sanitize numeric columns to prevent PostgreSQL syntax errors (e.g. "3167 ETB" -> 3167)
+    if (
+      (tableName === 'payment_receipts' && colName === 'amount') ||
+      (tableName === 'kpi_metrics' && colName === 'total_revenue')
+    ) {
+      if (typeof v === 'number') {
+        result[colName] = isNaN(v) ? 0 : v;
+      } else if (typeof v === 'string') {
+        const cleaned = parseFloat(v.replace(/[^0-9.-]/g, ''));
+        result[colName] = isNaN(cleaned) ? 0 : cleaned;
+      } else {
+        result[colName] = 0;
+      }
+      continue;
+    }
+
+    if (
+      (tableName === 'print_batch_orders' && (colName === 'total_items' || colName === 'total_count')) ||
+      (tableName === 'file_uploads' && colName === 'file_size') ||
+      (tableName === 'system_settings' && colName === 'system_reset_epoch')
+    ) {
+      if (typeof v === 'number') {
+        result[colName] = isNaN(v) ? 0 : Math.round(v);
+      } else if (typeof v === 'string') {
+        const cleaned = parseInt(v.replace(/[^0-9-]/g, ''), 10);
+        result[colName] = isNaN(cleaned) ? 0 : cleaned;
+      } else {
+        result[colName] = 0;
+      }
+      continue;
+    }
+
+    if (tableName === 'kpi_metrics' && typeof v !== 'object') {
+      if (typeof v === 'number') {
+        result[colName] = isNaN(v) ? 0 : v;
+      } else if (typeof v === 'string' && /^[0-9.-]+$/.test(v.trim())) {
+        const num = parseFloat(v.trim());
+        result[colName] = isNaN(num) ? 0 : num;
+      } else {
+        result[colName] = v;
+      }
       continue;
     }
 

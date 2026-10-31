@@ -146,7 +146,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-5">
           <div className="border-b border-outline-variant pb-3 flex items-center justify-between">
             <h2 className="text-sm font-black text-on-surface  tracking-wider flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-amber-600 text-[20px]">policy</Icon>
+              <Icon className="material-symbols-outlined text-primary text-[20px]">policy</Icon>
               {isAmharic ? 'የሪፖርት ዝርዝሮች (አማራጭ)' : 'Incident Report Details (All Optional)'}
             </h2>
             <span className="text-[11px] font-semibold text-secondary">
@@ -290,7 +290,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         {/* Reporting Officer Information Card */}
         <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-amber-600 text-[20px]">badge</Icon>
+            <Icon className="material-symbols-outlined text-primary text-[20px]">badge</Icon>
             <div>
               <p className="font-black text-on-surface">{officerName}</p>
               <p className="text-[11px] text-secondary font-mono">{userBadgeId}</p>

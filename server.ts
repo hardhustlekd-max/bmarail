@@ -813,12 +813,39 @@ app.post('/api/auth/users/update', async (req, res) => {
       cleanUpdates.passwordHash = await hashPassword(cleanUpdates.password);
       delete cleanUpdates.password;
     }
-    await dbUpdateFields('system_users', id, cleanUpdates);
+
+    // Resolve target record in system_users (supports ID, UID, or previous Badge ID)
+    let targetUser = await dbGetById('system_users', id);
+    if (!targetUser) {
+      const allUsers = await dbGetAll('system_users');
+      targetUser = allUsers.find((u: any) => u.uid === id || u.badgeId === id || u.id === id);
+    }
+    const targetId = targetUser?.id || targetUser?.uid || id;
+
+    // Check if badgeId is being updated and prevent duplicate collisions
+    if (cleanUpdates.badgeId) {
+      cleanUpdates.badgeId = String(cleanUpdates.badgeId).trim().toUpperCase();
+      const allUsers = await dbGetAll('system_users');
+      const conflict = allUsers.find(
+        (u: any) =>
+          u.id !== targetId &&
+          u.uid !== targetId &&
+          u.badgeId?.toUpperCase() === cleanUpdates.badgeId
+      );
+      if (conflict) {
+        return res.status(400).json({
+          success: false,
+          error: `Badge ID "${cleanUpdates.badgeId}" is already assigned to ${conflict.fullName || 'another user'}.`,
+        });
+      }
+    }
+
+    await dbUpdateFields('system_users', targetId, cleanUpdates);
     if (cleanUpdates.status) {
       await recordSystemAction({
         actionType: 'USER_STATUS_CHANGED',
         entityType: 'user',
-        entityId: id,
+        entityId: targetId,
         payload: { status: cleanUpdates.status },
       });
     }
@@ -1665,6 +1692,14 @@ app.post('/api/payment-receipts', async (req, res) => {
     }
     // Offload any embedded base64 receipt images to S3/disk
     receipt = await offloadObjectBase64Images(receipt, receipt.plateNumber || receipt.ownerRegistrationId || receipt.id, receipt.enteredBy);
+
+    // Clean numeric amount to ensure valid decimal type across PostgreSQL
+    if (receipt.amount !== undefined && receipt.amount !== null) {
+      if (typeof receipt.amount === 'string') {
+        const num = parseFloat(receipt.amount.replace(/[^0-9.-]/g, ''));
+        receipt.amount = isNaN(num) ? 0 : num;
+      }
+    }
 
     // 1. Audit ledger record write
     await dbUpsert('payment_receipts', receipt.id, receipt);

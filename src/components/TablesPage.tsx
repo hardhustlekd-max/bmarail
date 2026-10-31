@@ -701,7 +701,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         phone: renewalModalReg.phone || '',
         paymentDate: renewalPaymentDate,
         expirationDate,
-        amount: renewalAmount.trim() || undefined,
+        amount: renewalAmount ? (parseFloat(renewalAmount.replace(/[^0-9.]/g, '')) || 500) : 500,
         receiptScreenshot: finalScreenshot || undefined,
         notes: renewalNotes.trim() || undefined,
         enteredBy: userBadgeId || 'CLERK',

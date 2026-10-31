@@ -1343,7 +1343,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   
                   {/* Warning Alert for Pending Status */}
                   {isPending && (
-                    <div className="bg-amber-100/90 dark:bg-amber-950/90 border-2 border-amber-500 dark:border-amber-600 p-2 rounded-md text-xs flex items-start gap-2 shadow-xs">
+                    <div className="bg-amber-100/90 dark:bg-amber-950/90 border border-amber-500 dark:border-amber-600 p-2 rounded-md text-xs flex items-start gap-2 shadow-xs">
                       <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 font-black">
                         <Icon className="material-symbols-outlined text-[20px]">warning</Icon>
                       </div>
@@ -1362,7 +1362,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                   {/* Association Motor (Company Vehicle) Notice - Visible strictly on scanner results */}
                   {scannedRegResult.hideFromOtherUsers && (
-                    <div className="bg-purple-50/95 dark:bg-purple-950/80 border-2 border-purple-400 dark:border-purple-600 p-2 sm:p-2.5 rounded-md text-xs flex items-start gap-2 shadow-xs">
+                    <div className="bg-purple-50/95 dark:bg-purple-950/80 border border-purple-400 dark:border-purple-600 p-2 sm:p-2.5 rounded-md text-xs flex items-start gap-2 shadow-xs">
                       <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0 font-black">
                         <Icon className="material-symbols-outlined text-[19px]">business</Icon>
                       </div>
@@ -1387,7 +1387,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {/* =========================================================
                       CARD 1: OWNER & PRIMARY MOTORCYCLE INFO
                       ========================================================= */}
-                  <div className={`${activeTheme.ownerCardBg || activeTheme.cardBg} border-2 rounded-md p-2 sm:p-2.5 shadow-xs space-y-2`}>
+                  <div className={`${activeTheme.ownerCardBg || activeTheme.cardBg} border rounded-md p-2 sm:p-2.5 shadow-xs space-y-2`}>
                     
                     {/* Top Row: Portrait Image on Left & Info Details on Right */}
                     <div className="flex items-start gap-2.5">
@@ -1395,7 +1395,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Left: Portrait Photo or Cyan Monogram (As in Attachment 1) */}
                       <div 
                         onClick={() => openDocumentCarousel(portraitUrl, `${scannedRegResult.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}`)}
-                        className="w-28 h-36 sm:w-32 sm:h-40 rounded-md overflow-hidden bg-slate-100 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 shrink-0 shadow-xs cursor-pointer relative group flex items-center justify-center"
+                        className="w-28 h-36 sm:w-32 sm:h-40 rounded-md overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 shrink-0 shadow-xs cursor-pointer relative group flex items-center justify-center"
                       >
                         {scannedRegResult.userPortraitPhoto ? (
                           <SmartImage
@@ -1468,7 +1468,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {/* =========================================================
                       CARD 2: MERGED VEHICLE & CONTACT DETAILS (2-COLUMN HORIZONTAL GRID)
                       ========================================================= */}
-                  <div className={`${activeTheme.specCardBg || activeTheme.cardBg} border-2 rounded-md p-2 sm:p-2.5 shadow-xs space-y-2`}>
+                  <div className={`${activeTheme.specCardBg || activeTheme.cardBg} border rounded-md p-2 sm:p-2.5 shadow-xs space-y-2`}>
                     <h3 className={`text-xs sm:text-sm font-black ${activeTheme.headingText} flex items-center gap-1.5`}>
                       <Icon className={`material-symbols-outlined ${activeTheme.sectionIconColor} text-[18px]`}>two_wheeler</Icon>
                       <span>{isAmharic ? 'ተጨማሪ የተሽከርካሪ ዝርዝሮች' : 'Additional Vehicle Details'}</span>

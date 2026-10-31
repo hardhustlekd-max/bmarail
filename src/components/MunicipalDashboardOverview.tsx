@@ -567,17 +567,6 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       });
     }
 
-    // Task 9: PVC Print Queue
-    if (isTaskViewable(userRole, 9)) {
-      roleActions.push({
-        key: 'pvc_batch_print',
-        title: isAmharic ? 'የPVC ካርድ ማተሚያ' : 'PVC Print Queue',
-        subtitle: isAmharic ? 'የካርድ ህትመት ቅደም ተከተል' : 'Manage batch printing',
-        icon: 'print',
-        badge: isAmharic ? 'ህትመት' : 'Print',
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-      });
-    }
 
     // Task 10, 16, or 17: Payment Receipts Entry, Ledger, or Financial KPIs
     if (isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) {
@@ -643,7 +632,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
           <div
             onClick={() => handleActionClick('quick_verify')}
-            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-blue-500/10 border-2 border-blue-500/30 flex items-center justify-center shadow-md group cursor-pointer hover:bg-blue-500/20 active:scale-95 touch-manipulation transition-all duration-300"
+            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shadow-md group cursor-pointer hover:bg-blue-500/20 active:scale-95 touch-manipulation transition-all duration-300"
           >
             <Icon className="material-symbols-outlined text-[42px] sm:text-[48px] text-slate-700 group-hover:scale-110 transition-transform duration-300">
               qr_code_scanner
@@ -699,10 +688,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Total Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-slate-700">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
               </div>
@@ -714,10 +703,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Super Admins & Admins */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200/50 dark:border-purple-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block group-hover:text-purple-600">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-purple-600 dark:group-hover:text-purple-300">
                   {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
                 </span>
               </div>
@@ -731,10 +720,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Blocked Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:shadow-xs active:scale-105 transition-all duration-200 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'የታገዱ' : 'Blocked'}
                 </span>
               </div>
@@ -877,10 +866,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
+                  className="w-full text-left p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                    <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                       {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                     </span>
                   </div>
@@ -894,10 +883,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
+                  className="w-full text-left p-2 sm:p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                    <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                       {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                     </span>
                   </div>
@@ -911,10 +900,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-                  className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
+                  className="w-full text-left p-2 sm:p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200/50 dark:border-rose-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                    <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                       {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                     </span>
                   </div>
@@ -935,7 +924,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <div className="flex items-center gap-2.5">
               <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
               <div>
-                <h2 className="font-extrabold text-sm sm:text-base text-on-surface  tracking-wider">
+                <h2 className="font-extrabold text-sm sm:text-base text-on-surface tracking-wider">
                   {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
                 </h2>
               </div>
@@ -947,10 +936,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                 </span>
               </div>
@@ -964,10 +953,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/50 dark:border-emerald-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'የፀደቁ' : 'Valid'}
                 </span>
               </div>
@@ -979,10 +968,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                 </span>
               </div>
@@ -996,10 +985,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-              className="w-full text-left p-2 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2 sm:p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200/50 dark:border-rose-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold  tracking-tight text-on-surface truncate block">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                 </span>
               </div>

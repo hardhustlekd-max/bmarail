@@ -559,7 +559,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         phone: phone.trim() || undefined,
         paymentDate,
         expirationDate,
-        amount: amount.trim() ? `${amount.trim()} ETB` : '500 ETB',
+        amount: amount.trim() ? (parseFloat(amount.replace(/[^0-9.]/g, '')) || 500) : 500,
         receiptScreenshot: receiptScreenshot || undefined,
         enteredBy: userBadgeId,
         createdAt: getTodayEthiopianDateTimeIso(),
@@ -735,7 +735,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div class="row"><span class="label">Clerk / የመዘገበው ሰራተኛ:</span><span class="val">${rc.enteredBy}</span></div>
           <div class="total">
             <span>Total Amount Paid / የተከፈለ መጠን:</span>
-            <span style="color:#166534">${rc.amount || '500 ETB'}</span>
+            <span style="color:#166534">${rc.amount ? (String(rc.amount).includes('ETB') ? rc.amount : `${rc.amount} ETB`) : '500 ETB'}</span>
           </div>
           <div class="footer">Verified Official System Receipt — ${new Date().toLocaleDateString()}</div>
           <script>window.onload = function() { window.print(); };</script>
@@ -758,7 +758,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     try {
       const updatedReceipt: PaymentReceipt = {
         ...editingReceipt,
-        amount: `${editFormAmount.trim() || '500'} ETB`,
+        amount: parseFloat(editFormAmount.replace(/[^0-9.]/g, '')) || 500,
         notes: editFormNotes.trim() || undefined,
         paymentDate: editFormPaymentDate || editingReceipt.paymentDate,
         expirationDate: editFormExpDate || editingReceipt.expirationDate,
@@ -1495,7 +1495,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <div className="p-4 bg-[#F7F9FC] dark:bg-[#24303F] rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col justify-between space-y-3">
                 <div>
                   <h4 className="text-xs font-bold text-[#1C2434] dark:text-white uppercase tracking-wider flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-[18px] text-emerald-600">account_balance</Icon>
+                    <Icon className="material-symbols-outlined text-[18px] text-primary">account_balance</Icon>
                     <span>{isAmharic ? 'የአባልነት ክፍያ እርምጃዎች' : 'Membership Fee Actions'}</span>
                   </h4>
                 </div>
@@ -2528,7 +2528,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           });
                         }
                       }}
-                      className="relative w-full max-w-[180px] aspect-square rounded-xl overflow-hidden border-2 border-primary/60 shadow-md cursor-pointer group bg-slate-200 dark:bg-slate-700"
+                      className="relative w-full max-w-[180px] aspect-square rounded-xl overflow-hidden border border-primary/60 shadow-md cursor-pointer group bg-slate-200 dark:bg-slate-700"
                     >
                       <SmartImage
                         src={selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail || ''}
@@ -2541,7 +2541,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="w-full max-w-[180px] aspect-square rounded-xl bg-primary/10 border-2 border-dashed border-primary/30 flex flex-col items-center justify-center text-primary gap-2">
+                    <div className="w-full max-w-[180px] aspect-square rounded-xl bg-primary/10 border border-dashed border-primary/30 flex flex-col items-center justify-center text-primary gap-2">
                       <span className="text-4xl font-black">
                         {(selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title || 'M').charAt(0).toUpperCase()}
                       </span>
@@ -2833,7 +2833,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
                           <div className="flex items-center gap-2">
                             <span className="font-mono font-black text-emerald-700 dark:text-emerald-400 text-xs">
-                              {rc.amount ? `${rc.amount} ETB` : '500 ETB'}
+                              {rc.amount ? (String(rc.amount).includes('ETB') ? rc.amount : `${rc.amount} ETB`) : '500 ETB'}
                             </span>
                             <button
                               type="button"

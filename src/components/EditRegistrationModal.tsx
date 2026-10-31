@@ -709,7 +709,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 <div className="p-3.5 bg-purple-50/70 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-800 flex items-center justify-between gap-3">
                   <div>
                     <span className="font-bold text-slate-900 dark:text-white block flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[17px] text-purple-600">business</span>
+                      <span className="material-symbols-outlined text-[17px] text-primary">business</span>
                       {isAmharic ? 'እንደ ኩባንያ / የማህበር ተሽከርካሪ መዝግብ' : 'Save as Company / Association Motor'}
                     </span>
                     <span className="text-[11px] text-slate-500 dark:text-slate-400 block">

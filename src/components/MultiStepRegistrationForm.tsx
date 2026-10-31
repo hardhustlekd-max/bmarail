@@ -948,7 +948,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         phone: phone.trim() || undefined,
         paymentDate: payDateStr,
         expirationDate: expDateStr,
-        amount: `${actualAmount} ETB`,
+        amount: actualAmount,
         vehicleCategory,
         receiptScreenshot: upReceipt || receiptScreenshot || undefined,
         enteredBy: userBadgeId || 'CLERK-001',

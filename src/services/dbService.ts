@@ -1597,21 +1597,30 @@ export function subscribePaymentReceipts(
 export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<void> {
   return trackGlobalAction(
     async () => {
+      const numericAmount = typeof receipt.amount === 'string'
+        ? (parseFloat(receipt.amount.replace(/[^0-9.-]/g, '')) || 0)
+        : (Number(receipt.amount) || 0);
+
+      const cleanReceipt: PaymentReceipt = {
+        ...receipt,
+        amount: numericAmount,
+      };
+
       // 1. Save or update payment receipt
-      const index = inMemory.paymentReceipts.findIndex((r) => r.id === receipt.id);
+      const index = inMemory.paymentReceipts.findIndex((r) => r.id === cleanReceipt.id);
       if (index >= 0) {
-        inMemory.paymentReceipts[index] = { ...inMemory.paymentReceipts[index], ...receipt };
+        inMemory.paymentReceipts[index] = { ...inMemory.paymentReceipts[index], ...cleanReceipt };
       } else {
-        inMemory.paymentReceipts.unshift(receipt);
+        inMemory.paymentReceipts.unshift(cleanReceipt);
       }
       notifyPaymentReceipts();
-      broadcastCrossTabSync('payment_receipts', 'upsert', receipt.id, receipt);
+      broadcastCrossTabSync('payment_receipts', 'upsert', cleanReceipt.id, cleanReceipt);
 
       // 2. Account Ledger Model: Atomically update associated registration's financial status
-      const targetRegId = receipt.ownerRegistrationId;
+      const targetRegId = cleanReceipt.ownerRegistrationId;
       const regIndex = inMemory.registrations.findIndex((r) =>
         (targetRegId && r.id === targetRegId) ||
-        (receipt.plateNumber && r.plateNumber && r.plateNumber.toLowerCase() === receipt.plateNumber.toLowerCase())
+        (cleanReceipt.plateNumber && r.plateNumber && r.plateNumber.toLowerCase() === cleanReceipt.plateNumber.toLowerCase())
       );
 
       if (regIndex >= 0) {
@@ -1619,12 +1628,12 @@ export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<v
         const updatedReg: MotorcycleRegistration = {
           ...reg,
           termStatus: 'CURRENT',
-          activeTermExpirationDate: receipt.expirationDate,
-          lastPaymentDate: receipt.paymentDate,
-          lastReceiptNumber: receipt.receiptNumber,
-          lastPaymentAmount: receipt.amount || '500 ETB',
-          receiptNumber: receipt.receiptNumber,
-          paymentAmount: receipt.amount ? String(receipt.amount) : '500 ETB',
+          activeTermExpirationDate: cleanReceipt.expirationDate,
+          lastPaymentDate: cleanReceipt.paymentDate,
+          lastReceiptNumber: cleanReceipt.receiptNumber,
+          lastPaymentAmount: `${numericAmount} ETB`,
+          receiptNumber: cleanReceipt.receiptNumber,
+          paymentAmount: `${numericAmount} ETB`,
         };
         inMemory.registrations[regIndex] = updatedReg;
         notifyRegistrations();
@@ -1640,7 +1649,7 @@ export async function savePaymentReceiptToDb(receipt: PaymentReceipt): Promise<v
       try {
         await safeJsonFetch('/api/payment-receipts', {
           method: 'POST',
-          body: JSON.stringify(receipt),
+          body: JSON.stringify(cleanReceipt),
         });
         fetchPreAggregatedKPIs();
       } catch (apiErr) {
