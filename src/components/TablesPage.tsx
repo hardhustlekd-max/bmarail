@@ -226,6 +226,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   type RegSortOrder = 'asc' | 'desc';
   const [sortField, setSortField] = useState<RegSortField>('date');
   const [sortOrder, setSortOrder] = useState<RegSortOrder>('desc');
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+
+  const hasActiveSecondaryFilters = Boolean(
+    regSubCityFilter !== 'all' ||
+    regCompanyVehicleFilter !== 'all' ||
+    sortField !== 'date' ||
+    sortOrder !== 'desc'
+  );
 
   const handleToggleSort = (field: RegSortField) => {
     if (sortField === field) {
@@ -800,151 +808,189 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           />
         }
         toolbar={
-          <div className="px-3 sm:px-4 py-2 bg-white dark:bg-[#1C2434] flex flex-wrap items-center gap-2 text-xs w-full max-w-full">
-            {/* Search Input - Flexible, responsive, never overflows or collides */}
-            <div className="relative flex-1 min-w-[200px] sm:min-w-[240px] max-w-xs md:max-w-sm shrink-0 sm:shrink">
-              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
-                <Icon className="material-symbols-outlined text-[17px]">search</Icon>
-              </div>
-              <input
-                type="text"
-                value={regSearchQuery}
-                onChange={(e) => {
-                  setRegSearchQuery(e.target.value);
-                  setRegPage(1);
-                }}
-                placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search name, plate, phone, chasis...'}
-                className="w-full h-8 pl-8 pr-7 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary focus:bg-white dark:focus:bg-[#1C2434] focus:outline-none transition-colors"
-              />
-              {regSearchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setRegSearchQuery('')}
-                  className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-                </button>
-              )}
-            </div>
-
-            {/* Vehicle Type Segmented Toggle (Compact) */}
-            <div className="inline-flex items-center p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0">
-              {[
-                { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: tabScopedRegistrations.length },
-                { id: 'electric' as const, label: isAmharic ? 'ኤሌክትሪክ' : 'Electric', count: electricCount },
-                { id: 'gas_under_110cc' as const, label: isAmharic ? 'ቤንዚን' : 'Gasoline', count: gasCount },
-              ].map((vType) => {
-                const active = regVehicleTypeFilter === vType.id;
-                return (
-                  <button
-                    key={vType.id}
-                    type="button"
-                    onClick={() => {
-                      setRegVehicleTypeFilter(vType.id);
+          <div className="flex flex-col w-full bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+            {/* TIER 1: PRIMARY TOOLBAR (Search + Filter Toggle + Vehicle Types) */}
+            <div className="px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 text-xs w-full max-w-full">
+              {/* Left Sub-Row: Search Input + Filter Toggle Button */}
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
+                  <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
+                    <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                  </div>
+                  <input
+                    type="text"
+                    value={regSearchQuery}
+                    onChange={(e) => {
+                      setRegSearchQuery(e.target.value);
                       setRegPage(1);
                     }}
-                    className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
-                      active
-                        ? 'bg-primary text-white shadow-2xs'
-                        : 'text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
-                    }`}
-                  >
-                    <span>{vType.label}</span>
-                    <span className={`text-[10px] px-1 rounded-full font-mono ${active ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
-                      {vType.count}
+                    placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search name, plate, phone, chasis...'}
+                    className="w-full h-8 pl-8 pr-7 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary focus:bg-white dark:focus:bg-[#1C2434] focus:outline-none transition-colors"
+                  />
+                  {regSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setRegSearchQuery('')}
+                      className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                    >
+                      <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Drawer Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
+                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                    isFilterDrawerOpen || hasActiveSecondaryFilters
+                      ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
+                      : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                  }`}
+                  title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                  <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                  {hasActiveSecondaryFilters && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  )}
+                </button>
+              </div>
+
+              {/* Right Sub-Row (Mobile: Row 2 Scrollable; Desktop: Inline Right) */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0 shrink-0">
+                <div className="inline-flex items-center p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0">
+                  {[
+                    { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: tabScopedRegistrations.length },
+                    { id: 'electric' as const, label: isAmharic ? 'ኤሌክትሪክ' : 'Electric', count: electricCount },
+                    { id: 'gas_under_110cc' as const, label: isAmharic ? 'ቤንዚን' : 'Gasoline', count: gasCount },
+                  ].map((vType) => {
+                    const active = regVehicleTypeFilter === vType.id;
+                    return (
+                      <button
+                        key={vType.id}
+                        type="button"
+                        onClick={() => {
+                          setRegVehicleTypeFilter(vType.id);
+                          setRegPage(1);
+                        }}
+                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
+                          active
+                            ? 'bg-primary text-white shadow-2xs'
+                            : 'text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                        }`}
+                      >
+                        <span>{vType.label}</span>
+                        <span className={`text-[10px] px-1 rounded-full font-mono ${active ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                          {vType.count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
+            {isFilterDrawerOpen && (
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                  {/* SubCity Filter */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                      {isAmharic ? 'ክ/ከተማ:' : 'Sub-City:'}
                     </span>
-                  </button>
-                );
-              })}
-            </div>
+                    <select
+                      value={regSubCityFilter}
+                      onChange={(e) => {
+                        setRegSubCityFilter(e.target.value);
+                        setRegPage(1);
+                      }}
+                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                    >
+                      <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
+                      {BAHIR_DAR_SUBCITIES.map((sc) => (
+                        <option key={sc.en} value={sc.en}>
+                          {isAmharic ? sc.am : sc.en}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-            {/* Right Group: SubCity, SuperAdmin Filter, Sort, Clear (pushed to right on wide screens with ms-auto) */}
-            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:ms-auto shrink-0">
-              {isSuperAdmin && (
-                <select
-                  value={regCompanyVehicleFilter}
-                  onChange={(e) => {
-                    setRegCompanyVehicleFilter(e.target.value as any);
-                    setRegPage(1);
-                  }}
-                  className="h-8 py-1 px-2 rounded-md border border-purple-300 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 text-xs font-bold focus:border-primary focus:outline-none cursor-pointer"
-                  title={isAmharic ? 'የኩባንያ / ማህበር ተሽከርካሪዎች ማጣሪያ' : 'Company / Association filter'}
-                >
-                  <option value="all">{isAmharic ? 'ሁሉም አባላት' : 'All Members'}</option>
-                  <option value="standard">{isAmharic ? 'መደበኛ' : 'Standard'}</option>
-                  <option value="company">{isAmharic ? 'ኩባንያ / ማህበር' : 'Company/Assoc'}</option>
-                </select>
-              )}
+                  {/* Sorting Dropdown & Direction */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                      {isAmharic ? 'ደርድር በ:' : 'Sort By:'}
+                    </span>
+                    <select
+                      value={sortField}
+                      onChange={(e) => handleToggleSort(e.target.value as any)}
+                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                    >
+                      <option value="date">{isAmharic ? 'ቀን' : 'Date'}</option>
+                      <option value="name">{isAmharic ? 'ስም' : 'Name'}</option>
+                      <option value="plate">{isAmharic ? 'ሰሌዳ' : 'Plate'}</option>
+                      <option value="category">{isAmharic ? 'ዓይነት' : 'Type'}</option>
+                      <option value="subCity">{isAmharic ? 'ክ/ከተማ' : 'Sub-City'}</option>
+                      <option value="brand">{isAmharic ? 'ብራንድ' : 'Brand'}</option>
+                    </select>
 
-              {/* SubCity Filter Dropdown */}
-              <div className="flex items-center gap-1">
-                <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider hidden lg:inline">
-                  {isAmharic ? 'ክ/ከተማ:' : 'SubCity:'}
-                </span>
-                <select
-                  value={regSubCityFilter}
-                  onChange={(e) => {
-                    setRegSubCityFilter(e.target.value);
-                    setRegPage(1);
-                  }}
-                  className="h-8 py-1 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-medium focus:border-primary focus:outline-none cursor-pointer"
-                >
-                  <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
-                  {BAHIR_DAR_SUBCITIES.map((sc) => (
-                    <option key={sc.en} value={sc.en}>
-                      {isAmharic ? sc.am : sc.en}
-                    </option>
-                  ))}
-                </select>
+                    <button
+                      type="button"
+                      onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                      className="h-8 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                      title={sortOrder === 'asc' ? (isAmharic ? 'ከትንሽ ወደ ትልቅ (ASC)' : 'Ascending') : (isAmharic ? 'ከትልቅ ወደ ትንሽ (DESC)' : 'Descending')}
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">
+                        {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                      </Icon>
+                      <span className="text-[11px] font-mono">{sortOrder.toUpperCase()}</span>
+                    </button>
+                  </div>
+
+                  {/* SuperAdmin Company Vehicle Filter */}
+                  {isSuperAdmin && (
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'አባልነት:' : 'Membership:'}
+                      </span>
+                      <select
+                        value={regCompanyVehicleFilter}
+                        onChange={(e) => {
+                          setRegCompanyVehicleFilter(e.target.value as any);
+                          setRegPage(1);
+                        }}
+                        className="h-8 py-1 px-2.5 rounded-md border border-purple-300 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 text-xs font-bold focus:border-primary focus:outline-none cursor-pointer"
+                      >
+                        <option value="all">{isAmharic ? 'ሁሉም አባላት' : 'All Members'}</option>
+                        <option value="standard">{isAmharic ? 'መደበኛ' : 'Standard'}</option>
+                        <option value="company">{isAmharic ? 'ኩባንያ / ማህበር' : 'Company/Assoc'}</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {/* Clear Filters Button inside Drawer */}
+                  {(regSearchQuery || regSubCityFilter !== 'all' || regVehicleTypeFilter !== 'all' || regCompanyVehicleFilter !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRegSearchQuery('');
+                        setRegSubCityFilter('all');
+                        setRegVehicleTypeFilter('all');
+                        setRegCompanyVehicleFilter('all');
+                        setSortField('date');
+                        setSortOrder('desc');
+                        setRegPage(1);
+                      }}
+                      className="h-8 px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
+                      <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                    </button>
+                  )}
+                </div>
               </div>
-
-              {/* Sorting Dropdown */}
-              <div className="flex items-center gap-1">
-                <select
-                  value={sortField}
-                  onChange={(e) => handleToggleSort(e.target.value as any)}
-                  className="h-8 py-1 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-medium focus:border-primary focus:outline-none cursor-pointer"
-                  title={isAmharic ? 'ደርድር' : 'Sort field'}
-                >
-                  <option value="date">{isAmharic ? 'ቀን' : 'Date'}</option>
-                  <option value="name">{isAmharic ? 'ስም' : 'Name'}</option>
-                  <option value="plate">{isAmharic ? 'ሰሌዳ' : 'Plate'}</option>
-                  <option value="category">{isAmharic ? 'ዓይነት' : 'Type'}</option>
-                  <option value="subCity">{isAmharic ? 'ክ/ከተማ' : 'Sub-City'}</option>
-                  <option value="brand">{isAmharic ? 'ብራንድ' : 'Brand'}</option>
-                </select>
-
-                <button
-                  type="button"
-                  onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                  className="h-8 w-8 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center justify-center shrink-0"
-                  title={sortOrder === 'asc' ? (isAmharic ? 'ቅደም ተከተል: ከትንሽ ወደ ትልቅ (ASC)' : 'Ascending order') : (isAmharic ? 'ቅደም ተከተል: ከትልቅ ወደ ትንሽ (DESC)' : 'Descending order')}
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">
-                    {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
-                  </Icon>
-                </button>
-              </div>
-
-              {/* Reset filter button if filtered */}
-              {(regSearchQuery || regSubCityFilter !== 'all' || regVehicleTypeFilter !== 'all' || regCompanyVehicleFilter !== 'all') && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRegSearchQuery('');
-                    setRegSubCityFilter('all');
-                    setRegVehicleTypeFilter('all');
-                    setRegCompanyVehicleFilter('all');
-                    setRegPage(1);
-                  }}
-                  className="h-8 px-2.5 rounded-md text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs shrink-0"
-                  title={isAmharic ? 'ማጣሪያዎችን አጽዳ' : 'Reset Filters'}
-                >
-                  <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
-                  <span>{isAmharic ? 'አጽዳ' : 'Clear'}</span>
-                </button>
-              )}
-            </div>
+            )}
           </div>
         }
 >

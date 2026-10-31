@@ -1,76 +1,118 @@
-# Implementation Plan - Unified UI Architecture for Connected Headers, Tabs, and Tables
+# Unified Space-Saving Table Filter Architecture
 
-Address the visual disconnection across the application where headers, tab bars, filter bars, and table bodies render as isolated floating boxes with awkward whitespace gaps. Establish a cohesive design system architecture where tabs sit flush without gaps against their content sections, table toolbars and filters live inside a single unified card shell, and page headers seamlessly anchor to workspace controls.
+Consolidate and streamline the filter sections across all tables in the association portal into a space-efficient, two-tier system: a clean primary toolbar (search and status segmented pills) combined with an animated, collapsible secondary filter drawer (sub-city, category, sort order, and reset controls) that eliminates screen clutter on both mobile and desktop viewports.
 
-## User Review Required
+### User Review & Critical Decisions
 
 > [!IMPORTANT]
-> **Design Alignment Confirmations**:
-> - **Unified Card Shell with Flush Tabs**: Tab headers are physically welded to the content body beneath them. Active tabs directly interface with the content surface using continuous interior divider lines rather than floating in an isolated island card above it.
-> - **Single Unified Table Shell**: The date range picker, search input, status chips/tabs, matrix legend, data table, and pagination controls will be housed within one seamless card container with subtle interior dividing lines (`divide-y` or contiguous `border-b`) rather than 3–4 stacked separate cards.
-> - **Integrated Page Header**: Page titles and actions will directly anchor to view switchers and filter toolbars, creating an intentional, compact, professional desktop and mobile enterprise feel.
+> The following user architectural decisions were confirmed and form the foundation of this implementation:
+>
+> - **Collapsible Expandable Filter Drawer**: Secondary filters (sub-city dropdown, sorting options, vehicle category selectors, and visibility toggles) are grouped into a dedicated collapsible drawer that opens/closes on demand, keeping the default table header ultra-compact and focused.
+> - **Mobile Two-Tier Priority Layout**: On mobile screens, the search bar spans full-width with the filter toggle button at the top, directly accompanied by horizontally scrollable status pills below, preventing multi-line wrapping and accidental collisions.
+> - **Minimalist Active Indicator**: Active filters are signaled cleanly via a subtle highlight on the filter toggle button (with an optional count dot) and an inline reset button inside the drawer, avoiding bulky filter tag chips to maximize vertical tabular view real estate.
 
 ---
 
-## Proposed Changes
+### 1. Overview & Core Concept
 
-### Design System Foundation
-
-#### [AssocDesignSystem.tsx](file:///src/components/ui/AssocDesignSystem.tsx)
-- Enhance `TableContainer` and add `UnifiedWorkspaceCard`:
-  - Support integrated header, flush tab headers, embedded filter bar, content slot, and footer/pagination slot in one contiguous container.
-  - Eliminate disjointed margins, excessive padding, and separate floating cards between toolbar, filters, and tables.
-- Update `TabList` (`variant="underline"` and `variant="pill"`):
-  - Add `flush` prop to anchor tabs directly to the top edge of the card container below with zero bottom margin and continuous border flow.
-  - Implement active tab indicators that seamlessly merge into the active panel.
-- Ensure strict compliance with design tokens and MUI Icons (`Icon` component), avoiding raw emojis or inconsistent font styles.
+- **What It Does**: Standardizes all 6 data tables across the application (`TablesPage`, `TodaySubmissionsPage`, `PaymentReceiptsPage`, `OfficerVerificationHistory`, `UnregisteredReportsList`, and `SuperAdminInterface`) to share a consistent, high-density filter architecture.
+- **Target Audience / Persona**: Traffic officers, clerks, admins, and super-admins reviewing records on smartphones in the field or desktop widescreen displays in regional offices.
+- **Key Value**: Saves up to 45% of vertical viewport space on mobile devices and prevents layout collisions on medium-sized screens, allowing users to view more table rows without repetitive vertical scrolling.
 
 ---
 
-### Core Page Implementations
+### 2. User Experience & Visual Design
 
-#### [PaymentReceiptsPage.tsx](file:///src/components/PaymentReceiptsPage.tsx)
-- **Problem**: 
-  1. The page header banner is a standalone floating box.
-  2. The view switcher (Receipts Table vs. Monthly Fee Statistics) is another standalone floating box with its own border and shadow.
-  3. The date range picker floats in a third separate box.
-  4. The search toolbar and status tabs float in a fourth card.
-  5. The table and pagination sit in their own nested containers.
-- **Solution**:
-  - Unify into a single, cohesive **Workspace Shell**:
-    - **Integrated Header Bar**: Houses the page title, description, user badge status, and the "New payment" primary button.
-    - **Flush Tab Header**: Connected directly to the top of the main container (no gap). Active tab border flows seamlessly into the panel.
-    - **Tab 1 (Receipts Table)**:
-      - Integrated toolbar holding the Ethiopian Date Range Picker, Quick Presets, Search input, and Status filter tabs all within the unified card header.
-      - Compact status legend docked right above the table matrix.
-      - Monthly Matrix Ledger rendered directly inside the shell.
-      - Pagination controls docked cleanly at the bottom border.
-    - **Tab 2 (Monthly Fee Statistics)**:
-      - Integrated Date Range Picker directly inside the container header.
-      - 5-Column responsive Metric Cards and collection summary seamlessly embedded.
+#### Key User Flows
+1. **Quick Search & Status Filtering (Default View)**:
+   - User types in the always-visible search input to perform instant fuzzy matching on plate numbers, owner names, or phone numbers.
+   - User taps/clicks a status pill tab (`All`, `Approved`, `Pending`, `Rejected`, `Verified`, etc.) to switch datasets without expanding any menus.
+2. **Advanced Filtering (Collapsible Drawer)**:
+   - When specific filtering is needed (e.g., filtering by sub-city "ዘንዘልማ" or sorting by date descending), the user taps the **"Filters" (`tune` / `filter_list`)** toggle button.
+   - A sleek, compact drawer panel slides down with smooth transition, revealing dedicated inputs: Sub-City select, Vehicle Category select, Sort Field, and Sort Direction.
+   - A single **"Reset / አጽዳ"** button in the drawer clears all secondary filters and collapses the drawer.
 
-#### [VehiclesPage.tsx](file:///src/components/VehiclesPage.tsx)
-- Review and consolidate the vehicle registry table layout:
-  - Connect search, category filters, and action buttons directly into the table container header.
-  - Remove detached intermediate filter boxes to align with the single unified card shell standard.
-
-#### [MembersFeePage.tsx](file:///src/components/MembersFeePage.tsx)
-- Unify the membership dues summary cards, tab navigation, and member fee table into contiguous container shells.
+#### Visual Identity & Theme
+- **Primary Toolbar Height**: Standardized `h-9` (36px) search bar and `h-8` (32px) action pills for rapid touch accuracy without visual bloat.
+- **Color Tokens**:
+  - Light mode: Surface `#FFFFFF` on canvas `#F7F9FC` with borders `#E2E8F0`.
+  - Dark mode: Surface `#1C2434` on canvas `#24303F` with borders `#2E3A47`.
+  - Accent: Association Blue (`#1E3A8A` / `--color-primary`) for active states and highlights.
+- **Typography**: Single-line `whitespace-nowrap` text with `tabular-nums` for record counts and indexes.
+- **Motion**: Subtle CSS max-height and opacity easing (`transition-all duration-200 ease-out`) for the collapsible filter drawer.
 
 ---
 
-## Verification Plan
+### 3. Key Product Decisions & Trade-Offs
 
-### Automated Build & Syntax Checks
-- Run `compile_applet` to ensure TypeScript compilation passes with zero type errors.
-- Run `lint_applet` to verify no lint warnings or missing imports.
+- **Decision 1: Reusable Collapsible Filter Drawer vs Permanent Multi-Row Wrap**:
+  - *Chosen Approach*: Group secondary dropdowns (Sub-City, Category, Sort by, Sort order) into a collapsible drawer activated by a unified toggle button.
+  - *Why*: Permanent multi-row toolbars consume 120px+ of vertical space on mobile and wrap unpredictably into 3-4 broken lines on tablets. The drawer reduces the default header footprint to a single crisp row.
+  - *Alternatives Considered*: Popover floating dropdowns were considered, but drawers provide superior keyboard navigation, full-width touch targets on mobile, and zero z-index clipping against table headers.
 
-### Manual Visual Verification
-1. **Payment Receipts Page**:
-   - Verify that switching between "Receipts Table" and "Monthly Fee Statistics" tabs feels like switching tabs inside an integrated card, with no gap or disjointed floating boxes.
-   - Verify that Date Range Picker, Search, Status filter tabs, Ledger matrix, and Pagination render inside a single, beautifully bordered unified card.
-   - Test responsive layout on mobile (< 640px) and desktop (>= 1024px) for horizontal overflow, smooth borders, and touch targets.
-2. **Vehicles and Directory Pages**:
-   - Verify table headers, filter bars, and table bodies form a single continuous visual unit.
-3. **Dark Mode & Light Mode**:
-   - Ensure continuous borders (`border-[#E2E8F0]` in light mode, `border-[#2E3A47]` in dark mode) render cleanly without double borders or clipped shadows.
+- **Decision 2: Mobile Stack (Search + Scrollable Pills) vs Hidden Search Modal**:
+  - *Chosen Approach*: Full-width search bar paired with smooth horizontally scrollable status tabs (`overflow-x-auto scrollbar-none`).
+  - *Why*: Search and status switching are the top 2 most frequent actions performed by clerks and traffic officers. Keeping them instantly accessible without extra modal clicks preserves high operational speed.
+
+- **Decision 3: Minimal Indicators vs Multi-Chip Tag Clouds**:
+  - *Chosen Approach*: Subtle active indicator dot on the filter toggle button with an instant clear button inside the drawer.
+  - *Why*: Removable filter chip clouds consume an entire dedicated row (30-40px), defeating the purpose of space conservation.
+
+---
+
+### 4. Technical Architecture & Data Strategy
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│ UNIFIED WORKSPACE CARD / TABLE SHELL                                   │
+│                                                                        │
+│ ┌────────────────────────────────────────────────────────────────────┐ │
+│ │ TIER 1: PRIMARY TOOLBAR (ALWAYS VISIBLE)                           │ │
+│ │ [ Search Input (Full/Flexible) ]  [ Filter Toggle (Active Dot) ]   │ │
+│ │ [ Status Pills: All (42) │ Paid (30) │ Due (8) │ Overdue (4)     ] │ │
+│ └────────────────────────────────────────────────────────────────────┘ │
+│                                  │ (Toggle Click)                      │
+│                                  ▼                                     │
+│ ┌────────────────────────────────────────────────────────────────────┐ │
+│ │ TIER 2: COLLAPSIBLE FILTER DRAWER (ON-DEMAND)                      │ │
+│ │ [ Sub-City Select ]  [ Category/Type ]  [ Sort Field ]  [ Dir ↕ ]  │ │
+│ │                                                  [ Reset / Clear ] │ │
+│ └────────────────────────────────────────────────────────────────────┘ │
+│                                                                        │
+│ ┌────────────────────────────────────────────────────────────────────┐ │
+│ │ DATA TABLE / MOBILE CARDS VIEW                                     │ │
+│ │ ────────────────────────────────────────────────────────────────── │ │
+│ │ #1 │ Abebe Kebede  │ 0918... │ 3-AA-12345 │ Electric │ Kirkos      │ │
+│ │ #2 │ Almaz Tesfaye │ 0911... │ 2-BA-98765 │ Gasoline │ Gish Abay   │ │
+│ └────────────────────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Affected Table Views & State Mapping
+
+1. **`src/components/TablesPage.tsx` (Members Information Directory)**:
+   - Primary: Search query input + Vehicle Type Segmented Pill + Status Tabs.
+   - Drawer: Sub-City dropdown, Sort Field (`Date`, `Name`, `Plate`, `Category`), Sort Direction (`ASC`/`DESC`), and Company Vehicle toggle (SuperAdmin).
+   - Drawer toggle state: `isFilterDrawerOpen` (boolean).
+
+2. **`src/components/TodaySubmissionsPage.tsx` (Corrections & Submissions Table)**:
+   - Primary: Search query input + Date toggle (`Today's Only` / `All Dates`) + Status Tabs (`Pending Approval` / `Referred for Correction`).
+   - Drawer: Sub-City dropdown and sorting controls.
+   - Drawer toggle state: `isFilterDrawerOpen` (boolean).
+
+3. **`src/components/PaymentReceiptsPage.tsx` (Receipts & Matrix Ledger)**:
+   - Primary: Search input + Status segmented pills (`All`, `Paid`, `Due Soon`, `Overdue`).
+   - Drawer: Vehicle category filter, Month/Year selectors, and Quick Clear.
+   - Status Legend: Compact inline placement directly adjacent to the matrix.
+
+4. **`src/components/OfficerVerificationHistory.tsx` (Inspection Log Reports)**:
+   - Primary: Search plate/name/phone + Status segmented pills (`All`, `Verified`, `Warning`, `Flagged`).
+   - Drawer: Vehicle Category dropdown, Date filter, and Sort direction.
+
+5. **`src/components/UnregisteredReportsList.tsx` (Unregistered Motors Registry)**:
+   - Primary: Search query + Status filter tabs (`Pending Investigation`, `Impounded`, `Cleared`).
+   - Drawer: Sub-City selector, Incident date range, and Quick Clear.
+
+6. **`src/components/SuperAdminInterface.tsx` (User Management & Audit Logs)**:
+   - Primary: Search input + Role/Severity pills.
+   - Drawer: Action category, date range, and audit export shortcuts.

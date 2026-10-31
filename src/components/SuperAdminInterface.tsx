@@ -1,5 +1,5 @@
 import { ExpandableMemberCard } from './ExpandableMemberCard';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Icon } from './ui/Icon';
 import {
   Language,
@@ -72,6 +72,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   // User Filter & Search
   const [userSearch, setUserSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [isUserFilterDrawerOpen, setIsUserFilterDrawerOpen] = useState(false);
+  const [userSortField, setUserSortField] = useState<'name' | 'badge' | 'role'>('name');
+  const [userSortOrder, setUserSortOrder] = useState<'asc' | 'desc'>('asc');
+  const hasActiveUserSecondaryFilters = roleFilter !== 'all' || userSortField !== 'name' || userSortOrder !== 'asc';
 
   // Modals
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -92,6 +96,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [auditSearch, setAuditSearch] = useState('');
   const [auditSeverityFilter, setAuditSeverityFilter] = useState<'all' | 'info' | 'warning' | 'critical'>('all');
   const [auditViewLimit, setAuditViewLimit] = useState(25);
+  const [isAuditFilterDrawerOpen, setIsAuditFilterDrawerOpen] = useState(false);
+  const [auditSortOrder, setAuditSortOrder] = useState<'asc' | 'desc'>('desc');
+  const hasActiveAuditSecondaryFilters = auditSeverityFilter !== 'all' || auditViewLimit !== 25 || auditSortOrder !== 'desc';
 
   // Form State for New User
   const [newFullName, setNewFullName] = useState('');
@@ -173,15 +180,49 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   }, []);
 
   // Filtered Users
-  const filteredUsers = users.filter((u) => {
-    const matchesSearch =
-      (u.fullName || '').toLowerCase().includes(userSearch.toLowerCase()) ||
-      (u.badgeId || '').toLowerCase().includes(userSearch.toLowerCase()) ||
-      (u.phone || '').toLowerCase().includes(userSearch.toLowerCase());
+  const filteredUsers = useMemo(() => {
+    return users.filter((u) => {
+      const matchesSearch =
+        (u.fullName || '').toLowerCase().includes(userSearch.toLowerCase()) ||
+        (u.badgeId || '').toLowerCase().includes(userSearch.toLowerCase()) ||
+        (u.phone || '').toLowerCase().includes(userSearch.toLowerCase());
 
-    const matchesRole = roleFilter === 'all' || u.role === roleFilter;
-    return matchesSearch && matchesRole;
-  });
+      const matchesRole = roleFilter === 'all' || u.role === roleFilter;
+      return matchesSearch && matchesRole;
+    }).sort((a, b) => {
+      let comparison = 0;
+      if (userSortField === 'name') {
+        comparison = (a.fullName || '').localeCompare(b.fullName || '');
+      } else if (userSortField === 'badge') {
+        comparison = (a.badgeId || '').localeCompare(b.badgeId || '');
+      } else if (userSortField === 'role') {
+        comparison = (a.role || '').localeCompare(b.role || '');
+      }
+      return userSortOrder === 'desc' ? -comparison : comparison;
+    });
+  }, [users, userSearch, roleFilter, userSortField, userSortOrder]);
+
+  // Filtered Audit Logs
+  const filteredAuditLogs = useMemo(() => {
+    return auditLogs.filter((log) => {
+      if (auditSearch.trim()) {
+        const q = auditSearch.toLowerCase().trim();
+        const matches =
+          (log.actorBadgeId || '').toLowerCase().includes(q) ||
+          (log.actorRole || '').toLowerCase().includes(q) ||
+          (log.action || '').toLowerCase().includes(q) ||
+          (log.details || '').toLowerCase().includes(q);
+        if (!matches) return false;
+      }
+      if (auditSeverityFilter !== 'all') {
+        if (log.severity !== auditSeverityFilter) return false;
+      }
+      return true;
+    }).sort((a, b) => {
+      const comp = (a.timestamp || '').localeCompare(b.timestamp || '');
+      return auditSortOrder === 'desc' ? -comp : comp;
+    }).slice(0, auditViewLimit);
+  }, [auditLogs, auditSearch, auditSeverityFilter, auditViewLimit, auditSortOrder]);
 
   // Action Handlers
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -857,58 +898,145 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {/* ================= TAB 1: STANDALONE SYSTEM USER MANAGEMENT ================= */}
       {activeTab === 'users' && (
         <div className="space-y-3">
-          {/* Controls & Search Bar */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2 pb-1.5">
-            <div className="flex-1 flex flex-col sm:flex-row items-center gap-2">
-              <div className="relative w-full sm:w-80">
-                <input
-                  type="text"
-                  value={userSearch}
-                  onChange={(e) => setUserSearch(e.target.value)}
-                  placeholder={
-                    isAmharic
-                      ? 'በስም፣ መታወቂያ ወይም ስልክ ቁጥር ፈልግ...'
-                      : 'Search by name, badge ID, or phone...'
-                  }
-                  className="w-full h-8 bg-surface-container border border-outline-variant rounded-md pl-8 pr-3 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
-                />
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
-                  <Icon className="material-symbols-outlined text-[16px]">
-                    search
-                  </Icon>
+          {/* Controls & Search Bar with Collapsible Filter Drawer */}
+          <div className="flex flex-col gap-2 pb-1.5">
+            {/* TIER 1: PRIMARY TOOLBAR */}
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
+                  <input
+                    type="text"
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    placeholder={
+                      isAmharic
+                        ? 'በስም፣ መታወቂያ ወይም ስልክ ቁጥር ፈልግ...'
+                        : 'Search by name, badge ID, or phone...'
+                    }
+                    className="w-full h-8 bg-surface-container border border-outline-variant rounded-md pl-8 pr-7 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-primary"
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                    <Icon className="material-symbols-outlined text-[16px]">
+                      search
+                    </Icon>
+                  </div>
+                  {userSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setUserSearch('')}
+                      className="absolute inset-y-0 right-2 flex items-center text-outline hover:text-on-surface cursor-pointer"
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">close</Icon>
+                    </button>
+                  )}
                 </div>
+
+                {/* Filter Drawer Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsUserFilterDrawerOpen((prev) => !prev)}
+                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                    isUserFilterDrawerOpen || hasActiveUserSecondaryFilters
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-outline-variant bg-surface-container text-secondary hover:text-on-surface'
+                  }`}
+                  title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                  <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                  {hasActiveUserSecondaryFilters && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  )}
+                </button>
               </div>
 
-              <select
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="w-full sm:w-48 h-8 bg-surface-container border border-outline-variant rounded-md px-2.5 py-0 text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
-              >
-                <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
-                <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
-                <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin/Manager)' : 'Admin / Manager'}</option>
-                <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
-                <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Traffic Officer)' : 'Traffic Officer'}</option>
-              </select>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 shrink-0">
+                <button
+                  onClick={() => setActiveTab('roles')}
+                  className="w-full sm:w-auto h-8 px-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">shield_person</Icon>
+                  <span>{isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}</span>
+                </button>
+
+                <button
+                  onClick={() => setShowAddUserModal(true)}
+                  className="w-full sm:w-auto h-8 px-3.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 shrink-0 cursor-pointer"
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">person_add</Icon>
+                  <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5">
-              <button
-                onClick={() => setActiveTab('roles')}
-                className="w-full sm:w-auto h-8 px-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[16px]">shield_person</Icon>
-                <span>{isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}</span>
-              </button>
+            {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
+            {isUserFilterDrawerOpen && (
+              <div className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                  {/* Role Filter */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                      {isAmharic ? 'ሚና:' : 'Role:'}
+                    </span>
+                    <select
+                      value={roleFilter}
+                      onChange={(e) => setRoleFilter(e.target.value)}
+                      className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                    >
+                      <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
+                      <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
+                      <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin/Manager)' : 'Admin / Manager'}</option>
+                      <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
+                      <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Traffic Officer)' : 'Traffic Officer'}</option>
+                    </select>
+                  </div>
 
-              <button
-                onClick={() => setShowAddUserModal(true)}
-                className="w-full sm:w-auto h-8 px-3.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 shrink-0 cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[16px]">person_add</Icon>
-                <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
-              </button>
-            </div>
+                  {/* Sort Field */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                      {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
+                    </span>
+                    <select
+                      value={userSortField}
+                      onChange={(e) => setUserSortField(e.target.value as any)}
+                      className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs text-on-surface font-medium focus:outline-hidden focus:border-primary"
+                    >
+                      <option value="name">{isAmharic ? 'በስም' : 'Name'}</option>
+                      <option value="badge">{isAmharic ? 'በመታወቂያ' : 'Badge ID'}</option>
+                      <option value="role">{isAmharic ? 'በሚና' : 'Role'}</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={() => setUserSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                      className="h-7 w-7 flex items-center justify-center bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer"
+                      title={userSortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">
+                        {userSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                      </Icon>
+                    </button>
+                  </div>
+
+                  {/* Reset All Filters in Drawer */}
+                  {(hasActiveUserSecondaryFilters || userSearch) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRoleFilter('all');
+                        setUserSortField('name');
+                        setUserSortOrder('asc');
+                        setUserSearch('');
+                      }}
+                      className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                    >
+                      <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                      <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
               {/* Users Responsive Table & Mobile Cards (Semantic Design Tokens) */}
@@ -1392,12 +1520,132 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
           {/* Real-Time Audit Log Table (Semantic Tokens) */}
           <div className="rounded-sm border border-outline-variant bg-surface-container shadow-xs overflow-hidden">
-            <div className="p-4 md:px-6 border-b border-outline-variant flex items-center justify-between">
-              <h3 className="font-semibold text-sm text-on-surface flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[18px] text-primary">history</Icon>
-                {isAmharic ? 'የሲስተም ኦዲት ታሪክ (System Audit Logs)' : 'System Audit Trail'}
-              </h3>
-              <span className="text-xs text-secondary font-mono">{auditLogs.length} Records</span>
+            <div className="p-3 sm:p-4 border-b border-outline-variant flex flex-col gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-sm text-on-surface flex items-center gap-2">
+                    <Icon className="material-symbols-outlined text-[18px] text-primary">history</Icon>
+                    {isAmharic ? 'የሲስተም ኦዲት ታሪክ (System Audit Logs)' : 'System Audit Trail'}
+                  </h3>
+                  <span className="text-xs text-secondary font-mono">({filteredAuditLogs.length} / {auditLogs.length})</span>
+                </div>
+
+                {/* Primary Search + Filter Button */}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1 sm:w-64">
+                    <input
+                      type="text"
+                      value={auditSearch}
+                      onChange={(e) => setAuditSearch(e.target.value)}
+                      placeholder={isAmharic ? 'በመታወቂያ ወይም ዝርዝር ፈልግ...' : 'Search badge or details...'}
+                      className="w-full h-8 bg-surface-container-high/60 border border-outline-variant rounded-md pl-8 pr-7 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-primary"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                      <Icon className="material-symbols-outlined text-[15px]">search</Icon>
+                    </div>
+                    {auditSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setAuditSearch('')}
+                        className="absolute inset-y-0 right-2 flex items-center text-outline hover:text-on-surface cursor-pointer"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">close</Icon>
+                      </button>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsAuditFilterDrawerOpen((prev) => !prev)}
+                    className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                      isAuditFilterDrawerOpen || hasActiveAuditSecondaryFilters
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-outline-variant bg-surface-container text-secondary hover:text-on-surface'
+                    }`}
+                    title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                    <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                    {hasActiveAuditSecondaryFilters && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Collapsible Filter Drawer for Audit Trail */}
+              {isAuditFilterDrawerOpen && (
+                <div className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md animate-in fade-in slide-in-from-top-1 duration-150">
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                    {/* Severity Filter */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'ስጋት ደረጃ:' : 'Severity:'}
+                      </span>
+                      <select
+                        value={auditSeverityFilter}
+                        onChange={(e) => setAuditSeverityFilter(e.target.value as any)}
+                        className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                      >
+                        <option value="all">{isAmharic ? 'ሁሉም ደረጃዎች' : 'All Severities'}</option>
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="critical">Critical</option>
+                      </select>
+                    </div>
+
+                    {/* Limit */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'ገደብ:' : 'Limit:'}
+                      </span>
+                      <select
+                        value={auditViewLimit}
+                        onChange={(e) => setAuditViewLimit(Number(e.target.value))}
+                        className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                      >
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                      </select>
+                    </div>
+
+                    {/* Sort Order Toggle */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'ቅደም ተከተል:' : 'Order:'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setAuditSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                        className="h-7 px-2 flex items-center gap-1 bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer font-medium"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">
+                          {auditSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                        </Icon>
+                        <span>{auditSortOrder === 'asc' ? 'Oldest First' : 'Newest First'}</span>
+                      </button>
+                    </div>
+
+                    {/* Reset Button */}
+                    {(hasActiveAuditSecondaryFilters || auditSearch) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAuditSearch('');
+                          setAuditSeverityFilter('all');
+                          setAuditViewLimit(25);
+                          setAuditSortOrder('desc');
+                        }}
+                        className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                      >
+                        <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                        <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="overflow-x-auto">
@@ -1413,14 +1661,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant font-medium">
-                  {auditLogs.length === 0 ? (
+                  {filteredAuditLogs.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="text-center py-12 px-4 text-secondary">
                         {isAmharic ? 'ምንም የኦዲት ማህደር አልተመዘገበም' : 'No audit records logged yet.'}
                       </td>
                     </tr>
                   ) : (
-                    auditLogs.map((log) => (
+                    filteredAuditLogs.map((log) => (
                       <tr key={log.id} className="hover:bg-surface-container-high/40 transition-colors border-b border-outline-variant">
                         {/* Standalone Timestamp */}
                         <td className="py-4 px-4 font-mono text-xs text-secondary whitespace-nowrap">

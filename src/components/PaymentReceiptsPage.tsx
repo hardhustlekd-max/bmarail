@@ -357,6 +357,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'expiring_soon' | 'expired'>(
     initialFilter
   );
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'electric' | 'gas_under_110cc'>('all');
+  const [sortField, setSortField] = useState<'name' | 'plate'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // Server-Side Paginated Membership Fee Directory State (Default 10 records per request)
   const [page, setPage] = useState(1);
@@ -382,6 +386,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [dateRangePreset, setDateRangePreset] = useState<DateRangePreset>('this_month');
   const [startDate, setStartDate] = useState<string>(() => computeEthiopianPresetRange('this_month').start);
   const [endDate, setEndDate] = useState<string>(() => computeEthiopianPresetRange('this_month').end);
+  const hasActiveSecondaryFilters = dateRangePreset !== 'this_month' || categoryFilter !== 'all' || sortField !== 'name' || sortOrder !== 'asc';
 
   const handleSelectPreset = (preset: DateRangePreset) => {
     setDateRangePreset(preset);
@@ -1064,9 +1069,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     });
   }, [effectiveRegistrations, combinedReceipts, matrixColumns, currentEthMonth, currentEthYear, isAmharic]);
 
-  // Filter matrix rows according to search query and status filter
+  // Filter matrix rows according to search query, status filter, category, and sort
   const filteredMatrixRows = useMemo(() => {
-    return allMatrixRows.filter((row) => {
+    const list = allMatrixRows.filter((row) => {
       // 1. Search Query filter (matches Name, Plate, Phone, ID, or Receipt Number)
       if (searchQuery.trim()) {
         const q = searchQuery.trim().toLowerCase();
@@ -1089,14 +1094,30 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       }
 
       // 2. Status filter
-      if (statusFilter === 'all') return true;
-      if (statusFilter === 'active') return row.currentMonthStatus === 'paid';
-      if (statusFilter === 'expiring_soon') return row.currentMonthStatus === 'pending';
-      if (statusFilter === 'expired') return row.currentMonthStatus === 'unpaid';
+      if (statusFilter !== 'all') {
+        if (statusFilter === 'active' && row.currentMonthStatus !== 'paid') return false;
+        if (statusFilter === 'expiring_soon' && row.currentMonthStatus !== 'pending') return false;
+        if (statusFilter === 'expired' && row.currentMonthStatus !== 'unpaid') return false;
+      }
+
+      // 3. Category Filter
+      if (categoryFilter !== 'all') {
+        if (row.member?.vehicleCategory !== categoryFilter) return false;
+      }
 
       return true;
     });
-  }, [allMatrixRows, searchQuery, statusFilter]);
+
+    return list.sort((a, b) => {
+      let comparison = 0;
+      if (sortField === 'name') {
+        comparison = a.title.localeCompare(b.title);
+      } else if (sortField === 'plate') {
+        comparison = (a.plateNumber || '').localeCompare(b.plateNumber || '');
+      }
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+  }, [allMatrixRows, searchQuery, statusFilter, categoryFilter, sortField, sortOrder]);
 
   // Server-Side Paginated Membership Fee Directory Fetch Effect
   React.useEffect(() => {
@@ -1973,84 +1994,186 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {/* TAB 2: TABLE SECTION (INTEGRATED FLUSH VIEW) */}
       {currentTab === 'table' && canViewTable && (
         <div className="w-full max-w-full min-w-0 divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
-          {/* Integrated Native Date Range Picker */}
-          <div className="w-full max-w-full overflow-hidden">
-            {renderDateRangePicker()}
-          </div>
-
-          {/* SEARCH & STATUS FILTER TOOLBAR (TAILADMIN DESIGN) */}
-          <div className="px-3 sm:px-4 py-2 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center gap-2 w-full max-w-full border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-            {/* Search Bar */}
-            <div className="relative flex-1 min-w-[200px] max-w-xs md:max-w-sm shrink-0 sm:shrink">
-              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-                <Icon className="material-symbols-outlined text-[17px]">search</Icon>
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setPage(1);
-                }}
-                placeholder={
-                  isAmharic
-                    ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
-                    : 'Search receipt #, owner name, plate...'
-                }
-                className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchQuery('');
-                    setPage(1);
-                  }}
-                  className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-                  title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-                </button>
-              )}
-            </div>
-
-            {/* Status Segmented Pill Tabs (Never overlaps or hangs) */}
-            <div className="inline-flex items-center p-0.5 rounded-md bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0 overflow-x-auto scrollbar-none sm:ms-auto">
-              {[
-                { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
-                { key: 'active' as const, label: isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid', count: matrixCounts.active },
-                { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: matrixCounts.expiring },
-                { key: 'expired' as const, label: isAmharic ? 'ያልተከፈለባቸው' : 'Overdue', count: matrixCounts.expired },
-              ].map((tab) => {
-                const isActive = statusFilter === tab.key;
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(tab.key);
+          {/* SEARCH & STATUS FILTER TOOLBAR WITH COLLAPSIBLE DRAWER */}
+          <div className="flex flex-col w-full bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+            {/* TIER 1: PRIMARY TOOLBAR */}
+            <div className="px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 w-full max-w-full">
+              {/* Left: Search Bar + Filter Drawer Button */}
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
+                  <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+                    <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
                       setPage(1);
                     }}
-                    className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
-                      isActive
-                        ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
-                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    <span
-                      className={`text-[10px] px-1 rounded-full font-mono font-bold ${
-                        isActive
-                          ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
-                          : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
-                      }`}
+                    placeholder={
+                      isAmharic
+                        ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
+                        : 'Search receipt #, owner name, plate...'
+                    }
+                    className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setPage(1);
+                      }}
+                      className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                      title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
                     >
-                      {tab.count}
-                    </span>
-                  </button>
-                );
-              })}
+                      <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Drawer Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
+                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                    isFilterDrawerOpen || hasActiveSecondaryFilters
+                      ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
+                      : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                  }`}
+                  title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                  <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                  {hasActiveSecondaryFilters && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  )}
+                </button>
+              </div>
+
+              {/* Right: Status Segmented Pill Tabs */}
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0 shrink-0">
+                <div className="inline-flex items-center p-0.5 rounded-md bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0">
+                  {[
+                    { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
+                    { key: 'active' as const, label: isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid', count: matrixCounts.active },
+                    { key: 'expiring_soon' as const, label: isAmharic ? 'የደረሰ' : 'Due Soon', count: matrixCounts.expiring },
+                    { key: 'expired' as const, label: isAmharic ? 'ያልተከፈለባቸው' : 'Overdue', count: matrixCounts.expired },
+                  ].map((tab) => {
+                    const isActive = statusFilter === tab.key;
+                    return (
+                      <button
+                        key={tab.key}
+                        type="button"
+                        onClick={() => {
+                          setStatusFilter(tab.key);
+                          setPage(1);
+                        }}
+                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
+                          isActive
+                            ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
+                            : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
+                        }`}
+                      >
+                        <span>{tab.label}</span>
+                        <span
+                          className={`text-[10px] px-1 rounded-full font-mono font-bold ${
+                            isActive
+                              ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
+                              : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
+                          }`}
+                        >
+                          {tab.count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
+
+            {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
+            {isFilterDrawerOpen && (
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="flex flex-col gap-2.5">
+                  {/* Integrated Ethiopian Date Range Picker inside drawer */}
+                  <div className="w-full max-w-full overflow-hidden">
+                    {renderDateRangePicker()}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs pt-1 border-t border-[#E2E8F0]/70 dark:border-[#2E3A47]/70">
+                    {/* Category Filter */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'የሞተር ዓይነት:' : 'Category:'}
+                      </span>
+                      <select
+                        value={categoryFilter}
+                        onChange={(e) => {
+                          setCategoryFilter(e.target.value as any);
+                          setPage(1);
+                        }}
+                        className="h-7 px-2 bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-xs text-[#1C2434] dark:text-white focus:outline-none focus:border-primary font-medium"
+                      >
+                        <option value="all">{isAmharic ? 'ሁሉም ዓይነቶች' : 'All Types'}</option>
+                        <option value="electric">{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</option>
+                        <option value="gas_under_110cc">{isAmharic ? 'ቤንዚን' : 'Gasoline'}</option>
+                      </select>
+                    </div>
+
+                    {/* Sort Field */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
+                      </span>
+                      <select
+                        value={sortField}
+                        onChange={(e) => setSortField(e.target.value as any)}
+                        className="h-7 px-2 bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-xs text-[#1C2434] dark:text-white focus:outline-none focus:border-primary font-medium"
+                      >
+                        <option value="name">{isAmharic ? 'በባለቤት ስም' : 'Name'}</option>
+                        <option value="plate">{isAmharic ? 'በሰሌዳ ቁጥር' : 'Plate No'}</option>
+                      </select>
+
+                      <button
+                        type="button"
+                        onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                        className="h-7 w-7 flex items-center justify-center bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                        title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">
+                          {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                        </Icon>
+                      </button>
+                    </div>
+
+                    {/* Reset All Filters in Drawer */}
+                    {(hasActiveSecondaryFilters || searchQuery || statusFilter !== 'all') && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDateRangePreset('this_month');
+                          const range = computeEthiopianPresetRange('this_month');
+                          setStartDate(range.start);
+                          setEndDate(range.end);
+                          setCategoryFilter('all');
+                          setSortField('name');
+                          setSortOrder('asc');
+                          setSearchQuery('');
+                          setStatusFilter('all');
+                          setPage(1);
+                        }}
+                        className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                      >
+                        <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                        <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* MATRIX STATUS LEGEND */}

@@ -41,6 +41,10 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
   }, [initialStatusFilter]);
 
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [sortField, setSortField] = useState<'date' | 'plate' | 'name'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const hasActiveSecondaryFilters = categoryFilter !== 'all' || sortField !== 'date' || sortOrder !== 'desc';
   const [selectedLogForDetails, setSelectedLogForDetails] = useState<VerificationLog | null>(null);
   const [zoomedImage, setZoomedImage] = useState<{ url: string; title: string } | null>(null);
 
@@ -109,8 +113,18 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
           : log.vehicleCategory === categoryFilter;
 
       return matchesSearch && matchesStatus && matchesCategory;
+    }).sort((a, b) => {
+      let comparison = 0;
+      if (sortField === 'date') {
+        comparison = (a.scannedAt || '').localeCompare(b.scannedAt || '');
+      } else if (sortField === 'plate') {
+        comparison = (a.plateNumber || '').localeCompare(b.plateNumber || '');
+      } else if (sortField === 'name') {
+        comparison = (a.fullName || '').localeCompare(b.fullName || '');
+      }
+      return sortOrder === 'desc' ? -comparison : comparison;
     });
-  }, [scopedLogs, searchTerm, statusFilter, categoryFilter]);
+  }, [scopedLogs, searchTerm, statusFilter, categoryFilter, sortField, sortOrder]);
 
   // Tab counts calculated in a single fast pass from scoped logs
   const statusCounts = useMemo(() => {
@@ -454,93 +468,171 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
           </div>
         )}
 
-        {/* 3. SEARCH & STATUS FILTER TOOLBAR */}
-        <div className="px-3 sm:px-4 py-2 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center gap-2 w-full max-w-full border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-          {/* Search Input */}
-          <div className="relative flex-1 min-w-[200px] max-w-xs md:max-w-sm shrink-0 sm:shrink">
-            <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-              <Icon className="material-symbols-outlined text-[17px]">search</Icon>
-            </div>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder={isAmharic ? 'በሰሌዳ፣ በስም፣ በስልክ፣ ወይም በማስታወሻ ፈልግ...' : 'Search plate, owner name, phone, notes...'}
-              className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
-            />
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchTerm('');
-                  setCurrentPage(1);
-                }}
-                className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-              </button>
-            )}
-          </div>
-
-          {/* Vehicle Category & Status Filter Tabs (pushed to right on wide screens) */}
-          <div className="flex items-center gap-2 flex-wrap shrink-0 sm:ms-auto">
-            {/* Category Dropdown */}
-            <div className="shrink-0">
-              <select
-                value={categoryFilter}
-                onChange={(e) => {
-                  setCategoryFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary outline-none cursor-pointer shadow-2xs"
-              >
-                <option value="all">{isAmharic ? 'ሁሉም አይነቶች' : 'All Vehicle Types'}</option>
-                <option value="electric">{isAmharic ? 'ኤሌክትሪክ (EV)' : 'Electric (EV)'}</option>
-                <option value="gasoline">{isAmharic ? 'ቤንዚን (Gas)' : 'Gasoline'}</option>
-              </select>
-            </div>
-
-            {/* Status Segmented Pill Tabs (Never overlaps) */}
-            <div className="inline-flex items-center p-0.5 rounded-md bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0 overflow-x-auto scrollbar-none">
-              {[
-                { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: statusCounts.all },
-                { id: 'verified' as const, label: isAmharic ? 'የተረጋገጡ' : 'Verified', count: statusCounts.verified },
-                { id: 'warning' as const, label: isAmharic ? 'ማስጠንቀቂያ' : 'Warning', count: statusCounts.warning },
-                { id: 'flagged' as const, label: isAmharic ? 'የተከለከሉ' : 'Flagged', count: statusCounts.flagged },
-              ].map((tab) => {
-                const isActive = statusFilter === tab.id;
-                return (
+        {/* 3. SEARCH & STATUS FILTER TOOLBAR WITH COLLAPSIBLE DRAWER */}
+        <div className="flex flex-col w-full bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+          {/* TIER 1: PRIMARY TOOLBAR */}
+          <div className="px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 w-full max-w-full">
+            {/* Left: Search Input + Filter Drawer Button */}
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
+                <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+                  <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                </div>
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder={isAmharic ? 'በሰሌዳ፣ በስም፣ በስልክ፣ ወይም በማስታወሻ ፈልግ...' : 'Search plate, owner name, phone, notes...'}
+                  className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
+                />
+                {searchTerm && (
                   <button
-                    key={tab.id}
                     type="button"
                     onClick={() => {
-                      setStatusFilter(tab.id);
+                      setSearchTerm('');
                       setCurrentPage(1);
                     }}
-                    className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
-                      isActive
-                        ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
-                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
-                    }`}
+                    className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
                   >
-                    <span>{tab.label}</span>
-                    <span
-                      className={`text-[10px] px-1 rounded-full font-mono font-bold ${
+                    <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                  </button>
+                )}
+              </div>
+
+              {/* Filter Drawer Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
+                className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                  isFilterDrawerOpen || hasActiveSecondaryFilters
+                    ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
+                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                }`}
+                title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+              >
+                <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                {hasActiveSecondaryFilters && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                )}
+              </button>
+            </div>
+
+            {/* Right: Status Segmented Pill Tabs */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0 shrink-0">
+              <div className="inline-flex items-center p-0.5 rounded-md bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0">
+                {[
+                  { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: statusCounts.all },
+                  { id: 'verified' as const, label: isAmharic ? 'የተረጋገጡ' : 'Verified', count: statusCounts.verified },
+                  { id: 'warning' as const, label: isAmharic ? 'ማስጠንቀቂያ' : 'Warning', count: statusCounts.warning },
+                  { id: 'flagged' as const, label: isAmharic ? 'የተከለከሉ' : 'Flagged', count: statusCounts.flagged },
+                ].map((tab) => {
+                  const isActive = statusFilter === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => {
+                        setStatusFilter(tab.id);
+                        setCurrentPage(1);
+                      }}
+                      className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
                         isActive
-                          ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
-                          : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
+                          ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
+                          : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                       }`}
                     >
-                      {tab.count}
-                    </span>
-                  </button>
-                );
-              })}
+                      <span>{tab.label}</span>
+                      <span
+                        className={`text-[10px] px-1 rounded-full font-mono font-bold ${
+                          isActive
+                            ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
+                            : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
+
+          {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
+          {isFilterDrawerOpen && (
+            <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                {/* Category Dropdown */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                    {isAmharic ? 'የሞተር ዓይነት:' : 'Category:'}
+                  </span>
+                  <select
+                    value={categoryFilter}
+                    onChange={(e) => {
+                      setCategoryFilter(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="h-7 px-2 rounded border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-medium focus:border-primary outline-none cursor-pointer"
+                  >
+                    <option value="all">{isAmharic ? 'ሁሉም አይነቶች' : 'All Vehicle Types'}</option>
+                    <option value="electric">{isAmharic ? 'ኤሌክትሪክ (EV)' : 'Electric (EV)'}</option>
+                    <option value="gasoline">{isAmharic ? 'ቤንዚን (Gas)' : 'Gasoline'}</option>
+                  </select>
+                </div>
+
+                {/* Sort Field */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                    {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
+                  </span>
+                  <select
+                    value={sortField}
+                    onChange={(e) => setSortField(e.target.value as any)}
+                    className="h-7 px-2 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-xs text-[#1C2434] dark:text-white focus:outline-none focus:border-primary font-medium"
+                  >
+                    <option value="date">{isAmharic ? 'በፍተሻ ቀን' : 'Scan Date'}</option>
+                    <option value="plate">{isAmharic ? 'በሰሌዳ ቁጥር' : 'Plate No'}</option>
+                    <option value="name">{isAmharic ? 'በባለቤት ስም' : 'Owner Name'}</option>
+                  </select>
+
+                  <button
+                    type="button"
+                    onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                    className="h-7 w-7 flex items-center justify-center bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                    title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                  >
+                    <Icon className="material-symbols-outlined text-[15px]">
+                      {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                    </Icon>
+                  </button>
+                </div>
+
+                {/* Reset All Filters in Drawer */}
+                {(hasActiveSecondaryFilters || searchTerm || statusFilter !== 'all') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategoryFilter('all');
+                      setSortField('date');
+                      setSortOrder('desc');
+                      setSearchTerm('');
+                      setStatusFilter('all');
+                      setCurrentPage(1);
+                    }}
+                    className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                  >
+                    <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                    <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* TABLE CONTENT / EMPTY STATE */}

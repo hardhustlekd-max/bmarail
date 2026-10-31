@@ -39,6 +39,10 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
   const [searchTerm, setSearchTerm] = useState('');
   const [subCityFilter, setSubCityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'under_investigation' | 'resolved' | 'registered'>('all');
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [sortField, setSortField] = useState<'date' | 'plate' | 'driver'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const hasActiveSecondaryFilters = subCityFilter !== 'all' || sortField !== 'date' || sortOrder !== 'desc';
   const [selectedReport, setSelectedReport] = useState<UnregisteredVehicleReport | null>(null);
   const [zoomedImage, setZoomedImage] = useState<{ url: string; title: string } | null>(null);
   const [resolutionInput, setResolutionInput] = useState('');
@@ -76,23 +80,35 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
   }, [unregisteredReports]);
 
   // Filtered list computation
-  const filteredReports = unregisteredReports.filter((rep) => {
-    const matchesSearch =
-      (rep.plateNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rep.engineOrSerialNo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rep.driverName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rep.driverPhone || '').includes(searchTerm) ||
-      (rep.officerBadgeId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rep.officerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rep.locationName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rep.notes || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (rep.id || '').toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredReports = useMemo(() => {
+    return unregisteredReports.filter((rep) => {
+      const matchesSearch =
+        (rep.plateNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (rep.engineOrSerialNo || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (rep.driverName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (rep.driverPhone || '').includes(searchTerm) ||
+        (rep.officerBadgeId || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (rep.officerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (rep.locationName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (rep.notes || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (rep.id || '').toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesSubCity = subCityFilter === 'all' || rep.subCity === subCityFilter;
-    const matchesStatus = statusFilter === 'all' || rep.status === statusFilter;
+      const matchesSubCity = subCityFilter === 'all' || rep.subCity === subCityFilter;
+      const matchesStatus = statusFilter === 'all' || rep.status === statusFilter;
 
-    return matchesSearch && matchesSubCity && matchesStatus;
-  });
+      return matchesSearch && matchesSubCity && matchesStatus;
+    }).sort((a, b) => {
+      let comparison = 0;
+      if (sortField === 'date') {
+        comparison = (a.reportedAt || '').localeCompare(b.reportedAt || '');
+      } else if (sortField === 'plate') {
+        comparison = (a.plateNumber || '').localeCompare(b.plateNumber || '');
+      } else if (sortField === 'driver') {
+        comparison = (a.driverName || '').localeCompare(b.driverName || '');
+      }
+      return sortOrder === 'desc' ? -comparison : comparison;
+    });
+  }, [unregisteredReports, searchTerm, subCityFilter, statusFilter, sortField, sortOrder]);
 
   // Calculate pagination slices
   const totalItems = filteredReports.length;
@@ -218,81 +234,135 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
           />
         }
         toolbar={
-          <div className="px-3 sm:px-4 py-2 bg-[#F7F9FC] dark:bg-[#24303F] flex flex-wrap items-center gap-2.5 w-full max-w-full">
-            {/* Live Search Input */}
-            <div className="relative flex-1 min-w-[200px] max-w-xs md:max-w-sm shrink-0 sm:shrink">
-              <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-                <Icon className="material-symbols-outlined text-[17px]">search</Icon>
-              </div>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                placeholder={
-                  isAmharic
-                    ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ ወይም ኦፊሰር ፈልግ...'
-                    : 'Search plate, driver, location, officer...'
-                }
-                className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white shadow-2xs"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setCurrentPage(1);
-                  }}
-                  className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0 sm:ms-auto">
-              {/* Sub-City Filter Dropdown */}
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider hidden sm:inline">
-                  {isAmharic ? 'ክ/ከተማ:' : 'SubCity:'}
-                </span>
-                <select
-                  value={subCityFilter}
+          <div className="flex flex-col w-full bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+            {/* TIER 1: PRIMARY TOOLBAR */}
+            <div className="px-3 sm:px-4 py-2 flex items-center justify-between gap-2 w-full max-w-full">
+              {/* Search Input */}
+              <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
+                <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+                  <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                </div>
+                <input
+                  type="text"
+                  value={searchTerm}
                   onChange={(e) => {
-                    setSubCityFilter(e.target.value);
+                    setSearchTerm(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary outline-none cursor-pointer shadow-2xs"
-                >
-                  <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
-                  {BAHIR_DAR_SUBCITIES.map((sc) => (
-                    <option key={sc.en} value={sc.en}>
-                      {isAmharic ? sc.am : sc.en}
-                    </option>
-                  ))}
-                </select>
+                  placeholder={
+                    isAmharic
+                      ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ ወይም ኦፊሰር ፈልግ...'
+                      : 'Search plate, driver, location, officer...'
+                  }
+                  className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white shadow-2xs"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchTerm('');
+                      setCurrentPage(1);
+                    }}
+                    className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                  </button>
+                )}
               </div>
 
-              {/* Reset filter button if filtered */}
-              {(searchTerm || statusFilter !== 'all' || subCityFilter !== 'all') && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setStatusFilter('all');
-                    setSubCityFilter('all');
-                    setCurrentPage(1);
-                  }}
-                  className="h-8 px-2.5 rounded-md text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-xs shrink-0"
-                  title={isAmharic ? 'ማጣሪያዎችን አጽዳ' : 'Reset Filters'}
-                >
-                  <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
-                  <span>{isAmharic ? 'አጽዳ' : 'Clear'}</span>
-                </button>
-              )}
+              {/* Filter Drawer Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
+                className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                  isFilterDrawerOpen || hasActiveSecondaryFilters
+                    ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
+                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                }`}
+                title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+              >
+                <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                {hasActiveSecondaryFilters && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                )}
+              </button>
             </div>
+
+            {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
+            {isFilterDrawerOpen && (
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                  {/* Sub-City Filter */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                      {isAmharic ? 'ክ/ከተማ:' : 'SubCity:'}
+                    </span>
+                    <select
+                      value={subCityFilter}
+                      onChange={(e) => {
+                        setSubCityFilter(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="h-7 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary outline-none cursor-pointer"
+                    >
+                      <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
+                      {BAHIR_DAR_SUBCITIES.map((sc) => (
+                        <option key={sc.en} value={sc.en}>
+                          {isAmharic ? sc.am : sc.en}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Sort Field */}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                      {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
+                    </span>
+                    <select
+                      value={sortField}
+                      onChange={(e) => setSortField(e.target.value as any)}
+                      className="h-7 px-2 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-xs text-[#1C2434] dark:text-white focus:outline-none focus:border-primary font-medium"
+                    >
+                      <option value="date">{isAmharic ? 'በሪፖርት ቀን' : 'Report Date'}</option>
+                      <option value="plate">{isAmharic ? 'በሰሌዳ ቁጥር' : 'Plate No'}</option>
+                      <option value="driver">{isAmharic ? 'በአሽከርካሪ ስም' : 'Driver Name'}</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                      className="h-7 w-7 flex items-center justify-center bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                      title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">
+                        {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                      </Icon>
+                    </button>
+                  </div>
+
+                  {/* Reset All Filters in Drawer */}
+                  {(hasActiveSecondaryFilters || searchTerm || statusFilter !== 'all') && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSubCityFilter('all');
+                        setSortField('date');
+                        setSortOrder('desc');
+                        setSearchTerm('');
+                        setStatusFilter('all');
+                        setCurrentPage(1);
+                      }}
+                      className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                    >
+                      <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                      <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         }
       >
