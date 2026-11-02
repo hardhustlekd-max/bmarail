@@ -18,6 +18,38 @@ export const autoCapitalize = (str?: string): string => {
     .join(' ');
 };
 
+/* Paper Money / Banknote Guilloché Security Pattern Overlay Component */
+const BanknoteSecurityPattern: React.FC<{ patternId: string }> = ({ patternId }) => (
+  <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.11] overflow-hidden select-none">
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id={patternId} width="72" height="36" patternUnits="userSpaceOnUse">
+          {/* Banknote Micro-Guilloché Interlocking Sine Waves */}
+          <path d="M 0 6 Q 18 20, 36 6 T 72 6" fill="none" stroke="#24963e" strokeWidth="0.7" />
+          <path d="M 0 12 Q 18 26, 36 12 T 72 12" fill="none" stroke="#15803d" strokeWidth="0.65" />
+          <path d="M 0 18 Q 18 32, 36 18 T 72 18" fill="none" stroke="#24963e" strokeWidth="0.7" />
+          <path d="M 0 24 Q 18 38, 36 24 T 72 24" fill="none" stroke="#166534" strokeWidth="0.65" />
+          <path d="M 0 30 Q 18 44, 36 30 T 72 30" fill="none" stroke="#24963e" strokeWidth="0.7" />
+
+          {/* Counter-swept Guilloché Waves */}
+          <path d="M 0 30 Q 18 16, 36 30 T 72 30" fill="none" stroke="#166534" strokeWidth="0.55" strokeDasharray="3,1.5" />
+          <path d="M 0 18 Q 18 4, 36 18 T 72 18" fill="none" stroke="#24963e" strokeWidth="0.55" strokeDasharray="3,1.5" />
+
+          {/* Vertical Fine Lathe Curves */}
+          <path d="M 12 0 Q 24 18, 12 36" fill="none" stroke="#15803d" strokeWidth="0.5" />
+          <path d="M 36 0 Q 48 18, 36 36" fill="none" stroke="#24963e" strokeWidth="0.5" />
+          <path d="M 60 0 Q 72 18, 60 36" fill="none" stroke="#15803d" strokeWidth="0.5" />
+
+          {/* Banknote Rosette Micro-Geometrics */}
+          <circle cx="36" cy="18" r="12" fill="none" stroke="#24963e" strokeWidth="0.55" />
+          <circle cx="36" cy="18" r="7" fill="none" stroke="#166534" strokeWidth="0.5" strokeDasharray="2,2" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+    </svg>
+  </div>
+);
+
 export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) => {
   const isAmharic = lang === 'am';
   const [printError, setPrintError] = useState<boolean>(false);
@@ -148,11 +180,11 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             <div className="flex flex-col items-center justify-center text-center px-0.5">
               <h2
                 style={{
-                  WebkitTextStroke: '0.95px #18181b',
+                  WebkitTextStroke: '1.1px #18181b',
                   paintOrder: 'stroke fill',
-                  textShadow: '0 1px 2px rgba(24, 24, 27, 0.85)',
+                  textShadow: '0 1px 2px rgba(24, 24, 27, 0.9)',
                 }}
-                className="text-[20px] font-black text-white tracking-tight leading-tight whitespace-nowrap"
+                className="text-[20.5px] font-black text-white tracking-tight leading-tight whitespace-nowrap"
               >
                 ባህር ዳር ሞተረኞች ማህበር
               </h2>
@@ -185,13 +217,16 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           {/* MAIN CARD BODY - CSS Grid Alignment with Zero Vertical Padding & Centered Watermark Stamp */}
           <div className="px-4 py-0 bg-white flex-1 grid grid-cols-[124px_1fr_120px] items-center gap-3 relative overflow-hidden z-10">
             
+            {/* Paper Money / Banknote Fine-Line Security Pattern */}
+            <BanknoteSecurityPattern patternId="pvc-front-banknote-pattern" />
+
             {/* Centered Security Watermark Stamp - Restricted Strictly to Card Body */}
             <div className="absolute inset-0 pointer-events-none z-0 opacity-15 flex items-center justify-center">
               <div className="w-54 h-54 w-[216px] h-[216px] rounded-full border-4 border-double border-neutral-900 p-1 flex items-center justify-center">
-                <div className="w-full h-full rounded-full border-2 border-dashed border-neutral-800 flex flex-col items-center justify-center p-2 text-center text-neutral-900 font-black">
-                  <span className="text-[12px] tracking-wide">ባህር ዳር ሞተረኞች</span>
-                  <Icon className="material-symbols-outlined text-[36px] text-neutral-900 my-0.5">two_wheeler</Icon>
-                  <span className="text-[12px] tracking-wide">ማህበር</span>
+                <div className="w-full h-full rounded-full border-2 border-dashed border-neutral-800 flex flex-col items-center justify-center p-2 text-center text-neutral-950 font-black">
+                  <span className="text-[12.5px] font-black tracking-wide">ባህር ዳር ሞተረኞች</span>
+                  <Icon className="material-symbols-outlined text-[36px] text-neutral-950 my-0.5">two_wheeler</Icon>
+                  <span className="text-[12.5px] font-black tracking-wide">ማህበር</span>
                 </div>
               </div>
             </div>
@@ -213,13 +248,13 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               
               {/* Full Name */}
               <div className="grid grid-cols-[124px_1fr] items-center gap-1.5 leading-tight">
-                <span className="font-extrabold text-[#374151] text-[11.5px] whitespace-nowrap shrink-0">
-                  <span>ሙሉ ስም</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#4b5563] text-[11px] font-medium">Full Name</span>
+                <span className="font-black text-neutral-950 text-[12px] whitespace-nowrap shrink-0">
+                  <span className="font-black text-black">ሙሉ ስም</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#374151] text-[11px] font-semibold">Full Name</span>
                 </span>
-                <div className="font-bold text-[#18181b] text-[13px] flex items-center flex-wrap gap-1 min-w-0 leading-tight">
-                  <span>: {nameParts.am}</span>
+                <div className="font-black text-black text-[13.5px] flex items-center flex-wrap gap-1 min-w-0 leading-tight">
+                  <span className="font-black text-black">: {nameParts.am}</span>
                   {nameParts.en && (
-                    <span className="text-[#374151] font-semibold text-[11.5px] whitespace-nowrap">
+                    <span className="text-[#374151] font-bold text-[11.5px] whitespace-nowrap">
                       ({nameParts.en})
                     </span>
                   )}
@@ -228,50 +263,50 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
 
               {/* ID No */}
               <div className="grid grid-cols-[124px_1fr] items-center gap-1.5 leading-tight">
-                <span className="font-extrabold text-[#374151] text-[11.5px] whitespace-nowrap shrink-0">
-                  <span>የአባል መለያ ቁጥር</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#4b5563] text-[11px] font-medium">ID No.</span>
+                <span className="font-black text-neutral-950 text-[12px] whitespace-nowrap shrink-0">
+                  <span className="font-black text-black">የአባል መለያ ቁጥር</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#374151] text-[11px] font-semibold">ID No.</span>
                 </span>
-                <span className="font-bold text-[#18181b] text-[13px] min-w-0 whitespace-nowrap leading-tight">: {idNo}</span>
+                <span className="font-black text-black text-[13px] min-w-0 whitespace-nowrap leading-tight">: {idNo}</span>
               </div>
 
               {/* Plate No */}
               <div className="grid grid-cols-[124px_1fr] items-center gap-1.5 leading-tight">
-                <span className="font-extrabold text-[#374151] text-[11.5px] whitespace-nowrap shrink-0">
-                  <span>የምዝገባ ሰሌዳ</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#4b5563] text-[11px] font-medium">Plate No.</span>
+                <span className="font-black text-neutral-950 text-[12px] whitespace-nowrap shrink-0">
+                  <span className="font-black text-black">የምዝገባ ሰሌዳ</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#374151] text-[11px] font-semibold">Plate No.</span>
                 </span>
-                <span className="font-bold text-[#18181b] text-[13px] min-w-0 whitespace-nowrap leading-tight">: {plateNo}</span>
+                <span className="font-black text-black text-[13px] min-w-0 whitespace-nowrap leading-tight">: {plateNo}</span>
               </div>
 
               {/* Blood Group */}
               <div className="grid grid-cols-[124px_1fr] items-center gap-1.5 leading-tight">
-                <span className="font-extrabold text-[#374151] text-[11.5px] whitespace-nowrap shrink-0">
-                  <span>የደም አይነት</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#4b5563] text-[11px] font-medium">Blood Group</span>
+                <span className="font-black text-neutral-950 text-[12px] whitespace-nowrap shrink-0">
+                  <span className="font-black text-black">የደም አይነት</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#374151] text-[11px] font-semibold">Blood Group</span>
                 </span>
-                <span className="font-bold text-[#18181b] text-[13px] min-w-0 whitespace-nowrap leading-tight">: {bloodGroup}</span>
+                <span className="font-black text-black text-[13px] min-w-0 whitespace-nowrap leading-tight">: {bloodGroup}</span>
               </div>
 
               {/* Phone */}
               <div className="grid grid-cols-[124px_1fr] items-center gap-1.5 leading-tight">
-                <span className="font-extrabold text-[#374151] text-[11.5px] whitespace-nowrap shrink-0">
-                  <span>ስልክ</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#4b5563] text-[11px] font-medium">Phone</span>
+                <span className="font-black text-neutral-950 text-[12px] whitespace-nowrap shrink-0">
+                  <span className="font-black text-black">ስልክ</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#374151] text-[11px] font-semibold">Phone</span>
                 </span>
-                <span className="font-bold text-[#18181b] text-[13px] min-w-0 whitespace-nowrap leading-tight">: {phone}</span>
+                <span className="font-black text-black text-[13px] min-w-0 whitespace-nowrap leading-tight">: {phone}</span>
               </div>
 
               {/* Issue Date */}
               <div className="grid grid-cols-[124px_1fr] items-center gap-1.5 leading-tight">
-                <span className="font-extrabold text-[#374151] text-[11.5px] whitespace-nowrap shrink-0">
-                  <span>የተሰጠበት ቀን</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#4b5563] text-[11px] font-medium">Issue Date</span>
+                <span className="font-black text-neutral-950 text-[12px] whitespace-nowrap shrink-0">
+                  <span className="font-black text-black">የተሰጠበት ቀን</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#374151] text-[11px] font-semibold">Issue Date</span>
                 </span>
-                <span className="font-bold text-[#18181b] text-[13px] min-w-0 whitespace-nowrap leading-tight">: {issueDate}</span>
+                <span className="font-black text-black text-[13px] min-w-0 whitespace-nowrap leading-tight">: {issueDate}</span>
               </div>
 
               {/* Expiry Date & Time */}
               <div className="grid grid-cols-[124px_1fr] items-center gap-1.5 leading-tight">
-                <span className="font-extrabold text-[#374151] text-[11.5px] whitespace-nowrap shrink-0">
-                  <span>የሚያበቃበት ቀን</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#4b5563] text-[11px] font-medium">Expiry</span>
+                <span className="font-black text-neutral-950 text-[12px] whitespace-nowrap shrink-0">
+                  <span className="font-black text-black">የሚያበቃበት ቀን</span> <span className="text-neutral-400 font-normal">/</span> <span className="text-[#374151] text-[11px] font-semibold">Expiry</span>
                 </span>
-                <span className="font-bold text-[#18181b] text-[13px] min-w-0 whitespace-nowrap leading-tight">: {expiryDate} 12:00 PM</span>
+                <span className="font-black text-black text-[13px] min-w-0 whitespace-nowrap leading-tight">: {expiryDate} 12:00 PM</span>
               </div>
             </div>
 
@@ -291,7 +326,7 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
                   </svg>
                 </div>
                 <div className="w-20 border-b border-neutral-400 my-0.5" />
-                <span className="text-[8px] font-bold text-neutral-800 text-center leading-tight">
+                <span className="text-[8.5px] font-black text-neutral-950 text-center leading-tight">
                   የስራ ኃላፊ ፊርማ<br />Authorized Signature
                 </span>
               </div>
@@ -302,11 +337,11 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           <div className="bg-gradient-to-r from-[#24963e] via-[#2ea44f] to-[#24963e] text-white py-2 px-3 flex items-center justify-center shrink-0 border-t border-black/10 relative z-20">
             <div
               style={{
-                WebkitTextStroke: '0.75px #18181b',
+                WebkitTextStroke: '0.85px #18181b',
                 paintOrder: 'stroke fill',
-                textShadow: '0 1px 2px rgba(24, 24, 27, 0.8)',
+                textShadow: '0 1px 2px rgba(24, 24, 27, 0.85)',
               }}
-              className="text-[12px] font-black tracking-wide text-white text-center"
+              className="text-[12.5px] font-black tracking-wider text-white text-center"
             >
               ይህ መታወቂያ የባህር ዳር ሞተረኞች ማህበር ንብረት ነው።
             </div>
@@ -326,11 +361,11 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             <div>
               <h3
                 style={{
-                  WebkitTextStroke: '0.95px #18181b',
+                  WebkitTextStroke: '1.1px #18181b',
                   paintOrder: 'stroke fill',
-                  textShadow: '0 1px 2px rgba(24, 24, 27, 0.85)',
+                  textShadow: '0 1px 2px rgba(24, 24, 27, 0.9)',
                 }}
-                className="text-[20px] font-black text-white tracking-wide leading-tight whitespace-nowrap"
+                className="text-[20.5px] font-black text-white tracking-wide leading-tight whitespace-nowrap"
               >
                 ባህር ዳር ሞተረኞች ማህበር
               </h3>
@@ -348,16 +383,19 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           </div>
 
           {/* Backside Center Content: Grid System with Clean Wrapped Terms & Extra Large QR Card */}
-          <div className="grid grid-cols-[1fr_235px] gap-3 px-4 py-1 flex-1 items-stretch">
+          <div className="grid grid-cols-[1fr_235px] gap-3 px-4 py-1 flex-1 items-stretch relative overflow-hidden">
+            
+            {/* Paper Money / Banknote Fine-Line Security Pattern */}
+            <BanknoteSecurityPattern patternId="pvc-back-banknote-pattern" />
             
             {/* Terms & Conditions Container - Clean Wrapped Text */}
             <div className="h-full flex flex-col justify-center text-neutral-800 bg-neutral-100/80 p-3.5 rounded-xl border border-neutral-200 shadow-xs">
-              <p className="font-extrabold text-neutral-900 text-[12px] mb-2 pb-1 border-b border-neutral-200">
-                <span>የአጠቃቀም ደንቦች እና ማሳሰቢያ</span> <span className="text-neutral-400 font-bold">/</span> <span className="text-neutral-700 text-[10.5px]">Terms & Conditions:</span>
+              <p className="font-black text-neutral-950 text-[13px] mb-2 pb-1 border-b border-neutral-200">
+                <span className="font-black text-black">የአጠቃቀም ደንቦች እና ማሳሰቢያ</span> <span className="text-neutral-400 font-bold">/</span> <span className="text-neutral-700 text-[10.5px] font-semibold">Terms & Conditions:</span>
               </p>
-              <ul className="space-y-2 list-disc list-inside text-[11px] leading-relaxed text-neutral-800 font-medium break-words">
-                <li>ይህ መታወቂያ ሲጠፋ ለህግ አስከባሪ አካል ወዲያውኑ ሪፖርት መደረግ አለበት።</li>
-                <li>በከተማ ውስጥ ሲንቀሳቀሱ ይህንን መታወቂያ ሁልጊዜ ከእርስዎ ጋር ይያዙ።</li>
+              <ul className="space-y-2 list-disc list-inside text-[11.5px] leading-relaxed text-neutral-950 font-black break-words">
+                <li className="font-black text-black">ይህ መታወቂያ ሲጠፋ ለህግ አስከባሪ አካል ወዲያውኑ ሪፖርት መደረግ አለበት።</li>
+                <li className="font-black text-black">በከተማ ውስጥ ሲንቀሳቀሱ ይህንን መታወቂያ ሁልጊዜ ከእርስዎ ጋር ይያዙ።</li>
               </ul>
             </div>
 
@@ -375,11 +413,11 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
             <div className="flex items-center gap-1.5 text-white">
               <span
                 style={{
-                  WebkitTextStroke: '0.75px #18181b',
+                  WebkitTextStroke: '0.85px #18181b',
                   paintOrder: 'stroke fill',
-                  textShadow: '0 1px 2px rgba(24, 24, 27, 0.8)',
+                  textShadow: '0 1px 2px rgba(24, 24, 27, 0.85)',
                 }}
-                className="text-white font-black text-[12px] tracking-wide"
+                className="text-white font-black text-[13px] tracking-wide"
               >
                 ባህርዳር ሞተረኛ ማህበር
               </span>
