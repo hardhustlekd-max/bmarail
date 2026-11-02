@@ -1016,9 +1016,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         const targetIndex = targetYear * 13 + targetMonth;
         const currentIndex = currentEthYear * 13 + currentEthMonth;
 
-        // If member has no payment records whatsoever in the DB, show muted dot
+        // If member has no payment records, current and past months since registration are unpaid
         if (!hasAnyPaymentRecord) {
-          periods[col.key] = 'muted';
+          if (targetIndex <= currentIndex) {
+            periods[col.key] = 'unpaid';
+          } else {
+            periods[col.key] = 'muted';
+          }
           return;
         }
 
@@ -1172,7 +1176,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const activePage = Math.min(page, totalPages);
   const startIndex = (activePage - 1) * pageSize;
   const displayMatrixRows = useMemo(() => {
-    if (serverRows && serverRows.length > 0) {
+    if (serverRows !== null) {
       return serverRows;
     }
     return filteredMatrixRows.slice(startIndex, startIndex + pageSize);

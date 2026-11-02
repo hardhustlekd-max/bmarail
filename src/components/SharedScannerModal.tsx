@@ -1369,7 +1369,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <p className="font-black text-purple-950 dark:text-purple-100 text-xs">
-                            {isAmharic ? 'የማህበር / የኩባንያ ተሽከርካሪ' : 'ASSOCIATION MOTOR / COMPANY VEHICLE'}
+                            {isAmharic ? 'የማህበር ተሽከርካሪ' : 'ASSOCIATION MOTOR'}
                           </p>
                           <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-purple-200 dark:bg-purple-800 text-purple-900 dark:text-purple-200">
                             {isAmharic ? 'በፍተሻ ውጤት ብቻ የሚታይ' : 'Scanner Verified Result'}
@@ -1377,8 +1377,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         </div>
                         <p className="mt-0.5 text-[10.5px] text-purple-900/90 dark:text-purple-200/90 font-medium leading-tight">
                           {isAmharic
-                            ? 'ይህ ተሽከርካሪ የማህበር / የኩባንያ መዝገብ በመሆኑ በሰንጠረዥና በሜትሪክስ የተደበቀ ሲሆን፣ በፍተሻ ውጤት ላይ ብቻ የሚታይ ነው።'
-                            : 'This motor is registered as an Association / Company vehicle (hidden from general lists & metrics, verified on scanner result).'}
+                            ? 'ይህ ተሽከርካሪ የማህበር መዝገብ በመሆኑ በሰንጠረዥና በሜትሪክስ የተደበቀ ሲሆን፣ በፍተሻ ውጤት ላይ ብቻ የሚታይ ነው።'
+                            : 'This motor is registered as an Association vehicle (hidden from general lists & metrics, verified on scanner result).'}
                         </p>
                       </div>
                     </div>

@@ -1196,9 +1196,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                   <div
                     className={`w-7 h-7 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center text-[11px] sm:text-[10px] font-black transition-all duration-150 ${
                       isActive
-                        ? 'bg-surface-container-lowest border-2 border-primary ring-2 ring-primary/20 text-primary shadow-xs'
+                        ? 'bg-surface-container-lowest border border-primary ring-1 ring-primary/20 text-primary shadow-xs'
                         : isCompleted
-                        ? 'bg-primary border-2 border-primary text-white shadow-2xs'
+                        ? 'bg-primary border border-primary text-white shadow-2xs'
                         : 'bg-surface-container-lowest border border-outline-variant text-secondary group-hover:border-outline'
                     }`}
                   >
@@ -1267,7 +1267,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
         {/* SUCCESS NOTIFICATION BANNER INSIDE FORM (Matching warning alert style) */}
         {isSubmittedSuccessfully && lastSubmittedReg && (
-          <div className="bg-emerald-50 dark:bg-emerald-950/60 border-2 border-emerald-500 dark:border-emerald-600 rounded-md p-4 text-emerald-950 dark:text-emerald-100 shadow-sm space-y-3 animate-fadeIn">
+          <div className="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500 dark:border-emerald-600 rounded-md p-4 text-emerald-950 dark:text-emerald-100 shadow-sm space-y-3 animate-fadeIn">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
@@ -1542,7 +1542,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             visibility_off
                           </Icon>
                           <span className="text-xs font-black text-purple-950 dark:text-purple-200">
-                            {isAmharic ? 'የኩባንያ / የማህበር ተሽከርካሪ (Company / Association Motor)' : 'Save as Company / Association Motor'}
+                            {isAmharic ? 'የማህበር ተሽከርካሪ (Association Motor)' : 'Save as Association Motor'}
                           </span>
                           <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                             {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
@@ -1550,8 +1550,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         </div>
                         <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
                           {isAmharic
-                            ? 'ይህ አማራጭ ሲበራ ማመልከቻው እንደ ኩባንያ / የማህበር ተሽከርካሪ ይመዝገባል፤ በሰንጠረዦችና በሜትሪክስ ተደብቆ በፍተሻ ውጤት (ስካነር) ላይ ብቻ ይታያል።'
-                            : 'When enabled, this application will be saved as an Association / Company vehicle (hidden from lists & metrics for other users, visible only for scanner results).'}
+                            ? 'ይህ አማራጭ ሲበራ ማመልከቻው እንደ የማህበር ተሽከርካሪ ይመዝገባል፤ በሰንጠረዦችና በሜትሪክስ ተደብቆ በፍተሻ ውጤት (ስካነር) ላይ ብቻ ይታያል።'
+                            : 'When enabled, this application will be saved as an Association Motor (hidden from lists & metrics for other users, visible only for scanner results).'}
                         </p>
                       </label>
                     </div>
@@ -2420,7 +2420,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       {isSuperAdmin && (
                         <DataField
                           label={isAmharic ? 'የምዝገባ ሁኔታ:' : 'Record Type:'}
-                          value={hideFromOtherUsers ? (isAmharic ? '🏢 የኩባንያ / የማህበር ተሽከርካሪ' : '🏢 Company / Association Motor') : (isAmharic ? 'መደበኛ (ግልጽ)' : 'Standard (Visible)')}
+                          value={hideFromOtherUsers ? (isAmharic ? '🏢 የማህበር ተሽከርካሪ' : '🏢 Association Motor') : (isAmharic ? 'መደበኛ (ግልጽ)' : 'Standard (Visible)')}
                           isPrimary={hideFromOtherUsers}
                         />
                       )}
@@ -2506,7 +2506,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                               business
                             </Icon>
                             <span className="text-xs font-black text-purple-950 dark:text-purple-200">
-                              {isAmharic ? 'እንደ ኩባንያ / የማህበር ተሽከርካሪ አስቀምጥ' : 'Save as Company / Association Motor'}
+                              {isAmharic ? 'እንደ የማህበር ተሽከርካሪ አስቀምጥ' : 'Save as Association Motor'}
                             </span>
                             <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
                               {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
@@ -2514,8 +2514,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           </div>
                           <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
                             {isAmharic
-                              ? 'ይህ ሲመረጥ እንደ ኩባንያ / የማህበር ተሽከርካሪ ይመዝገባል (በሰንጠረዥና ሜትሪክስ ተደብቆ በፍተሻ ውጤት ላይ ብቻ ይታያል)።'
-                              : 'Saves this registration as an Association / Company vehicle (hidden from lists & metrics, visible for scanner result).'}
+                              ? 'ይህ ሲመረጥ እንደ የማህበር ተሽከርካሪ ይመዝገባል (በሰንጠረዥና ሜትሪክስ ተደብቆ በፍተሻ ውጤት ላይ ብቻ ይታያል)።'
+                              : 'Saves this registration as an Association Motor (hidden from lists & metrics, visible for scanner result).'}
                           </p>
                         </div>
                       </label>

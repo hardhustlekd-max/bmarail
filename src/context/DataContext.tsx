@@ -158,13 +158,34 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     };
   }, []);
 
-  // Prefer TanStack Query cache if populated; fall back cleanly to local inMemory
-  const registrations = (qRegistrations && qRegistrations.length > 0) ? qRegistrations : localRegistrations;
+  // Merge TanStack Query cache with instant local in-memory state
+  const registrations = React.useMemo(() => {
+    const base = qRegistrations || [];
+    const local = localRegistrations || [];
+    if (base.length === 0) return local;
+    if (local.length === 0) return base;
+    const baseIds = new Set(base.map((r) => String(r.id)));
+    const missingFromBase = local.filter((r) => !baseIds.has(String(r.id)));
+    if (missingFromBase.length === 0) return base;
+    return [...missingFromBase, ...base];
+  }, [qRegistrations, localRegistrations]);
+
   const officers = (qOfficers && qOfficers.length > 0) ? qOfficers : localOfficers;
   const printOrders = (qPrintOrders && qPrintOrders.length > 0) ? qPrintOrders : localPrintOrders;
   const verificationLogs = (qVerificationLogs && qVerificationLogs.length > 0) ? qVerificationLogs : localVerificationLogs;
   const unregisteredReports = (qUnregisteredReports && qUnregisteredReports.length > 0) ? qUnregisteredReports : localUnregisteredReports;
-  const paymentReceipts = (qPaymentReceipts && qPaymentReceipts.length > 0) ? qPaymentReceipts : localPaymentReceipts;
+
+  const paymentReceipts = React.useMemo(() => {
+    const base = qPaymentReceipts || [];
+    const local = localPaymentReceipts || [];
+    if (base.length === 0) return local;
+    if (local.length === 0) return base;
+    const baseIds = new Set(base.map((r) => String(r.id)));
+    const missingFromBase = local.filter((r) => !baseIds.has(String(r.id)));
+    if (missingFromBase.length === 0) return base;
+    return [...missingFromBase, ...base];
+  }, [qPaymentReceipts, localPaymentReceipts]);
+
   const settings = qSettings || localSettings || DEFAULT_SETTINGS;
   const isLoading = isRefreshing || (isRegLoading && registrations.length === 0);
 
@@ -185,6 +206,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
       try {
         const res = await saveRegistrationToDb(newReg, options);
         if (res.success) {
+          invalidateAllCoreQueries();
           addToast(
             isAmharic
               ? `የ ${newReg.fullName} ምዝገባ በተሳካ ሁኔታ ተቀምጧል!`
@@ -213,6 +235,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     async (id: string) => {
       try {
         await updateRegistrationStatusInDb(id, 'approved');
+        invalidateAllCoreQueries();
         addToast(
           isAmharic
             ? `የምዝገባ መለያ ${id} በዳታቤዝ ውስጥ ጸድቋል!`
@@ -230,6 +253,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     async (id: string, reason: string) => {
       try {
         await updateRegistrationStatusInDb(id, 'rejected', reason);
+        invalidateAllCoreQueries();
         addToast(
           isAmharic
             ? `የምዝገባ መለያ ${id} ውድቅ ተደርጓል!`
@@ -247,6 +271,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     async (receipt: PaymentReceipt) => {
       try {
         await savePaymentReceiptToDb(receipt);
+        invalidateAllCoreQueries();
         addToast(
           isAmharic
             ? `የክፍያ ደረሰኝ ቁጥር ${receipt.receiptNumber} በተሳካ ሁኔታ ተመዝግቧል!`
@@ -267,6 +292,7 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     async (id: string) => {
       try {
         await deletePaymentReceiptFromDb(id);
+        invalidateAllCoreQueries();
         addToast(
           isAmharic ? 'የክፍያ ደረሰኙ ተሰርዟል!' : 'Payment receipt deleted successfully!',
           'info'

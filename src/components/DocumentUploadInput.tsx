@@ -213,7 +213,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative border-2 border-dashed rounded-lg p-3.5 sm:p-3 text-center transition-all cursor-pointer min-h-[120px] flex flex-col items-center justify-center space-y-1.5 group touch-manipulation active:scale-[0.98] ${
+          className={`relative border border-dashed rounded-lg p-3.5 sm:p-3 text-center transition-all cursor-pointer min-h-[120px] flex flex-col items-center justify-center space-y-1.5 group touch-manipulation active:scale-[0.98] ${
             hasError
               ? 'border-red-500 bg-red-50/70 dark:bg-red-950/30 ring-2 ring-red-500/30'
               : isDraggingOver

@@ -772,7 +772,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 rounded-md text-[11px] font-bold shadow-2xs">
                   <Icon className="material-symbols-outlined text-[16px]">business</Icon>
                   <span>
-                    {isAmharic ? 'የኩባንያ ተሽከርካሪዎች:' : 'Company Motors:'}{' '}
+                    {isAmharic ? 'የማህበር ተሽከርካሪዎች:' : 'Association Motors:'}{' '}
                     {registrations.filter((r) => r.hideFromOtherUsers).length}
                   </span>
                 </div>
@@ -964,7 +964,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       >
                         <option value="all">{isAmharic ? 'ሁሉም አባላት' : 'All Members'}</option>
                         <option value="standard">{isAmharic ? 'መደበኛ' : 'Standard'}</option>
-                        <option value="company">{isAmharic ? 'ኩባንያ / ማህበር' : 'Company/Assoc'}</option>
+                        <option value="company">{isAmharic ? 'ማህበር' : 'Association'}</option>
                       </select>
                     </div>
                   )}
@@ -1064,10 +1064,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     onClick={() => executeBulkToggleHide(true)}
                     disabled={isSubmittingBulk}
                     className="px-2.5 py-1.5 rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200 font-semibold text-xs hover:bg-purple-200 dark:hover:bg-purple-900 transition-colors cursor-pointer flex items-center gap-1 border border-purple-300 dark:border-purple-800"
-                    title={isAmharic ? 'እንደ የኩባንያ ተሽከርካሪ ምልክት አድርግ' : 'Mark as Company Vehicle'}
+                    title={isAmharic ? 'እንደ የማህበር ተሽከርካሪ ምልክት አድርግ' : 'Mark as Association Motor'}
                   >
                     <Icon className="material-symbols-outlined text-[15px]">business</Icon>
-                    <span>{isAmharic ? 'የኩባንያ' : 'Company'}</span>
+                    <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
                   </button>
                   <button
                     type="button"
@@ -1222,9 +1222,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 {reg.hideFromOtherUsers && isSuperAdmin && (
                                   <span
                                     className="px-1.5 py-0.2 rounded-sm text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0"
-                                    title={isAmharic ? 'የኩባንያ ተሽከርካሪ' : 'Company Vehicle'}
+                                    title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
                                   >
-                                    🏢 {isAmharic ? 'ኩባንያ' : 'Company'}
+                                    🏢 {isAmharic ? 'ማህበር' : 'Association'}
                                   </span>
                                 )}
                               </button>
@@ -1423,9 +1423,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               {reg.hideFromOtherUsers && isSuperAdmin && (
                                 <span
                                   className="px-1.5 py-0.2 rounded-sm text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shrink-0"
-                                  title={isAmharic ? 'የኩባንያ ተሽከርካሪ' : 'Company Vehicle'}
+                                  title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
                                 >
-                                  🏢 {isAmharic ? 'ኩባንያ' : 'Company'}
+                                  🏢 {isAmharic ? 'ማህበር' : 'Association'}
                                 </span>
                               )}
                             </div>

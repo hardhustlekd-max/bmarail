@@ -2596,7 +2596,11 @@ export async function dbGetMembershipFeeDirectoryScoped(options?: {
       }
 
       if (!hasAnyPaymentRecord) {
-        periods[colKey] = 'muted';
+        if (colPeriodIndex <= currentPeriodIndex) {
+          periods[colKey] = 'unpaid';
+        } else {
+          periods[colKey] = 'muted';
+        }
         continue;
       }
 
