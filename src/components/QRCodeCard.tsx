@@ -299,24 +299,14 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
           </div>
 
           {/* BOTTOM FOOTER BANNER - Corporate Green Banner with Charcoal Stroke on White Text */}
-          <div className="bg-gradient-to-r from-[#24963e] via-[#2ea44f] to-[#24963e] text-white py-2 px-3 flex flex-col gap-0.5 items-center shrink-0 border-t border-black/10 relative z-20">
-            <p
-              style={{
-                WebkitTextStroke: '0.65px #18181b',
-                paintOrder: 'stroke fill',
-                textShadow: '0 1px 2px rgba(24, 24, 27, 0.8)',
-              }}
-              className="text-[9.5px] font-bold text-center leading-tight text-white"
-            >
-              ይህ የአባልነት መታወቂያ የባህዳር ሞተረኛች ማህበር አባልነት ማረጋገጫ ብቻ ሲሆን እንደ የአሽከርካሪ መንጃ ፈቃድ የማያገለግል ነው።
-            </p>
+          <div className="bg-gradient-to-r from-[#24963e] via-[#2ea44f] to-[#24963e] text-white py-2 px-3 flex items-center justify-center shrink-0 border-t border-black/10 relative z-20">
             <div
               style={{
                 WebkitTextStroke: '0.75px #18181b',
                 paintOrder: 'stroke fill',
                 textShadow: '0 1px 2px rgba(24, 24, 27, 0.8)',
               }}
-              className="text-[11px] font-black tracking-wide text-white"
+              className="text-[12px] font-black tracking-wide text-white text-center"
             >
               ይህ መታወቂያ የባህር ዳር ሞተረኞች ማህበር ንብረት ነው።
             </div>
@@ -365,10 +355,9 @@ export const QRCodeCard: React.FC<QRCodeCardProps> = ({ registration, lang }) =>
               <p className="font-extrabold text-neutral-900 text-[12px] mb-2 pb-1 border-b border-neutral-200">
                 <span>የአጠቃቀም ደንቦች እና ማሳሰቢያ</span> <span className="text-neutral-400 font-bold">/</span> <span className="text-neutral-700 text-[10.5px]">Terms & Conditions:</span>
               </p>
-              <ul className="space-y-2 list-disc list-inside text-[10.5px] leading-relaxed text-neutral-800 font-medium break-words">
+              <ul className="space-y-2 list-disc list-inside text-[11px] leading-relaxed text-neutral-800 font-medium break-words">
                 <li>ይህ መታወቂያ ሲጠፋ ለህግ አስከባሪ አካል ወዲያውኑ ሪፖርት መደረግ አለበት።</li>
                 <li>በከተማ ውስጥ ሲንቀሳቀሱ ይህንን መታወቂያ ሁልጊዜ ከእርስዎ ጋር ይያዙ።</li>
-                <li>ለአደጋ ጊዜ ድንገተኛ ጥሪ፡ <b className="text-neutral-950 font-black text-[11.5px]">058-220-1122</b> ወይም <b className="text-neutral-950 font-black text-[11.5px]">991</b> ይደውሉ።</li>
               </ul>
             </div>
 
