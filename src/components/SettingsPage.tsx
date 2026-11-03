@@ -73,7 +73,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
     if (score <= 2) {
       return {
-        label: isAmharic ? 'ደካማ (Weak)' : 'Weak',
+        label: isAmharic ? 'ደካማ' : 'Weak',
         score: 33,
         color: 'bg-rose-500',
         textColor: 'text-rose-600 dark:text-rose-400',
@@ -81,14 +81,14 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
     }
     if (score <= 4) {
       return {
-        label: isAmharic ? 'መካከለኛ (Medium)' : 'Medium',
+        label: isAmharic ? 'መካከለኛ' : 'Medium',
         score: 66,
         color: 'bg-amber-500',
         textColor: 'text-amber-600 dark:text-amber-400',
       };
     }
     return {
-      label: isAmharic ? 'በጣም ጠንካራ (Strong)' : 'Strong',
+      label: isAmharic ? 'በጣም ጠንካራ' : 'Strong',
       score: 100,
       color: 'bg-emerald-500',
       textColor: 'text-emerald-600 dark:text-emerald-400',
@@ -219,48 +219,48 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           <div className="md:col-span-5 space-y-6">
             
             {/* User Profile Card */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
-              <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
-                <Icon className="material-symbols-outlined text-primary text-[22px]">account_circle</Icon>
-                <h2 className="text-sm font-black text-on-surface">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-xl p-5 shadow-xs space-y-4">
+              <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800/60 pb-3">
+                <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[22px]">account_circle</Icon>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                   {isAmharic ? 'የተጠቃሚ መገለጫ' : 'User Profile Details'}
                 </h2>
               </div>
 
               <div className="flex items-center gap-3.5">
-                <div className="w-14 h-14 rounded-full bg-surface-container border border-outline-variant flex items-center justify-center text-xl font-black text-on-surface shrink-0 overflow-hidden shadow-xs">
+                <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xl font-bold text-slate-900 dark:text-white shrink-0 overflow-hidden shadow-2xs">
                   <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="font-extrabold text-sm text-on-surface truncate">{displayName}</h3>
-                  <p className="font-mono text-xs font-bold text-on-surface bg-surface-container border border-outline-variant/60 px-2 py-0.5 rounded inline-block mt-0.5">
+                  <h3 className="font-bold text-sm text-slate-900 dark:text-white truncate">{displayName}</h3>
+                  <p className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-sm inline-block mt-0.5">
                     {userBadgeId || creds.badgeId}
                   </p>
-                  <div className="flex items-center gap-1.5 mt-1 text-[11px] text-primary font-bold">
-                    <span className="w-2 h-2 rounded-full bg-primary"></span>
-                    <span>{isAmharic ? 'ንቁ መለያ (Active Session)' : 'Active Session'}</span>
+                  <div className="flex items-center gap-1.5 mt-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>{isAmharic ? 'ንቁ መለያ' : 'Active Session'}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-2 text-xs border-t border-outline-variant/60 pt-3">
+              <div className="space-y-2 text-xs border-t border-slate-100 dark:border-slate-800/60 pt-3">
                 <div className="flex justify-between items-center py-1">
-                  <span className="text-outline">{isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}:</span>
-                  <span className="font-bold font-mono text-on-surface truncate max-w-[180px]">{displayPhone}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}:</span>
+                  <span className="font-bold font-mono text-slate-900 dark:text-white truncate max-w-[180px]">{displayPhone}</span>
                 </div>
                 <div className="flex justify-between items-center py-1">
-                  <span className="text-outline">{isAmharic ? 'የስራ ድርሻ' : 'Role Access'}:</span>
-                  <span className="font-bold  tracking-wider text-on-surface">{userRole}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{isAmharic ? 'የስራ ድርሻ' : 'Role Access'}:</span>
+                  <span className="font-bold tracking-wider text-slate-900 dark:text-white">{userRole}</span>
                 </div>
               </div>
             </div>
 
             {/* Application Preferences Card */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-outline-variant pb-3">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-xl p-5 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-primary text-[22px]">tune</Icon>
-                  <h2 className="text-sm font-black text-on-surface">
+                  <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[22px]">tune</Icon>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                     {isAmharic ? 'የስርዓት ምርጫዎች' : 'System Preferences'}
                   </h2>
                 </div>
@@ -271,17 +271,17 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 {onToggleLang && (
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-extrabold text-on-surface block">
-                        {isAmharic ? 'ቋንቋ (System Language)' : 'System Language'}
+                      <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                        {isAmharic ? 'ቋንቋ' : 'System Language'}
                       </span>
-                      <span className="text-[11px] text-outline">
-                        {currentLang === 'am' ? 'አማርኛ (Amharic)' : 'English (US)'}
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {currentLang === 'am' ? 'አማርኛ' : 'English (US)'}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={onToggleLang}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      className="px-3 py-1.5 rounded-md text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">translate</Icon>
                       <span>{currentLang === 'am' ? 'Switch to English' : 'ወደ አማርኛ ቀይር'}</span>
@@ -291,19 +291,19 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
                 {/* Dark Mode / Light Mode Switch */}
                 {onToggleTheme && (
-                  <div className="flex items-center justify-between border-t border-outline-variant/60 pt-3">
+                  <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 pt-3">
                     <div>
-                      <span className="text-xs font-extrabold text-on-surface block">
-                        {isAmharic ? 'የገጽታ ቀለም (Theme)' : 'Theme Mode'}
+                      <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                        {isAmharic ? 'የገጽታ ቀለም' : 'Theme Mode'}
                       </span>
-                      <span className="text-[11px] text-outline">
-                        {currentTheme === 'dark' ? (isAmharic ? 'ጨለማ ሁነታ (Dark)' : 'Dark Mode') : (isAmharic ? 'ብሩህ ሁነታ (Light)' : 'Light Mode')}
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                        {currentTheme === 'dark' ? (isAmharic ? 'ጨለማ ሁነታ' : 'Dark Mode') : (isAmharic ? 'ብሩህ ሁነታ' : 'Light Mode')}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={onToggleTheme}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      className="px-3 py-1.5 rounded-md text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">
                         {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
@@ -314,12 +314,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                 )}
 
                 {/* Calendar System */}
-                <div className="flex items-center justify-between border-t border-outline-variant/60 pt-3">
+                <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800/60 pt-3">
                   <div>
-                    <span className="text-xs font-extrabold text-on-surface block">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white block">
                       {isAmharic ? 'የቀን መቁጠሪያ' : 'Calendar Format'}
                     </span>
-                    <span className="text-[11px] text-outline">
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400">
                       {calendarSystem === 'ethiopian'
                         ? (isAmharic ? 'የኢትዮጵያ ዘመን አቆጣጠር' : 'Ethiopian Calendar')
                         : 'Gregorian Calendar'}
@@ -328,10 +328,10 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   <select
                     value={calendarSystem}
                     onChange={(e) => setCalendarSystem(e.target.value as any)}
-                    className="bg-surface-container border border-outline-variant rounded-md px-2.5 py-1 text-xs font-bold text-on-surface cursor-pointer"
+                    className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1 text-xs font-bold text-slate-900 dark:text-white cursor-pointer"
                   >
                     <option value="ethiopian">{isAmharic ? 'የኢትዮጵያ' : 'Ethiopian'}</option>
-                    <option value="gregorian">{isAmharic ? 'ፈረንጅ (GC)' : 'Gregorian'}</option>
+                    <option value="gregorian">{isAmharic ? 'ግሪጎሪያን' : 'Gregorian'}</option>
                   </select>
                 </div>
 
@@ -390,16 +390,16 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           {/* Right Column (7 Cols): Password Changing Setting (Core Requirement) */}
           <div className="md:col-span-7 space-y-6">
             
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 sm:p-6 shadow-xs space-y-5">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-xl p-5 sm:p-6 shadow-xs space-y-5">
               
-              <div className="border-b border-outline-variant pb-4">
+              <div className="border-b border-slate-100 dark:border-slate-800/60 pb-4">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">lock_reset</Icon>
+                  <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[22px] shrink-0">lock_reset</Icon>
                   <div>
-                    <h2 className="text-base font-black text-on-surface">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white">
                       {isAmharic ? 'የይለፍ ቃል መቀየሪያ' : 'Change Password'}
                     </h2>
-                    <p className="text-xs text-outline mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       {isAmharic
                         ? 'የመግቢያ የይለፍ ቃልዎን ይቀይሩ'
                         : 'Update your login password'}

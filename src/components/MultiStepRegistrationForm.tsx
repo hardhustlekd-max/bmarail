@@ -2420,7 +2420,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       {isSuperAdmin && (
                         <DataField
                           label={isAmharic ? 'የምዝገባ ሁኔታ:' : 'Record Type:'}
-                          value={hideFromOtherUsers ? (isAmharic ? '🏢 የማህበር ተሽከርካሪ' : '🏢 Association Motor') : (isAmharic ? 'መደበኛ (ግልጽ)' : 'Standard (Visible)')}
+                          value={hideFromOtherUsers ? (isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Motor') : (isAmharic ? 'መደበኛ' : 'Standard')}
                           isPrimary={hideFromOtherUsers}
                         />
                       )}

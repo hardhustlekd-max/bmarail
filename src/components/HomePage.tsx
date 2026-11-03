@@ -2923,59 +2923,25 @@ const HomePageShell: React.FC<HomePageProps> = ({
               {/* User Dropdown Menu */}
               {isUserDropdownOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-60 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md shadow-2xl py-2 z-[100] animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
+                  className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-xl py-1.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
                   onTouchStart={(e) => e.stopPropagation()}
                 >
-                  <div className="px-4 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <div className="px-4 py-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                     <p className="text-xs font-bold text-[#1C2434] dark:text-white truncate">
                       {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                     </p>
                     <p className="text-[11px] text-[#8A99AD] font-medium mt-0.5">
                       {userRole === 'superadmin'
-                        ? (isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin')
+                        ? (isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin')
                         : userRole === 'admin'
-                        ? (isAmharic ? 'ስራ አስኪያጅ (Manager)' : 'Manager')
+                        ? (isAmharic ? 'ስራ አስኪያጅ' : 'Manager')
                         : userRole === 'clerk'
-                        ? (isAmharic ? 'መዝጋቢ (Clerk)' : 'Clerk')
-                        : (isAmharic ? 'ኦፊሰር (Officer)' : 'Officer')}
+                        ? (isAmharic ? 'መዝጋቢ' : 'Clerk')
+                        : (isAmharic ? 'ኦፊሰር' : 'Officer')}
                     </p>
                   </div>
-
-                  {/* Role Switcher in Dropdown */}
-                  {onSwitchRole && (
-                    <div className="px-3 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] space-y-1">
-                      <p className="text-[10px] font-bold text-[#8A99AD] tracking-wider uppercase">
-                        {isAmharic ? 'ሚና ቀይር' : 'Switch Role'}
-                      </p>
-                      <div className="grid grid-cols-2 gap-1">
-                        {(['clerk', 'admin', 'officer', 'superadmin'] as UserRole[]).map((r) => (
-                          <button
-                            key={r}
-                            type="button"
-                            onClick={() => {
-                              onSwitchRole(r);
-                              setIsUserDropdownOpen(false);
-                            }}
-                            className={`px-2 py-1.5 rounded text-[11px] font-medium text-left transition-all cursor-pointer ${
-                              userRole === r
-                                ? 'bg-slate-800 dark:bg-slate-700 text-white font-bold shadow-2xs'
-                                : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
-                            }`}
-                          >
-                            {r === 'admin'
-                              ? (isAmharic ? 'ሥራ አስኪያጅ' : 'Manager')
-                              : r === 'superadmin'
-                              ? (isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin')
-                              : r === 'clerk'
-                              ? (isAmharic ? 'መዝጋቢ' : 'Clerk')
-                              : (isAmharic ? 'ኦፊሰር' : 'Officer')}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   {/* Settings and Sign out options in User Dropdown */}
                   <div className="py-1">
@@ -2985,10 +2951,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         setActivePage('settings');
                         setIsUserDropdownOpen(false);
                       }}
-                      className="w-full px-4 py-2 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] flex items-center gap-2 text-left cursor-pointer transition-colors"
+                      className="w-full px-4 py-2.5 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] flex items-center gap-2.5 text-left cursor-pointer transition-colors"
                     >
-                      <Icon className="material-symbols-outlined text-[17px] text-[#8A99AD]">settings</Icon>
-                      <span>{isAmharic ? 'ቅንብሮች (Settings)' : 'Settings'}</span>
+                      <Icon className="material-symbols-outlined text-[18px] text-[#8A99AD]">settings</Icon>
+                      <span>{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
                     </button>
                     {/* Logout Option */}
                     <button
@@ -2997,11 +2963,11 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         setIsUserDropdownOpen(false);
                         setIsLogoutModalOpen(true);
                       }}
-                      className="w-full px-4 py-2 text-xs font-semibold text-[#F87171] hover:bg-rose-500/10 dark:hover:bg-rose-500/15 flex items-center gap-2 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
-                      title={isAmharic ? 'ወጣ (Logout)' : 'Logout'}
+                      className="w-full px-4 py-2.5 text-xs font-semibold text-[#F87171] hover:bg-rose-500/10 dark:hover:bg-rose-500/15 flex items-center gap-2.5 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
+                      title={isAmharic ? 'ውጣ' : 'Sign Out'}
                     >
-                      <Icon className="material-symbols-outlined text-[17px] text-[#F87171]">logout</Icon>
-                      <span>{isAmharic ? 'ወጣ (Logout)' : 'Logout'}</span>
+                      <Icon className="material-symbols-outlined text-[18px] text-[#F87171]">logout</Icon>
+                      <span>{isAmharic ? 'ውጣ' : 'Sign Out'}</span>
                     </button>
                   </div>
                 </div>

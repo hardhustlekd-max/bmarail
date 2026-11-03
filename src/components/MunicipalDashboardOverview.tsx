@@ -661,19 +661,19 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
             {/* ==================== UNIFIED OVERVIEW CONTAINER ==================== */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-xs overflow-hidden mb-6">
-        <div className="flex items-center gap-2.5 border-b border-outline-variant/60 px-4 sm:px-5 py-3.5 bg-slate-50/50 dark:bg-slate-900/50">
-          <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">dashboard</Icon>
-          <h2 className="font-black text-sm sm:text-base text-on-surface  tracking-wider">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-xl overflow-hidden mb-6">
+        <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800/60 px-4 sm:px-5 py-3.5 bg-slate-50/40 dark:bg-slate-900/40">
+          <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0">dashboard</Icon>
+          <h2 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
             {isAmharic ? 'አጠቃላይ እይታ' : 'Overview'}
           </h2>
         </div>
-        <div className="flex flex-col divide-y divide-outline-variant/60 dark:divide-slate-800">
+        <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800/60">
 
       {/* SYSTEM GOVERNANCE STATS CARDS (VISIBLE WHEN USER MANAGEMENT / RBAC TASK IS VIEWABLE) */}
       {(isTaskViewable(userRole, 13) || isTaskViewable(userRole, 14)) && (
         <div className="p-4 sm:p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-2.5">
             <div className="flex items-center gap-2.5">
               <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
               <div>
@@ -703,10 +703,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Super Admins & Admins */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200/50 dark:border-purple-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-purple-600 dark:group-hover:text-purple-300">
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
                   {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
                 </span>
               </div>
@@ -770,19 +770,19 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
       {/* FINANCIAL & REVENUE METRICS ACCORDING TO THE ETHIOPIAN CALENDAR (VISIBLE WHEN PAYMENT / REVENUE LEDGER / KPIS TASK IS VIEWABLE) */}
       {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
-        <div className="p-3.5 sm:p-5 space-y-3.5 bg-white dark:bg-slate-900 rounded-xl border border-outline-variant/60 shadow-2xs">
-          {/* Header with Ethiopian Month Title & Badge (Month Filter Removed per User Request) */}
-          <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-outline-variant/60 pb-3">
+        <div className="p-4 sm:p-5 space-y-3.5">
+          {/* Header with Ethiopian Month Title & Badge */}
+          <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-slate-100 dark:border-slate-800/60 pb-3">
             {/* Title */}
             <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
               <Icon className="material-symbols-outlined text-[20px] sm:text-[22px] text-slate-600 dark:text-slate-400 shrink-0">payments</Icon>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white tracking-wide truncate">
+              <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight truncate">
                 {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
               </h3>
             </div>
           </div>
 
-          {/* 5-Column Responsive Metric Statistics Cards (Clean Design System) */}
+          {/* 4-Column Responsive Metric Statistics Cards (Clean Design System) */}
           <MetricGrid columns={4}>
             {/* 1. Paid Members */}
             <MetricStatCard
@@ -790,6 +790,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               value={isLoading ? '—' : ethiopianMonthlyMetrics.paidMembersCount}
               subtext={isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
               statusVariant="paid"
+              unboxed={true}
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
             />
 
@@ -799,6 +800,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               value={isLoading ? '—' : ethiopianMonthlyMetrics.dueSoonMembersCount}
               subtext={isAmharic ? 'በ5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
               statusVariant="due"
+              unboxed={true}
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
             />
 
@@ -808,6 +810,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               value={isLoading ? '—' : ethiopianMonthlyMetrics.unpaidMembersCount}
               subtext={isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
               statusVariant="overdue"
+              unboxed={true}
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
             />
 
@@ -818,6 +821,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               unit={isAmharic ? 'ብር' : 'ETB'}
               subtext={isLoading ? (isAmharic ? 'በመጫን ላይ...' : 'Loading...') : `${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
               icon="account_balance_wallet"
+              unboxed={true}
               onClick={() => onQuickAction && onQuickAction('payment_receipts')}
             />
           </MetricGrid>

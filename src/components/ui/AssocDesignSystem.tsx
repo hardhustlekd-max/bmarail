@@ -102,36 +102,36 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const variantStyles: Record<StatusBadgeVariant, { bg: string; dot: string }> = {
     active: {
-      bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 shadow-2xs',
-      dot: 'bg-emerald-600 dark:bg-emerald-400',
+      bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60',
+      dot: 'bg-emerald-500',
     },
     success: {
-      bg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700 shadow-2xs',
-      dot: 'bg-emerald-600 dark:bg-emerald-400',
+      bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60',
+      dot: 'bg-emerald-500',
     },
     overdue: {
-      bg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700 shadow-2xs',
-      dot: 'bg-rose-600 dark:bg-rose-400',
+      bg: 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60',
+      dot: 'bg-rose-500',
     },
     danger: {
-      bg: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700 shadow-2xs',
-      dot: 'bg-rose-600 dark:bg-rose-400',
+      bg: 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60',
+      dot: 'bg-rose-500',
     },
     pending: {
-      bg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-2xs',
-      dot: 'bg-amber-600 dark:bg-amber-400',
+      bg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60',
+      dot: 'bg-amber-500',
     },
     warning: {
-      bg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-2xs',
-      dot: 'bg-amber-600 dark:bg-amber-400',
+      bg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60',
+      dot: 'bg-amber-500',
     },
     info: {
-      bg: 'bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300 border-sky-300 dark:border-sky-700 shadow-2xs',
-      dot: 'bg-sky-600 dark:bg-sky-400',
+      bg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700',
+      dot: 'bg-slate-500',
     },
     neutral: {
-      bg: 'bg-slate-100 text-slate-800 dark:bg-slate-800/90 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-2xs',
-      dot: 'bg-slate-500 dark:bg-slate-400',
+      bg: 'bg-slate-100 text-slate-700 dark:bg-slate-800/80 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+      dot: 'bg-slate-400',
     },
   };
 
@@ -139,7 +139,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border shrink-0 leading-tight ${current.bg} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold border shrink-0 leading-tight ${current.bg} ${className}`}
     >
       {showDot && <span className={`w-1.5 h-1.5 rounded-full ${current.dot}`} />}
       {label}
@@ -652,6 +652,7 @@ export interface MetricStatCardProps {
   onClick?: () => void;
   className?: string;
   isActive?: boolean;
+  unboxed?: boolean;
 }
 
 export const MetricStatCard: React.FC<MetricStatCardProps> = ({
@@ -666,6 +667,7 @@ export const MetricStatCard: React.FC<MetricStatCardProps> = ({
   onClick,
   className = '',
   isActive = false,
+  unboxed = false,
 }) => {
   const dotColorMap: Record<string, string> = {
     paid: 'bg-emerald-500',
@@ -683,36 +685,38 @@ export const MetricStatCard: React.FC<MetricStatCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`p-3.5 rounded-xl bg-white dark:bg-slate-900 border ${
-        isActive
-          ? 'border-primary dark:border-primary shadow-kpi-active'
-          : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-kpi'
+      className={`p-3 sm:p-3.5 rounded-lg transition-all duration-150 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
+        unboxed
+          ? 'bg-slate-50/70 dark:bg-slate-900/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 border border-slate-200/50 dark:border-slate-800/50'
+          : isActive
+          ? 'bg-white dark:bg-slate-900 border border-primary dark:border-primary shadow-xs'
+          : 'bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/70 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
       } ${
-        onClick ? 'cursor-pointer group shadow-kpi-hover active:scale-98' : ''
-      } transition-all duration-200 min-w-0 overflow-hidden select-none flex flex-col justify-between ${className}`}
+        onClick ? 'cursor-pointer group active:scale-[0.98]' : ''
+      } ${className}`}
     >
       <div className="flex items-center justify-between gap-1 mb-1">
-        <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 truncate block">
+        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate block">
           {label}
         </span>
         {resolvedDotColor && (
-          <span className={`w-2 h-2 rounded-full shrink-0 ${resolvedDotColor}`} />
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${resolvedDotColor}`} />
         )}
         {icon && !resolvedDotColor && (
-          <Icon name={icon} size={16} className="text-slate-400 dark:text-slate-500 shrink-0" />
+          <Icon name={icon} size={15} className="text-slate-400 dark:text-slate-500 shrink-0" />
         )}
       </div>
       <div>
-        <p className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight flex items-baseline">
+        <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight flex items-baseline font-mono">
           {value}
           {unit && (
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-1">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 ml-1">
               {unit}
             </span>
           )}
         </p>
         {subtext && (
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 truncate font-medium">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate font-medium">
             {subtext}
           </p>
         )}
@@ -796,10 +800,10 @@ export const UnifiedWorkspaceCard: React.FC<UnifiedWorkspaceCardProps> = ({
   className = '',
 }) => (
   <div
-    className={`rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] w-full max-w-full min-w-0 ${className}`}
+    className={`rounded-lg border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-slate-100 dark:divide-slate-800/60 w-full max-w-full min-w-0 ${className}`}
   >
     {header && <div className="w-full">{header}</div>}
-    {tabs && <div className="w-full bg-[#F8FAFC] dark:bg-[#1E293B]/70">{tabs}</div>}
+    {tabs && <div className="w-full bg-slate-50/70 dark:bg-[#1E293B]/70">{tabs}</div>}
     {toolbar && <div className="w-full">{toolbar}</div>}
     {legend && <div className="w-full">{legend}</div>}
     <div className="w-full min-w-0 overflow-x-hidden md:overflow-x-auto">{children}</div>

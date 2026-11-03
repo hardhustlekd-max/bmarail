@@ -135,7 +135,7 @@ export async function runStandaloneMigration(): Promise<void> {
       console.log('[Database Migration CLI] Running document file renaming migration based on registration numbers...');
       await migrateExistingFilesToRegistrationNumbers(pool);
 
-      console.log('[Database Migration CLI] ✅ Database schema is up-to-date and ready for production!');
+      console.log('[Database Migration CLI] [OK] Database schema is up-to-date and ready for production!');
     } finally {
       client.release();
     }

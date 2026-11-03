@@ -1,6 +1,6 @@
 {
-  "summary":  "Architectural plan to review and refactor table filter toolbars across all tables in the application. Implements a unified, space-saving design featuring a primary compact bar (full-width search + scrollable status pills on mobile) paired with a collapsible secondary filter drawer for granular controls (sub-city, sorting, category, company vehicle) and minimal zero-clutter active indicators.",
-  "updatedAt":  "2026-10-31T06:54:08.717885237Z",
-  "requestFeedback":  true,
-  "userFacing":  true
+  "summary": "Updated implementation plan incorporating explicit exclusions for the QR scanner, scanner verification results, member ID cards, A4 permit papers, and vehicle QR stickers, focusing de-boxing and color harmonization strictly on core dashboard, table, form, and governance views.",
+  "updatedAt": "2026-11-03T14:42:49.389961275Z",
+  "requestFeedback": true,
+  "userFacing": true
 }

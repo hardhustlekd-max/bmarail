@@ -2117,20 +2117,23 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">palette</Icon>
-                  <h3 className="font-black text-base text-on-surface">
-                    {isAmharic ? 'የስካነር ውጤት ገጽ ገጽታ መምረጫ (Scanner Result Themes)' : 'Scanner Result Page Theme Settings'}
+                  <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                    {isAmharic ? 'የስካነር ውጤት ገጽታ' : 'Scanner Result Page Theme'}
                   </h3>
                 </div>
-                <p className="text-xs text-outline mt-1 font-medium">
-                  {isAmharic
-                    ? '⚠️ ይህ ገጽታ የሚተገበረው ለስካነር ውጤት ማሳያ ገጽ ብቻ ነው፤ እዚህ ሲመረጥ ለሁሉም ኦፊሰሮችና ተጠቃሚዎች ወዲያውኑ ይተገበራል።'
-                    : '⚠️ Themes are strictly applied only to the scanner result page and take effect globally for all officers and users.'}
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium flex items-center gap-1.5">
+                  <Icon className="material-symbols-outlined text-[15px] text-amber-600 shrink-0">info</Icon>
+                  <span>
+                    {isAmharic
+                      ? 'ይህ ገጽታ ለስካነር ውጤት ማሳያ ብቻ የሚያገለግል ሲሆን ለሁሉም ኦፊሰሮች ወዲያውኑ ይተገበራል።'
+                      : 'Themes apply strictly to the scanner result page globally across all officers.'}
+                  </span>
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                <span className="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-slate-600 dark:bg-slate-400"></span>
                   <span>
                     {isAmharic ? 'የአሁኑ ገጽታ:' : 'Active:'}{' '}
                     <strong>
@@ -2152,13 +2155,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     key={themeKey}
                     className={`rounded-xl border transition-all p-4 flex flex-col justify-between space-y-3 relative overflow-hidden ${
                       isSelected
-                        ? 'border-indigo-600 bg-indigo-50/20 dark:bg-indigo-950/20 ring-2 ring-indigo-500/20 shadow-md'
-                        : 'border-outline-variant/70 hover:border-outline bg-surface-container/30 hover:shadow-xs'
+                        ? 'border-slate-800 dark:border-slate-300 bg-slate-50/70 dark:bg-slate-800/40 shadow-xs'
+                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 bg-surface-container/30 hover:shadow-2xs'
                     }`}
                   >
                     {/* Active Ribbon */}
                     {isSelected && (
-                      <div className="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] font-black  px-3 py-0.5 rounded-bl-lg flex items-center gap-1 shadow-xs">
+                      <div className="absolute top-0 right-0 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-black px-3 py-0.5 rounded-bl-lg flex items-center gap-1 shadow-xs">
                         <Icon className="material-symbols-outlined text-[12px]">check_circle</Icon>
                         <span>{isAmharic ? 'ተመርጧል' : 'Active'}</span>
                       </div>
@@ -2177,8 +2180,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                               ባህር ዳር ሞተረኞች ማህበር
                             </span>
                           </div>
-                          <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-white/20 text-white ">
-                            ✓ VERIFIED
+                          <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-white/20 text-white inline-flex items-center gap-0.5">
+                            <Icon className="material-symbols-outlined text-[10px]">check</Icon>
+                            <span>VERIFIED</span>
                           </span>
                         </div>
                         {/* Mockup Body Preview */}
@@ -2193,7 +2197,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             </div>
                           </div>
                           <div className={`p-1.5 rounded-lg flex items-center justify-between text-[8px] font-bold ${theme.specCardBg || theme.cardBg}`}>
-                            <span className={theme.headingText}>📄 Police Verification Permit</span>
+                            <span className={`inline-flex items-center gap-1 ${theme.headingText}`}>
+                              <Icon className="material-symbols-outlined text-[10px]">description</Icon>
+                              Police Verification Permit
+                            </span>
                             <span className="text-[7px] px-1 py-0.5 rounded bg-emerald-500 text-white font-bold">VALID</span>
                           </div>
                         </div>

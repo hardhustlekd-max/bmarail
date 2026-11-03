@@ -254,15 +254,16 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-black text-sm sm:text-base text-slate-900 dark:text-white truncate">
-                  {isAmharic ? 'የአባል መረጃ ማሻሻያ (Edit Record)' : 'Edit Member Registration'}
+                  {isAmharic ? 'የአባል መረጃ ማሻሻያ' : 'Edit Member Registration'}
                 </h3>
                 {isSuperAdmin ? (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                    👑 {isAmharic ? 'ሱፐር አድሚን ፍቃድ' : 'Super Admin Mode'}
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 inline-flex items-center gap-1">
+                    <Icon className="material-symbols-outlined text-[13px]">shield</Icon>
+                    <span>{isAmharic ? 'ሱፐር አድሚን' : 'Super Admin'}</span>
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    {isAmharic ? 'የተጠቃሚ ሚና፡ ' : 'Role: '} {userRole}
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    {userRole}
                   </span>
                 )}
               </div>
