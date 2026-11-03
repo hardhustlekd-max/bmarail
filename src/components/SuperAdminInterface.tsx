@@ -1786,7 +1786,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
             <button
               onClick={handleMasterApproveAllPending}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-md transition-all shadow-md active:scale-95 flex items-center gap-1.5"
+              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5 cursor-pointer"
             >
               <Icon className="material-symbols-outlined text-[18px]">done_all</Icon>
               {isAmharic ? 'የሚጠብቁትን ሁሉ በጅምላ አጽድቅ' : 'Bulk Approve Pending Permits'}
@@ -1812,7 +1812,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 type="button"
                 onClick={handleForceSyncDatabase}
                 disabled={isSyncingLiveDb}
-                className="hidden sm:inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#1e293b] hover:bg-[#162B5B] text-white rounded-md text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                className="hidden sm:inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer disabled:opacity-50"
               >
                 <Icon className={`material-symbols-outlined text-[18px] ${isSyncingLiveDb ? 'animate-spin' : ''}`}>
                   sync
@@ -1845,7 +1845,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 type="button"
                 onClick={handleRunStorageMaintenance}
                 disabled={isStorageMaintenanceRunning}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-md text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer disabled:opacity-50"
               >
                 <Icon className={`material-symbols-outlined text-[18px] ${isStorageMaintenanceRunning ? 'animate-spin' : ''}`}>
                   {isStorageMaintenanceRunning ? 'sync' : 'play_circle'}
@@ -1891,7 +1891,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 <button
                   type="button"
                   onClick={handleExportFullDatabaseBackup}
-                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-md text-xs font-extrabold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                  className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Icon className="material-symbols-outlined text-[18px]">cloud_download</Icon>
                   <span>{isAmharic ? 'ባክአፕ ፋይል አውርድ (JSON)' : 'Download Backup (.JSON)'}</span>
@@ -1914,7 +1914,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </p>
                 </div>
 
-                <label className="w-full py-2.5 bg-[#1e293b] hover:bg-[#162B5B] text-white rounded-md text-xs font-extrabold shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98">
+                <label className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors flex items-center justify-center gap-2 cursor-pointer">
                   <Icon className={`material-symbols-outlined text-[18px] ${isRestoringBackup ? 'animate-spin' : ''}`}>
                     {isRestoringBackup ? 'sync' : 'restore_page'}
                   </Icon>
@@ -2542,7 +2542,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold shadow-xs active:scale-95"
+                  className="px-5 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors"
                 >
                   {isAmharic ? 'ተጠቃሚውን አስመዝግብ' : 'Create User Account'}
                 </button>
@@ -2700,7 +2700,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold shadow-xs active:scale-95"
+                  className="px-5 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors"
                 >
                   {isAmharic ? 'ለውጦችን መዝግብ' : 'Save Changes'}
                 </button>

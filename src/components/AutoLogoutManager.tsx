@@ -380,23 +380,23 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
               <button
                 type="button"
                 onClick={handleImmediateLogout}
-                className="order-2 sm:order-1 px-4 py-2.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-surface-container-high dark:hover:bg-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                className="order-2 sm:order-1 px-4 py-2.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Icon className="material-symbols-outlined text-[16px]">logout</Icon>
-                <span>{isAmharic ? 'አሁን ውጣ (Sign Out)' : 'Sign Out Now'}</span>
+                <span>{isAmharic ? 'አሁን ውጣ' : 'Sign Out Now'}</span>
               </button>
 
               <button
                 ref={keepLoggedInButtonRef}
                 type="button"
                 onClick={handleKeepLoggedIn}
-                className="order-1 sm:order-2 px-6 py-3 rounded-lg text-xs sm:text-sm font-black bg-primary hover:bg-primary-hover text-white shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-95 group"
+                className="order-1 sm:order-2 px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-primary hover:bg-primary-hover text-white border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer flex items-center justify-center gap-2 group"
               >
                 <Icon className="material-symbols-outlined text-[18px] text-yellow-400 group-hover:rotate-180 transition-transform duration-500">
                   lock_reset
                 </Icon>
                 <span>{isAmharic ? 'በመለያዬ እንዳለሁ አቆየኝ' : 'Keep me logged in'}</span>
-                <span className="ml-1 px-2 py-0.5 rounded-md text-[10px] font-black bg-yellow-400/20 text-yellow-300 border border-yellow-400/30">
+                <span className="ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-yellow-400/20 text-yellow-300">
                   +15 min
                 </span>
               </button>

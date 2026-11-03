@@ -40,13 +40,13 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary:
-      'bg-primary hover:bg-primary-hover text-white dark:text-slate-900 font-semibold shadow-xs hover:shadow-sm focus:ring-2 focus:ring-slate-900/30 dark:focus:ring-slate-100/30',
+      'bg-primary hover:bg-primary-hover text-white font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-primary/40 transition-colors',
     secondary:
-      'bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-slate-400/30',
+      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-slate-400/30 transition-colors',
     danger:
-      'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold shadow-xs focus:ring-2 focus:ring-rose-500/40',
+      'bg-rose-600 hover:bg-rose-700 text-white font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-rose-500/40 transition-colors',
     ghost:
-      'bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus:ring-2 focus:ring-slate-300',
+      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus:ring-2 focus:ring-slate-300 transition-colors',
   };
 
   return (
@@ -613,8 +613,8 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-5 shadow-kpi transition-all ${
-        onClick ? 'cursor-pointer shadow-kpi-hover hover:border-slate-300 dark:hover:border-slate-700' : ''
+      className={`bg-slate-50/60 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 rounded-lg p-3.5 sm:p-5 transition-colors ${
+        onClick ? 'cursor-pointer hover:bg-slate-100/70 dark:hover:bg-slate-800/60' : ''
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-1.5">
@@ -685,14 +685,14 @@ export const MetricStatCard: React.FC<MetricStatCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`p-3 sm:p-3.5 rounded-lg transition-all duration-150 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
+      className={`p-3 sm:p-3.5 rounded-lg transition-colors duration-150 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
         unboxed
-          ? 'bg-slate-50/70 dark:bg-slate-900/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 border border-slate-200/50 dark:border-slate-800/50'
+          ? 'bg-slate-50/70 dark:bg-slate-900/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800/60'
           : isActive
-          ? 'bg-white dark:bg-slate-900 border border-primary dark:border-primary shadow-xs'
-          : 'bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/70 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs'
+          ? 'bg-slate-50/90 dark:bg-slate-900/60 border border-slate-400 dark:border-slate-600'
+          : 'bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-50/80 dark:hover:bg-slate-800/40'
       } ${
-        onClick ? 'cursor-pointer group active:scale-[0.98]' : ''
+        onClick ? 'cursor-pointer group' : ''
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-1 mb-1">

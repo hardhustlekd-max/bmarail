@@ -179,7 +179,7 @@ export const ActionTriggerPrimary = ({
     id={id}
     type="button"
     onClick={onClick}
-    className={`min-h-[48px] px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 shadow-sm hover:shadow-md active:scale-98 transition-all duration-200 cursor-pointer select-none ${className}`}
+    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer select-none ${className}`}
   >
     <Icon name={icon} size={20} />
     <span className="whitespace-nowrap">{label}</span>

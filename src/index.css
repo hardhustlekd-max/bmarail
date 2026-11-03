@@ -1148,59 +1148,59 @@ html.dark .shadow-animated-hover:hover {
    REFINED KPI METRICS SHADOW & ELEVATION SYSTEM
    ========================================================================== */
 
-/* Refined base KPI card shadow with dual-layer depth for both light & dark mode */
+/* Flat, un-embossed KPI metrics design with zero shadow depth or translateY lift */
 .shadow-kpi {
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 14px -2px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.04);
-  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: none !important;
+  transition: background-color 150ms ease, border-color 150ms ease;
 }
 
 html.dark .shadow-kpi {
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.35), 0 8px 20px -4px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: none !important;
 }
 
-/* Hover state for interactive KPI cards */
+/* Hover state for flat interactive KPI cards - no translateY lift */
 .shadow-kpi-hover {
-  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease;
+  transition: background-color 150ms ease, border-color 150ms ease;
 }
 
 .shadow-kpi-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.08);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 html.dark .shadow-kpi-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.75), 0 6px 16px -2px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* Active / Selected state shadow glow for KPI cards */
+/* Active / Selected state - clean hairline border, no 3D glow or scale */
 .shadow-kpi-active {
-  box-shadow: 0 0 0 1px var(--color-primary, #2563eb), 0 8px 24px -2px rgba(37, 99, 235, 0.2) !important;
+  box-shadow: none !important;
 }
 
 html.dark .shadow-kpi-active {
-  box-shadow: 0 0 0 1px var(--color-primary, #3b82f6), 0 8px 24px -2px rgba(59, 130, 246, 0.35) !important;
+  box-shadow: none !important;
 }
 
-/* Card Interactive Elevation State */
+/* Card Interactive Flat State */
 .card-interactive-state {
-  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 150ms ease, border-color 150ms ease;
   border: 1px solid var(--assoc-border);
 }
 
 .card-interactive-state:hover {
   border-color: var(--assoc-accent);
-  transform: translateY(-1.5px);
-  box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 html.dark .card-interactive-state:hover {
-  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.45);
+  box-shadow: none !important;
 }
 
 .card-interactive-state:active {
-  transform: translateY(0) scale(0.985);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 /* UI State Input Focus Ring Feedback */

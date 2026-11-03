@@ -1401,6 +1401,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 value={isLoading ? '—' : ethiopianMonthlyMetrics.paidMembersCount}
                 subtext={isAmharic ? 'ወቅታዊ ክፍያ የተጠናቀቀ' : 'Fully paid for month'}
                 statusVariant="paid"
+                unboxed={true}
                 onClick={() => {
                   setStatusFilter('active');
                   setActiveMainTab('table');
@@ -1413,6 +1414,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 value={isLoading ? '—' : ethiopianMonthlyMetrics.dueSoonMembersCount}
                 subtext={isAmharic ? 'በ 5 ቀናት ውስጥ የሚያበቃ' : 'Expiring in ≤5 days'}
                 statusVariant="due"
+                unboxed={true}
                 onClick={() => {
                   setStatusFilter('expiring_soon');
                   setActiveMainTab('table');
@@ -1425,6 +1427,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 value={isLoading ? '—' : ethiopianMonthlyMetrics.unpaidMembersCount}
                 subtext={isAmharic ? 'ክፍያ ያልተፈጸመ' : 'Delinquent dues'}
                 statusVariant="overdue"
+                unboxed={true}
                 onClick={() => {
                   setStatusFilter('expired');
                   setActiveMainTab('table');
@@ -1438,6 +1441,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 unit={isAmharic ? 'ብር' : 'ETB'}
                 subtext={isLoading ? (isAmharic ? 'በመጫን ላይ...' : 'Loading...') : `${ethiopianMonthlyMetrics.totalReceiptsCount} ${isAmharic ? 'ደረሰኞች ተመዝግበዋል' : 'receipts recorded'}`}
                 icon="account_balance_wallet"
+                unboxed={true}
                 onClick={() => {
                   setStatusFilter('all');
                   setActiveMainTab('table');
@@ -1451,6 +1455,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 icon="pie_chart"
                 progress={isLoading ? 0 : ethiopianMonthlyMetrics.complianceRate}
                 className="col-span-2 sm:col-span-1"
+                unboxed={true}
                 onClick={() => {
                   setStatusFilter('all');
                   setActiveMainTab('table');
@@ -1640,7 +1645,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     type="button"
                     onClick={handleVerifyReceiptInForm}
                     disabled={formChekiLoading || !receiptNumber.trim()}
-                    className="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 shrink-0 cursor-pointer disabled:cursor-not-allowed active:scale-95"
+                    className="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5 shrink-0 cursor-pointer disabled:cursor-not-allowed"
                     title={isAmharic ? 'ደረሰኙን አረጋግጥ' : 'Verify receipt on bank system via Cheki API'}
                   >
                     {formChekiLoading ? (
@@ -1968,7 +1973,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || isFormReadOnly || !canAddReceipt || selectedRegInfo?.expirationStatusType === 'active'}
-              className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-xs font-black transition-all shadow-xs flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -2921,7 +2926,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     setSelectedMemberDetail(null);
                     setIsFormOpen(true);
                   }}
-                  className="py-2 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
+                  className="py-2 px-3.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Icon name="add_card" size={16} />
                   <span>{isAmharic ? 'አዲስ ክፍያ መዝግብ' : 'Record New Payment'}</span>

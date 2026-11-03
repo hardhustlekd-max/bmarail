@@ -747,7 +747,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 id="save-edit-registration-btn"
                 type="submit"
                 disabled={isSubmitting || !canEdit}
-                className="px-5 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs rounded-lg font-black cursor-pointer shadow-md flex items-center gap-1.5 transition-transform active:scale-98"
+                className="px-5 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs rounded-lg font-bold cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5"
               >
                 {isSubmitting ? (
                   <>

@@ -577,7 +577,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-[#1e293b] hover:bg-[#112D6C] text-white font-extrabold text-xs py-3 rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98 disabled:opacity-50"
+                    className="w-full bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer disabled:opacity-50"
                   >
                     {isLoading ? (
                       <Icon className="material-symbols-outlined text-[18px] animate-spin">sync</Icon>

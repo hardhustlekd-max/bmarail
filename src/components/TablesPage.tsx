@@ -2483,7 +2483,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmittingRenewal}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs rounded-md font-extrabold cursor-pointer shadow-xs flex items-center gap-1.5"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs rounded-lg font-bold cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5"
                 >
                   {isSubmittingRenewal ? (
                     <>

@@ -653,7 +653,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <button
             type="button"
             onClick={() => handleActionClick('quick_verify')}
-            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-[#0f172a] hover:bg-slate-800 active:scale-95 touch-manipulation transition-all font-black text-xs sm:text-sm text-white tracking-wider  flex items-center justify-center gap-2.5 shadow-md cursor-pointer"
+            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-primary hover:bg-primary-hover border-0 shadow-none hover:shadow-none touch-manipulation transition-colors font-black text-xs sm:text-sm text-white tracking-wider flex items-center justify-center gap-2.5 cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[22px]">photo_camera</Icon>
             <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch QR Scanner'}</span>
@@ -688,7 +688,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Total Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
                 <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
@@ -703,7 +703,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Super Admins & Admins */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
                 <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
@@ -720,7 +720,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Blocked Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer group min-w-0 overflow-hidden select-none"
+              className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
                 <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
@@ -870,7 +870,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-                  className="w-full text-left p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
+                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-slate-400/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
                     <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
@@ -887,7 +887,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-                  className="w-full text-left p-2 sm:p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
+                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50 hover:bg-amber-100/70 dark:hover:bg-amber-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
                     <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
@@ -904,7 +904,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-                  className="w-full text-left p-2 sm:p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200/50 dark:border-rose-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
+                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/80 dark:bg-rose-900/20 border border-rose-200/70 dark:border-rose-800/50 hover:bg-rose-100/70 dark:hover:bg-rose-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
                     <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
@@ -940,7 +940,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-              className="w-full text-left p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200/50 dark:border-slate-800/60 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-blue-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-slate-400/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
                 <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
@@ -957,7 +957,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="w-full text-left p-2 sm:p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/50 dark:border-emerald-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-emerald-50/80 dark:bg-emerald-900/20 border border-emerald-200/70 dark:border-emerald-800/50 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
                 <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
@@ -972,7 +972,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-              className="w-full text-left p-2 sm:p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50 hover:bg-amber-100/70 dark:hover:bg-amber-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
                 <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
@@ -989,7 +989,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-              className="w-full text-left p-2 sm:p-3 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200/50 dark:border-rose-800/40 shadow-kpi shadow-kpi-hover active:scale-98 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/80 dark:bg-rose-900/20 border border-rose-200/70 dark:border-rose-800/50 hover:bg-rose-100/70 dark:hover:bg-rose-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
                 <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
