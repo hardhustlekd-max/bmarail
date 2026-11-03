@@ -1915,6 +1915,155 @@ const HomePageShell: React.FC<HomePageProps> = ({
               </div>
             </div>
           </nav>
+
+          {/* Desktop Sidebar Bottom Date & Time Widget */}
+          <div className="pt-3 mt-auto border-t border-slate-800 shrink-0 w-full relative" ref={dateDropdownRef}>
+            <button
+              type="button"
+              onClick={() => {
+                setIsDateDropdownOpen((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    setIsUserDropdownOpen(false);
+                    setIsNotificationOpen(false);
+                  }
+                  return next;
+                });
+              }}
+              className={`w-full flex items-center rounded-lg bg-slate-800/80 hover:bg-slate-800 text-slate-200 transition-all cursor-pointer select-none ${
+                isCollapsed ? 'justify-center p-2' : 'justify-between px-3 py-2.5'
+              }`}
+              title={isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian Calendar'}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Icon className="material-symbols-outlined text-amber-400 text-[18px] shrink-0">calendar_month</Icon>
+                {!isCollapsed && (
+                  <div className="min-w-0 text-left">
+                    <span className="text-xs font-bold text-white block truncate leading-tight">
+                      {isAmharic ? ethDate.formattedAm : ethDate.formattedEn}
+                    </span>
+                    <span className="text-[10px] text-amber-300 font-mono font-medium block truncate">
+                      {isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {!isCollapsed && (
+                <Icon className="material-symbols-outlined text-slate-400 text-[16px] shrink-0">
+                  {isDateDropdownOpen ? 'expand_less' : 'expand_more'}
+                </Icon>
+              )}
+            </button>
+
+            {/* Interactive Ethiopian Calendar Popover from Sidebar */}
+            {isDateDropdownOpen && (
+              <div
+                className={`absolute bottom-full mb-2 z-[100] w-80 sm:w-88 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-2xl p-4 animate-in fade-in slide-in-from-bottom-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE] ${
+                  isCollapsed ? 'left-12' : 'left-0'
+                }`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Municipal Calendar Header */}
+                <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-slate-700 space-y-1 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-extrabold text-slate-300 tracking-wider flex items-center gap-1">
+                      <Icon className="material-symbols-outlined text-[14px]">event</Icon>
+                      {isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian National Calendar'}
+                    </span>
+                    <span className="text-[11px] font-black bg-slate-700 text-slate-200 px-2 py-0.5 rounded">
+                      {ethDate.weekdayAm} ({ethDate.weekdayEn})
+                    </span>
+                  </div>
+                  <div className="text-base font-black tracking-tight text-white">
+                    {ethDate.monthNameAm} {ethDate.day} ቀን {ethDate.year} ዓ.ም
+                  </div>
+                  <div className="text-xs text-[#8A99AD] font-medium">
+                    {ethDate.monthNameEn} {ethDate.day}, {ethDate.year} E.C.
+                  </div>
+                </div>
+
+                {/* Real-time Digital Clocks */}
+                <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                  <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
+                      {isAmharic ? 'የሀገር ባህል ሰዓት' : 'Ethiopian Traditional Time'}
+                    </span>
+                    <span className="font-mono font-black text-xs text-amber-600 dark:text-amber-300 flex items-center gap-1 mt-0.5">
+                      <Icon className="material-symbols-outlined text-[14px]">sunny</Icon>
+                      {isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}
+                    </span>
+                  </div>
+
+                  <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
+                      {isAmharic ? 'ዓመተ ምሕረት (E.C.)' : 'Era (E.C.)'}
+                    </span>
+                    <span className="font-mono font-black text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
+                      <Icon className="material-symbols-outlined text-[14px] text-amber-500">calendar_month</Icon>
+                      {ethDate.year} ዓ.ም
+                    </span>
+                  </div>
+                </div>
+
+                {/* Ethiopian Calendar Date & GMT+3 Standard */}
+                <div className="mt-3 bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between text-xs">
+                  <div>
+                    <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
+                      {isAmharic ? 'የኢትዮጵያ ካሌንደር' : 'Ethiopian Calendar'}
+                    </span>
+                    <span className="font-bold text-[#1C2434] dark:text-white">
+                      {isAmharic ? ethDate.formattedAm : ethDate.formattedEn}
+                    </span>
+                  </div>
+                  <span className="text-xs font-mono font-extrabold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-1 rounded-sm">
+                    E.C.
+                  </span>
+                </div>
+
+                {/* Calendar Quick Month Navigation Grid for Visual Display */}
+                <div className="mt-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-extrabold text-[#1C2434] dark:text-white">
+                      {isAmharic ? `የወሩ ቀናት (${ethDate.monthNameAm})` : `Days of ${ethDate.monthNameEn}`}
+                    </span>
+                    <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded-sm">
+                      {isAmharic ? 'ዛሬ: ' + ethDate.day : 'Today: ' + ethDate.day}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold">
+                    {['እ', 'ሰ', 'ማ', 'ረ', 'ሐ', 'ዓ', 'ቅ'].map((day, idx) => (
+                      <div key={idx} className="text-[#8A99AD] text-[11px] font-black py-0.5">
+                        {day}
+                      </div>
+                    ))}
+                    {Array.from({ length: ethDate.isPagume ? 6 : 30 }, (_, i) => i + 1).map((d) => (
+                      <div
+                        key={d}
+                        className={`py-1 rounded-sm font-mono font-bold text-xs ${
+                          d === ethDate.day
+                            ? 'bg-slate-800 dark:bg-slate-700 text-white font-black shadow-xs'
+                            : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
+                        }`}
+                      >
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Close / Dismiss */}
+                <div className="mt-3 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsDateDropdownOpen(false)}
+                    className="px-3.5 py-1.5 rounded-sm bg-[#F1F5F9] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-xs font-semibold text-[#1C2434] dark:text-white transition-colors cursor-pointer border border-[#E2E8F0] dark:border-[#2E3A47]"
+                  >
+                    {isAmharic ? 'ዝጋ' : 'Close'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </aside>
 
@@ -2653,18 +2802,18 @@ const HomePageShell: React.FC<HomePageProps> = ({
           </div>
         </div>
 
-        {/* DESKTOP TOP BAR (hidden md:flex) */}
-        <header className="hidden md:flex items-center justify-between px-4 sm:px-6 md:px-8 py-2.5 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0] dark:border-[#2E3A47] sticky top-0 z-40 shadow-xs relative overflow-hidden transition-colors">
+        {/* DESKTOP TOP BAR (hidden md:flex) - Clean Unboxed Design */}
+        <header className="hidden md:flex items-center justify-between px-4 sm:px-6 md:px-8 py-2 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0]/80 dark:border-[#2E3A47] sticky top-0 z-40 relative transition-colors">
           {/* Left Side: Sidebar Toggle Button & Current Context */}
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="w-8.5 h-8.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+              className="w-9 h-9 rounded-lg text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24303F] flex items-center justify-center transition-all cursor-pointer active:scale-95"
               title={isCollapsed ? (isAmharic ? 'ሳይድባር ዘርጋ' : 'Expand Sidebar') : (isAmharic ? 'ሳይድባር አሳንስ' : 'Collapse Sidebar')}
               aria-label="Toggle Sidebar"
             >
-              <Icon className="material-symbols-outlined text-[20px]">
+              <Icon className="material-symbols-outlined text-[22px]">
                 {isCollapsed ? 'menu_open' : 'menu'}
               </Icon>
             </button>
@@ -2681,150 +2830,33 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </div>
           </div>
 
-          {/* Right Side Tools: Date Dropdown, Notifications, User Dropdown */}
-          <div className="flex items-center gap-2.5">
-            {/* Real Working Ethiopian Calendar Date & Time Display (Clean unboxed style) */}
-            <div className="relative" ref={dateDropdownRef}>
-              <button
-                type="button"
-                onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-                className="px-2 py-1 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-1.5 sm:gap-2 cursor-pointer transition-colors select-none"
-                title={isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian Calendar'}
-              >
-                <Icon className="material-symbols-outlined text-amber-500 text-[18px]">calendar_month</Icon>
-                <span className="font-semibold text-xs text-[#1C2434] dark:text-[#DEE4EE]">{isAmharic ? ethDate.formattedAm : ethDate.formattedEn}</span>
-                <span className="hidden lg:inline text-[11px] text-[#64748B] dark:text-[#8A99AD] font-mono font-medium">
-                  {isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}
-                </span>
-                <Icon className="material-symbols-outlined text-[#8A99AD] text-[15px]">
-                  {isDateDropdownOpen ? 'expand_less' : 'expand_more'}
-                </Icon>
-              </button>
-
-              {/* Interactive Ethiopian Calendar Dropdown */}
-              {isDateDropdownOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-80 sm:w-88 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Municipal Calendar Header */}
-                  <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-slate-700 space-y-1 shadow-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold text-slate-300 tracking-wider flex items-center gap-1">
-                        <Icon className="material-symbols-outlined text-[14px]">event</Icon>
-                        {isAmharic ? 'የኢትዮጵያ ቀን መቁጠሪያ' : 'Ethiopian National Calendar'}
-                      </span>
-                      <span className="text-[11px] font-black bg-slate-700 text-slate-200 px-2 py-0.5 rounded">
-                        {ethDate.weekdayAm} ({ethDate.weekdayEn})
-                      </span>
-                    </div>
-                    <div className="text-base font-black tracking-tight text-white">
-                      {ethDate.monthNameAm} {ethDate.day} ቀን {ethDate.year} ዓ.ም
-                    </div>
-                    <div className="text-xs text-[#8A99AD] font-medium">
-                      {ethDate.monthNameEn} {ethDate.day}, {ethDate.year} E.C.
-                    </div>
-                  </div>
-
-                  {/* Real-time Digital Clocks */}
-                  <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
-                        {isAmharic ? 'የሀገር ባህል ሰዓት' : 'Ethiopian Traditional Time'}
-                      </span>
-                      <span className="font-mono font-black text-xs text-amber-600 dark:text-amber-300 flex items-center gap-1 mt-0.5">
-                        <Icon className="material-symbols-outlined text-[14px]">sunny</Icon>
-                        {isAmharic ? ethDate.traditionalTimeAm : ethDate.traditionalTimeEn}
-                      </span>
-                    </div>
-
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
-                        {isAmharic ? 'ዓመተ ምሕረት (E.C.)' : 'Era (E.C.)'}
-                      </span>
-                      <span className="font-mono font-black text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1 mt-0.5">
-                        <Icon className="material-symbols-outlined text-[14px] text-amber-500">calendar_month</Icon>
-                        {ethDate.year} ዓ.ም
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Ethiopian Calendar Date & GMT+3 Standard */}
-                  <div className="mt-3 bg-[#F7F9FC] dark:bg-[#24303F] p-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between text-xs">
-                    <div>
-                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] block font-bold">
-                        {isAmharic ? 'የኢትዮጵያ ካሌንደር' : 'Ethiopian Calendar'}
-                      </span>
-                      <span className="font-bold text-[#1C2434] dark:text-white">
-                        {isAmharic ? ethDate.formattedAm : ethDate.formattedEn}
-                      </span>
-                    </div>
-                    <span className="text-xs font-mono font-extrabold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-1 rounded-sm">
-                      E.C.
-                    </span>
-                  </div>
-
-                  {/* Calendar Quick Month Navigation Grid for Visual Display */}
-                  <div className="mt-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-extrabold text-[#1C2434] dark:text-white">
-                        {isAmharic ? `የወሩ ቀናት (${ethDate.monthNameAm})` : `Days of ${ethDate.monthNameEn}`}
-                      </span>
-                      <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 px-2 py-0.5 rounded-sm">
-                        {isAmharic ? 'ዛሬ: ' + ethDate.day : 'Today: ' + ethDate.day}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold">
-                      {['እ', 'ሰ', 'ማ', 'ረ', 'ሐ', 'ዓ', 'ቅ'].map((day, idx) => (
-                        <div key={idx} className="text-[#8A99AD] text-[11px] font-black py-0.5">
-                          {day}
-                        </div>
-                      ))}
-                      {Array.from({ length: ethDate.isPagume ? 6 : 30 }, (_, i) => i + 1).map((d) => (
-                        <div
-                          key={d}
-                          className={`py-1 rounded-sm font-mono font-bold text-xs ${
-                            d === ethDate.day
-                              ? 'bg-slate-800 dark:bg-slate-700 text-white font-black shadow-xs'
-                              : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
-                          }`}
-                        >
-                          {d}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Close / Dismiss */}
-                  <div className="mt-3 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setIsDateDropdownOpen(false)}
-                      className="px-3.5 py-1.5 rounded-sm bg-[#F1F5F9] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-xs font-semibold text-[#1C2434] dark:text-white transition-colors cursor-pointer border border-[#E2E8F0] dark:border-[#2E3A47]"
-                    >
-                      {isAmharic ? 'ዝጋ' : 'Close'}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Notification Bell Icon Button with dynamic unread badge */}
+          {/* Right Side Tools: Notifications & User Profile */}
+          <div className="flex items-center gap-2">
+            {/* Notification Bell Icon Button */}
             <div className="relative" ref={notificationDropdownRef}>
               <button
                 type="button"
-                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center transition-all cursor-pointer relative shadow-xs ${
+                onClick={() => {
+                  setIsNotificationOpen((prev) => {
+                    const next = !prev;
+                    if (next) {
+                      setIsUserDropdownOpen(false);
+                      setIsDateDropdownOpen(false);
+                    }
+                    return next;
+                  });
+                }}
+                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer relative ${
                   isNotificationOpen
-                    ? 'border-slate-800 bg-slate-800 text-white'
-                    : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white'
+                    : 'text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24303F]'
                 }`}
                 title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                 aria-label="Notifications"
               >
-                <Icon className="material-symbols-outlined text-[19px]">notifications</Icon>
+                <Icon className="material-symbols-outlined text-[20px]">notifications</Icon>
                 {unreadNotificationCount > 0 && (
-                  <span className="bg-[#FB5454] text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-1 -right-1 shadow-2xs border border-white dark:border-[#1C2434]">
+                  <span className="bg-[#FB5454] text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute top-1 right-1 shadow-2xs border border-white dark:border-[#1C2434]">
                     {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                   </span>
                 )}
@@ -2853,14 +2885,29 @@ const HomePageShell: React.FC<HomePageProps> = ({
               )}
             </div>
 
-            {/* Top-Right Active User Dropdown Pill */}
+            {/* Top-Right Active User Profile Trigger (Unboxed) */}
             <div className="relative" ref={userDropdownRef}>
               <button
                 type="button"
-                onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                className="h-8.5 px-2.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:border-slate-700 flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                onClick={() => {
+                  setIsUserDropdownOpen((prev) => {
+                    const next = !prev;
+                    if (next) {
+                      setIsNotificationOpen(false);
+                      setIsDateDropdownOpen(false);
+                    }
+                    return next;
+                  });
+                }}
+                className={`h-9 px-2.5 rounded-lg flex items-center gap-2.5 transition-all cursor-pointer ${
+                  isUserDropdownOpen
+                    ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white'
+                    : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#24303F]'
+                }`}
+                aria-haspopup="true"
+                aria-expanded={isUserDropdownOpen}
               >
-                <div className="w-6 h-6 rounded-full bg-[#1C2434] border border-slate-600 text-white flex items-center justify-center shrink-0 overflow-hidden">
+                <div className="w-7 h-7 rounded-full bg-[#1C2434] border border-slate-600/60 text-white flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
                   <img src={APP_LOGO} alt="User Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </div>
                 <div className="text-left hidden sm:block">
@@ -2868,25 +2915,38 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                   </span>
                 </div>
-                <Icon className="material-symbols-outlined text-[#8A99AD] text-[16px]">expand_more</Icon>
+                <Icon className={`material-symbols-outlined text-[#8A99AD] text-[16px] transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`}>
+                  expand_more
+                </Icon>
               </button>
 
               {/* User Dropdown Menu */}
               {isUserDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]">
+                <div
+                  className="absolute right-0 mt-2 w-60 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md shadow-2xl py-2 z-[100] animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                >
                   <div className="px-4 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <p className="text-xs font-bold text-[#1C2434] dark:text-white">
+                    <p className="text-xs font-bold text-[#1C2434] dark:text-white truncate">
                       {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                     </p>
-                    <p className="text-xs text-[#8A99AD] font-medium">
-                      {userRole === 'superadmin' ? 'Super Admin' : userRole === 'admin' ? 'Manager' : userRole === 'clerk' ? 'Secretary' : 'Officer'}
+                    <p className="text-[11px] text-[#8A99AD] font-medium mt-0.5">
+                      {userRole === 'superadmin'
+                        ? (isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin')
+                        : userRole === 'admin'
+                        ? (isAmharic ? 'ስራ አስኪያጅ (Manager)' : 'Manager')
+                        : userRole === 'clerk'
+                        ? (isAmharic ? 'መዝጋቢ (Clerk)' : 'Clerk')
+                        : (isAmharic ? 'ኦፊሰር (Officer)' : 'Officer')}
                     </p>
                   </div>
 
                   {/* Role Switcher in Dropdown */}
                   {onSwitchRole && (
                     <div className="px-3 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] space-y-1">
-                      <p className="text-[10px] font-bold  text-[#8A99AD] tracking-wider">
+                      <p className="text-[10px] font-bold text-[#8A99AD] tracking-wider uppercase">
                         {isAmharic ? 'ሚና ቀይር' : 'Switch Role'}
                       </p>
                       <div className="grid grid-cols-2 gap-1">
@@ -2898,13 +2958,19 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               onSwitchRole(r);
                               setIsUserDropdownOpen(false);
                             }}
-                            className={`px-2 py-1 rounded-sm text-[11px] font-medium text-left transition-all ${
+                            className={`px-2 py-1.5 rounded text-[11px] font-medium text-left transition-all cursor-pointer ${
                               userRole === r
-                                ? 'bg-slate-800 dark:bg-slate-700 text-white font-semibold'
+                                ? 'bg-slate-800 dark:bg-slate-700 text-white font-bold shadow-2xs'
                                 : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]'
                             }`}
                           >
-                            {r === 'admin' ? (isAmharic ? 'ሥራ አስኪያጅ' : 'Manager') : r === 'superadmin' ? (isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin') : r}
+                            {r === 'admin'
+                              ? (isAmharic ? 'ሥራ አስኪያጅ' : 'Manager')
+                              : r === 'superadmin'
+                              ? (isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin')
+                              : r === 'clerk'
+                              ? (isAmharic ? 'መዝጋቢ' : 'Clerk')
+                              : (isAmharic ? 'ኦፊሰር' : 'Officer')}
                           </button>
                         ))}
                       </div>
@@ -2919,19 +2985,19 @@ const HomePageShell: React.FC<HomePageProps> = ({
                         setActivePage('settings');
                         setIsUserDropdownOpen(false);
                       }}
-                      className="w-full px-3 py-2 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] flex items-center gap-2 text-left cursor-pointer transition-colors"
+                      className="w-full px-4 py-2 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] flex items-center gap-2 text-left cursor-pointer transition-colors"
                     >
                       <Icon className="material-symbols-outlined text-[17px] text-[#8A99AD]">settings</Icon>
                       <span>{isAmharic ? 'ቅንብሮች (Settings)' : 'Settings'}</span>
                     </button>
-                    {/* Logout Option (Moved from side bar) */}
+                    {/* Logout Option */}
                     <button
                       type="button"
                       onClick={() => {
                         setIsUserDropdownOpen(false);
                         setIsLogoutModalOpen(true);
                       }}
-                      className="w-full px-3 py-2 text-xs font-medium text-[#F87171] hover:bg-rose-500/10 dark:hover:bg-rose-500/15 flex items-center gap-2 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
+                      className="w-full px-4 py-2 text-xs font-semibold text-[#F87171] hover:bg-rose-500/10 dark:hover:bg-rose-500/15 flex items-center gap-2 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
                       title={isAmharic ? 'ወጣ (Logout)' : 'Logout'}
                     >
                       <Icon className="material-symbols-outlined text-[17px] text-[#F87171]">logout</Icon>
