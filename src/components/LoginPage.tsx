@@ -108,15 +108,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           </div>
 
           {sessionExpiredMessage && (
-            <div className="p-3 rounded-lg text-xs bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 flex items-start gap-2.5 animate-in fade-in shadow-2xs">
-              <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
-                alarm
+            <div className="p-3 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-start gap-2.5 animate-in fade-in shadow-2xs">
+              <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
+                info
               </Icon>
               <div className="flex-1 min-w-0">
-                <span className="block font-black text-xs text-amber-950 dark:text-amber-100">
+                <span className="block font-black text-xs text-slate-900 dark:text-slate-100">
                   {lang === 'am' ? 'የስራ ክፍለ-ጊዜ ማብቂያ' : 'Session Expired for Security'}
                 </span>
-                <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-amber-900 dark:text-amber-300">
+                <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-slate-600 dark:text-slate-400">
                   {sessionExpiredMessage}
                 </span>
               </div>
@@ -124,7 +124,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 <button
                   type="button"
                   onClick={onClearSessionExpiredMessage}
-                  className="text-amber-700 hover:text-amber-900 dark:text-amber-300 p-0.5 rounded cursor-pointer shrink-0"
+                  className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 p-0.5 rounded cursor-pointer shrink-0"
                   title={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
                 >
                   <Icon className="material-symbols-outlined text-[16px]">close</Icon>

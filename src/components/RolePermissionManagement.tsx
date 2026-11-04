@@ -160,7 +160,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     descriptionAm: 'የካርድ ህትመት ወረፋ፣ የባች ማዘዣዎች እና ኤክስፖርት',
     descriptionEn: 'Card printing queues, batch printing orders, and export.',
     icon: 'print',
-    badgeBg: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-2xs',
+    badgeBg: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-2xs',
     governedComponents: {
       sideMenuAm: 'የህትመት ወረፋ፣ የባች ትዕዛዞች',
       sideMenuEn: 'Print Queue, Batch Orders',
@@ -189,7 +189,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
     descriptionAm: 'የክፍያ ደረሰኞች፣ የባንክ ማረጋገጫ እና የገቢ ስታቲስቲክስ',
     descriptionEn: 'Bank and Telebirr payment receipts, revenue KPIs, and ledger.',
     icon: 'payments',
-    badgeBg: 'bg-purple-100 text-purple-900 dark:bg-purple-950/80 dark:text-purple-300 border-purple-300 dark:border-purple-700 shadow-2xs',
+    badgeBg: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-2xs',
     governedComponents: {
       sideMenuAm: 'የክፍያ ደረሰኞች፣ የገቢ መዝገብ ሰንጠረዥ',
       sideMenuEn: 'Payment Receipts, Monthly Fee Statistics Table',
@@ -297,7 +297,7 @@ const INITIAL_ROLES: RoleDefinition[] = [
     titleAm: 'ጸሃፊ',
     titleEn: 'Secretary',
     userCountText: '3 ተጠቃሚ',
-    avatarBg: 'bg-amber-600',
+    avatarBg: 'bg-slate-600',
     avatarType: 'secretary',
     status: 'active',
   },
@@ -327,7 +327,7 @@ const INITIAL_ROLES: RoleDefinition[] = [
     titleAm: 'አይቲ ባለሙያ',
     titleEn: 'IT Specialist',
     userCountText: '1 ተጠቃሚ',
-    avatarBg: 'bg-purple-600',
+    avatarBg: 'bg-slate-700',
     avatarType: 'it',
     status: 'active',
   },
@@ -724,8 +724,8 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0" />
-              <span className="text-amber-800 dark:text-amber-300">{isAmharic ? 'ማየት ብቻ' : 'View Only'}</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-slate-400 shrink-0" />
+              <span className="text-slate-700 dark:text-slate-400">{isAmharic ? 'ማየት ብቻ' : 'View Only'}</span>
             </div>
 
             <div className="flex items-center gap-1.5">
@@ -785,7 +785,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                     onClick={() => handleSetModuleMasterPermission(moduleObj, 'view_only')}
                     className={`px-2.5 py-1 rounded text-[11px] font-black transition-all cursor-pointer ${
                       masterState === 'view_only'
-                        ? 'bg-amber-500 text-white'
+                        ? 'bg-slate-700 text-white'
                         : 'text-slate-600 dark:text-slate-300 hover:bg-surface-container-high'
                     }`}
                   >
@@ -841,7 +841,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                           onClick={() => handleSetPermission(task.id, 'view_only')}
                           className={`py-1 px-2.5 rounded text-[10px] font-black  transition-all cursor-pointer ${
                             taskState === 'view_only'
-                              ? 'bg-amber-500 text-white'
+                              ? 'bg-slate-700 text-white'
                               : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
                           }`}
                         >

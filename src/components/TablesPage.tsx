@@ -159,8 +159,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600 shadow-2xs" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
-            <Icon className="material-symbols-outlined text-[14px] shrink-0">schedule</Icon>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-2xs" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
             <span className={textClass}>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
         );
@@ -178,7 +177,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     if (status === 'rejected' || status === 'expired') {
       return 'border-[#FB5454] dark:border-[#FB5454] ring-1 ring-[#FB5454]/30';
     }
-    return 'border-[#F59E0B] dark:border-[#F59E0B] ring-1 ring-[#F59E0B]/30';
+    return 'border-slate-300 dark:border-slate-600 ring-1 ring-slate-400/20';
   };
 
   // If user role is Officer, render the dedicated Verification History & Scanned Vehicles Log
@@ -781,8 +780,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             <div className="flex items-center gap-2 shrink-0">
               {isSuperAdmin && (
-                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 rounded-md text-[11px] font-bold shadow-2xs">
-                  <Icon className="material-symbols-outlined text-[16px]">business</Icon>
+                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-md text-[11px] font-bold shadow-2xs">
                   <span>
                     {isAmharic ? 'የማህበር ተሽከርካሪዎች:' : 'Association Motors:'}{' '}
                     {registrations.filter((r) => r.hideFromOtherUsers).length}
@@ -837,7 +835,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       setRegPage(1);
                     }}
                     placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search name, plate, phone, chasis...'}
-                    className="w-full h-8 pl-8 pr-7 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary focus:bg-white dark:focus:bg-[#1C2434] focus:outline-none transition-colors"
+                    className="w-full h-8 pl-8 pr-7 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary/80 focus:bg-white dark:focus:bg-[#1C2434] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   />
                   {regSearchQuery && (
                     <button
@@ -854,7 +852,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
-                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                     isFilterDrawerOpen || hasActiveSecondaryFilters
                       ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
                       : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
@@ -886,14 +884,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setRegVehicleTypeFilter(vType.id);
                           setRegPage(1);
                         }}
-                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
+                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                           active
-                            ? 'bg-primary text-white shadow-2xs'
-                            : 'text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                            ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
+                            : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
                         }`}
                       >
                         <span>{vType.label}</span>
-                        <span className={`text-[10px] px-1 rounded-full font-mono ${active ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                          active
+                            ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
+                            : 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400'
+                        }`}>
                           {vType.count}
                         </span>
                       </button>
@@ -972,7 +974,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setRegCompanyVehicleFilter(e.target.value as any);
                           setRegPage(1);
                         }}
-                        className="h-8 py-1 px-2.5 rounded-md border border-purple-300 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-900 dark:text-purple-200 text-xs font-bold focus:border-primary focus:outline-none cursor-pointer"
+                        className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-bold focus:border-primary focus:outline-none cursor-pointer"
                       >
                         <option value="all">{isAmharic ? 'ሁሉም አባላት' : 'All Members'}</option>
                         <option value="standard">{isAmharic ? 'መደበኛ' : 'Standard'}</option>
@@ -1075,20 +1077,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     type="button"
                     onClick={() => executeBulkToggleHide(true)}
                     disabled={isSubmittingBulk}
-                    className="px-2.5 py-1.5 rounded-md bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-200 font-semibold text-xs hover:bg-purple-200 dark:hover:bg-purple-900 transition-colors cursor-pointer flex items-center gap-1 border border-purple-300 dark:border-purple-800"
+                    className="px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer border border-slate-300 dark:border-slate-700"
                     title={isAmharic ? 'እንደ የማህበር ተሽከርካሪ ምልክት አድርግ' : 'Mark as Association Motor'}
                   >
-                    <Icon className="material-symbols-outlined text-[15px]">business</Icon>
                     <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => executeBulkToggleHide(false)}
                     disabled={isSubmittingBulk}
-                    className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer flex items-center gap-1"
+                    className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer border border-slate-300 dark:border-slate-600"
                     title={isAmharic ? 'እንደ መደበኛ ተሽከርካሪ መልስ' : 'Mark as Standard Vehicle'}
                   >
-                    <Icon className="material-symbols-outlined text-[15px]">visibility</Icon>
                     <span>{isAmharic ? 'መደበኛ' : 'Standard'}</span>
                   </button>
                 </div>
@@ -1276,10 +1276,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                       e.stopPropagation();
                                       onApproveRegistration(reg.id);
                                     }}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95"
+                                    className="inline-flex items-center px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95"
                                     title={isAmharic ? 'አፅድቅ' : 'Approve'}
                                   >
-                                    <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
                                     <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
                                   </button>
                                 )}
@@ -1289,10 +1288,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     e.stopPropagation();
                                     setSelectedRegForDetails(reg);
                                   }}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                                  className="inline-flex items-center px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
                                   title={isAmharic ? 'የአባል ሙሉ መረጃ እና ተግባራትን በጎን መስኮት ክፈት' : 'View full member details in drawer'}
                                 >
-                                  <Icon className="material-symbols-outlined text-[16px] text-primary">assignment_ind</Icon>
                                   <span>{isAmharic ? 'ዝርዝር' : 'Details'}</span>
                                 </button>
                               </div>
@@ -1630,7 +1628,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   <button
                     type="button"
                     onClick={() => handleCopyField(selectedRegForDetails.plateNumber, 'Plate')}
-                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-xs text-amber-400 flex items-center gap-1 transition-colors cursor-pointer tabular-nums"
+                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-xs text-slate-100 flex items-center gap-1 transition-colors cursor-pointer tabular-nums"
                     title={isAmharic ? 'የሰሌዳ ቁጥር ቅዳ' : 'Copy Plate Number'}
                   >
                     <span>{selectedRegForDetails.plateNumber}</span>
@@ -1678,7 +1676,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
               return (
                 <div className="p-2 sm:p-2.5 bg-[#F7F9FC] dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
-                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-200/60 dark:bg-slate-900/60 rounded-lg">
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-200/60 dark:bg-slate-900/60 border border-slate-300/40 dark:border-slate-800/80 rounded-lg">
                     {tabs.map((tab) => {
                       const isActive = drawerActiveTab === tab.id;
                       return (
@@ -1686,21 +1684,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           key={tab.id}
                           type="button"
                           onClick={() => setDrawerActiveTab(tab.id as 'info' | 'payments' | 'documents')}
-                          className={`flex items-center justify-center gap-1.5 py-1.5 sm:py-2 px-1.5 sm:px-2.5 rounded-md text-xs font-bold transition-all cursor-pointer truncate ${
+                          className={`flex items-center justify-center gap-1.5 py-1.5 sm:py-2 px-1.5 sm:px-2.5 rounded-md text-xs font-bold transition-all cursor-pointer truncate select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                             isActive
-                              ? 'bg-white dark:bg-[#24303F] text-primary dark:text-white shadow-xs'
-                              : 'text-slate-600 dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white'
+                              ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm border border-slate-200 dark:border-slate-600'
+                              : 'text-slate-600 dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white border border-transparent'
                           }`}
                         >
-                          <Icon className={`material-symbols-outlined text-[15px] shrink-0 ${isActive ? 'text-primary' : ''}`}>
+                          <Icon className={`material-symbols-outlined text-[15px] shrink-0 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
                             {tab.icon}
                           </Icon>
                           <span className="truncate">{tab.label}</span>
                           {tab.badge !== undefined && (
                             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold tabular-nums shrink-0 ${
                               isActive
-                                ? 'bg-primary/10 text-primary dark:bg-primary/25 dark:text-blue-300'
-                                : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                ? 'bg-slate-100 dark:bg-[#1C2434] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
+                                : 'bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                             }`}>
                               {tab.badge}
                             </span>
@@ -1853,7 +1851,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">two_wheeler</Icon>
                       <span>{isAmharic ? 'የተሽከርካሪ እና የሞተር መረጃ' : 'Vehicle Specifications'}</span>
                     </h4>
-                    <span className="font-mono font-bold text-xs bg-slate-900 text-amber-400 px-2 py-0.5 rounded border border-slate-700 tabular-nums">
+                    <span className="font-mono font-bold text-xs bg-slate-900 dark:bg-slate-800 text-slate-100 px-2 py-0.5 rounded border border-slate-700 tabular-nums">
                       {selectedRegForDetails.plateNumber || '—'}
                     </span>
                   </div>
@@ -2092,7 +2090,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             rcStatus.status === 'active'
                                               ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
                                               : rcStatus.status === 'expiring_soon'
-                                              ? 'bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/20'
+                                              ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700'
                                               : 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
                                           }`}>
                                             {rcStatus.status === 'active' ? (isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያልተከፈለበት' : 'Over due')}
@@ -2162,7 +2160,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                           rcStatus.status === 'active'
                                             ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
                                             : rcStatus.status === 'expiring_soon'
-                                            ? 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border-amber-300 dark:border-amber-700'
+                                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700'
                                             : 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border-rose-300 dark:border-rose-700'
                                         }`}>
                                           {rcStatus.status === 'active' ? (isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያልተከፈለበት' : 'Over due')}
@@ -2365,15 +2363,13 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     onClick={() => onApproveRegistration(selectedRegForDetails.id)}
                     className="py-2 px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] cursor-pointer transition-all"
                   >
-                    <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
                     <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setRejectingId(selectedRegForDetails.id)}
-                    className="py-2 px-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] cursor-pointer hover:bg-rose-100 transition-all"
+                    className="py-2 px-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center shadow-xs active:scale-[0.98] cursor-pointer hover:bg-rose-100 transition-all"
                   >
-                    <Icon className="material-symbols-outlined text-[16px]">cancel</Icon>
                     <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
                   </button>
                 </div>
@@ -2391,10 +2387,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         setSelectedRegForDetails(null);
                         setEditingRegistration(reg);
                       }}
-                      className="py-1.5 sm:py-2 px-2.5 sm:px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                      className="py-1.5 sm:py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer border border-slate-300 dark:border-slate-700 shadow-2xs transition-colors shrink-0"
                       title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
                     >
-                      <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
                       <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
                     </button>
                   )}
@@ -2407,10 +2402,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         setSelectedRegForDetails(null);
                         setSelectedRegForQR(reg);
                       }}
-                      className="py-1.5 sm:py-2 px-2.5 sm:px-3 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                      className="py-1.5 sm:py-2 px-3 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer border border-slate-900 dark:border-slate-200 shadow-xs transition-colors shrink-0"
                       title={isAmharic ? 'የመታወቂያ ካርድ አትም' : 'Print ID Card'}
                     >
-                      <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
                       <span>{isAmharic ? 'መታወቂያ' : 'ID Card'}</span>
                     </button>
                   )}
@@ -2424,10 +2418,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setSelectedRegForDetails(null);
                           setSelectedRegForA4(reg);
                         }}
-                        className="py-1.5 sm:py-2 px-2.5 sm:px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer transition-colors shadow-xs shrink-0"
+                        className="py-1.5 sm:py-2 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer transition-colors shadow-2xs shrink-0"
                         title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ አትም' : 'Print Permit'}
                       >
-                        <Icon className="material-symbols-outlined text-[15px]">print</Icon>
                         <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
                       </button>
 
@@ -2438,10 +2431,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setSelectedRegForDetails(null);
                           setSelectedRegForSticker(reg);
                         }}
-                        className="py-1.5 sm:py-2 px-2.5 sm:px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                        className="py-1.5 sm:py-2 px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer shadow-2xs transition-colors shrink-0"
                         title={isAmharic ? 'ተለጣፊ QR ኮድ አትም' : 'Print Sticker'}
                       >
-                        <Icon className="material-symbols-outlined text-[15px]">qr_code_scanner</Icon>
                         <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
                       </button>
                     </>

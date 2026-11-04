@@ -110,7 +110,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining,
       labelAm: `ሊያልቅ የደረሰ (${daysRemaining} ቀናት)`,
       labelEn: `Expiring Soon (${daysRemaining}d)`,
-      badgeClass: 'bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-700 font-semibold shadow-2xs',
+      badgeClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-semibold shadow-2xs',
     };
   } else {
     return {

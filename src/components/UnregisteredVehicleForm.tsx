@@ -118,7 +118,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         {/* CONTAINER SECTION HEADER */}
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-[22px] text-amber-600 shrink-0">report_problem</Icon>
+            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">report_problem</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}
@@ -248,7 +248,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               <label
                 htmlFor={isPhotoUploading ? undefined : 'unreg-photo-upload'}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-bold transition-all shadow-xs ${
-                  isPhotoUploading ? 'bg-amber-400 cursor-wait' : 'bg-amber-600 hover:bg-amber-700 cursor-pointer'
+                  isPhotoUploading ? 'bg-slate-400 cursor-wait' : 'bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 cursor-pointer'
                 }`}
               >
                 <Icon className={`material-symbols-outlined text-[18px] ${isPhotoUploading ? 'animate-spin' : ''}`}>
@@ -283,12 +283,12 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
                 ? 'ተጨማሪ ማብራሪያ ወይም አስተያየት እዚህ ይጻፉ...'
                 : 'Enter optional incident details or officer notes...'
             }
-            className="w-full px-3.5 py-2.5 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 outline-none transition-all"
+            className="w-full px-3.5 py-2.5 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all"
           />
         </div>
 
         {/* Reporting Officer Information Card */}
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 flex items-center justify-between text-xs">
+        <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2.5">
             <Icon className="material-symbols-outlined text-primary text-[20px]">badge</Icon>
             <div>
@@ -296,7 +296,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               <p className="text-[11px] text-secondary font-mono">{userBadgeId}</p>
             </div>
           </div>
-          <span className="px-2.5 py-1 rounded-md bg-amber-100 text-amber-900 font-bold text-[11px]">
+          <span className="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-[11px]">
             {isAmharic ? 'የተቆጣጣሪ መታወቂያ' : 'Reporting Officer'}
           </span>
         </div>
@@ -316,7 +316,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold tracking-wider border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            className="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-bold tracking-wider border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

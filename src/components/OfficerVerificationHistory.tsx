@@ -345,8 +345,8 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         );
       case 'warning':
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[14px] text-amber-700 dark:text-amber-300 shrink-0">priority_high</Icon>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shadow-2xs whitespace-nowrap">
+            <Icon className="material-symbols-outlined text-[14px] text-amber-700 dark:text-amber-400 shrink-0">priority_high</Icon>
             <span>{isAmharic ? 'ማስጠንቀቂያ' : 'Warning'}</span>
           </span>
         );
@@ -395,7 +395,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600 shadow-2xs whitespace-nowrap">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-2xs whitespace-nowrap">
             <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
             <span>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
@@ -936,7 +936,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
               <div className="flex items-center gap-2">
                 {selectedLogForDetails.plateNumber && (
-                  <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-amber-400">
+                  <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-slate-100">
                     {selectedLogForDetails.plateNumber}
                   </span>
                 )}

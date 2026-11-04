@@ -1351,3 +1351,42 @@ html.dark .animate-shimmer-state {
 .animate-toast-pulse-success {
   animation: toastPulseSubtle 2.5s infinite ease-in-out;
 }
+
+/* ==========================================================================
+   GLOBAL FOCUS STYLING ARCHITECTURE
+   - Eliminates jarring default browser focus rings on mouse click and touch
+   - Enforces clean, high-visibility, accessible focus rings for keyboard users (focus-visible)
+   - Harmonizes active segmented pills & tabs without harsh high-contrast glare
+   ========================================================================== */
+
+:focus:not(:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible),
+[role="tab"]:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(15, 23, 42, 0.4);
+  outline-offset: 1px;
+}
+
+.dark button:focus-visible,
+.dark [role="button"]:focus-visible,
+.dark [role="tab"]:focus-visible,
+.dark a:focus-visible {
+  outline: 2px solid rgba(248, 250, 252, 0.45);
+  outline-offset: 1px;
+}
+

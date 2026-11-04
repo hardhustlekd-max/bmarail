@@ -438,15 +438,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       default:
         if (reg?.isCorrection || reg?.lastRejectionReason) {
           return (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600 shadow-2xs">
-              <Icon className="material-symbols-outlined text-[14px] shrink-0">edit_note</Icon>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 shadow-2xs">
               <span>{isAmharic ? 'ተስተካክሎ የቀረበ' : 'Corrected & Resubmitted'}</span>
             </span>
           );
         }
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-600 shadow-2xs">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-2xs">
             <span>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
         );
@@ -465,9 +463,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       return 'border-[#FB5454] dark:border-[#FB5454] ring-1 ring-[#FB5454]/30';
     }
     if (reg?.isCorrection || reg?.lastRejectionReason) {
-      return 'border-amber-500 dark:border-amber-500 ring-1 ring-amber-500/30';
+      return 'border-slate-400 dark:border-slate-500 ring-1 ring-slate-400/20';
     }
-    return 'border-[#F59E0B] dark:border-[#F59E0B] ring-1 ring-[#F59E0B]/30';
+    return 'border-slate-300 dark:border-slate-600 ring-1 ring-slate-400/20';
   };
 
   // 1. Role-specific & Submission Correction filtering (contains only rejection corrections and pending approval submissions waiting for approval)
@@ -604,7 +602,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         header={
           <div className="px-3.5 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434]">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 shadow-xs">
                 <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
               </div>
               <div>
@@ -722,10 +720,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setDateFilter('today');
                       setPage(1);
                     }}
-                    className={`h-7 px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap select-none ${
+                    className={`h-7 px-2.5 rounded-sm text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                       dateFilter === 'today'
-                        ? 'bg-primary text-white shadow-2xs'
-                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
+                        ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
+                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
                     }`}
                   >
                     {isAmharic ? 'የዛሬ ብቻ' : "Today's Only"}
@@ -736,10 +734,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setDateFilter('all');
                       setPage(1);
                     }}
-                    className={`h-7 px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap select-none ${
+                    className={`h-7 px-2.5 rounded-sm text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                       dateFilter === 'all'
-                        ? 'bg-primary text-white shadow-2xs'
-                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
+                        ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
+                        : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
                     }`}
                   >
                     {isAmharic ? 'ሁሉንም ቀናት' : 'All Dates'}
@@ -1084,7 +1082,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                       className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
                                       title={isAmharic ? 'የተያያዙ ሰነዶችን በሙሉ እይ' : 'View Attached Documents Carousel'}
                                     >
-                                      <Icon className="material-symbols-outlined text-[16px] text-amber-600 dark:text-amber-400">photo_library</Icon>
+                                      <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">photo_library</Icon>
                                       <span>{isAmharic ? `የተያያዙ ሰነዶች (${getRegistrationDocCount(reg)})` : `Documents (${getRegistrationDocCount(reg)})`}</span>
                                     </button>
 
@@ -1325,7 +1323,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             onClick={() => openMemberDocumentCarousel(reg)}
                             className="w-full py-2 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold rounded-md text-xs cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                           >
-                            <Icon className="material-symbols-outlined text-[16px] text-amber-600 dark:text-amber-400">photo_library</Icon>
+                            <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">photo_library</Icon>
                             <span>{isAmharic ? `የተያያዙ ሰነዶችን እይ (${getRegistrationDocCount(reg)})` : `View Attached Documents (${getRegistrationDocCount(reg)})`}</span>
                           </button>
                         </div>
@@ -1423,8 +1421,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             {/* Modal Form Body */}
             <form onSubmit={handleSaveEdit} className="p-4 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {isReadOnly && (
-                <div className="p-3 bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 rounded-lg text-amber-900 dark:text-amber-200 text-xs font-bold flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0">lock</Icon>
+                <div className="p-3 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
                   <span>
                     {isAmharic ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ ማስተካከል እና ማስቀመጥ አይፈቀድም።' : 'Read-Only Mode Active: Form editing and saving is disabled.'}
                   </span>
@@ -1771,8 +1769,8 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             </div>
 
             {/* Warning Message */}
-            <div className="p-3 bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 rounded-sm text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2">
-              <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">warning</Icon>
+            <div className="p-3 bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-sm text-xs text-slate-800 dark:text-slate-200 flex items-start gap-2">
+              <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">info</Icon>
               <span>
                 {isAmharic
                   ? 'የተመረጡትን ማመልከቻዎች በአንድ ጊዜ ያጸድቃል።'

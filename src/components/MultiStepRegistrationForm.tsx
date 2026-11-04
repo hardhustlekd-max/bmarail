@@ -1528,27 +1528,27 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                   {/* SUPER ADMIN: OPTION TO SAVE AS HIDDEN REGISTRATION (STEP 1) */}
                   {isSuperAdmin && (
-                    <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-300 dark:border-purple-800/80 p-3 rounded-lg flex items-start gap-3 shadow-2xs">
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-3 rounded-lg flex items-start gap-3 shadow-2xs">
                       <input
                         type="checkbox"
                         id="save-as-hidden-step1"
                         checked={hideFromOtherUsers}
                         onChange={(e) => setHideFromOtherUsers(e.target.checked)}
-                        className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500 accent-purple-600 mt-0.5 cursor-pointer shrink-0"
+                        className="w-4 h-4 text-primary rounded focus:ring-primary accent-primary mt-0.5 cursor-pointer shrink-0"
                       />
                       <label htmlFor="save-as-hidden-step1" className="cursor-pointer select-none space-y-0.5 min-w-0">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <Icon className="material-symbols-outlined text-[16px] text-purple-700 dark:text-purple-300 shrink-0">
+                          <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">
                             visibility_off
                           </Icon>
-                          <span className="text-xs font-black text-purple-950 dark:text-purple-200">
+                          <span className="text-xs font-black text-slate-900 dark:text-slate-100">
                             {isAmharic ? 'የማህበር ተሽከርካሪ (Association Motor)' : 'Save as Association Motor'}
                           </span>
-                          <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-bold tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded">
                             {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                           </span>
                         </div>
-                        <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                           {isAmharic
                             ? 'ይህ አማራጭ ሲበራ ማመልከቻው እንደ የማህበር ተሽከርካሪ ይመዝገባል፤ በሰንጠረዦችና በሜትሪክስ ተደብቆ በፍተሻ ውጤት (ስካነር) ላይ ብቻ ይታያል።'
                             : 'When enabled, this application will be saved as an Association Motor (hidden from lists & metrics for other users, visible only for scanner results).'}
@@ -2491,28 +2491,28 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                   {/* SUPER ADMIN: HIDDEN REGISTRATION CONFIRMATION TOGGLE (STEP 5) */}
                   {isSuperAdmin && (
-                    <div className="bg-purple-50 dark:bg-purple-950/40 border border-purple-300 dark:border-purple-800/80 p-3.5 rounded-lg space-y-1.5 shadow-2xs">
+                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 p-3.5 rounded-lg space-y-1.5 shadow-2xs">
                       <label className="flex items-start gap-3 cursor-pointer">
                         <input
                           type="checkbox"
                           id="save-as-hidden-step5"
                           checked={hideFromOtherUsers}
                           onChange={(e) => setHideFromOtherUsers(e.target.checked)}
-                          className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 accent-purple-600 mt-0.5 cursor-pointer shrink-0"
+                          className="w-5 h-5 text-primary rounded focus:ring-primary accent-primary mt-0.5 cursor-pointer shrink-0"
                         />
                         <div className="space-y-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-1.5">
-                            <Icon className="material-symbols-outlined text-[17px] text-purple-700 dark:text-purple-300 shrink-0">
+                            <Icon className="material-symbols-outlined text-[17px] text-slate-700 dark:text-slate-300 shrink-0">
                               business
                             </Icon>
-                            <span className="text-xs font-black text-purple-950 dark:text-purple-200">
+                            <span className="text-xs font-black text-slate-900 dark:text-slate-100">
                               {isAmharic ? 'እንደ የማህበር ተሽከርካሪ አስቀምጥ' : 'Save as Association Motor'}
                             </span>
-                            <span className="text-[10px] font-bold tracking-wider bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-bold tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded">
                               {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                             </span>
                           </div>
-                          <p className="text-[11px] text-purple-900/80 dark:text-purple-300/80 leading-relaxed">
+                          <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                             {isAmharic
                               ? 'ይህ ሲመረጥ እንደ የማህበር ተሽከርካሪ ይመዝገባል (በሰንጠረዥና ሜትሪክስ ተደብቆ በፍተሻ ውጤት ላይ ብቻ ይታያል)።'
                               : 'Saves this registration as an Association Motor (hidden from lists & metrics, visible for scanner result).'}

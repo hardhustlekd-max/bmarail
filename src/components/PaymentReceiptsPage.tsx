@@ -1584,8 +1584,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             >
 
           {isFormReadOnly && (
-            <div className="p-3 bg-amber-50 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 rounded-lg text-xs font-bold flex items-center gap-2 shadow-2xs">
-              <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[20px] shrink-0">lock</Icon>
+            <div className="p-3 bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg text-xs font-bold flex items-center gap-2 shadow-2xs">
+              <Icon className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[20px] shrink-0">lock</Icon>
               <span>
                 {isAmharic
                   ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ ደረሰኝ መመዝገብ ተገድቧል።'
@@ -2037,7 +2037,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
                         : 'Search receipt #, owner name, plate...'
                     }
-                    className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
+                    className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary/80 focus:ring-2 focus:ring-primary/20 dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white"
                   />
                   {searchQuery && (
                     <button
@@ -2058,7 +2058,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
-                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                     isFilterDrawerOpen || hasActiveSecondaryFilters
                       ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
                       : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
@@ -2091,18 +2091,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           setStatusFilter(tab.key);
                           setPage(1);
                         }}
-                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
+                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                           isActive
-                            ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
-                            : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
+                            ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
+                            : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
                         }`}
                       >
                         <span>{tab.label}</span>
                         <span
-                          className={`text-[10px] px-1 rounded-full font-mono font-bold ${
+                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
                             isActive
-                              ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
-                              : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
+                              ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
+                              : 'bg-slate-200/70 dark:bg-slate-800 text-[#64748B] dark:text-[#8A99AD]'
                           }`}
                         >
                           {tab.count}
@@ -2302,7 +2302,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             e.stopPropagation();
                             handleOpenEditTransaction(latestRc);
                           }}
-                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-amber-50 dark:bg-amber-950/80 hover:bg-amber-100 dark:hover:bg-amber-900 active:scale-95 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 shadow-2xs transition-all cursor-pointer"
+                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 shadow-2xs transition-all cursor-pointer"
                         >
                           <Icon name="edit" size={16} />
                           <span className="truncate">{isAmharic ? 'ክፍያ አርትዕ' : 'Edit Transaction'}</span>
@@ -2380,10 +2380,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           e.stopPropagation();
                           handleOpenEditTransaction(latestRc);
                         }}
-                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-950/80 hover:bg-amber-100 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800 transition-all active:scale-95 cursor-pointer"
+                        className="px-2.5 py-1 rounded-md text-[11px] font-bold inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
                         title={isAmharic ? 'የክፍያ ዝርዝር አርትዕ (SuperAdmin)' : 'Edit Transaction (SuperAdmin)'}
                       >
-                        <Icon name="edit" size={13} />
                         <span>{isAmharic ? 'አርትዕ' : 'Edit'}</span>
                       </button>
                     )}
@@ -2515,7 +2514,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <button
                     type="button"
                     onClick={() => handleMemberCopyField(selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber || '', 'Plate')}
-                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-xs text-amber-400 flex items-center gap-1 transition-colors cursor-pointer tabular-nums"
+                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-xs text-slate-100 flex items-center gap-1 transition-colors cursor-pointer tabular-nums"
                     title={isAmharic ? 'የሰሌዳ ቁጥር ቅዳ' : 'Copy Plate Number'}
                   >
                     <span>{selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber}</span>
@@ -2565,7 +2564,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
               return (
                 <div className="p-2 sm:p-2.5 bg-[#F7F9FC] dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
-                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-200/60 dark:bg-slate-900/60 rounded-lg">
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-200/60 dark:bg-slate-900/60 border border-slate-300/40 dark:border-slate-800/80 rounded-lg">
                     {tabs.map((tab) => {
                       const isActive = memberDrawerTab === tab.id;
                       return (
@@ -2573,19 +2572,19 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           key={tab.id}
                           type="button"
                           onClick={() => setMemberDrawerTab(tab.id as 'info' | 'payments' | 'documents')}
-                          className={`flex items-center justify-center gap-1.5 py-1.5 sm:py-2 px-1.5 sm:px-2.5 rounded-md text-xs font-bold transition-all cursor-pointer truncate ${
+                          className={`flex items-center justify-center gap-1.5 py-1.5 sm:py-2 px-1.5 sm:px-2.5 rounded-md text-xs font-bold transition-all cursor-pointer truncate select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                             isActive
-                              ? 'bg-white dark:bg-[#24303F] text-primary dark:text-white shadow-xs'
-                              : 'text-slate-600 dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white'
+                              ? 'bg-white dark:bg-[#24303F] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700/80'
+                              : 'text-slate-600 dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white border border-transparent'
                           }`}
                         >
-                          <Icon name={tab.icon} size={15} className={`shrink-0 ${isActive ? 'text-primary' : ''}`} />
+                          <Icon name={tab.icon} size={15} className={`shrink-0 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`} />
                           <span className="truncate">{tab.label}</span>
                           {tab.badge !== undefined && (
                             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold tabular-nums shrink-0 ${
                               isActive
-                                ? 'bg-primary/10 text-primary dark:bg-primary/25 dark:text-blue-300'
-                                : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                ? 'bg-slate-100 dark:bg-[#1C2434] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
+                                : 'bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                             }`}>
                               {tab.badge}
                             </span>
@@ -2727,7 +2726,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         <Icon name="two_wheeler" size={16} className="text-primary shrink-0" />
                         <span>{isAmharic ? 'የተሽከርካሪ እና የሞተር መረጃ' : 'Vehicle Specifications'}</span>
                       </h4>
-                      <span className="font-mono font-bold text-xs bg-slate-900 text-amber-400 px-2 py-0.5 rounded border border-slate-700 tabular-nums">
+                      <span className="font-mono font-bold text-xs bg-slate-900 dark:bg-slate-800 text-slate-100 px-2 py-0.5 rounded border border-slate-700 tabular-nums">
                         {selectedMemberDetail.member?.plateNumber || selectedMemberDetail.row.plateNumber || '—'}
                       </span>
                     </div>
@@ -2902,7 +2901,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                                 <span className="text-[10px] block text-[#64748B] dark:text-[#8A99AD] font-semibold">
                                   {isAmharic ? 'የማብቂያ ቀን' : 'Expiration Date'}
                                 </span>
-                                <span className="font-mono font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+                                <span className="font-mono font-bold text-slate-800 dark:text-slate-200 tabular-nums">
                                   {formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}
                                 </span>
                               </div>
@@ -3142,7 +3141,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
               <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <Icon name="edit" size={18} className="text-amber-500" />
+                <Icon name="edit" size={18} className="text-primary" />
                 <span>{isAmharic ? 'የክፍያ ዝርዝር አርትዕ' : 'Edit Transaction'}</span>
               </h3>
               <button
@@ -3224,7 +3223,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <button
                 type="button"
                 onClick={handleSaveEditedTransaction}
-                className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-black shadow-xs cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-black shadow-xs cursor-pointer"
               >
                 {isAmharic ? 'አስቀምጥ' : 'Save Changes'}
               </button>

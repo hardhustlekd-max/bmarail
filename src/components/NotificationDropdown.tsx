@@ -122,14 +122,14 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             e.stopPropagation();
             setFilter('all');
           }}
-          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
             filter === 'all'
-              ? 'bg-primary text-white shadow-xs'
-              : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47]'
+              ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700/90'
+              : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#2E3A47] border border-transparent'
           }`}
         >
           <span>{isAmharic ? 'ሁሉም' : 'All'}</span>
-          <span className={`px-1.5 rounded-full text-[9px] ${filter === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 dark:bg-[#2E3A47] text-slate-600 dark:text-slate-300'}`}>
+          <span className={`px-1.5 rounded-full text-[9px] font-mono font-bold ${filter === 'all' ? 'bg-white dark:bg-[#1C2434] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60' : 'bg-slate-100 dark:bg-[#2E3A47] text-slate-600 dark:text-slate-300'}`}>
             {notifications.length}
           </span>
         </button>
@@ -140,10 +140,10 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             e.stopPropagation();
             setFilter('unread');
           }}
-          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
+          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
             filter === 'unread'
-              ? 'bg-primary text-white shadow-xs'
-              : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47]'
+              ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700/90'
+              : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#2E3A47] border border-transparent'
           }`}
         >
           <span>{isAmharic ? 'ያልተነበቡ' : 'Unread'}</span>

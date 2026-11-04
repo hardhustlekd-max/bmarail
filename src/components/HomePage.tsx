@@ -1098,10 +1098,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
             : 'Assign registered patrol officers to sub-cities and active patrol sectors.',
           type: 'info',
           icon: 'manage_accounts',
-          iconBg: 'bg-purple-500/15 text-purple-600 dark:text-purple-400',
+          iconBg: 'bg-primary/10 text-primary dark:text-blue-400',
           badgeLabel: isAmharic ? 'ስርዓት አስተዳደር' : 'System Governance',
-          badgeBg: 'bg-purple-500/20',
-          badgeText: 'text-purple-700 dark:text-purple-300',
+          badgeBg: 'bg-primary/15',
+          badgeText: 'text-primary dark:text-blue-400',
           actionPage: 'superadmin_users',
         });
       }

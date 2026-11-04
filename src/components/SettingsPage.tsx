@@ -83,8 +83,8 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
       return {
         label: isAmharic ? 'መካከለኛ' : 'Medium',
         score: 66,
-        color: 'bg-amber-500',
-        textColor: 'text-amber-600 dark:text-amber-400',
+        color: 'bg-slate-500',
+        textColor: 'text-slate-600 dark:text-slate-400',
       };
     }
     return {

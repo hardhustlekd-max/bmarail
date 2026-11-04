@@ -343,7 +343,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
   if (requireClerkRequest && isClerk && !clerkAccessGranted) {
     return (
       <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 max-w-md w-full mx-auto text-center space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-        <div className="w-14 h-14 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 flex items-center justify-center mx-auto shadow-xs">
+        <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center justify-center mx-auto shadow-xs">
           <Icon className="material-symbols-outlined text-[32px]">lock_person</Icon>
         </div>
         <div>
@@ -357,8 +357,8 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
           </p>
         </div>
 
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-md p-3 text-[11px] text-amber-900 dark:text-amber-300 font-medium flex items-center gap-2 text-left">
-          <Icon className="material-symbols-outlined text-amber-500 text-[18px] shrink-0">info</Icon>
+        <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md p-3 text-[11px] text-slate-700 dark:text-slate-300 font-medium flex items-center gap-2 text-left">
+          <Icon className="material-symbols-outlined text-slate-500 text-[18px] shrink-0">info</Icon>
           <span>
             {isAmharic
               ? 'የዕይታ እንቅስቃሴዎ በደህንነት ኦዲት ይመዘገባል።'

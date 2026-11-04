@@ -363,11 +363,11 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                 </div>
               </div>
 
-              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-lg p-3 text-left flex items-start gap-2.5">
-                <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
+              <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-left flex items-start gap-2.5">
+                <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
                   info
                 </Icon>
-                <p className="text-[11px] text-amber-900 dark:text-amber-300 font-medium leading-relaxed">
+                <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                   {isAmharic
                     ? 'ስራዎን ሳያቋርጡ ለመቀጠል ከታች ያለውን "በመለያዬ እንዳለሁ አቆየኝ" የሚለውን ይጫኑ ወይም የቁልፍ ሰሌዳዎን "Enter" ይጫኑ። ይህ ተጨማሪ 15 ደቂቃ ይሰጥዎታል።'
                     : 'Click "Keep me logged in" below or press [Enter] to extend your session for another 15 minutes without losing any unsaved work.'}

@@ -118,11 +118,11 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
       dot: 'bg-rose-500',
     },
     pending: {
-      bg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60',
-      dot: 'bg-amber-500',
+      bg: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700',
+      dot: 'bg-slate-400',
     },
     warning: {
-      bg: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200/80 dark:border-amber-800/60',
+      bg: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
       dot: 'bg-amber-500',
     },
     info: {
@@ -484,19 +484,19 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`group flex items-center gap-2 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+              className={`group flex items-center gap-2 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                 isActive
-                  ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-primary dark:text-primary bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
+                  ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-slate-900 dark:text-white bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
                   : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
               }`}
             >
-              {tab.icon && <Icon name={tab.icon} size={18} />}
+              {tab.icon && <Icon name={tab.icon} size={18} className={isActive ? 'text-slate-900 dark:text-white' : 'text-[#64748B] dark:text-[#8A99AD]'} />}
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
                   className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
                     isActive
-                      ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary'
+                      ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
                       : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
                   }`}
                 >
@@ -512,7 +512,7 @@ export const TabList = <T extends string>({
 
   if (variant === 'pill') {
     return (
-      <div className={`flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg ${className}`}>
+      <div className={`inline-flex items-center gap-1 p-1 bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 rounded-lg ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -520,18 +520,20 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900 ${
                 isActive
-                  ? 'bg-primary text-white shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent'
               }`}
             >
-              {tab.icon && <Icon name={tab.icon} size={16} />}
+              {tab.icon && <Icon name={tab.icon} size={16} className={isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'} />}
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                    isActive
+                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
+                      : 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400'
                   }`}
                 >
                   {tab.count}
@@ -553,19 +555,19 @@ export const TabList = <T extends string>({
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`group flex items-center gap-1.5 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap select-none ${
+            className={`group flex items-center gap-1.5 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900 ${
               isActive
-                ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-primary dark:text-primary rounded-t-md font-bold'
+                ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-t-md font-bold'
                 : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
             }`}
           >
-            {tab.icon && <Icon name={tab.icon} size={18} />}
+            {tab.icon && <Icon name={tab.icon} size={18} className={isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'} />}
             <span>{tab.label}</span>
             {typeof tab.count === 'number' && (
               <span
                 className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
                   isActive
-                    ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-primary'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                 }`}
               >
@@ -1071,7 +1073,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                             status === 'paid'
                               ? 'bg-emerald-50/80 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60 shadow-2xs'
                               : status === 'pending'
-                              ? 'bg-amber-50/80 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300 border-amber-200 dark:border-amber-800/60 shadow-2xs'
+                              ? 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-2xs'
                               : status === 'unpaid'
                               ? 'bg-rose-50/80 text-rose-800 dark:bg-rose-950/30 dark:text-rose-300 border-rose-200 dark:border-rose-800/60 shadow-2xs'
                               : 'bg-slate-50/80 text-slate-500 dark:bg-slate-800/40 dark:text-slate-400 border-slate-200 dark:border-slate-700/60';

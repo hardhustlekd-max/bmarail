@@ -46,9 +46,9 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       count: isLoading ? '—' : pendingCount,
       percentage: Math.round((pendingCount / totalCount) * 100),
       icon: 'pending_actions',
-      badgeBg: 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700',
-      bg: 'bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/40',
-      textClass: 'text-amber-700 dark:text-amber-400',
+      badgeBg: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+      bg: 'bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-800/50',
+      textClass: 'text-slate-700 dark:text-slate-300',
       description: isAmharic ? 'ማፅደቂያ የሚጠበቁ' : 'Awaiting review',
     },
     {

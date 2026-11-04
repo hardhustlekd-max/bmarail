@@ -257,7 +257,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                   {isAmharic ? 'የአባል መረጃ ማሻሻያ' : 'Edit Member Registration'}
                 </h3>
                 {isSuperAdmin ? (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 inline-flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 inline-flex items-center gap-1">
                     <Icon className="material-symbols-outlined text-[13px]">shield</Icon>
                     <span>{isAmharic ? 'ሱፐር አድሚን' : 'Super Admin'}</span>
                   </span>
@@ -286,13 +286,13 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
         {/* RBAC Warning Banner if user is not authorized */}
         {!canEdit && (
-          <div className="mx-4 sm:mx-6 mt-3 p-3 bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 rounded-lg flex items-start gap-2.5 text-xs text-amber-900 dark:text-amber-200">
-            <Icon className="material-symbols-outlined text-[20px] text-amber-600 dark:text-amber-400 shrink-0">lock</Icon>
+          <div className="mx-4 sm:mx-6 mt-3 p-3 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg flex items-start gap-2.5 text-xs text-slate-800 dark:text-slate-200">
+            <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
             <div>
               <p className="font-black">
                 {isAmharic ? 'የማስተካከል ፈቃድ አልተሰጠም' : 'Editing Disabled'}
               </p>
-              <p className="text-[11px] mt-0.5 text-amber-800 dark:text-amber-300">
+              <p className="text-[11px] mt-0.5 text-slate-600 dark:text-slate-400">
                 {isAmharic
                   ? 'የአባላት መረጃን የማስተካከል ፈቃድ የለዎትም።'
                   : 'Editing is disabled for your user role.'}
@@ -667,7 +667,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {[
                     { id: 'approved', am: 'የተፈቀደ', en: 'Approved', color: 'border-emerald-500 text-emerald-700 dark:text-emerald-300' },
-                    { id: 'pending_approval', am: 'የሚጠበቅ', en: 'Pending', color: 'border-amber-500 text-amber-700 dark:text-amber-300' },
+                    { id: 'pending_approval', am: 'የሚጠበቅ', en: 'Pending', color: 'border-slate-400 text-slate-700 dark:text-slate-300' },
                     { id: 'ordered_print', am: 'በሕትመት', en: 'In Print', color: 'border-indigo-500 text-indigo-700 dark:text-indigo-300' },
                     { id: 'printed', am: 'የታተመ', en: 'Printed', color: 'border-blue-500 text-slate-800 dark:text-blue-300' },
                     { id: 'rejected', am: 'ውድቅ', en: 'Rejected', color: 'border-rose-500 text-rose-700 dark:text-rose-300' },
@@ -707,7 +707,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
               {/* Super Admin Company Vehicle Toggle */}
               {isSuperAdmin && (
-                <div className="p-3.5 bg-purple-50/70 dark:bg-purple-950/30 rounded-lg border border-purple-200 dark:border-purple-800 flex items-center justify-between gap-3">
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
                   <div>
                     <span className="font-bold text-slate-900 dark:text-white block flex items-center gap-1.5">
                       <span className="material-symbols-outlined text-[17px] text-primary">business</span>
@@ -723,7 +723,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     type="checkbox"
                     checked={hideFromOtherUsers}
                     onChange={(e) => setHideFromOtherUsers(e.target.checked)}
-                    className="w-5 h-5 accent-purple-600 rounded cursor-pointer"
+                    className="w-5 h-5 accent-primary rounded cursor-pointer"
                   />
                 </div>
               )}

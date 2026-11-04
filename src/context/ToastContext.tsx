@@ -218,7 +218,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
               activeToast.type === 'success'
                 ? 'bg-[#10B981] border border-emerald-400/60 shadow-emerald-950/25'
                 : activeToast.type === 'warning'
-                ? 'bg-[#F59E0B] border border-amber-400/60 shadow-amber-950/25'
+                ? 'bg-slate-900 border border-amber-500/70 shadow-black/40 text-slate-100'
                 : activeToast.type === 'error'
                 ? 'bg-[#EF4444] border border-rose-400/60 shadow-rose-950/25'
                 : 'bg-slate-900 border border-slate-700 shadow-black/30'

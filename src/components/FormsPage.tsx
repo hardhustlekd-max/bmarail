@@ -63,8 +63,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
           </span>
         </div>
       ) : isReadOnly ? (
-        <div className="p-3.5 sm:p-4 bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 rounded-lg text-amber-800 dark:text-amber-200 text-xs font-medium flex items-center gap-2.5">
-          <Icon className="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400 shrink-0">warning</Icon>
+        <div className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 text-xs font-medium flex items-center gap-2.5">
+          <Icon className="material-symbols-outlined text-[18px] text-slate-500 dark:text-slate-400 shrink-0">warning</Icon>
           <span>
             {isAmharic
               ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ ምዝገባ ተገድቧል።'
