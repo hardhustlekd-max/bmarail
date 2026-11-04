@@ -291,7 +291,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
             {isFilterDrawerOpen && (
-              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] animate-in fade-in slide-in-from-top-1 duration-150">
                 <div className="flex flex-wrap items-center gap-2.5 text-xs">
                   {/* Sub-City Filter */}
                   <div className="flex items-center gap-1.5">
@@ -383,38 +383,37 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
           </div>
         ) : (
           <>
-            {/* Desktop Data Table (TailAdmin Design with Standalone Columns) */}
+            {/* Desktop Data Table (TailAdmin Design with Fixed Width & Core Columns) */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full table-auto text-left border-collapse text-xs">
+              <table className="w-full text-left border-collapse text-xs table-fixed">
                 <thead>
-                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <th className="py-4 px-3 text-center w-12 font-medium">#</th>
-                    <th className="py-4 px-3 text-center font-medium">{isAmharic ? 'ፎቶ' : 'Photo'}</th>
-                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የሪፖርት #' : 'Report ID'}</th>
-                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የተዘገበበት ቀን' : 'Reported Date'}</th>
-                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
-                    <th className="py-4 px-4 font-medium">{isAmharic ? 'አሽከርካሪ / ተጠርጣሪ' : 'Driver / Suspect'}</th>
-                    <th className="py-4 px-3 font-medium">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
-                    <th className="py-4 px-3 font-medium">{isAmharic ? 'ዝርዝር ቦታ' : 'Location'}</th>
-                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የኦፊሰር ባጅ' : 'Officer Badge'}</th>
-                    <th className="py-4 px-3 font-medium">{isAmharic ? 'የኦፊሰር ስም' : 'Officer Name'}</th>
-                    <th className="py-4 px-3 text-center font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                    <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'ተግባር' : 'Actions'}</th>
+                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <th className="py-3 px-3 text-center w-12 font-medium">#</th>
+                    <th className="py-3 px-2 text-center w-12 font-medium">{isAmharic ? 'ፎቶ' : 'Photo'}</th>
+                    <th className="py-3 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
+                    <th className="py-3 px-3 font-medium truncate">{isAmharic ? 'አሽከርካሪ / ተጠርጣሪ' : 'Driver / Suspect'}</th>
+                    <th className="py-3 px-3 font-medium w-40 truncate">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
+                    <th className="py-3 px-3 text-center w-32 font-medium whitespace-nowrap">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                    <th className="py-3 px-3 text-right w-32 font-medium whitespace-nowrap">{isAmharic ? 'ተግባር' : 'Actions'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
                   {paginatedReports.map((rep, idx) => (
-                    <tr key={rep.id} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                      {/* 1. Standalone Index */}
-                      <td className="py-4 px-3 text-center font-mono font-medium text-[#64748B] dark:text-[#8A99AD] text-xs">
+                    <tr
+                      key={rep.id}
+                      onClick={() => setSelectedReport(rep)}
+                      className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47] cursor-pointer"
+                    >
+                      {/* Index */}
+                      <td className="py-3 px-3 text-center font-mono font-medium text-[#64748B] dark:text-[#8A99AD] text-xs w-12">
                         {startIndex + idx + 1}
                       </td>
 
-                      {/* 2. Standalone Evidence Photo */}
-                      <td className="py-4 px-3 text-center">
+                      {/* Photo Thumbnail */}
+                      <td className="py-3 px-2 text-center w-12" onClick={(e) => e.stopPropagation()}>
                         <div
                           onClick={() => rep.evidencePhoto && setZoomedImage({ url: rep.evidencePhoto, title: rep.id })}
-                          className="w-10 h-10 rounded-sm overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shrink-0 cursor-pointer group relative shadow-2xs mx-auto"
+                          className="w-9 h-9 rounded-sm overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shrink-0 cursor-pointer group relative shadow-2xs mx-auto"
                         >
                           <SmartImage
                             src={rep.evidencePhoto}
@@ -425,71 +424,55 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         </div>
                       </td>
 
-                      {/* 3. Standalone Report ID */}
-                      <td className="py-4 px-3 font-mono font-medium text-primary whitespace-nowrap">
-                        {rep.id}
-                      </td>
-
-                      {/* 4. Standalone Reported Date */}
-                      <td className="py-4 px-3 whitespace-nowrap text-xs text-[#1C2434] dark:text-white">
-                        {rep.reportedAt ? formatEthiopianDateTime(rep.reportedAt, isAmharic ? 'am' : 'en') : '—'}
-                      </td>
-
-                      {/* 5. Standalone Plate Number */}
-                      <td className="py-4 px-3 whitespace-nowrap">
+                      {/* Plate Number / ID */}
+                      <td className="py-3 px-3 whitespace-nowrap w-36">
                         {rep.plateNumber ? (
-                          <span className="font-mono font-semibold text-xs px-2.5 py-1 rounded-sm bg-primary/10 text-primary border border-primary/20 inline-block shadow-2xs">
+                          <span className="font-mono font-bold text-xs px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 inline-block">
                             {rep.plateNumber}
                           </span>
                         ) : (
-                          <span className="text-[#FB5454] font-medium text-xs">[ሰሌዳ የለውም]</span>
+                          <span className="font-mono font-bold text-xs text-rose-500 bg-rose-50 dark:bg-rose-950/40 px-2 py-0.5 rounded">
+                            {rep.id}
+                          </span>
                         )}
                       </td>
 
-                      {/* 6. Standalone Driver / Suspect */}
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-[#1C2434] dark:text-white">
+                      {/* Driver Name & Phone */}
+                      <td className="py-3 px-3 overflow-hidden">
+                        <div className="font-semibold text-[#1C2434] dark:text-white truncate" title={rep.driverName || '—'}>
                           {rep.driverName || '—'}
                         </div>
                         {rep.driverPhone && (
-                          <div className="text-[11px] font-mono text-[#64748B] dark:text-[#8A99AD]">
+                          <div className="text-[11px] font-mono text-[#64748B] dark:text-[#8A99AD] truncate">
                             {rep.driverPhone}
                           </div>
                         )}
                       </td>
 
-                      {/* 7. Standalone Sub-City */}
-                      <td className="py-4 px-3 whitespace-nowrap font-medium text-[#1C2434] dark:text-white">
-                        {rep.subCity}
+                      {/* Sub-City & Location */}
+                      <td className="py-3 px-3 text-xs text-[#1C2434] dark:text-white w-40 overflow-hidden">
+                        <div className="font-medium truncate" title={`${rep.subCity || ''} ${rep.locationName || ''}`}>
+                          {rep.subCity || '—'}
+                        </div>
+                        {rep.locationName && (
+                          <div className="text-[10px] text-[#64748B] dark:text-[#8A99AD] truncate">
+                            {rep.locationName}
+                          </div>
+                        )}
                       </td>
 
-                      {/* 8. Standalone Location */}
-                      <td className="py-4 px-3 text-xs text-[#64748B] dark:text-[#8A99AD] max-w-[140px] truncate">
-                        {rep.locationName}
-                      </td>
+                      {/* Status Badge */}
+                      <td className="py-3 px-3 text-center w-32 whitespace-nowrap">{getStatusBadge(rep.status)}</td>
 
-                      {/* 9. Standalone Officer Badge */}
-                      <td className="py-4 px-3 font-mono font-medium text-xs text-[#1C2434] dark:text-white whitespace-nowrap">
-                        {rep.officerBadgeId}
-                      </td>
-
-                      {/* 10. Standalone Officer Name */}
-                      <td className="py-4 px-3 text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
-                        {rep.officerName || 'Patrol Officer'}
-                      </td>
-
-                      {/* 11. Standalone Status */}
-                      <td className="py-4 px-3 text-center whitespace-nowrap">{getStatusBadge(rep.status)}</td>
-
-                      {/* 12. Standalone Actions */}
-                      <td className="py-4 px-4 text-right whitespace-nowrap">
+                      {/* Action Button */}
+                      <td className="py-3 px-3 text-right w-32 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
                           onClick={() => setSelectedReport(rep)}
                           className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-all cursor-pointer shadow-xs inline-flex items-center gap-1"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
-                          <span>{isAmharic ? 'ዝርዝር' : 'View Details'}</span>
+                          <span>{isAmharic ? 'ዝርዝር' : 'Details'}</span>
                         </button>
                       </td>
                     </tr>

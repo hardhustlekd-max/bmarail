@@ -46,7 +46,7 @@ import {
 import { EditRegistrationModal } from './EditRegistrationModal';
 import { triggerDocumentPrint } from '../utils/printUtils';
 import { LoadingSpinner } from './ui/Skeleton';
-import { UnifiedWorkspaceCard, TabList, TabItem } from './ui/AssocDesignSystem';
+import { UnifiedWorkspaceCard, TabList, TabItem, StatusBadge } from './ui/AssocDesignSystem';
 
 interface TablesPageProps {
   lang: Language;
@@ -359,6 +359,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   const [selectedRegForSticker, setSelectedRegForSticker] = useState<MotorcycleRegistration | null>(null);
   const [selectedRegForDetails, setSelectedRegForDetails] = useState<MotorcycleRegistration | null>(null);
   const [drawerActiveTab, setDrawerActiveTab] = useState<'info' | 'payments' | 'documents'>('info');
+  const [drawerCopiedField, setDrawerCopiedField] = useState<string | null>(null);
+
+  const handleCopyField = (text: string, fieldName: string) => {
+    if (!text) return;
+    try {
+      navigator.clipboard.writeText(text);
+      setDrawerCopiedField(fieldName);
+      setTimeout(() => setDrawerCopiedField(null), 1800);
+    } catch {
+      // Fallback if clipboard api fails
+    }
+  };
   const [carouselModal, setCarouselModal] = useState<{
     items: DocumentViewerItem[];
     initialIndex: number;
@@ -893,7 +905,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
             {isFilterDrawerOpen && (
-              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] animate-in fade-in slide-in-from-top-1 duration-150">
                 <div className="flex flex-wrap items-center gap-2.5 text-xs">
                   {/* SubCity Filter */}
                   <div className="flex items-center gap-1.5">
@@ -1111,13 +1123,13 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         {/* --- VIEW 1: REGISTRATIONS TABLE (FILTERED BY STATUS) --- */}
         {(activeTableTab === 'approved' || activeTableTab === 'pending' || activeTableTab === 'expired') && (
           <div className="flex flex-col">
-            {/* Desktop Data Table (>= md) WITH STANDALONE COLUMNS - SCROLLABLE ROWS WITH FIXED STICKY THEAD */}
+            {/* Desktop Data Table (>= md) WITH FIXED WIDTH & ESSENTIAL COLUMNS */}
             <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] min-h-[360px] scrollbar-thin">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
-                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <th className="py-2.5 px-3 text-center min-w-[75px] align-middle font-medium">
-                      <div className="flex items-center justify-center gap-2">
+                  <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <th className="py-2.5 px-3 text-center w-14 font-medium">
+                      <div className="flex items-center justify-center gap-1.5">
                         <input
                           type="checkbox"
                           checked={isAllPageSelected}
@@ -1130,21 +1142,17 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         </span>
                       </div>
                     </th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'አይነት / ነዳጅ' : 'Category'}</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ቻሲስ' : 'Chasis'}</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}</th>
-                    <th className="py-2.5 px-3 text-right font-medium whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
+                    <th className="py-2.5 px-3 font-medium truncate">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                    <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
+                    <th className="py-2.5 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'አይነት' : 'Category'}</th>
+                    <th className="py-2.5 px-3 font-medium w-32 whitespace-nowrap text-center">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                    <th className="py-2.5 px-3 text-right font-medium w-40 whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
                   {registrations.length === 0 ? (
                     <tr>
-                      <td colSpan={11} className="p-12 text-center text-[#64748B] dark:text-[#8A99AD]">
+                      <td colSpan={6} className="p-12 text-center text-[#64748B] dark:text-[#8A99AD]">
                         <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
                           <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD]">inbox</Icon>
                           <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
@@ -1160,7 +1168,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     </tr>
                   ) : filteredRegistrations.length === 0 ? (
                     <tr>
-                      <td colSpan={11} className="p-10 text-center text-[#64748B] dark:text-[#8A99AD]">
+                      <td colSpan={6} className="p-10 text-center text-[#64748B] dark:text-[#8A99AD]">
                         <div className="flex flex-col items-center justify-center gap-2 py-4">
                           <Icon className="material-symbols-outlined text-[32px] text-[#8A99AD]">search_off</Icon>
                           <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
@@ -1181,6 +1189,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   ) : (
                       paginatedRegistrations.map((reg, index) => {
                         const isRowSelected = selectedRegIds.has(reg.id);
+                        const displayName = getDisplayName(reg);
                         return (
                           <tr
                             key={reg.id}
@@ -1191,12 +1200,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                 : 'hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50'
                             }`}
                           >
-                            {/* Index Number + Bulk Select Checkbox (No expandable chevron in desktop) */}
+                            {/* Checkbox + Row Index */}
                             <td
-                              className="px-3 py-2.5 align-middle text-center font-mono font-medium text-[#8A99AD]"
+                              className="px-3 py-2.5 align-middle text-center font-mono font-medium text-[#8A99AD] w-14"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <div className="flex items-center justify-center gap-2">
+                              <div className="flex items-center justify-center gap-1.5">
                                 <input
                                   type="checkbox"
                                   checked={isRowSelected}
@@ -1208,17 +1217,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               </div>
                             </td>
 
-                            {/* Standalone Column 1: Owner Name */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                            {/* Column 1: Owner Name with Truncation and Tooltip */}
+                            <td className="px-3 py-2.5 align-middle overflow-hidden">
                               <button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedRegForDetails(reg);
                                 }}
-                                className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer max-w-[180px]"
+                                className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer w-full overflow-hidden"
+                                title={displayName}
                               >
-                                <span className="truncate">{getDisplayName(reg)}</span>
+                                <span className="truncate block">{displayName}</span>
                                 {reg.hideFromOtherUsers && isSuperAdmin && (
                                   <span
                                     className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"
@@ -1231,22 +1241,15 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               </button>
                             </td>
 
-                            {/* Standalone Column 2: Phone Number */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                              <span className="text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
-                                {getDisplayPhone(reg)}
-                              </span>
-                            </td>
-
-                            {/* Standalone Column 3: Plate Number */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                              <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white">
+                            {/* Column 2: Plate Number */}
+                            <td className="px-3 py-2.5 align-middle w-36 whitespace-nowrap">
+                              <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-primary">
                                 {reg.plateNumber || '—'}
                               </span>
                             </td>
 
-                            {/* Standalone Column 4: Vehicle Category (Fuel / EV) */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
+                            {/* Column 3: Category */}
+                            <td className="px-3 py-2.5 align-middle w-28 whitespace-nowrap">
                               <span className="text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE]">
                                 {reg.vehicleCategory === 'electric'
                                   ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
@@ -1254,39 +1257,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               </span>
                             </td>
 
-                            {/* Standalone Column 5: Chasis */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                              <span className="font-mono font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[130px] truncate" title={getChassisDisplay(reg)}>
-                                {getChassisDisplay(reg)}
-                              </span>
+                            {/* Column 4: Status Badge */}
+                            <td className="px-3 py-2.5 align-middle w-32 text-center whitespace-nowrap">
+                              {renderStatusBadge(reg.status, true, reg)}
                             </td>
 
-                            {/* Standalone Column 6: Brand & Model */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                              <span className="font-medium text-xs text-[#1C2434] dark:text-[#DEE4EE] block max-w-[120px] truncate" title={`${reg.motorBrand || ''} ${reg.motorModel || ''}`}>
-                                {reg.motorBrand ? `${reg.motorBrand} ${reg.motorModel || ''}`.trim() : '—'}
-                              </span>
-                            </td>
-
-                            {/* Standalone Column 7: Sub-City */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                              <span className="text-xs text-[#1C2434] dark:text-white block">
-                                {reg.subCity || '—'}
-                              </span>
-                            </td>
-
-                            {/* Standalone Column 8: Registration Date */}
-                            <td className="px-3 py-2.5 align-middle whitespace-nowrap">
-                              <span className="font-mono text-xs text-[#64748B] dark:text-[#8A99AD] block">
-                                {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                              </span>
-                            </td>
-
-
-
-                            {/* Actions Column: Open Drawer & Quick Approve */}
+                            {/* Column 5: Actions */}
                             <td
-                              className="px-3 py-2.5 align-middle text-right whitespace-nowrap"
+                              className="px-3 py-2.5 align-middle text-right w-40 whitespace-nowrap"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="inline-flex items-center justify-end gap-1.5">
@@ -1315,7 +1293,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   title={isAmharic ? 'የአባል ሙሉ መረጃ እና ተግባራትን በጎን መስኮት ክፈት' : 'View full member details in drawer'}
                                 >
                                   <Icon className="material-symbols-outlined text-[16px] text-primary">assignment_ind</Icon>
-                                  <span>{isAmharic ? 'ዝርዝር / ተግባራት' : 'View Details'}</span>
+                                  <span>{isAmharic ? 'ዝርዝር' : 'Details'}</span>
                                 </button>
                               </div>
                             </td>
@@ -1612,86 +1590,95 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         </div>
       )}
 
-      {/* MEMBER FULL INFORMATION DRAWER (Slide-Over Side-Sheet - Matching side menu size in mobile) */}
+      {/* MEMBER FULL INFORMATION DRAWER (Slide-Over Panel - Refined for Desktop & Mobile) */}
       {selectedRegForDetails && (
         <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
           {/* Subtle semi-transparent backdrop */}
           <div
             onClick={() => setSelectedRegForDetails(null)}
-            className="fixed inset-0 bg-slate-950/65 backdrop-blur-md transition-opacity cursor-pointer"
+            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity cursor-pointer"
           />
 
-          {/* Side-Sheet Drawer Content Container (Leaves space on left for touch-outside to close) */}
-          <div className="relative w-[80vw] sm:w-[480px] md:w-[520px] lg:w-[560px] max-w-[80vw] sm:max-w-[560px] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
-            {/* Drawer Header */}
+          {/* Side-Sheet Drawer Content Container: 520px-580px on desktop, full width on mobile */}
+          <div className="relative w-full sm:w-[540px] md:w-[560px] lg:w-[580px] max-w-full sm:max-w-[580px] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
+            {/* Drawer Header: Elevated with entity info, copy chip, status & close button */}
             <div className="p-3 sm:p-4 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
-                  <Icon className="material-symbols-outlined text-[18px] sm:text-[22px]">assignment_ind</Icon>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
+                  <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">assignment_ind</Icon>
                 </div>
 
                 <div className="space-y-0.5 min-w-0">
-                  <h3 className="text-xs sm:text-sm font-black tracking-wide truncate flex items-center gap-1.5">
-                    <span>{isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Details'}</span>
-                  </h3>
-                  <p className="text-[10px] sm:text-xs text-slate-300 font-medium truncate">
-                    {selectedRegForDetails.fullName || '—'}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h3 className="text-xs sm:text-sm font-black tracking-wide truncate max-w-[180px] sm:max-w-[240px]">
+                      {selectedRegForDetails.fullName || (isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Details')}
+                    </h3>
+                    <span className="font-mono text-[10px] text-slate-400 font-bold bg-slate-800 px-1.5 py-0.2 rounded tabular-nums">
+                      #{selectedRegForDetails.id}
+                    </span>
+                  </div>
+                  <p className="text-[10px] sm:text-xs text-slate-400 font-medium truncate flex items-center gap-1">
+                    <span>{selectedRegForDetails.subCity || '—'}</span>
+                    <span>•</span>
+                    <span>{selectedRegForDetails.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}</span>
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 {selectedRegForDetails.plateNumber && (
-                  <span className="hidden sm:inline-block px-2 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-amber-400">
-                    {selectedRegForDetails.plateNumber}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyField(selectedRegForDetails.plateNumber, 'Plate')}
+                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-xs text-amber-400 flex items-center gap-1 transition-colors cursor-pointer tabular-nums"
+                    title={isAmharic ? 'የሰሌዳ ቁጥር ቅዳ' : 'Copy Plate Number'}
+                  >
+                    <span>{selectedRegForDetails.plateNumber}</span>
+                    <Icon className="material-symbols-outlined text-[13px] text-slate-400">
+                      {drawerCopiedField === 'Plate' ? 'check' : 'content_copy'}
+                    </Icon>
+                  </button>
                 )}
+
                 <button
                   type="button"
                   onClick={() => setSelectedRegForDetails(null)}
-                  className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-xs font-bold shrink-0"
+                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-sm font-bold shrink-0"
                   title={isAmharic ? 'ዝጋ' : 'Close Drawer'}
                 >
-                  ✕
+                  <Icon className="material-symbols-outlined text-[18px]">close</Icon>
                 </button>
               </div>
             </div>
 
-            {/* Drawer Underline Navigation Tabs (Design System Standard - Compact) */}
+            {/* Segmented Control Tabs (Info, Payments, Documents) */}
             {(() => {
               const matchedReceipts = getReceiptsForRegistration(selectedRegForDetails, paymentReceipts);
-              const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
-              const docCount = [
-                selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail,
-                selectedRegForDetails.nationalIdPhoto,
-                selectedRegForDetails.drivingLicensePhoto,
-                selectedRegForDetails.drivingPermitPhoto,
-                latestRc?.receiptScreenshot || selectedRegForDetails.receiptScreenshot,
-              ].filter(Boolean).length;
+              const docCount = getRegistrationDocCount(selectedRegForDetails);
 
               const tabs = [
                 {
                   id: 'info',
-                  label: isAmharic ? 'የባለቤት እና ተሽከርካሪ መረጃ' : 'Owner & Vehicle Info',
+                  label: isAmharic ? 'የአባልና ተሽከርካሪ' : 'Info & Vehicle',
                   icon: 'badge',
                 },
                 {
                   id: 'payments',
-                  label: isAmharic ? 'የክፍያ ሁኔታ እና ታሪክ' : 'Payments & Ledger',
+                  label: isAmharic ? 'ክፍያዎች' : 'Payments',
                   icon: 'receipt_long',
                   badge: matchedReceipts.length,
                 },
                 {
                   id: 'documents',
-                  label: isAmharic ? 'የተያያዙ ሰነዶች' : 'Uploaded Documents',
+                  label: isAmharic ? 'ሰነዶች' : 'Documents',
                   icon: 'photo_library',
                   badge: `${docCount}/5`,
                 },
               ];
 
               return (
-                <div className="px-3 sm:px-4 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
-                  <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto scrollbar-none -mb-[1px]">
+                <div className="p-2 sm:p-2.5 bg-[#F7F9FC] dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-200/60 dark:bg-slate-900/60 rounded-lg">
                     {tabs.map((tab) => {
                       const isActive = drawerActiveTab === tab.id;
                       return (
@@ -1699,21 +1686,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           key={tab.id}
                           type="button"
                           onClick={() => setDrawerActiveTab(tab.id as 'info' | 'payments' | 'documents')}
-                          className={`group relative flex items-center gap-1.5 py-2 sm:py-2.5 px-2.5 sm:px-3 text-xs border-b-2 transition-all cursor-pointer whitespace-nowrap select-none shrink-0 ${
+                          className={`flex items-center justify-center gap-1.5 py-1.5 sm:py-2 px-1.5 sm:px-2.5 rounded-md text-xs font-bold transition-all cursor-pointer truncate ${
                             isActive
-                              ? 'border-primary text-primary dark:text-white dark:border-primary font-bold'
-                              : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1] dark:hover:border-[#334155] font-semibold'
+                              ? 'bg-white dark:bg-[#24303F] text-primary dark:text-white shadow-xs'
+                              : 'text-slate-600 dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white'
                           }`}
                         >
-                          <Icon className={`material-symbols-outlined text-[15px] ${isActive ? 'text-primary' : 'text-[#64748B] dark:text-[#8A99AD]'}`}>
+                          <Icon className={`material-symbols-outlined text-[15px] shrink-0 ${isActive ? 'text-primary' : ''}`}>
                             {tab.icon}
                           </Icon>
-                          <span>{tab.label}</span>
+                          <span className="truncate">{tab.label}</span>
                           {tab.badge !== undefined && (
-                            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold transition-colors ${
+                            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold tabular-nums shrink-0 ${
                               isActive
-                                ? 'bg-primary/15 text-primary dark:bg-primary/30 dark:text-blue-300'
-                                : 'bg-[#E2E8F0] dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
+                                ? 'bg-primary/10 text-primary dark:bg-primary/25 dark:text-blue-300'
+                                : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                             }`}>
                               {tab.badge}
                             </span>
@@ -1731,234 +1718,262 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             {/* TAB 1: OWNER & VEHICLE INFO */}
             {drawerActiveTab === 'info' && (
-              <div className="space-y-3.5 animate-in fade-in duration-200">
+              <div className="space-y-3 animate-in fade-in duration-200">
                 {/* Rejection notice if rejected */}
                 {selectedRegForDetails.status === 'rejected' && selectedRegForDetails.rejectionReason && (
-                  <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-md text-xs text-rose-900 dark:text-rose-200">
-                    <span className="font-bold block mb-0.5">{isAmharic ? 'የመሰረዣ ምክንያት:' : 'Rejection Reason:'}</span>
-                    <p className="leading-snug">{selectedRegForDetails.rejectionReason}</p>
+                  <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-900 dark:text-rose-200 space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold">
+                      <Icon className="material-symbols-outlined text-[16px] text-rose-600">error</Icon>
+                      <span>{isAmharic ? 'የመሰረዣ ምክንያት:' : 'Rejection Reason:'}</span>
+                    </div>
+                    <p className="leading-snug pl-5">{selectedRegForDetails.rejectionReason}</p>
                   </div>
                 )}
 
-                {/* Core Data Cards - Column 1: Portrait Thumbnail Only | Column 2: Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] md:grid-cols-[160px_1fr] gap-3.5 text-xs items-stretch">
-                  {/* Column 1: ONLY Portrait Thumbnail Card */}
-                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col items-center justify-center text-center space-y-2 shrink-0">
-                    <div className="w-full flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1">
-                      <span className="text-[10px] font-bold text-[#64748B] dark:text-[#8A99AD] uppercase tracking-wider">
-                        {isAmharic ? 'የባለቤት ፎቶ' : 'Portrait'}
-                      </span>
-                      <span className="text-[10px] font-mono font-bold text-primary dark:text-blue-300 bg-primary/10 dark:bg-primary/20 px-1.5 py-0.2 rounded">
-                        #{selectedRegForDetails.id}
-                      </span>
-                    </div>
-
-                    <div
-                      onClick={() => {
-                        const photo = selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail;
-                        if (photo) openDocumentCarousel(photo, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
-                      }}
-                      className="w-22 h-28 sm:w-26 sm:h-32 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] overflow-hidden flex items-center justify-center shadow-2xs relative group cursor-pointer"
-                      title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
-                    >
-                      {(selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto) ? (
-                        <>
-                          <img
-                            src={selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto}
-                            alt={selectedRegForDetails.fullName}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                            onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
-                          />
-                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                            <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                          </div>
-                        </>
-                      ) : (
-                        <Icon className="material-symbols-outlined text-[32px] text-slate-400">person</Icon>
-                      )}
-                    </div>
-
-                    <p className="font-bold text-xs text-[#1C2434] dark:text-white truncate max-w-full" title={selectedRegForDetails.fullName}>
-                      {selectedRegForDetails.fullName || '—'}
-                    </p>
+                {/* Tile 1: Profile & Owner Identity Card */}
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] space-y-3">
+                  <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-2">
+                    <h4 className="font-bold text-xs text-[#1C2434] dark:text-white tracking-wider flex items-center gap-1.5">
+                      <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">person</Icon>
+                      <span>{isAmharic ? 'የአባል እና የባለቤት ዝርዝር' : 'Owner & Member Identity'}</span>
+                    </h4>
+                    <StatusBadge
+                      label={selectedRegForDetails.status.replace('_', ' ').toUpperCase()}
+                      variant={
+                        selectedRegForDetails.status === 'approved'
+                          ? 'success'
+                          : selectedRegForDetails.status === 'pending_approval' || (selectedRegForDetails.status as string) === 'pending'
+                          ? 'pending'
+                          : selectedRegForDetails.status === 'printed' || selectedRegForDetails.status === 'ordered_print'
+                          ? 'info'
+                          : 'danger'
+                      }
+                    />
                   </div>
 
-                  {/* Column 2: Owner Information & Vehicle Specifications Grid */}
-                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5 flex-1 min-w-0">
-                    <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5">
-                      <h4 className="font-bold text-xs text-[#1C2434] dark:text-white tracking-wider flex items-center gap-1.5">
-                        <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">badge</Icon>
-                        <span>{isAmharic ? 'የባለቤትና የተሽከርካሪ መረጃ' : 'Owner & Vehicle Details'}</span>
-                      </h4>
-                
+                  <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-3 items-center">
+                    {/* Portrait Thumbnail */}
+                    <div className="flex flex-col items-center justify-center text-center space-y-1.5">
+                      <div
+                        onClick={() => {
+                          const photo = selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail;
+                          if (photo) openDocumentCarousel(photo, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
+                        }}
+                        className="w-24 h-28 sm:w-28 sm:h-32 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] overflow-hidden flex items-center justify-center shadow-xs relative group cursor-pointer"
+                        title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
+                      >
+                        {(selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto) ? (
+                          <>
+                            <img
+                              src={selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto}
+                              alt={selectedRegForDetails.fullName}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                            </div>
+                          </>
+                        ) : (
+                          <Icon className="material-symbols-outlined text-[36px] text-slate-400">person</Icon>
+                        )}
+                      </div>
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD]">
+                        {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
+                      </span>
                     </div>
 
-                    <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ሙሉ ስም' : 'Full Name'}</dt>
-                        <dd className="font-bold text-[#1C2434] dark:text-white text-xs leading-snug truncate" title={selectedRegForDetails.fullName}>
+                    {/* Owner Details Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                        <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                          {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
+                        </span>
+                        <span className="font-bold text-[#1C2434] dark:text-white text-xs block truncate" title={selectedRegForDetails.fullName}>
                           {selectedRegForDetails.fullName || '—'}
-                        </dd>
+                        </span>
                       </div>
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</dt>
-                        <dd className="font-mono font-bold text-[#1C2434] dark:text-white text-xs leading-snug truncate">
+
+                      <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                        <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                          {isAmharic ? 'ስልክ ቁጥር' : 'Phone'}
+                        </span>
+                        <div className="flex items-center justify-between gap-1">
                           {selectedRegForDetails.phone ? (
-                            <a href={`tel:${selectedRegForDetails.phone}`} className="text-primary hover:underline flex items-center gap-1">
-                              <Icon className="material-symbols-outlined text-[12px]">call</Icon>
+                            <a
+                              href={`tel:${selectedRegForDetails.phone}`}
+                              className="font-mono font-bold text-primary hover:underline text-xs flex items-center gap-1 tabular-nums truncate"
+                            >
+                              <Icon className="material-symbols-outlined text-[13px]">call</Icon>
                               <span>{getDisplayPhone(selectedRegForDetails)}</span>
                             </a>
-                          ) : '—'}
-                        </dd>
+                          ) : (
+                            <span className="font-mono text-xs text-slate-400">—</span>
+                          )}
+                          {selectedRegForDetails.phone && (
+                            <button
+                              type="button"
+                              onClick={() => handleCopyField(selectedRegForDetails.phone, 'Phone')}
+                              className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                              title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
+                            >
+                              <Icon className="material-symbols-outlined text-[13px]">
+                                {drawerCopiedField === 'Phone' ? 'check' : 'content_copy'}
+                              </Icon>
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</dt>
-                        <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug truncate">{selectedRegForDetails.subCity || '—'}</dd>
+
+                      <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                        <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                          {isAmharic ? 'ክፍለ ከተማ' : 'Subcity'}
+                        </span>
+                        <span className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate">
+                          {selectedRegForDetails.subCity || '—'}
+                        </span>
                       </div>
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'የተመዘገበበት' : 'Reg Date'}</dt>
-                        <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug truncate">
-                          {selectedRegForDetails.registrationDate ? formatEthiopianDate(selectedRegForDetails.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                        </dd>
+
+                      <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                        <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                          {isAmharic ? 'የመዘገበው ሰራተኛ' : 'Registered By'}
+                        </span>
+                        <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate tabular-nums">
+                          {selectedRegForDetails.registeredBy ? `Officer ${selectedRegForDetails.registeredBy}` : '—'}
+                        </span>
                       </div>
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</dt>
-                        <dd className="font-mono font-bold text-[#1C2434] dark:text-white text-xs leading-snug truncate">{selectedRegForDetails.plateNumber || '—'}</dd>
-                      </div>
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ዓይነት' : 'Category'}</dt>
-                        <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs">
-                          {selectedRegForDetails.vehicleCategory === 'electric'
-                            ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
-                            : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis'}</dt>
-                        <dd className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug truncate" title={getChassisDisplay(selectedRegForDetails)}>
-                          {getChassisDisplay(selectedRegForDetails)}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] mb-0.5">{isAmharic ? 'ብራንድ/ሞዴል' : 'Brand/Model'}</dt>
-                        <dd className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs leading-snug truncate" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
-                          {`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`.trim()}
-                        </dd>
-                      </div>
-                    </dl>
+                    </div>
                   </div>
                 </div>
 
-                {/* Third Section: Operational Actions Moved to Bottom Section */}
-                <div className="pt-1 mt-auto">
-                  <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2">
-                  <div className="flex items-center justify-between pb-1 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <span className="font-bold text-[11px] text-[#1C2434] dark:text-white flex items-center gap-1.5">
-                      <Icon className="material-symbols-outlined text-[15px] text-primary">bolt</Icon>
-                      <span>{isAmharic ? 'ፈጣን ተግባራት' : 'Actions'}</span>
+                {/* Tile 2: Vehicle & Technical Specifications Card */}
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5">
+                  <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-2">
+                    <h4 className="font-bold text-xs text-[#1C2434] dark:text-white tracking-wider flex items-center gap-1.5">
+                      <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">two_wheeler</Icon>
+                      <span>{isAmharic ? 'የተሽከርካሪ እና የሞተር መረጃ' : 'Vehicle Specifications'}</span>
+                    </h4>
+                    <span className="font-mono font-bold text-xs bg-slate-900 text-amber-400 px-2 py-0.5 rounded border border-slate-700 tabular-nums">
+                      {selectedRegForDetails.plateNumber || '—'}
                     </span>
                   </div>
 
-                  {/* Approval decision row if pending */}
-                  {(userRole === 'admin' || isSuperAdmin) && selectedRegForDetails.status === 'pending_approval' && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => onApproveRegistration(selectedRegForDetails.id)}
-                        className="py-1.5 px-3 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer"
-                      >
-                        <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
-                        <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRejectingId(selectedRegForDetails.id)}
-                        className="py-1.5 px-3 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer hover:bg-rose-100"
-                      >
-                        <Icon className="material-symbols-outlined text-[15px]">cancel</Icon>
-                        <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
-                      </button>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'ምድብ' : 'Category'}
+                      </span>
+                      <span className="font-bold text-[#1C2434] dark:text-white text-xs block">
+                        {selectedRegForDetails.vehicleCategory === 'electric'
+                          ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
+                          : (isAmharic ? 'ነዳጅ (<110cc)' : 'Gas (<110cc)')}
+                      </span>
                     </div>
-                  )}
 
-                  {/* Standard Operational Actions with Old Minimized Text */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {canEditRegistration && (
-                      <button
-                        id="details-modal-edit-reg-btn"
-                        type="button"
-                        onClick={() => {
-                          const reg = selectedRegForDetails;
-                          setSelectedRegForDetails(null);
-                          setEditingRegistration(reg);
-                        }}
-                        className="py-1.5 px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                      >
-                        <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
-                        <span>{isAmharic ? 'መረጃ አሻሽል' : 'Edit'}</span>
-                      </button>
-                    )}
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'ብራንድ እና ሞዴል' : 'Brand & Model'}
+                      </span>
+                      <span className="font-bold text-[#1C2434] dark:text-white text-xs block truncate" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
+                        {`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`.trim()}
+                      </span>
+                    </div>
 
-                    {(userRole === 'admin' || isSuperAdmin) && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const reg = selectedRegForDetails;
-                          setSelectedRegForDetails(null);
-                          setSelectedRegForQR(reg);
-                        }}
-                        className="py-1.5 px-3 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                      >
-                        <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
-                        <span>{isAmharic ? 'መታወቂያ' : 'ID Card'}</span>
-                      </button>
-                    )}
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'አገልግሎት' : 'Service Type'}
+                      </span>
+                      <span className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate">
+                        {selectedRegForDetails.serviceCategory || (isAmharic ? 'መደበኛ' : 'Standard')}
+                      </span>
+                    </div>
 
-                    {(selectedRegForDetails.status === 'approved' || selectedRegForDetails.status === 'printed' || selectedRegForDetails.status === 'ordered_print') && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const reg = selectedRegForDetails;
-                            setSelectedRegForDetails(null);
-                            setSelectedRegForA4(reg);
-                          }}
-                          className="py-1.5 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
-                        >
-                          <Icon className="material-symbols-outlined text-[15px]">print</Icon>
-                          <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
-                        </button>
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis #'}
+                      </span>
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums" title={getChassisDisplay(selectedRegForDetails)}>
+                          {getChassisDisplay(selectedRegForDetails)}
+                        </span>
+                        {selectedRegForDetails.chassisNumber && (
+                          <button
+                            type="button"
+                            onClick={() => handleCopyField(selectedRegForDetails.chassisNumber || '', 'Chassis')}
+                            className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                            title={isAmharic ? 'ቻሲስ ቁጥር ቅዳ' : 'Copy Chassis #'}
+                          >
+                            <Icon className="material-symbols-outlined text-[13px]">
+                              {drawerCopiedField === 'Chassis' ? 'check' : 'content_copy'}
+                            </Icon>
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const reg = selectedRegForDetails;
-                            setSelectedRegForDetails(null);
-                            setSelectedRegForSticker(reg);
-                          }}
-                          className="py-1.5 px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                        >
-                          <Icon className="material-symbols-outlined text-[15px]">qr_code_scanner</Icon>
-                          <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
-                        </button>
-                      </>
-                    )}
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'ሞተር / ሴሪያል ቁጥር' : 'Engine / Serial #'}
+                      </span>
+                      <div className="flex items-center justify-between gap-1">
+                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums" title={selectedRegForDetails.engineOrSerialNo || selectedRegForDetails.engineNumber || '—'}>
+                          {selectedRegForDetails.engineOrSerialNo || selectedRegForDetails.engineNumber || '—'}
+                        </span>
+                        {(selectedRegForDetails.engineOrSerialNo || selectedRegForDetails.engineNumber) && (
+                          <button
+                            type="button"
+                            onClick={() => handleCopyField(selectedRegForDetails.engineOrSerialNo || selectedRegForDetails.engineNumber || '', 'Engine')}
+                            className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                            title={isAmharic ? 'ሞተር ቁጥር ቅዳ' : 'Copy Engine #'}
+                          >
+                            <Icon className="material-symbols-outlined text-[13px]">
+                              {drawerCopiedField === 'Engine' ? 'check' : 'content_copy'}
+                            </Icon>
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-                    {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
-                      <button
-                        type="button"
-                        onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
-                        className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-md text-xs inline-flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-                      >
-                        <Icon className="material-symbols-outlined text-[15px]">add_card</Icon>
-                        <span>{isAmharic ? '+ ደረሰኝ' : '+ Receipt'}</span>
-                      </button>
-                    )}
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'የተመዘገበበት ቀን' : 'Reg Date (E.C.)'}
+                      </span>
+                      <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate tabular-nums">
+                        {selectedRegForDetails.registrationDate ? formatEthiopianDate(selectedRegForDetails.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tile 3: Association Registration Records */}
+                <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5">
+                  <h4 className="font-bold text-xs text-[#1C2434] dark:text-white tracking-wider flex items-center gap-1.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-2">
+                    <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">fact_check</Icon>
+                    <span>{isAmharic ? 'የማህበሩ ምዝገባ እና የስራ መረጃ' : 'Association Registration Records'}</span>
+                  </h4>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'የደም ዓይነት' : 'Blood Group'}
+                      </span>
+                      <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums">
+                        {selectedRegForDetails.bloodGroup || '—'}
+                      </span>
+                    </div>
+
+                    <div className="bg-white dark:bg-[#1C2434] p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                        {isAmharic ? 'የመጨረሻ ደረሰኝ ቁጥር' : 'Last Receipt #'}
+                      </span>
+                      <span className="font-mono font-bold text-primary text-xs block truncate tabular-nums">
+                        {selectedRegForDetails.lastReceiptNumber || selectedRegForDetails.receiptNumber || '—'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
             {/* TAB 2: PAYMENT STATUS & LEDGER */}
             {drawerActiveTab === 'payments' && (
@@ -2339,8 +2354,124 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             )}
 
             </div>
+
+            {/* STICKY ACTION FOOTER (Pinned at base of drawer across all tabs) */}
+            <div className="sticky bottom-0 z-20 shrink-0 bg-slate-50/95 dark:bg-[#1A2232]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#2E3A47] p-3 sm:p-3.5 space-y-2">
+              {/* Approval Row if Pending */}
+              {(userRole === 'admin' || isSuperAdmin) && (selectedRegForDetails.status === 'pending_approval' || (selectedRegForDetails.status as string) === 'pending') && (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onApproveRegistration(selectedRegForDetails.id)}
+                    className="py-2 px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] cursor-pointer transition-all"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                    <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRejectingId(selectedRegForDetails.id)}
+                    className="py-2 px-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] cursor-pointer hover:bg-rose-100 transition-all"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">cancel</Icon>
+                    <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Quick Operational Actions Bar */}
+              <div className="flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap">
+                <div className="flex items-center gap-1.5 flex-wrap flex-1">
+                  {canEditRegistration && (
+                    <button
+                      id="details-modal-edit-reg-btn"
+                      type="button"
+                      onClick={() => {
+                        const reg = selectedRegForDetails;
+                        setSelectedRegForDetails(null);
+                        setEditingRegistration(reg);
+                      }}
+                      className="py-1.5 sm:py-2 px-2.5 sm:px-3 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                      title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
+                      <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
+                    </button>
+                  )}
+
+                  {(userRole === 'admin' || isSuperAdmin) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const reg = selectedRegForDetails;
+                        setSelectedRegForDetails(null);
+                        setSelectedRegForQR(reg);
+                      }}
+                      className="py-1.5 sm:py-2 px-2.5 sm:px-3 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                      title={isAmharic ? 'የመታወቂያ ካርድ አትም' : 'Print ID Card'}
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">badge</Icon>
+                      <span>{isAmharic ? 'መታወቂያ' : 'ID Card'}</span>
+                    </button>
+                  )}
+
+                  {(selectedRegForDetails.status === 'approved' || selectedRegForDetails.status === 'printed' || selectedRegForDetails.status === 'ordered_print') && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const reg = selectedRegForDetails;
+                          setSelectedRegForDetails(null);
+                          setSelectedRegForA4(reg);
+                        }}
+                        className="py-1.5 sm:py-2 px-2.5 sm:px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer transition-colors shadow-xs shrink-0"
+                        title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ አትም' : 'Print Permit'}
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">print</Icon>
+                        <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const reg = selectedRegForDetails;
+                          setSelectedRegForDetails(null);
+                          setSelectedRegForSticker(reg);
+                        }}
+                        className="py-1.5 sm:py-2 px-2.5 sm:px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                        title={isAmharic ? 'ተለጣፊ QR ኮድ አትም' : 'Print Sticker'}
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">qr_code_scanner</Icon>
+                        <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
+                      </button>
+                    </>
+                  )}
+
+                  {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
+                    <button
+                      type="button"
+                      onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
+                      className="py-1.5 sm:py-2 px-2.5 sm:px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                      title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
+                    >
+                      <Icon className="material-symbols-outlined text-[15px]">add_card</Icon>
+                      <span>{isAmharic ? '+ ደረሰኝ' : '+ Receipt'}</span>
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedRegForDetails(null)}
+                  className="py-1.5 sm:py-2 px-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0 ml-auto"
+                >
+                  <Icon className="material-symbols-outlined text-[15px]">close</Icon>
+                  <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
       )}
 
       {/* RENEWAL MONTHLY PAYMENT RECEIPT MODAL */}

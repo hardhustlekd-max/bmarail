@@ -564,7 +564,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
           {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
           {isFilterDrawerOpen && (
-            <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+            <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] animate-in fade-in slide-in-from-top-1 duration-150">
               <div className="flex flex-wrap items-center gap-2.5 text-xs">
                 {/* Category Dropdown */}
                 <div className="flex items-center gap-1.5">
@@ -648,39 +648,27 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
           </div>
         ) : (
           <>
-            {/* 1. DESKTOP STRUCTURED DATA TABLE (MATCHING TABLES PAGE PATTERN) */}
+            {/* 1. DESKTOP STRUCTURED DATA TABLE (FIXED WIDTH & CORE COLUMNS) */}
             <div className="hidden md:block overflow-x-auto w-full max-w-full">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse table-fixed">
                 <thead>
                   <tr className="border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]">
                     <th className="py-3 px-3 text-center text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] font-mono w-12">
                       {isAmharic ? 'ተ.ቁ' : '#'}
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] truncate">
                       {isAmharic ? 'ባለቤት / ነጂ' : 'Owner / Driver'}
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] font-mono">
-                      {isAmharic ? 'ስልክ ቁጥር' : 'Phone'}
-                    </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] font-mono">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] font-mono w-32 whitespace-nowrap">
                       {isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate #'}
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
+                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] w-28 whitespace-nowrap">
                       {isAmharic ? 'ዓይነት' : 'Category'}
                     </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
-                      {isAmharic ? 'የፍተሻ ጣቢያ / ቦታ' : 'Checkpoint Location'}
-                    </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] font-mono">
-                      {isAmharic ? 'የተፈተሸበት ቀንና ሰዓት' : 'Scanned At'}
-                    </th>
-                    <th className="py-3 px-3 text-left text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] font-mono">
-                      {isAmharic ? 'የተቆጣጣሪው ባጅ' : 'Officer'}
-                    </th>
-                    <th className="py-3 px-3 text-center text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
+                    <th className="py-3 px-3 text-center text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] w-36 whitespace-nowrap">
                       {isAmharic ? 'የፍተሻ ውጤት' : 'Inspection Result'}
                     </th>
-                    <th className="py-3 px-3 text-right text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE]">
+                    <th className="py-3 px-3 text-right text-xs font-semibold text-[#1C2434] dark:text-[#DEE4EE] w-32 whitespace-nowrap">
                       {isAmharic ? 'እርምጃዎች' : 'Actions'}
                     </th>
                   </tr>
@@ -695,73 +683,47 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         className="hover:bg-slate-50 dark:hover:bg-[#24303F]/60 transition-colors cursor-pointer select-none"
                       >
                         {/* 1. Row Index */}
-                        <td className="py-3.5 px-3 text-center text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
+                        <td className="py-3.5 px-3 text-center text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap w-12">
                           {rowNumber}
                         </td>
 
                         {/* 2. Owner / Driver Name */}
-                        <td className="py-3.5 px-3 text-xs font-medium text-[#1C2434] dark:text-white whitespace-nowrap">
+                        <td className="py-3.5 px-3 text-xs font-medium text-[#1C2434] dark:text-white overflow-hidden">
                           <button
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedLogForDetails(log);
                             }}
-                            className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer max-w-[170px]"
+                            className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer w-full overflow-hidden"
+                            title={log.fullName || '—'}
                           >
-                            <span className="truncate">{log.fullName || '—'}</span>
+                            <span className="truncate block">{log.fullName || '—'}</span>
                           </button>
                         </td>
 
-                        {/* 3. Phone Number */}
-                        <td className="py-3.5 px-3 text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
-                          {log.phone || '—'}
-                        </td>
-
-                        {/* 4. Plate Number */}
-                        <td className="py-3.5 px-3 text-xs font-mono font-bold text-[#1C2434] dark:text-white whitespace-nowrap">
+                        {/* 3. Plate Number */}
+                        <td className="py-3.5 px-3 text-xs font-mono font-bold text-[#1C2434] dark:text-white w-32 whitespace-nowrap">
                           <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-primary font-bold">
                             {log.plateNumber || '—'}
                           </span>
                         </td>
 
-                        {/* 5. Category (EV / Gas) */}
-                        <td className="py-3.5 px-3 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] whitespace-nowrap">
+                        {/* 4. Category (EV / Gas) */}
+                        <td className="py-3.5 px-3 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] w-28 whitespace-nowrap">
                           {log.vehicleCategory === 'electric'
                             ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
                             : (isAmharic ? 'ቤንዚን' : 'Gasoline')}
                         </td>
 
-                        {/* 6. Checkpoint Location */}
-                        <td className="py-3.5 px-3 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] whitespace-nowrap">
-                          <div className="flex items-center gap-1 text-slate-700 dark:text-slate-300">
-                            <Icon className="material-symbols-outlined text-[15px] text-slate-400">location_on</Icon>
-                            <span className="truncate max-w-[150px]">{log.locationName || 'Sub-City Checkpoint'}</span>
-                          </div>
-                        </td>
-
-                        {/* 7. Scanned Date & Time */}
-                        <td className="py-3.5 px-3 text-xs font-mono text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
-                          {log.scannedAt ? formatEthiopianDateTime(log.scannedAt, isAmharic ? 'am' : 'en') : '—'}
-                        </td>
-
-                        {/* 8. Inspector Officer Badge */}
-                        <td className="py-3.5 px-3 text-xs font-mono text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
-                          <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[11px] font-bold">
-                            {log.officerBadgeId || userBadgeId || 'OFF-8842'}
-                          </span>
-                        </td>
-
-                        {/* 9. Verification Status Badge */}
-                        <td className="py-3.5 px-3 text-center whitespace-nowrap">
+                        {/* 5. Verification Status Badge */}
+                        <td className="py-3.5 px-3 text-center w-36 whitespace-nowrap">
                           {renderVerificationBadge(log.verificationStatus)}
                         </td>
 
-
-
-                        {/* 11. Actions */}
+                        {/* 6. Actions */}
                         <td
-                          className="py-3.5 px-3 text-right whitespace-nowrap"
+                          className="py-3.5 px-3 text-right w-32 whitespace-nowrap"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <button

@@ -476,7 +476,7 @@ export const TabList = <T extends string>({
 }: TabListProps<T>) => {
   if (variant === 'flush') {
     return (
-      <div className={`flex items-center gap-2 sm:gap-6 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-1.5 overflow-x-auto scrollbar-none -mb-[1px] ${className}`}>
+      <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-2.5 overflow-x-auto scrollbar-none ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -484,10 +484,10 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`group relative flex items-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+              className={`group flex items-center gap-2 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                 isActive
-                  ? 'border-primary text-primary dark:text-primary dark:border-primary bg-white dark:bg-[#1C2434] rounded-t-md shadow-2xs'
-                  : 'border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white hover:border-[#CBD5E1]'
+                  ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-primary dark:text-primary bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
+                  : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
               }`}
             >
               {tab.icon && <Icon name={tab.icon} size={18} />}
@@ -545,7 +545,7 @@ export const TabList = <T extends string>({
   }
 
   return (
-    <div className={`flex items-center gap-2 sm:gap-6 border-b border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-none -mb-[1px] ${className}`}>
+    <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-none pt-2.5 px-3 sm:px-5 ${className}`}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -553,10 +553,10 @@ export const TabList = <T extends string>({
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`group relative flex items-center gap-1.5 py-3 px-3 text-xs sm:text-sm font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap select-none ${
+            className={`group flex items-center gap-1.5 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap select-none ${
               isActive
-                ? 'border-primary text-primary dark:text-primary font-bold'
-                : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700'
+                ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-primary dark:text-primary rounded-t-md font-bold'
+                : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
             }`}
           >
             {tab.icon && <Icon name={tab.icon} size={18} />}
@@ -800,14 +800,14 @@ export const UnifiedWorkspaceCard: React.FC<UnifiedWorkspaceCardProps> = ({
   className = '',
 }) => (
   <div
-    className={`rounded-lg border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-slate-100 dark:divide-slate-800/60 w-full max-w-full min-w-0 ${className}`}
+    className={`rounded-lg border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden w-full max-w-full min-w-0 ${className}`}
   >
-    {header && <div className="w-full">{header}</div>}
-    {tabs && <div className="w-full bg-slate-50/70 dark:bg-[#1E293B]/70">{tabs}</div>}
+    {header && <div className="w-full border-b border-slate-100 dark:border-slate-800/60">{header}</div>}
+    {tabs && <div className="w-full relative z-10 bg-slate-50/70 dark:bg-[#1E293B]/70">{tabs}</div>}
     {toolbar && <div className="w-full">{toolbar}</div>}
-    {legend && <div className="w-full">{legend}</div>}
+    {legend && <div className="w-full border-t border-slate-100 dark:border-slate-800/60">{legend}</div>}
     <div className="w-full min-w-0 overflow-x-hidden md:overflow-x-auto">{children}</div>
-    {footer && <div className="w-full">{footer}</div>}
+    {footer && <div className="w-full border-t border-slate-100 dark:border-slate-800/60">{footer}</div>}
   </div>
 );
 

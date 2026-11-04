@@ -750,7 +750,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
             {isFilterDrawerOpen && (
-              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] animate-in fade-in slide-in-from-top-1 duration-150">
                 <div className="flex flex-wrap items-center gap-2.5 text-xs">
                   {/* SubCity Filter */}
                   <div className="flex items-center gap-1.5">
@@ -877,13 +877,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
         {/* --- REGISTRATIONS DATA TABLE (TAILADMIN DATATABLE DESIGN) --- */}
         <div className="flex flex-col">
-          {/* Desktop Data Table (>= md) */}
+          {/* Desktop Data Table (>= md) WITH FIXED WIDTH & ESSENTIAL COLUMNS */}
           <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] min-h-[360px] scrollbar-thin">
-            <table className="w-full table-auto text-left border-collapse">
+            <table className="w-full text-left border-collapse table-fixed">
               <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
-                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs  font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                   {canApproveBulk && (
-                    <th className="py-2.5 px-3 text-center min-w-[100px] font-medium align-middle">
+                    <th className="py-2.5 px-3 text-center w-14 font-medium align-middle">
                       <div className="flex flex-col items-center justify-center gap-1">
                         <label
                           className="inline-flex items-center gap-1.5 cursor-pointer select-none"
@@ -895,34 +895,22 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             onChange={toggleSelectAll}
                             className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer"
                           />
-                          <span className="text-[11px] font-bold text-[#1C2434] dark:text-white  tracking-wider">
-                            {isAmharic ? 'ሁሉንም' : 'All'}
-                          </span>
                         </label>
-                        {selectedRegIds.size > 0 && (
-                          <span className="inline-flex items-center px-1.5 py-0.2 rounded-sm text-[10px] font-bold bg-primary text-white animate-fade-in shadow-2xs whitespace-nowrap">
-                            {isAmharic ? `${selectedRegIds.size} ተመርጠዋል` : `${selectedRegIds.size} selected`}
-                          </span>
-                        )}
                       </div>
                     </th>
                   )}
                   <th className="py-2.5 px-3 text-center w-12 font-medium">#</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'አይነት' : 'Category'}</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ቻሲስ' : 'Chasis'}</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ብራንድ / ሞዴል' : 'Brand & Model'}</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
-                  <th className="py-2.5 px-3 font-medium whitespace-nowrap">{isAmharic ? 'የተመዘገበበት ቀን' : 'Registered Date'}</th>
-                  <th className="py-2.5 px-3 text-right font-medium whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
+                  <th className="py-2.5 px-3 font-medium truncate">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                  <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
+                  <th className="py-2.5 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'አይነት' : 'Category'}</th>
+                  <th className="py-2.5 px-3 font-medium w-36 text-center whitespace-nowrap">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                  <th className="py-2.5 px-3 text-right font-medium w-36 whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
                 {roleFilteredRegs.length === 0 ? (
                   <tr>
-                    <td colSpan={canApproveBulk ? 12 : 11} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
+                    <td colSpan={canApproveBulk ? 7 : 6} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
                         <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD]">inbox</Icon>
                         <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
@@ -938,7 +926,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   </tr>
                 ) : finalFilteredRegs.length === 0 ? (
                   <tr>
-                    <td colSpan={canApproveBulk ? 12 : 11} className="py-14 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
+                    <td colSpan={canApproveBulk ? 7 : 6} className="py-14 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 py-4">
                         <Icon className="material-symbols-outlined text-[32px] text-[#8A99AD]">search_off</Icon>
                         <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
@@ -964,10 +952,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     const isExpanded = !!expandedRegs[reg.id];
                     return (
                       <React.Fragment key={reg.id}>
-                        <tr className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                        <tr
+                          onClick={() => toggleRegExpand(reg.id)}
+                          className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors border-b border-[#E2E8F0] dark:border-[#2E3A47] cursor-pointer"
+                        >
                           {/* Bulk Select Checkbox Column */}
                           {canApproveBulk && (
-                            <td className="py-2.5 px-3 text-center align-middle" onClick={(e) => e.stopPropagation()}>
+                            <td className="py-2.5 px-3 text-center align-middle w-14" onClick={(e) => e.stopPropagation()}>
                               <input
                                 type="checkbox"
                                 checked={selectedRegIds.has(reg.id)}
@@ -978,12 +969,15 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             </td>
                           )}
 
-                          {/* 1. Index & Expand */}
-                          <td className="py-2.5 px-3 text-center align-middle font-mono font-medium text-[#64748B] dark:text-[#8A99AD]">
-                            <div className="flex items-center justify-center gap-1.5">
+                          {/* Index & Expand */}
+                          <td className="py-2.5 px-3 text-center align-middle font-mono font-medium text-[#64748B] dark:text-[#8A99AD] w-12">
+                            <div className="flex items-center justify-center gap-1">
                               <button
                                 type="button"
-                                onClick={() => toggleRegExpand(reg.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleRegExpand(reg.id);
+                                }}
                                 className={`p-0.5 transition-colors cursor-pointer flex items-center justify-center ${
                                   isExpanded
                                     ? 'text-primary dark:text-white'
@@ -999,27 +993,25 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             </div>
                           </td>
 
-                          {/* 2. Standalone Owner Name */}
-                          <td className="py-2.5 px-3 align-middle whitespace-nowrap">
-                            <span className="font-semibold text-xs text-[#1C2434] dark:text-white block truncate max-w-[160px]">
+                          {/* Column 1: Owner Name */}
+                          <td className="py-2.5 px-3 align-middle overflow-hidden">
+                            <span
+                              className="font-semibold text-xs text-[#1C2434] dark:text-white block truncate"
+                              title={reg.fullName || '—'}
+                            >
                               {reg.fullName || '—'}
                             </span>
                           </td>
 
-                          {/* 3. Standalone Phone Number */}
-                          <td className="py-2.5 px-3 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
-                            {reg.phone || '—'}
-                          </td>
-
-                          {/* 4. Standalone Plate Number */}
-                          <td className="py-2.5 px-3 align-middle whitespace-nowrap">
-                            <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white">
+                          {/* Column 2: Plate Number */}
+                          <td className="py-2.5 px-3 align-middle w-36 whitespace-nowrap">
+                            <span className="font-mono font-bold text-xs text-primary bg-primary/10 px-2 py-0.5 rounded">
                               {reg.plateNumber || '—'}
                             </span>
                           </td>
 
-                          {/* 5. Standalone Category */}
-                          <td className="py-2.5 px-3 align-middle text-xs whitespace-nowrap">
+                          {/* Column 3: Category */}
+                          <td className="py-2.5 px-3 align-middle text-xs w-28 whitespace-nowrap">
                             <span className="text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE]">
                               {reg.vehicleCategory === 'electric'
                                 ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
@@ -1027,30 +1019,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             </span>
                           </td>
 
-                          {/* 6. Standalone Chasis */}
-                          <td className="py-2.5 px-3 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] max-w-[130px] truncate whitespace-nowrap" title={getChassisDisplay(reg)}>
-                            {getChassisDisplay(reg)}
+                          {/* Column 4: Status Badge */}
+                          <td className="py-2.5 px-3 align-middle text-center w-36 whitespace-nowrap">
+                            {renderStatusBadge(reg.status, reg)}
                           </td>
 
-                          {/* 7. Standalone Brand & Model */}
-                          <td className="py-2.5 px-3 align-middle text-xs text-[#1C2434] dark:text-white whitespace-nowrap">
-                            {reg.motorBrand || ''} {reg.motorModel || (reg.motorBrand ? '' : '—')}
-                          </td>
-
-                          {/* 8. Standalone Sub-City */}
-                          <td className="py-2.5 px-3 align-middle text-xs text-[#1C2434] dark:text-white whitespace-nowrap">
-                            {reg.subCity || '—'}
-                          </td>
-
-                          {/* 9. Standalone Registered Date */}
-                          <td className="py-2.5 px-3 align-middle font-mono text-xs text-[#64748B] dark:text-[#8A99AD] whitespace-nowrap">
-                            {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                          </td>
-
-
-
-                          {/* 11. Actions Column: Clean Expand / Action Trigger */}
-                          <td className="py-2.5 px-3 align-middle text-right whitespace-nowrap">
+                          {/* Column 5: Actions Column */}
+                          <td className="py-2.5 px-3 align-middle text-right w-36 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
                               onClick={() => toggleRegExpand(reg.id)}
@@ -1072,7 +1047,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                         {/* Desktop Collapsible Sub-row: Action Buttons & Member Card */}
                         {isExpanded && (
                           <tr className="bg-[#F7F9FC]/90 dark:bg-[#24303F]/80 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                            <td colSpan={canApproveBulk ? 12 : 11} className="px-5 py-3">
+                            <td colSpan={canApproveBulk ? 7 : 6} className="px-5 py-3">
                               <div className="space-y-3">
                                 {/* Member Information Card (Redesigned Style) */}
                                 <ExpandableMemberCard

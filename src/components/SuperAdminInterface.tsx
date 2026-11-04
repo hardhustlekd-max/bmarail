@@ -895,7 +895,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </h2>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap overflow-x-auto scrollbar-none max-w-full -mb-[1px]">
+          <div className="relative z-10 flex items-end gap-1 sm:gap-2 flex-wrap sm:flex-nowrap overflow-x-auto scrollbar-none max-w-full border-b border-outline-variant/60 pt-2.5 px-2">
             {superAdminTabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -903,10 +903,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`group relative flex items-center gap-1.5 py-2 px-2.5 sm:px-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                  className={`group flex items-center gap-1.5 py-2 px-3 text-xs transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                     isActive
-                      ? 'border-primary text-primary font-bold'
-                      : 'border-transparent text-secondary hover:text-on-surface hover:border-outline-variant/60 font-medium'
+                      ? 'relative top-[1px] z-10 border-t border-l border-r border-outline-variant border-b-0 bg-surface-container-lowest text-primary font-bold rounded-t-md'
+                      : 'border border-transparent text-secondary hover:text-on-surface font-medium'
                   }`}
                 >
                   <Icon className="material-symbols-outlined text-[16px] shrink-0">{tab.icon}</Icon>
@@ -1098,15 +1098,15 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               <div className="rounded-sm border border-outline-variant bg-surface-container shadow-xs overflow-hidden">
                 {/* Desktop View Table */}
                 <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full table-auto text-left border-collapse">
+                  <table className="w-full text-left border-collapse text-xs table-fixed">
                     <thead>
                       <tr className="bg-surface-container-high/60 text-on-surface text-xs font-semibold border-b border-outline-variant">
-                        <th className="py-4 px-4 font-medium">{isAmharic ? 'ተጠቃሚ' : 'User'}</th>
-                        <th className="py-4 px-4 font-medium">{isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}</th>
-                        <th className="py-4 px-3 font-medium">{isAmharic ? 'የመታወቂያ ቁጥር' : 'Badge ID'}</th>
-                        <th className="py-4 px-3 font-medium">{isAmharic ? 'ሚና' : 'Role'}</th>
-                        <th className="py-4 px-3 font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                        <th className="py-4 px-4 text-right font-medium">{isAmharic ? 'ተግባራት' : 'Actions'}</th>
+                        <th className="py-3 px-4 font-medium truncate">{isAmharic ? 'ተጠቃሚ' : 'User'}</th>
+                        <th className="py-3 px-3 font-medium w-32 whitespace-nowrap">{isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}</th>
+                        <th className="py-3 px-3 font-medium w-32 whitespace-nowrap">{isAmharic ? 'የመታወቂያ ቁጥር' : 'Badge ID'}</th>
+                        <th className="py-3 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'ሚና' : 'Role'}</th>
+                        <th className="py-3 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                        <th className="py-3 px-4 text-right font-medium w-28 whitespace-nowrap">{isAmharic ? 'ተግባራት' : 'Actions'}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant text-xs font-medium">
@@ -1120,13 +1120,15 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       ) : (
                         filteredUsers.map((user) => (
                           <tr key={user.uid} className="hover:bg-surface-container-high/40 transition-colors border-b border-outline-variant">
-                            {/* Standalone User Name & Avatar */}
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs bg-surface-container-high text-on-surface border border-outline-variant shrink-0 shadow-2xs">
+                            {/* User Name & Avatar */}
+                            <td className="py-3 px-4 overflow-hidden">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs bg-surface-container-high text-on-surface border border-outline-variant shrink-0 shadow-2xs">
                                   {(user.fullName || 'U').charAt(0).toUpperCase()}
                                 </div>
-                                <div className="font-semibold text-on-surface">{user.fullName}</div>
+                                <div className="font-semibold text-on-surface truncate" title={user.fullName}>
+                                  {user.fullName}
+                                </div>
                               </div>
                             </td>
 
