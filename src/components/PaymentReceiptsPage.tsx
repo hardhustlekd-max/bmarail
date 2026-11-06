@@ -2002,7 +2002,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* TAB 2: TABLE SECTION (INTEGRATED FLUSH VIEW) */}
       {currentTab === 'table' && canViewTable && (
-        <div className="w-full max-w-full min-w-0 divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
+        <div className="w-full max-w-full min-w-0 divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] flex flex-col min-h-[500px] justify-between">
           {/* SEARCH & STATUS FILTER TOOLBAR WITH COLLAPSIBLE DRAWER */}
           <div className="flex flex-col w-full bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             {/* TIER 1: PRIMARY TOOLBAR */}
@@ -2208,7 +2208,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* MONTHLY MATRIX LEDGER TABLE */}
-          <div className="overflow-x-hidden md:overflow-x-auto bg-white dark:bg-[#1C2434] w-full max-w-full min-w-0">
+          <div className="overflow-x-hidden md:overflow-x-auto bg-white dark:bg-[#1C2434] w-full max-w-full min-w-0 min-h-[420px] max-h-[calc(100vh-270px)] [scrollbar-gutter:stable] scrollbar-thin flex-1">
             <MonthlyMatrixLedger
               columns={matrixColumns}
               rows={displayMatrixRows}

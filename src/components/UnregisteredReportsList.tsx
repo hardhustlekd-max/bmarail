@@ -382,9 +382,9 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             </p>
           </div>
         ) : (
-          <>
+          <div className="flex flex-col min-h-[460px] justify-between">
             {/* Desktop Data Table (TailAdmin Design with Fixed Width & Core Columns) */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto overflow-y-auto min-h-[420px] max-h-[calc(100vh-270px)] [scrollbar-gutter:stable] scrollbar-thin flex-1">
               <table className="w-full text-left border-collapse text-xs table-fixed">
                 <thead>
                   <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
@@ -482,7 +482,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             </div>
 
             {/* Mobile Card View (shown on screens < md) */}
-            <div className="block md:hidden divide-y divide-outline-variant">
+            <div className="block md:hidden divide-y divide-outline-variant h-[420px] overflow-y-auto [scrollbar-gutter:stable]">
               {paginatedReports.map((rep) => {
                 const isExpanded = !!expandedReportIds[rep.id];
                 return (
@@ -603,7 +603,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                 </button>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
       </UnifiedWorkspaceCard>

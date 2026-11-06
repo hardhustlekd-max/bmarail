@@ -1123,9 +1123,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
         {/* --- VIEW 1: REGISTRATIONS TABLE (FILTERED BY STATUS) --- */}
         {(activeTableTab === 'approved' || activeTableTab === 'pending' || activeTableTab === 'expired') && (
-          <div className="flex flex-col">
+          <div className="flex flex-col min-h-[460px] justify-between">
             {/* Desktop Data Table (>= md) WITH FIXED WIDTH & ESSENTIAL COLUMNS */}
-            <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] min-h-[360px] scrollbar-thin">
+            <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] h-[420px] [scrollbar-gutter:stable] scrollbar-thin flex-1">
               <table className="w-full text-left border-collapse table-fixed">
                 <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
                   <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
@@ -1340,7 +1340,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             </div>
 
             {/* Mobile Cards / Collapsed Rows View (< md) - SCROLLABLE WITH FIXED HEADER & FOOTER */}
-            <div className="block md:hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] overflow-y-auto max-h-[calc(100vh-260px)] min-h-[300px]">
+            <div className="block md:hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] overflow-y-auto max-h-[calc(100vh-260px)] h-[420px] [scrollbar-gutter:stable]">
               {/* Mobile Select All Header Bar */}
               {filteredRegistrations.length > 0 && (
                 <div className="p-2.5 bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between sticky top-0 z-10 shadow-2xs">

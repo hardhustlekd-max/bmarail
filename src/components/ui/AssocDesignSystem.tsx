@@ -908,7 +908,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
   const desktopCols = (showNumbering ? 1 : 0) + 1 + (hasPlate ? 1 : 0) + columns.length + (renderActions ? 1 : 0);
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden md:overflow-x-auto min-w-0">
+    <div className="w-full max-w-full overflow-x-hidden md:overflow-x-auto min-w-0 min-h-[420px] max-h-[calc(100vh-270px)] [scrollbar-gutter:stable] scrollbar-thin">
       <table className={`w-full border-collapse text-left table-fixed md:table-auto ${className}`}>
         {/* Rigid column definition on mobile to lock widths and prevent any resizing jumps when rows expand */}
         <colgroup className="md:hidden">

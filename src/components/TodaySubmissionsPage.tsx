@@ -874,9 +874,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         )}
 
         {/* --- REGISTRATIONS DATA TABLE (TAILADMIN DATATABLE DESIGN) --- */}
-        <div className="flex flex-col">
+        <div className="flex flex-col min-h-[460px] justify-between">
           {/* Desktop Data Table (>= md) WITH FIXED WIDTH & ESSENTIAL COLUMNS */}
-          <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] min-h-[360px] scrollbar-thin">
+          <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] h-[420px] [scrollbar-gutter:stable] scrollbar-thin flex-1">
             <table className="w-full text-left border-collapse table-fixed">
               <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
                 <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
@@ -1143,7 +1143,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
 
           {/* Mobile Card List (< md) */}
-          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800 h-[420px] max-h-[calc(100vh-260px)] overflow-y-auto [scrollbar-gutter:stable] flex-1">
             {canApproveBulk && allSelectableRegs.length > 0 && (
               <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/60 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between">
                 <label className="inline-flex items-center gap-2 text-xs font-bold text-[#1C2434] dark:text-white cursor-pointer select-none">
