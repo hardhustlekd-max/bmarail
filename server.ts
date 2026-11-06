@@ -17,10 +17,12 @@ import {
   dbGetPaymentReceiptsScoped,
   dbGetVerificationLogsScoped,
   dbUpsert,
+  dbUpsertMany,
   dbUpdateFields,
   dbDelete,
   dbClearTable,
   dbQuery,
+  waitForDbConnection,
   recordSystemAction,
   getMaterializedKPIs,
   getMaterializedNotifications,
@@ -1974,6 +1976,55 @@ app.post('/api/reset-data', async (req, res) => {
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/import-database', async (req, res) => {
+  try {
+    const { users, registrations, officers, auditLogs, unregisteredReports, paymentReceipts, settings } = req.body;
+    const results: Record<string, any> = {};
+
+    console.log('[PostgreSQL] Starting bulk import of database backup...');
+
+    if (Array.isArray(users)) {
+      results.users = await dbUpsertMany('system_users', users);
+    }
+    if (Array.isArray(registrations)) {
+      results.registrations = await dbUpsertMany('motorcycle_registrations', registrations);
+    }
+    if (Array.isArray(officers)) {
+      results.officers = await dbUpsertMany('officer_assignments', officers);
+    }
+    if (Array.isArray(unregisteredReports)) {
+      results.unregisteredReports = await dbUpsertMany('unregistered_vehicle_reports', unregisteredReports);
+    }
+    if (Array.isArray(paymentReceipts)) {
+      results.paymentReceipts = await dbUpsertMany('payment_receipts', paymentReceipts);
+    }
+    if (Array.isArray(auditLogs)) {
+      // Audit logs are special, we might not want to overwrite by ID if IDs collide with current session
+      // but for restore, overwrite is usually intended.
+      results.auditLogs = await dbUpsertMany('system_audit_logs', auditLogs);
+    }
+    if (settings) {
+      results.settings = await dbUpsert('system_settings', 'global_config', settings);
+    }
+
+    // Force version bumps to trigger clients to refresh
+    Object.keys(collectionVersions).forEach(k => {
+      collectionVersions[k] = (collectionVersions[k] || 1) + 1;
+    });
+
+    broadcastSseChange({ collection: 'system_reset', action: 'clear', data: settings });
+
+    res.json({
+      success: true,
+      message: 'Database backup imported and synchronized successfully.',
+      results
+    });
+  } catch (err: any) {
+    console.error('[PostgreSQL Import Error]:', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

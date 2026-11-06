@@ -594,6 +594,11 @@ export async function dbQuery<T = any>(sql: string, params: any[] = []): Promise
  * Fetch all documents from a table
  */
 export async function dbGetAll<T = any>(tableName: string): Promise<T[]> {
+  // Wait for initial connection on cold start
+  if (!isPostgresConnected) {
+    await waitForDbConnection(2500);
+  }
+
   if (isPostgresConnected && dbPool) {
     try {
       const sql = `SELECT * FROM ${tableName} ORDER BY created_at DESC`;
@@ -1228,6 +1233,88 @@ export async function dbUpsert(tableName: string, id: string, data: Record<strin
       console.error(`[PostgreSQL] dbUpsert error on ${tableName}:`, err.message);
       return { success: false, target: 'postgresql', error: err.message };
     }
+  }
+}
+
+/**
+ * Wait for database connection to be established (useful for serverless cold starts)
+ */
+export async function waitForDbConnection(timeoutMs = 5000): Promise<boolean> {
+  if (isPostgresConnected) return true;
+  
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (isPostgresConnected) return true;
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
+  return isPostgresConnected;
+}
+
+/**
+ * Bulk upsert many documents (optimized for restores)
+ */
+export async function dbUpsertMany(tableName: string, records: any[]): Promise<DbMutationResult> {
+  if (!Array.isArray(records) || records.length === 0) {
+    return { success: true, target: isPostgresConnected ? 'postgresql' : 'in-memory', rowCount: 0 };
+  }
+
+  // Update memory store first
+  if (!memoryStore[tableName]) memoryStore[tableName] = new Map();
+  for (const rec of records) {
+    if (rec.id) {
+      memoryStore[tableName].set(rec.id, { ...rec });
+    }
+  }
+
+  invalidateCacheForTable(tableName);
+
+  if (!isPostgresConnected || !dbPool) {
+    return { success: true, target: 'in-memory', rowCount: records.length };
+  }
+
+  try {
+    const client = await dbPool.connect();
+    try {
+      await client.query('BEGIN');
+      let totalRows = 0;
+
+      for (const rec of records) {
+        const pgData = normalizeRowToPg(tableName, rec);
+        const keys = Object.keys(pgData);
+        if (keys.length === 0) continue;
+
+        const values = Object.values(pgData);
+        const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
+        const updateClauses = keys
+          .filter((k) => k !== 'id')
+          .map((k) => `${k} = EXCLUDED.${k}`)
+          .join(', ');
+
+        const sql = `
+          INSERT INTO ${tableName} (${keys.join(', ')})
+          VALUES (${placeholders})
+          ON CONFLICT (id) 
+          DO UPDATE SET ${updateClauses || 'updated_at = CURRENT_TIMESTAMP'}
+        `;
+        const res = await client.query(sql, values);
+        totalRows += res.rowCount || 0;
+      }
+
+      await client.query('COMMIT');
+      return { success: true, target: 'postgresql', rowCount: totalRows };
+    } catch (err: any) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err: any) {
+    console.error(`[PostgreSQL] Bulk upsert error on ${tableName}:`, err.message);
+    if (isNetworkError(err)) {
+      isPostgresConnected = false;
+      scheduleBackgroundReconnect();
+    }
+    return { success: false, target: 'postgresql', error: err.message };
   }
 }
 

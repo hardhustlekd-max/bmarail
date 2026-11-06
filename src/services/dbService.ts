@@ -2604,37 +2604,49 @@ export async function importFullDatabaseBackup(backupData: {
   };
 
   if (Array.isArray(backupData.registrations)) {
+    console.log('Before merge registrations:', inMemory.registrations.length);
     inMemory.registrations = mergeById(backupData.registrations, inMemory.registrations);
+    console.log('After merge registrations:', inMemory.registrations.length);
     counts.registrations = backupData.registrations.length;
     notifyRegistrations();
   }
 
   if (Array.isArray(backupData.users)) {
+    console.log('Before merge users:', inMemory.users.length);
     inMemory.users = mergeById(backupData.users, inMemory.users);
+    console.log('After merge users:', inMemory.users.length);
     counts.users = backupData.users.length;
     notifyUsers();
   }
 
   if (Array.isArray(backupData.officers)) {
+    console.log('Before merge officers:', inMemory.officers.length);
     inMemory.officers = mergeById(backupData.officers, inMemory.officers);
+    console.log('After merge officers:', inMemory.officers.length);
     counts.officers = backupData.officers.length;
     notifyOfficers();
   }
 
   if (Array.isArray(backupData.unregisteredReports)) {
+    console.log('Before merge unregisteredReports:', inMemory.unregisteredReports.length);
     inMemory.unregisteredReports = mergeById(backupData.unregisteredReports, inMemory.unregisteredReports);
+    console.log('After merge unregisteredReports:', inMemory.unregisteredReports.length);
     counts.unregisteredReports = backupData.unregisteredReports.length;
     notifyUnregisteredReports();
   }
 
   if (Array.isArray(backupData.paymentReceipts)) {
+    console.log('Before merge paymentReceipts:', inMemory.paymentReceipts.length);
     inMemory.paymentReceipts = mergeById(backupData.paymentReceipts, inMemory.paymentReceipts);
+    console.log('After merge paymentReceipts:', inMemory.paymentReceipts.length);
     counts.paymentReceipts = backupData.paymentReceipts.length;
     notifyPaymentReceipts();
   }
 
   if (Array.isArray(backupData.auditLogs)) {
+    console.log('Before merge auditLogs:', inMemory.auditLogs.length);
     inMemory.auditLogs = [...backupData.auditLogs, ...inMemory.auditLogs].slice(0, 200);
+    console.log('After merge auditLogs:', inMemory.auditLogs.length);
     counts.auditLogs = backupData.auditLogs.length;
     notifyAuditLogs();
   }
@@ -2645,6 +2657,23 @@ export async function importFullDatabaseBackup(backupData: {
   }
 
   saveStateToLocalStorage();
+
+  try {
+    console.log('[Storage] Pushing imported backup to PostgreSQL server for persistence...');
+    const serverResult = await safeJsonFetch<{ success: boolean; error?: string }>('/api/import-database', {
+      method: 'POST',
+      body: JSON.stringify(backupData),
+    });
+    
+    if (serverResult && serverResult.success) {
+      console.log('[Storage] Server-side database import successful.');
+    } else {
+      console.warn('[Storage] Server-side import failed:', serverResult.error);
+    }
+  } catch (err) {
+    console.warn('[Storage] Background server import notice (data saved locally):', err);
+  }
+
   await syncAllCollectionsWithDb().catch(() => {});
 
   return { success: true, importedCounts: counts };
