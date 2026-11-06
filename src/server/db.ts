@@ -247,7 +247,7 @@ export function getDbPool(): pg.Pool | null {
         password: process.env.PGPASSWORD,
         database: process.env.PGDATABASE || 'railway',
         ssl: { rejectUnauthorized: false },
-        max: 15,
+        max: 5,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 5000,
       };
