@@ -410,13 +410,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
   const getRegistrationDocCount = (reg: MotorcycleRegistration) => {
     let count = 0;
-    if (reg.userPortraitPhoto || reg.userPortraitThumbnail || reg.ownerPhoto) count++;
-    if (reg.nationalIdPhoto) count++;
-    if (reg.nationalIdBackPhoto) count++;
-    if (reg.drivingLicensePhoto) count++;
-    if (reg.drivingPermitPhoto) count++;
+    const r = reg as any;
+    if (r.userPortraitPhoto || r.user_portrait_photo || r.ownerPhoto || r.owner_photo || r.userPortraitThumbnail || r.user_portrait_thumbnail) count++;
+    if (r.nationalIdPhoto || r.national_id_photo || r.nationalId) count++;
+    if (r.nationalIdBackPhoto || r.national_id_back_photo || r.nationalIdBack) count++;
+    if (r.drivingLicensePhoto || r.driving_license_photo || r.driverLicensePhoto) count++;
+    if (r.drivingPermitPhoto || r.driving_permit_photo || r.policePermitPhoto) count++;
     const latestRc = getLatestReceiptForRegistration(reg, paymentReceipts);
-    if (latestRc?.receiptScreenshot || reg.receiptScreenshot) count++;
+    if (latestRc?.receiptScreenshot || (latestRc as any)?.receipt_screenshot || r.receiptScreenshot || r.receipt_screenshot) count++;
     return count;
   };
 
@@ -1219,26 +1220,52 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                             {/* Column 1: Owner Name with Full Visibility */}
                             <td className="px-3 py-2.5 align-middle min-w-[200px]">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedRegForDetails(reg);
-                                }}
-                                className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer w-full flex-wrap"
-                                title={displayName}
-                              >
-                                <span className="break-words font-semibold text-xs leading-snug">{displayName}</span>
-                                {reg.hideFromOtherUsers && isSuperAdmin && (
-                                  <span
-                                    className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"
-                                    title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
-                                  >
-                                    <Icon className="material-symbols-outlined text-[14px]">domain</Icon>
-                                    <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
-                                  </span>
-                                )}
-                              </button>
+                              <div className="flex items-center gap-2.5">
+                                {/* Portrait Avatar for Desktop */}
+                                <div
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openMemberDocumentCarousel(reg);
+                                  }}
+                                  className="w-8 h-10 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs shrink-0 overflow-hidden flex items-center justify-center cursor-pointer group relative"
+                                  title={isAmharic ? 'የአባሉን ሰነዶችና ፎቶዎች በሙሉ ማያ እይ' : 'Click to view member photos and documents'}
+                                >
+                                  {((reg as any).userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || (reg as any).user_portrait_thumbnail) ? (
+                                    <img
+                                      src={(reg as any).userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || (reg as any).user_portrait_thumbnail}
+                                      alt={displayName}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                      onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                                    />
+                                  ) : (
+                                    <img src="/logo.png" alt="Logo" className="w-full h-full object-contain p-0.5 opacity-60" />
+                                  )}
+                                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                                    <Icon name="photo_library" size={13} />
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedRegForDetails(reg);
+                                  }}
+                                  className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer flex-1 min-w-0 flex-wrap"
+                                  title={displayName}
+                                >
+                                  <span className="break-words font-semibold text-xs leading-snug">{displayName}</span>
+                                  {reg.hideFromOtherUsers && isSuperAdmin && (
+                                    <span
+                                      className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"
+                                      title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
+                                    >
+                                      <Icon className="material-symbols-outlined text-[14px]">domain</Icon>
+                                      <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
                             </td>
 
                             {/* Column 2: Plate Number */}
@@ -1280,6 +1307,17 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="inline-flex items-center justify-end gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openMemberDocumentCarousel(reg);
+                                  }}
+                                  className="inline-flex items-center px-2 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                                  title={isAmharic ? 'የአባሉን ሰነዶችና ፎቶዎች በሙሉ ማያ እይ' : 'View member documents & photos carousel'}
+                                >
+                                  <Icon name="photo_library" size={14} />
+                                </button>
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -1668,7 +1706,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   id: 'documents',
                   label: isAmharic ? 'ሰነዶች' : 'Documents',
                   icon: 'photo_library',
-                  badge: `${docCount}/5`,
+                  badge: `${docCount}/6`,
                 },
               ];
 
@@ -1738,27 +1776,32 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <div className="flex flex-col items-center justify-center text-center space-y-1.5">
                       <div
                         onClick={() => {
-                          const photo = selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto || selectedRegForDetails.userPortraitThumbnail;
+                          const r = selectedRegForDetails as any;
+                          const photo = r.userPortraitPhoto || r.user_portrait_photo || r.ownerPhoto || r.owner_photo || r.userPortraitThumbnail || r.user_portrait_thumbnail;
                           if (photo) openDocumentCarousel(photo, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
                         }}
                         className="w-24 h-28 sm:w-28 sm:h-32 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] overflow-hidden flex items-center justify-center shadow-xs relative group cursor-pointer"
                         title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
                       >
-                        {(selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto) ? (
-                          <>
-                            <img
-                              src={selectedRegForDetails.userPortraitThumbnail || selectedRegForDetails.userPortraitPhoto || selectedRegForDetails.ownerPhoto}
-                              alt={selectedRegForDetails.fullName}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                              onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                            </div>
-                          </>
-                        ) : (
-                          <Icon className="material-symbols-outlined text-[36px] text-slate-400">person</Icon>
-                        )}
+                        {(() => {
+                          const r = selectedRegForDetails as any;
+                          const photo = r.userPortraitThumbnail || r.user_portrait_thumbnail || r.userPortraitPhoto || r.user_portrait_photo || r.ownerPhoto || r.owner_photo;
+                          return photo ? (
+                            <>
+                              <img
+                                src={photo}
+                                alt={selectedRegForDetails.fullName}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                              </div>
+                            </>
+                          ) : (
+                            <Icon className="material-symbols-outlined text-[36px] text-slate-400">person</Icon>
+                          );
+                        })()}
                       </div>
                       <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD]">
                         {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
@@ -2218,119 +2261,89 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <Icon className="material-symbols-outlined text-[15px] text-primary">photo_library</Icon>
                     <span>{isAmharic ? 'የተያያዙ ፎቶዎች እና ሰነዶች (ለማጉላት ይጫኑ)' : 'Uploaded Document Photos (Click to Zoom)'}</span>
                   </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
-                        {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
-                      </span>
-                      <div
-                        onClick={() => selectedRegForDetails.userPortraitPhoto && openDocumentCarousel(selectedRegForDetails.userPortraitPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — Portrait`)}
-                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                      >
-                        {selectedRegForDetails.userPortraitPhoto ? (
-                          <>
-                            <SmartImage src={selectedRegForDetails.userPortraitPhoto} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                            </div>
-                          </>
-                        ) : (
-                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                        )}
-                      </div>
-                    </div>
+                  {(() => {
+                    const r = selectedRegForDetails as any;
+                    const portraitUrl = r.userPortraitPhoto || r.user_portrait_photo || r.ownerPhoto || r.owner_photo || r.userPortraitThumbnail || r.user_portrait_thumbnail;
+                    const nationalIdFrontUrl = r.nationalIdPhoto || r.national_id_photo || r.nationalId;
+                    const nationalIdBackUrl = r.nationalIdBackPhoto || r.national_id_back_photo || r.nationalIdBack;
+                    const drivingLicenseUrl = r.drivingLicensePhoto || r.driving_license_photo || r.driverLicensePhoto;
+                    const drivingPermitUrl = r.drivingPermitPhoto || r.driving_permit_photo || r.policePermitPhoto;
+                    const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
+                    const slipPhoto = latestRc?.receiptScreenshot || (latestRc as any)?.receipt_screenshot || r.receiptScreenshot || r.receipt_screenshot;
 
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
-                        {isAmharic ? 'ብሔራዊ መታወቂያ' : 'National ID'}
-                      </span>
-                      <div
-                        onClick={() => selectedRegForDetails.nationalIdPhoto && openDocumentCarousel(selectedRegForDetails.nationalIdPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — National ID`)}
-                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                      >
-                        {selectedRegForDetails.nationalIdPhoto ? (
-                          <>
-                            <SmartImage src={selectedRegForDetails.nationalIdPhoto} alt="National ID" fallbackIcon="badge" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                            </div>
-                          </>
-                        ) : (
-                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                        )}
-                      </div>
-                    </div>
+                    const docCards = [
+                      {
+                        label: isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait',
+                        url: portraitUrl,
+                        icon: 'person',
+                        title: `${getDisplayName(selectedRegForDetails)} — Portrait`,
+                      },
+                      {
+                        label: isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID Front',
+                        url: nationalIdFrontUrl,
+                        icon: 'badge',
+                        title: `${getDisplayName(selectedRegForDetails)} — National ID Front`,
+                      },
+                      {
+                        label: isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID Back',
+                        url: nationalIdBackUrl,
+                        icon: 'badge',
+                        title: `${getDisplayName(selectedRegForDetails)} — National ID Back`,
+                      },
+                      {
+                        label: isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License',
+                        url: drivingLicenseUrl,
+                        icon: 'card_membership',
+                        title: `${getDisplayName(selectedRegForDetails)} — License`,
+                      },
+                      {
+                        label: isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre',
+                        url: drivingPermitUrl,
+                        icon: 'menu_book',
+                        title: `${getDisplayName(selectedRegForDetails)} — Permit`,
+                      },
+                      {
+                        label: isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip',
+                        url: slipPhoto,
+                        icon: 'receipt_long',
+                        title: `${getDisplayName(selectedRegForDetails)} — Receipt Slip`,
+                      },
+                    ];
 
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
-                        {isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
-                      </span>
-                      <div
-                        onClick={() => selectedRegForDetails.drivingLicensePhoto && openDocumentCarousel(selectedRegForDetails.drivingLicensePhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — License`)}
-                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                      >
-                        {selectedRegForDetails.drivingLicensePhoto ? (
-                          <>
-                            <SmartImage src={selectedRegForDetails.drivingLicensePhoto} alt="Driving License" fallbackIcon="card_membership" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                    return (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                        {docCards.map((doc, idx) => (
+                          <div key={idx} className="space-y-1">
+                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
+                              {doc.label}
+                            </span>
+                            <div
+                              onClick={() => doc.url && openDocumentCarousel(doc.url, selectedRegForDetails, doc.title)}
+                              className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
+                            >
+                              {doc.url ? (
+                                <>
+                                  <SmartImage
+                                    src={doc.url}
+                                    alt={doc.label}
+                                    fallbackIcon={doc.icon}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                  />
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                    <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
+                                  </div>
+                                </>
+                              ) : (
+                                <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">
+                                  {isAmharic ? 'አልተያያዘም' : 'None'}
+                                </span>
+                              )}
                             </div>
-                          </>
-                        ) : (
-                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
-                        {isAmharic ? 'የመንቀሳቀሻ ፍቃድ' : 'Permit / Libre'}
-                      </span>
-                      <div
-                        onClick={() => selectedRegForDetails.drivingPermitPhoto && openDocumentCarousel(selectedRegForDetails.drivingPermitPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — Permit`)}
-                        className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                      >
-                        {selectedRegForDetails.drivingPermitPhoto ? (
-                          <>
-                            <SmartImage src={selectedRegForDetails.drivingPermitPhoto} alt="Permit" fallbackIcon="menu_book" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                              <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                            </div>
-                          </>
-                        ) : (
-                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* 5. Bank Receipt Slip */}
-                    {(() => {
-                      const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
-                      const slipPhoto = latestRc?.receiptScreenshot || selectedRegForDetails.receiptScreenshot;
-                      return (
-                        <div className="space-y-1">
-                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
-                            {isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip'}
-                          </span>
-                          <div
-                            onClick={() => slipPhoto && openDocumentCarousel(slipPhoto, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip'}`)}
-                            className="h-32 sm:h-36 md:h-40 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex items-center justify-center cursor-pointer group relative shadow-2xs"
-                          >
-                            {slipPhoto ? (
-                              <>
-                                <SmartImage src={slipPhoto} alt="Receipt Slip" fallbackIcon="receipt_long" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                  <Icon className="material-symbols-outlined text-[20px]">zoom_in</Icon>
-                                </div>
-                              </>
-                            ) : (
-                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'አልተያያዘም' : 'None'}</span>
-                            )}
                           </div>
-                        </div>
-                      );
-                    })()}
-                  </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             )}

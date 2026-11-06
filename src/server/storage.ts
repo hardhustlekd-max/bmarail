@@ -271,7 +271,7 @@ export async function saveFile(
   if (!fs.existsSync(targetFolder)) {
     fs.mkdirSync(targetFolder, { recursive: true });
   }
-  const localFilePath = path.join(targetFolder, `${timestamp}_${randomStr}_${safeBaseName}${detectedExt}`);
+  const localFilePath = path.join(targetFolder, path.basename(fileKey));
   try {
     fs.writeFileSync(localFilePath, buffer);
   } catch (writeErr) {

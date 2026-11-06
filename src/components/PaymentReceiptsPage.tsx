@@ -2251,14 +2251,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         onClick={(e) => {
                           e.stopPropagation();
                           const memberReg =
+                            (row as any).member ||
                             registrations.find((r) => String(r.id) === String(row.id)) ||
                             registrations.find((r) => r.plateNumber && row.plateNumber && r.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
                             null;
-                          const memberReceipts = combinedReceipts.filter(
-                            (rc) =>
-                              (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
-                              (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase())
-                          );
+                          const memberReceipts =
+                            (row as any).allReceipts && (row as any).allReceipts.length > 0
+                              ? (row as any).allReceipts
+                              : combinedReceipts.filter(
+                                  (rc) =>
+                                    (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                                    (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase())
+                                );
                           setSelectedMemberDetail({ row, member: memberReg, receipts: memberReceipts });
                         }}
                         className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-650 active:scale-95 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-600 shadow-2xs transition-all cursor-pointer"
@@ -2327,14 +2331,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         const memberReg =
+                          (row as any).member ||
                           registrations.find((r) => String(r.id) === String(row.id)) ||
                           registrations.find((r) => r.plateNumber && row.plateNumber && r.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
                           null;
-                        const memberReceipts = combinedReceipts.filter(
-                          (rc) =>
-                            (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
-                            (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase())
-                        );
+                        const memberReceipts =
+                          (row as any).allReceipts && (row as any).allReceipts.length > 0
+                            ? (row as any).allReceipts
+                            : combinedReceipts.filter(
+                                (rc) =>
+                                  (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                                  (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase())
+                              );
                         setSelectedMemberDetail({ row, member: memberReg, receipts: memberReceipts });
                       }}
                       className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
@@ -2379,6 +2387,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               }}
               onRowClick={(row) => {
                 const memberReg =
+                  (row as any).member ||
                   registrations.find((r) => String(r.id) === String(row.id)) ||
                   registrations.find(
                     (r) =>
@@ -2388,13 +2397,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   ) ||
                   null;
 
-                const memberReceipts = combinedReceipts.filter(
-                  (rc) =>
-                    (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
-                    (memberReg && rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(memberReg.id)) ||
-                    (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
-                    (rc.plateNumber && memberReg?.plateNumber && rc.plateNumber.toLowerCase() === memberReg.plateNumber.toLowerCase())
-                );
+                const memberReceipts =
+                  (row as any).allReceipts && (row as any).allReceipts.length > 0
+                    ? (row as any).allReceipts
+                    : combinedReceipts.filter(
+                        (rc) =>
+                          (rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(row.id)) ||
+                          (memberReg && rc.ownerRegistrationId && String(rc.ownerRegistrationId) === String(memberReg.id)) ||
+                          (rc.plateNumber && row.plateNumber && rc.plateNumber.toLowerCase() === row.plateNumber.toLowerCase()) ||
+                          (rc.plateNumber && memberReg?.plateNumber && rc.plateNumber.toLowerCase() === memberReg.plateNumber.toLowerCase())
+                      );
 
                 setSelectedMemberDetail({
                   row,
@@ -2523,11 +2535,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
             {/* Segmented Navigation Tabs */}
             {(() => {
+              const m = selectedMemberDetail.member as any;
               const docCount = [
-                selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail,
-                selectedMemberDetail.member?.nationalIdPhoto,
-                selectedMemberDetail.member?.drivingLicensePhoto,
-                selectedMemberDetail.member?.drivingPermitPhoto,
+                m?.userPortraitPhoto || m?.user_portrait_photo || m?.ownerPhoto || m?.owner_photo || m?.userPortraitThumbnail || m?.user_portrait_thumbnail,
+                m?.nationalIdPhoto || m?.national_id_photo || m?.nationalId,
+                m?.nationalIdBackPhoto || m?.national_id_back_photo || m?.nationalIdBack,
+                m?.drivingLicensePhoto || m?.driving_license_photo,
+                m?.drivingPermitPhoto || m?.driving_permit_photo,
               ].filter(Boolean).length;
 
               const tabs = [
@@ -2546,7 +2560,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   id: 'documents',
                   label: isAmharic ? 'ሰነዶች' : 'Documents',
                   icon: 'photo_library',
-                  badge: `${docCount}/4`,
+                  badge: `${docCount}/5`,
                 },
               ];
 
@@ -2618,27 +2632,32 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       <div className="flex flex-col items-center justify-center text-center space-y-1.5">
                         <div
                           onClick={() => {
-                            const photo = selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail;
+                            const m = selectedMemberDetail.member as any;
+                            const photo = m?.userPortraitPhoto || m?.user_portrait_photo || m?.ownerPhoto || m?.owner_photo || m?.userPortraitThumbnail || m?.user_portrait_thumbnail;
                             if (photo) setPreviewDocPhoto({ url: photo, title: isAmharic ? 'የአባል ፎቶ' : 'Member Portrait Photo' });
                           }}
                           className="w-24 h-28 sm:w-28 sm:h-32 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] overflow-hidden flex items-center justify-center shadow-xs relative group cursor-pointer"
                           title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
                         >
-                          {(selectedMemberDetail.member?.userPortraitThumbnail || selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto) ? (
-                            <>
-                              <img
-                                src={selectedMemberDetail.member?.userPortraitThumbnail || selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto}
-                                alt={selectedMemberDetail.member?.fullName || 'Member'}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
-                              />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                <Icon name="zoom_in" size={20} />
-                              </div>
-                            </>
-                          ) : (
-                            <Icon name="person" size={36} className="text-slate-400" />
-                          )}
+                          {(() => {
+                            const m = selectedMemberDetail.member as any;
+                            const photo = m?.userPortraitThumbnail || m?.user_portrait_thumbnail || m?.userPortraitPhoto || m?.user_portrait_photo || m?.ownerPhoto || m?.owner_photo;
+                            return photo ? (
+                              <>
+                                <img
+                                  src={photo}
+                                  alt={selectedMemberDetail.member?.fullName || 'Member'}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                  onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                  <Icon name="zoom_in" size={20} />
+                                </div>
+                              </>
+                            ) : (
+                              <Icon name="person" size={36} className="text-slate-400" />
+                            );
+                          })()}
                         </div>
                         <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD]">
                           {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
@@ -2944,65 +2963,77 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       <span>{isAmharic ? 'የአባሉ ሰነዶች እና ፎቶዎች (ለማጉላት ይጫኑ)' : 'Member Documents & Photos (Click to Zoom)'}</span>
                     </h4>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                      {[
+                    {(() => {
+                      const m = selectedMemberDetail.member as any;
+                      const memberDocs = [
                         {
                           label: isAmharic ? 'የአባል ፎቶ' : 'Member Photo',
-                          url: selectedMemberDetail.member?.userPortraitPhoto || selectedMemberDetail.member?.ownerPhoto || selectedMemberDetail.member?.userPortraitThumbnail,
+                          url: m?.userPortraitPhoto || m?.user_portrait_photo || m?.ownerPhoto || m?.owner_photo || m?.userPortraitThumbnail || m?.user_portrait_thumbnail,
                           icon: 'person',
                         },
                         {
-                          label: isAmharic ? 'የታደሰ መታወቂያ' : 'National ID Front',
-                          url: selectedMemberDetail.member?.nationalIdPhoto,
+                          label: isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID Front',
+                          url: m?.nationalIdPhoto || m?.national_id_photo || m?.nationalId,
+                          icon: 'badge',
+                        },
+                        {
+                          label: isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID Back',
+                          url: m?.nationalIdBackPhoto || m?.national_id_back_photo || m?.nationalIdBack,
                           icon: 'badge',
                         },
                         {
                           label: isAmharic ? 'የመንጃ ፈቃድ' : 'Driving License',
-                          url: selectedMemberDetail.member?.drivingLicensePhoto,
+                          url: m?.drivingLicensePhoto || m?.driving_license_photo || m?.driverLicensePhoto,
                           icon: 'card_membership',
                         },
                         {
                           label: isAmharic ? 'የማሽከርከር ፈቃድ' : 'Driving Permit',
-                          url: selectedMemberDetail.member?.drivingPermitPhoto,
+                          url: m?.drivingPermitPhoto || m?.driving_permit_photo || m?.policePermitPhoto,
                           icon: 'menu_book',
                         },
-                      ].map((doc, idx) => (
-                        <div
-                          key={idx}
-                          onClick={() => {
-                            if (doc.url) {
-                              setPreviewDocPhoto({ url: doc.url, title: doc.label });
-                            }
-                          }}
-                          className={`relative p-2 rounded-lg border text-center transition-all ${
-                            doc.url
-                              ? 'bg-white dark:bg-[#1C2434] border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary cursor-pointer group shadow-xs'
-                              : 'bg-slate-100/50 dark:bg-slate-900/40 border-dashed border-slate-200 dark:border-slate-800 cursor-default'
-                          }`}
-                        >
-                          <span className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 truncate mb-1.5">
-                            {doc.label}
-                          </span>
-                          {doc.url ? (
-                            <div className="w-full h-24 rounded-md overflow-hidden bg-black/10 relative">
-                              <SmartImage
-                                src={doc.url}
-                                alt={doc.label}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                              />
-                              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                                <Icon name="zoom_in" size={18} />
-                              </div>
+                      ];
+
+                      return (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+                          {memberDocs.map((doc, idx) => (
+                            <div
+                              key={idx}
+                              onClick={() => {
+                                if (doc.url) {
+                                  setPreviewDocPhoto({ url: doc.url, title: doc.label });
+                                }
+                              }}
+                              className={`relative p-2 rounded-lg border text-center transition-all ${
+                                doc.url
+                                  ? 'bg-white dark:bg-[#1C2434] border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary cursor-pointer group shadow-xs'
+                                  : 'bg-slate-100/50 dark:bg-slate-900/40 border-dashed border-slate-200 dark:border-slate-800 cursor-default'
+                              }`}
+                            >
+                              <span className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 truncate mb-1.5">
+                                {doc.label}
+                              </span>
+                              {doc.url ? (
+                                <div className="w-full h-24 rounded-md overflow-hidden bg-black/10 relative">
+                                  <SmartImage
+                                    src={doc.url}
+                                    alt={doc.label}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                  />
+                                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
+                                    <Icon name="zoom_in" size={18} />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="w-full h-24 rounded-md flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 bg-slate-100 dark:bg-slate-800">
+                                  <Icon name={doc.icon} size={22} />
+                                  <span className="text-[9px] mt-1 font-medium">{isAmharic ? 'አልተያያዘም' : 'Not attached'}</span>
+                                </div>
+                              )}
                             </div>
-                          ) : (
-                            <div className="w-full h-24 rounded-md flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 bg-slate-100 dark:bg-slate-800">
-                              <Icon name={doc.icon} size={22} />
-                              <span className="text-[9px] mt-1 font-medium">{isAmharic ? 'አልተያያዘም' : 'Not attached'}</span>
-                            </div>
-                          )}
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })()}
                   </div>
                 </div>
               )}

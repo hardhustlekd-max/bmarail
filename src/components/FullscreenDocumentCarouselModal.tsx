@@ -23,12 +23,12 @@ export const buildRegistrationDocumentList = (
   const list: DocumentViewerItem[] = [];
 
   // 1. Police Permit
-  const policePermitPhoto = reg.drivingPermitPhoto || reg.driving_permit_photo || reg.policePermitPhoto || reg.policePermit;
+  const policePermitPhoto = reg.drivingPermitPhoto || reg.driving_permit_photo || reg.policePermitPhoto || reg.police_permit_photo || reg.policePermit;
   if (policePermitPhoto && typeof policePermitPhoto === 'string' && policePermitPhoto.trim() !== '') {
     list.push({
       url: policePermitPhoto,
       title: isAmharic ? 'የፖሊስ የመንቀሳቀሻ ፈቃድ' : 'Police Permit',
-      subtitle: `${reg.fullName || ''} • ${reg.plateNumber || reg.engineOrSerialNo || ''}`,
+      subtitle: `${reg.fullName || reg.full_name || ''} • ${reg.plateNumber || reg.plate_number || reg.engineOrSerialNo || ''}`,
       icon: 'menu_book',
       type: 'police-permit',
     });
@@ -40,52 +40,55 @@ export const buildRegistrationDocumentList = (
     list.push({
       url: drivingLicensePhoto,
       title: isAmharic ? 'የመንጃ ፍቃድ' : 'Driver License',
-      subtitle: `${reg.fullName || ''} • ${reg.plateNumber || ''}`,
+      subtitle: `${reg.fullName || reg.full_name || ''} • ${reg.plateNumber || reg.plate_number || ''}`,
       icon: 'card_membership',
       type: 'driving-license',
     });
   }
 
   // 3. National ID (Front)
-  if (reg.nationalIdPhoto && typeof reg.nationalIdPhoto === 'string' && reg.nationalIdPhoto.trim() !== '') {
+  const nationalIdPhoto = reg.nationalIdPhoto || reg.national_id_photo || reg.nationalId;
+  if (nationalIdPhoto && typeof nationalIdPhoto === 'string' && nationalIdPhoto.trim() !== '') {
     list.push({
-      url: reg.nationalIdPhoto,
+      url: nationalIdPhoto,
       title: isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID (Front)',
-      subtitle: `${reg.fullName || ''}`,
+      subtitle: `${reg.fullName || reg.full_name || ''}`,
       icon: 'badge',
       type: 'national-id-front',
     });
   }
 
   // 4. National ID (Back)
-  if (reg.nationalIdBackPhoto && typeof reg.nationalIdBackPhoto === 'string' && reg.nationalIdBackPhoto.trim() !== '') {
+  const nationalIdBackPhoto = reg.nationalIdBackPhoto || reg.national_id_back_photo || reg.nationalIdBack;
+  if (nationalIdBackPhoto && typeof nationalIdBackPhoto === 'string' && nationalIdBackPhoto.trim() !== '') {
     list.push({
-      url: reg.nationalIdBackPhoto,
+      url: nationalIdBackPhoto,
       title: isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)',
-      subtitle: `${reg.fullName || ''}`,
+      subtitle: `${reg.fullName || reg.full_name || ''}`,
       icon: 'badge',
       type: 'national-id-back',
     });
   }
 
   // 5. Owner Portrait Photo
-  const portrait = reg.userPortraitPhoto || reg.ownerPhoto;
+  const portrait = reg.userPortraitPhoto || reg.user_portrait_photo || reg.ownerPhoto || reg.owner_photo || reg.userPortraitThumbnail || reg.user_portrait_thumbnail;
   if (portrait && typeof portrait === 'string' && portrait.trim() !== '') {
     list.push({
       url: portrait,
       title: isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait',
-      subtitle: reg.fullName || '',
+      subtitle: reg.fullName || reg.full_name || '',
       icon: 'account_circle',
       type: 'owner-photo',
     });
   }
 
   // 6. Payment Receipt Screenshot
-  if (reg.receiptScreenshot && typeof reg.receiptScreenshot === 'string' && reg.receiptScreenshot.trim() !== '') {
+  const receiptScreenshot = reg.receiptScreenshot || reg.receipt_screenshot;
+  if (receiptScreenshot && typeof receiptScreenshot === 'string' && receiptScreenshot.trim() !== '') {
     list.push({
-      url: reg.receiptScreenshot,
+      url: receiptScreenshot,
       title: isAmharic ? 'የባንክ ክፍያ ደረሰኝ' : 'Payment Receipt Slip',
-      subtitle: `${reg.receiptNumber ? `#${reg.receiptNumber}` : ''} ${reg.paymentAmount ? `• ${reg.paymentAmount} ETB` : ''}`,
+      subtitle: `${reg.receiptNumber || reg.receipt_number ? `#${reg.receiptNumber || reg.receipt_number}` : ''} ${reg.paymentAmount || reg.payment_amount ? `• ${reg.paymentAmount || reg.payment_amount} ETB` : ''}`,
       icon: 'receipt_long',
       type: 'receipt-slip',
     });
