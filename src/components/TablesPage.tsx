@@ -1234,7 +1234,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                     className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"
                                     title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
                                   >
-                                    <Icon className="material-symbols-outlined text-[11px]">domain</Icon>
+                                    <Icon className="material-symbols-outlined text-[14px]">domain</Icon>
                                     <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
                                   </span>
                                 )}
@@ -1400,7 +1400,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"
                                   title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
                                 >
-                                  <Icon className="material-symbols-outlined text-[11px]">domain</Icon>
+                                  <Icon className="material-symbols-outlined text-[14px]">domain</Icon>
                                   <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
                                 </span>
                               )}
@@ -1688,9 +1688,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               : 'text-slate-600 dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white border border-transparent'
                           }`}
                         >
-                          <Icon className={`material-symbols-outlined text-[15px] shrink-0 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
-                            {tab.icon}
-                          </Icon>
                           <span className="truncate">{tab.label}</span>
                           {tab.badge !== undefined && (
                             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold tabular-nums shrink-0 ${
@@ -1980,7 +1977,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         <div className="space-y-0.5">
                           <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የክፍያ ሁኔታ:' : 'Standing Status:'}</span>
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[11px] font-bold ${compliance.badgeClass}`}>
-                            <Icon className="material-symbols-outlined text-[12px]">
+                            <Icon className="material-symbols-outlined text-[14px]">
                               {compliance.status === 'active' ? 'check_circle' : compliance.status === 'expiring_soon' ? 'alarm' : 'cancel'}
                             </Icon>
                             <span>{isAmharic ? compliance.labelAm : compliance.labelEn}</span>

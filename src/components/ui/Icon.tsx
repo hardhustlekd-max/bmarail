@@ -49,6 +49,7 @@ export const Icon: React.FC<IconProps> = ({
   const finalHeight = height || calculatedSize;
 
   const combinedStyle: React.CSSProperties = {
+    fontSize: finalHeight || calculatedSize || 'inherit',
     ...(finalWidth ? { width: finalWidth } : {}),
     ...(finalHeight ? { height: finalHeight } : {}),
     ...style,

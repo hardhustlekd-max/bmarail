@@ -1382,7 +1382,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       />
                       {firstNameError && (
                         <p className="text-[10px] text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
-                          <Icon className="material-symbols-outlined text-[12px] shrink-0 mt-0.5">error</Icon>
+                          <Icon className="material-symbols-outlined text-[14px] shrink-0 mt-0.5">error</Icon>
                           <span className="break-words leading-tight">{firstNameError}</span>
                         </p>
                       )}
@@ -1408,7 +1408,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       />
                       {fatherNameError && (
                         <p className="text-[10px] text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
-                          <Icon className="material-symbols-outlined text-[12px] shrink-0 mt-0.5">error</Icon>
+                          <Icon className="material-symbols-outlined text-[14px] shrink-0 mt-0.5">error</Icon>
                           <span className="break-words leading-tight">{fatherNameError}</span>
                         </p>
                       )}
@@ -1434,7 +1434,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       />
                       {grandFatherNameError && (
                         <p className="text-[10px] text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
-                          <Icon className="material-symbols-outlined text-[12px] shrink-0 mt-0.5">error</Icon>
+                          <Icon className="material-symbols-outlined text-[14px] shrink-0 mt-0.5">error</Icon>
                           <span className="break-words leading-tight">{grandFatherNameError}</span>
                         </p>
                       )}
@@ -1471,7 +1471,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       </div>
                       {phoneError && (
                         <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                          <Icon className="material-symbols-outlined text-[12px]">error</Icon>
+                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                           <span>{phoneError}</span>
                         </p>
                       )}
@@ -1658,7 +1658,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       </div>
                       {motorBrandError && (
                         <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                          <Icon className="material-symbols-outlined text-[12px]">error</Icon>
+                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                           <span>{motorBrandError}</span>
                         </p>
                       )}
@@ -1713,7 +1713,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       </div>
                       {motorModelError && (
                         <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                          <Icon className="material-symbols-outlined text-[12px]">error</Icon>
+                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                           <span>{motorModelError}</span>
                         </p>
                       )}
@@ -1799,7 +1799,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                         {plateNumberError && (
                           <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                            <Icon className="material-symbols-outlined text-[12px]">error</Icon>
+                            <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                             <span>{plateNumberError}</span>
                           </p>
                         )}
@@ -1896,7 +1896,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                         {plateNumberError && (
                           <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                            <Icon className="material-symbols-outlined text-[12px]">error</Icon>
+                            <Icon className="material-symbols-outlined text-[14px]">error</Icon>
                             <span>{plateNumberError}</span>
                           </p>
                         )}
@@ -2147,13 +2147,13 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           <span className="text-red-500">*</span>
                           {isReceiptVerified && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black  bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                              <Icon className="material-symbols-outlined text-[12px]">verified</Icon>
+                              <Icon className="material-symbols-outlined text-[14px]">verified</Icon>
                               <span>{isAmharic ? 'በባንክ የተረጋገጠ' : 'Bank Verified'}</span>
                             </span>
                           )}
                         </label>
                         <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
-                          <Icon className="material-symbols-outlined text-[12px]">verified_user</Icon>
+                          <Icon className="material-symbols-outlined text-[14px]">verified_user</Icon>
                           <span>Cheki API</span>
                         </span>
                       </div>

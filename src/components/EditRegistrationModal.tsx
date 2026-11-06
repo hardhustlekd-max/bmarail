@@ -320,7 +320,6 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
             }`}
           >
-            <Icon className="material-symbols-outlined text-[18px]">person</Icon>
             <span>{isAmharic ? 'የባለቤት መረጃ' : 'Owner Info'}</span>
           </button>
 
@@ -333,7 +332,6 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
             }`}
           >
-            <Icon className="material-symbols-outlined text-[18px]">two_wheeler</Icon>
             <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Details'}</span>
           </button>
 
@@ -346,7 +344,6 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
             }`}
           >
-            <Icon className="material-symbols-outlined text-[18px]">photo_library</Icon>
             <span>{isAmharic ? 'ሰነዶችና ፎቶዎች' : 'Documents & Photos'}</span>
           </button>
 
@@ -360,7 +357,6 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                   : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[18px]">verified_user</Icon>
               <span>{isAmharic ? 'የፈቃድ ሁኔታ & ቁጥጥር' : 'Status & Admin'}</span>
             </button>
           )}

@@ -909,7 +909,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       : 'border border-transparent text-secondary hover:text-on-surface font-medium'
                   }`}
                 >
-                  <Icon className="material-symbols-outlined text-[16px] shrink-0">{tab.icon}</Icon>
                   <span className="tracking-tight">{tab.label}</span>
                   {typeof tab.count === 'number' && (
                     <span
@@ -2164,7 +2163,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     {/* Active Ribbon */}
                     {isSelected && (
                       <div className="absolute top-0 right-0 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-black px-3 py-0.5 rounded-bl-lg flex items-center gap-1 shadow-xs">
-                        <Icon className="material-symbols-outlined text-[12px]">check_circle</Icon>
+                        <Icon className="material-symbols-outlined text-[14px]">check_circle</Icon>
                         <span>{isAmharic ? 'ተመርጧል' : 'Active'}</span>
                       </div>
                     )}
@@ -2183,7 +2182,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             </span>
                           </div>
                           <span className="px-1.5 py-0.5 rounded text-[8px] font-black bg-white/20 text-white inline-flex items-center gap-0.5">
-                            <Icon className="material-symbols-outlined text-[10px]">check</Icon>
+                            <Icon className="material-symbols-outlined text-[12px]">check</Icon>
                             <span>VERIFIED</span>
                           </span>
                         </div>
@@ -2200,7 +2199,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                           </div>
                           <div className={`p-1.5 rounded-lg flex items-center justify-between text-[8px] font-bold ${theme.specCardBg || theme.cardBg}`}>
                             <span className={`inline-flex items-center gap-1 ${theme.headingText}`}>
-                              <Icon className="material-symbols-outlined text-[10px]">description</Icon>
+                              <Icon className="material-symbols-outlined text-[12px]">description</Icon>
                               Police Verification Permit
                             </span>
                             <span className="text-[7px] px-1 py-0.5 rounded bg-emerald-500 text-white font-bold">VALID</span>

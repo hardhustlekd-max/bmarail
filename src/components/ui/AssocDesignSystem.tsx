@@ -490,7 +490,6 @@ export const TabList = <T extends string>({
                   : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
               }`}
             >
-              {tab.icon && <Icon name={tab.icon} size={18} className={isActive ? 'text-slate-900 dark:text-white' : 'text-[#64748B] dark:text-[#8A99AD]'} />}
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
@@ -526,7 +525,6 @@ export const TabList = <T extends string>({
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent'
               }`}
             >
-              {tab.icon && <Icon name={tab.icon} size={16} className={isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'} />}
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
@@ -561,7 +559,6 @@ export const TabList = <T extends string>({
                 : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
             }`}
           >
-            {tab.icon && <Icon name={tab.icon} size={18} className={isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'} />}
             <span>{tab.label}</span>
             {typeof tab.count === 'number' && (
               <span

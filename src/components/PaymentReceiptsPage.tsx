@@ -2566,7 +2566,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                               : 'text-slate-600 dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white border border-transparent'
                           }`}
                         >
-                          <Icon name={tab.icon} size={15} className={`shrink-0 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`} />
                           <span className="truncate">{tab.label}</span>
                           {tab.badge !== undefined && (
                             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold tabular-nums shrink-0 ${
