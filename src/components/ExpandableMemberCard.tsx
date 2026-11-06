@@ -52,7 +52,7 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
 
             {/* Member Details Header */}
             <div className="min-w-0 flex-1 space-y-0.5">
-              <h4 className="text-sm font-bold text-on-surface leading-tight truncate">
+              <h4 className="text-sm font-bold text-on-surface leading-tight break-words">
                 {fullName} {roleOrTitle && <span className="text-on-surface-variant font-semibold text-xs">({roleOrTitle})</span>}
               </h4>
 
@@ -79,7 +79,7 @@ export const ExpandableMemberCard: React.FC<ExpandableMemberCardProps> = ({
             <span className="text-on-surface font-extrabold truncate min-w-0">
               {field.label}
             </span>
-            <span className="text-on-surface-variant font-extrabold text-left truncate min-w-0">
+            <span className="text-on-surface-variant font-extrabold text-left break-words min-w-0">
               {field.value || '—'}
             </span>
           </div>

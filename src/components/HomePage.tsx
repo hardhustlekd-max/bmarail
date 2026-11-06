@@ -1502,7 +1502,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
           }
         }}
         className={`hidden md:flex md:flex-col md:fixed md:inset-y-0 md:z-50 md:bg-slate-900 md:text-slate-300 md:border-r md:border-slate-800 md:justify-between md:shadow-sm transition-all duration-300 ease-in-out select-none ${
-          isCollapsed ? 'md:w-16 md:p-3 items-center' : 'md:w-64 md:p-5'
+          isCollapsed ? 'md:w-16 md:p-3 items-center' : 'md:w-52 md:p-3.5'
         }`}
       >
         <div className="flex flex-col h-full min-h-0 w-full">
@@ -2069,12 +2069,12 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
       {/* ==================== MAIN CONTAINER & TOP HEADER ==================== */}
       <div className={`flex-1 flex flex-col min-w-0 h-full max-h-full overflow-hidden transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'md:pl-16' : 'md:pl-64'
+        isCollapsed ? 'md:pl-16' : 'md:pl-52'
       }`}>
         
         {/* MOBILE NAVIGATION HEADER (md:hidden) */}
-        <header className="sticky top-0 z-50 bg-[#1e293b] text-white shadow-md px-3 sm:px-6 py-2.5 md:hidden shrink-0 relative overflow-hidden">
-          <div className="relative z-50 max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
+        <header className="sticky top-0 z-50 bg-[#1e293b] text-white shadow-md px-3 sm:px-5 h-14 md:hidden shrink-0 relative overflow-hidden flex items-center">
+          <div className="relative z-50 max-w-7xl mx-auto w-full flex items-center justify-between gap-2 sm:gap-4">
               
               {/* Left Logo & App Brand Title */}
               <div
@@ -2174,10 +2174,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 )}
               </nav>
 
-              {/* Right Controls (BORDERLESS MENU TOGGLE BUTTON & NOTIFICATION BELL FOR MOBILE) */}
+              {/* Right Controls (PROPORTIONAL MENU TOGGLE & NOTIFICATION BELL FOR MOBILE) */}
               <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
 
-                {/* Mobile Notification Bell Icon Button (Container removed for sleek mobile appearance) */}
+                {/* Mobile Notification Bell Icon Button */}
                 <div className="relative" ref={mobileNotificationRef}>
                   <button
                     type="button"
@@ -2185,24 +2185,24 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       setIsNotificationOpen(!isNotificationOpen);
                       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
                     }}
-                    className={`p-1.5 flex items-center justify-center transition-colors cursor-pointer shrink-0 relative touch-manipulation active:scale-90 ${
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all cursor-pointer shrink-0 relative touch-manipulation active:scale-95 ${
                       isNotificationOpen
-                        ? 'text-yellow-400'
-                        : 'text-white hover:text-yellow-400'
+                        ? 'text-yellow-400 bg-white/10'
+                        : 'text-white hover:text-yellow-400 hover:bg-white/10'
                     }`}
                     title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                     aria-label="Notifications"
                   >
-                    <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">notifications</Icon>
+                    <Icon name="notifications" size={26} className="text-[26px]">notifications</Icon>
                     {unreadNotificationCount > 0 && (
-                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[17px] h-4 px-1 rounded-full flex items-center justify-center absolute -top-0.5 -right-0.5 shadow-2xs border border-[#1e293b]">
+                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute top-1 right-1 shadow-2xs border-2 border-[#1e293b]">
                         {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                       </span>
                     )}
                   </button>
                 </div>
 
-                {/* Mobile Drawer Menu Toggle (Container removed for sleek mobile appearance) */}
+                {/* Mobile Drawer Menu Toggle */}
                 <button
                   ref={mobileMenuButtonRef}
                   type="button"
@@ -2211,9 +2211,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     if (isNotificationOpen) setIsNotificationOpen(false);
                   }}
                   aria-label="Toggle Navigation Menu"
-                  className="p-1.5 flex items-center justify-center text-white hover:text-yellow-400 active:scale-90 touch-manipulation transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 rounded-lg flex items-center justify-center text-white hover:text-yellow-400 hover:bg-white/10 active:scale-95 touch-manipulation transition-all cursor-pointer shrink-0"
                 >
-                  <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">
+                  <Icon name={isMobileMenuOpen ? 'close' : 'menu'} size={26} className="text-[26px]">
                     {isMobileMenuOpen ? 'close' : 'menu'}
                   </Icon>
                 </button>
@@ -2225,7 +2225,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
         {/* Mobile Notification Modal / Drawer Overlay (Positioned directly under top header) */}
         {isNotificationOpen && (
           <div
-            className="fixed top-[53px] sm:top-[57px] inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in md:hidden p-3 flex justify-center items-start"
+            className="fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in md:hidden p-3 flex justify-center items-start"
             onClick={() => setIsNotificationOpen(false)}
           >
             <div
@@ -2252,7 +2252,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
         {/* Mobile Backdrop & Left Slide-Out Drawer Menu (Positioned BELOW top header) */}
         <div
-          className={`fixed top-[53px] sm:top-[57px] inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-md md:hidden flex justify-start side-menu-backdrop ${
+          className={`fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-md md:hidden flex justify-start side-menu-backdrop ${
             isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
           onClick={() => setIsMobileMenuOpen(false)}
@@ -2803,17 +2803,17 @@ const HomePageShell: React.FC<HomePageProps> = ({
         </div>
 
         {/* DESKTOP TOP BAR (hidden md:flex) - Clean Unboxed Design */}
-        <header className="hidden md:flex items-center justify-between px-4 sm:px-6 md:px-8 py-2 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0]/80 dark:border-[#2E3A47] sticky top-0 z-40 relative transition-colors">
+        <header className="hidden md:flex items-center justify-between px-4 sm:px-6 md:px-8 h-14 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0]/80 dark:border-[#2E3A47] sticky top-0 z-40 relative transition-colors">
           {/* Left Side: Sidebar Toggle Button & Current Context */}
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="w-9 h-9 rounded-lg text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24303F] flex items-center justify-center transition-all cursor-pointer active:scale-95"
+              className="w-10 h-10 rounded-lg text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24303F] flex items-center justify-center transition-all cursor-pointer active:scale-95"
               title={isCollapsed ? (isAmharic ? 'ሳይድባር ዘርጋ' : 'Expand Sidebar') : (isAmharic ? 'ሳይድባር አሳንስ' : 'Collapse Sidebar')}
               aria-label="Toggle Sidebar"
             >
-              <Icon className="material-symbols-outlined text-[22px]">
+              <Icon name={isCollapsed ? 'menu_open' : 'menu'} size={26} className="text-[26px]">
                 {isCollapsed ? 'menu_open' : 'menu'}
               </Icon>
             </button>
@@ -2846,7 +2846,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     return next;
                   });
                 }}
-                className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all cursor-pointer relative ${
+                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all cursor-pointer relative ${
                   isNotificationOpen
                     ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white'
                     : 'text-[#64748B] dark:text-[#8A99AD] hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24303F]'
@@ -2854,9 +2854,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
                 title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                 aria-label="Notifications"
               >
-                <Icon className="material-symbols-outlined text-[20px]">notifications</Icon>
+                <Icon name="notifications" size={26} className="text-[26px]">notifications</Icon>
                 {unreadNotificationCount > 0 && (
-                  <span className="bg-[#FB5454] text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute top-1 right-1 shadow-2xs border border-white dark:border-[#1C2434]">
+                  <span className="bg-[#FB5454] text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute top-1 right-1 shadow-2xs border-2 border-white dark:border-[#1C2434]">
                     {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                   </span>
                 )}
@@ -2899,7 +2899,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     return next;
                   });
                 }}
-                className={`h-9 px-2.5 rounded-lg flex items-center gap-2.5 transition-all cursor-pointer ${
+                className={`h-10 px-2.5 rounded-lg flex items-center gap-2.5 transition-all cursor-pointer ${
                   isUserDropdownOpen
                     ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white'
                     : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#24303F]'

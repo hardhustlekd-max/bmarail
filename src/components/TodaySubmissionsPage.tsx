@@ -898,7 +898,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     </th>
                   )}
                   <th className="py-2.5 px-3 text-center w-12 font-medium">#</th>
-                  <th className="py-2.5 px-3 font-medium truncate">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                  <th className="py-2.5 px-3 font-medium min-w-[200px]">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
                   <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
                   <th className="py-2.5 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'አይነት' : 'Category'}</th>
                   <th className="py-2.5 px-3 font-medium w-36 text-center whitespace-nowrap">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
@@ -991,10 +991,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             </div>
                           </td>
 
-                          {/* Column 1: Owner Name */}
-                          <td className="py-2.5 px-3 align-middle overflow-hidden">
+                          {/* Column 1: Owner Name with Full Visibility */}
+                          <td className="py-2.5 px-3 align-middle min-w-[200px]">
                             <span
-                              className="font-semibold text-xs text-[#1C2434] dark:text-white block truncate"
+                              className="font-semibold text-xs text-[#1C2434] dark:text-white block break-words leading-snug"
                               title={reg.fullName || '—'}
                             >
                               {reg.fullName || '—'}

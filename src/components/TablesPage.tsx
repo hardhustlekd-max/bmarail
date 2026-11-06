@@ -1142,7 +1142,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         </span>
                       </div>
                     </th>
-                    <th className="py-2.5 px-3 font-medium truncate">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                    <th className="py-2.5 px-3 font-medium min-w-[200px]">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
                     <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
                     <th className="py-2.5 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'አይነት' : 'Category'}</th>
                     <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
@@ -1217,18 +1217,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               </div>
                             </td>
 
-                            {/* Column 1: Owner Name with Truncation and Tooltip */}
-                            <td className="px-3 py-2.5 align-middle overflow-hidden">
+                            {/* Column 1: Owner Name with Full Visibility */}
+                            <td className="px-3 py-2.5 align-middle min-w-[200px]">
                               <button
                                 type="button"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedRegForDetails(reg);
                                 }}
-                                className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer w-full overflow-hidden"
+                                className="font-semibold text-xs text-[#1C2434] dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-left flex items-center gap-1.5 cursor-pointer w-full flex-wrap"
                                 title={displayName}
                               >
-                                <span className="truncate block">{displayName}</span>
+                                <span className="break-words font-semibold text-xs leading-snug">{displayName}</span>
                                 {reg.hideFromOtherUsers && isSuperAdmin && (
                                   <span
                                     className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"

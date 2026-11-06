@@ -2482,7 +2482,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 </div>
                 <div className="space-y-0.5 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <h3 className="text-xs sm:text-sm font-black tracking-wide truncate max-w-[180px] sm:max-w-[240px]">
+                    <h3 className="text-xs sm:text-sm font-black tracking-wide break-words">
                       {selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title || (isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Details')}
                     </h3>
                     <span className="font-mono text-[10px] text-slate-400 font-bold bg-slate-800 px-1.5 py-0.2 rounded tabular-nums">

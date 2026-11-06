@@ -391,7 +391,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     <th className="py-3 px-3 text-center w-12 font-medium">#</th>
                     <th className="py-3 px-2 text-center w-12 font-medium">{isAmharic ? 'ፎቶ' : 'Photo'}</th>
                     <th className="py-3 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
-                    <th className="py-3 px-3 font-medium truncate">{isAmharic ? 'አሽከርካሪ / ተጠርጣሪ' : 'Driver / Suspect'}</th>
+                    <th className="py-3 px-3 font-medium min-w-[180px]">{isAmharic ? 'አሽከርካሪ / ተጠርጣሪ' : 'Driver / Suspect'}</th>
                     <th className="py-3 px-3 font-medium w-40 truncate">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
                     <th className="py-3 px-3 text-center w-32 font-medium whitespace-nowrap">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
                     <th className="py-3 px-3 text-right w-32 font-medium whitespace-nowrap">{isAmharic ? 'ተግባር' : 'Actions'}</th>
@@ -438,8 +438,8 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       </td>
 
                       {/* Driver Name & Phone */}
-                      <td className="py-3 px-3 overflow-hidden">
-                        <div className="font-semibold text-[#1C2434] dark:text-white truncate" title={rep.driverName || '—'}>
+                      <td className="py-3 px-3 overflow-hidden min-w-[180px]">
+                        <div className="font-semibold text-[#1C2434] dark:text-white break-words leading-snug" title={rep.driverName || '—'}>
                           {rep.driverName || '—'}
                         </div>
                         {rep.driverPhone && (
