@@ -1145,8 +1145,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <th className="py-2.5 px-3 font-medium truncate">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
                     <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
                     <th className="py-2.5 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'አይነት' : 'Category'}</th>
-                    <th className="py-2.5 px-3 font-medium w-32 whitespace-nowrap text-center">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                    <th className="py-2.5 px-3 text-right font-medium w-40 whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
+                    <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</th>
+                    <th className="py-2.5 px-3 text-right font-medium w-36 whitespace-nowrap">{isAmharic ? 'እርምጃዎች' : 'Actions'}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] text-xs">
@@ -1257,31 +1257,29 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               </span>
                             </td>
 
-                            {/* Column 4: Status Badge */}
-                            <td className="px-3 py-2.5 align-middle w-32 text-center whitespace-nowrap">
-                              {renderStatusBadge(reg.status, true, reg)}
+                            {/* Column 4: Phone Number */}
+                            <td className="px-3 py-2.5 align-middle w-36 whitespace-nowrap">
+                              {reg.phone ? (
+                                <a
+                                  href={`tel:${reg.phone}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="font-mono font-medium text-xs text-primary hover:underline inline-flex items-center gap-1.5"
+                                  title={isAmharic ? 'ወደ ስልክ ቁጥር ደውል' : 'Call Phone'}
+                                >
+                                  <Icon className="material-symbols-outlined text-[13px] shrink-0 text-slate-400">call</Icon>
+                                  <span>{getDisplayPhone(reg)}</span>
+                                </a>
+                              ) : (
+                                <span className="font-mono text-xs text-slate-400 dark:text-slate-500">—</span>
+                              )}
                             </td>
 
                             {/* Column 5: Actions */}
                             <td
-                              className="px-3 py-2.5 align-middle text-right w-40 whitespace-nowrap"
+                              className="px-3 py-2.5 align-middle text-right w-36 whitespace-nowrap"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="inline-flex items-center justify-end gap-1.5">
-                                {canApprove && (reg.status === 'pending_approval' || (reg.status as string) === 'pending') && (
-                                  <button
-                                    type="button"
-                                    id={`table-row-approve-btn-${reg.id}`}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onApproveRegistration(reg.id);
-                                    }}
-                                    className="inline-flex items-center px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs bg-[#10B981] hover:bg-[#059669] text-white cursor-pointer active:scale-95"
-                                    title={isAmharic ? 'አፅድቅ' : 'Approve'}
-                                  >
-                                    <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
-                                  </button>
-                                )}
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -1735,18 +1733,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <Icon className="material-symbols-outlined text-[16px] text-primary shrink-0">person</Icon>
                       <span>{isAmharic ? 'የአባል እና የባለቤት ዝርዝር' : 'Owner & Member Identity'}</span>
                     </h4>
-                    <StatusBadge
-                      label={selectedRegForDetails.status.replace('_', ' ').toUpperCase()}
-                      variant={
-                        selectedRegForDetails.status === 'approved'
-                          ? 'success'
-                          : selectedRegForDetails.status === 'pending_approval' || (selectedRegForDetails.status as string) === 'pending'
-                          ? 'pending'
-                          : selectedRegForDetails.status === 'printed' || selectedRegForDetails.status === 'ordered_print'
-                          ? 'info'
-                          : 'danger'
-                      }
-                    />
+                    {renderStatusBadge(selectedRegForDetails.status, true, selectedRegForDetails)}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-[130px_1fr] gap-3 items-center">

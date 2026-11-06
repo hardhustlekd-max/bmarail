@@ -98,7 +98,7 @@ export function toEthiopianDate(gregorianDateInput?: Date | string | number | nu
         const parsedYear = parseInt(ethMatch[1], 10);
         const parsedMonth = parseInt(ethMatch[2], 10);
         const parsedDay = parseInt(ethMatch[3], 10);
-        const isKnownEthYear = parsedYear >= 1900 && parsedYear <= 2022;
+        const isKnownEthYear = parsedYear >= 1900 && parsedYear <= 2025;
         const isPagume = parsedMonth === 13 && parsedDay >= 1 && parsedDay <= 6;
         if ((isKnownEthYear || isPagume) && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
           const monthObj = ETHIOPIAN_MONTHS[parsedMonth - 1] || ETHIOPIAN_MONTHS[0];
@@ -339,7 +339,7 @@ export function normalizeToEthiopianDateStr(dateInput?: Date | string | number |
         const parsedYear = parseInt(ethMatch[1], 10);
         const parsedMonth = parseInt(ethMatch[2], 10);
         const parsedDay = parseInt(ethMatch[3], 10);
-        const isKnownEthYear = parsedYear >= 1900 && parsedYear <= 2022;
+        const isKnownEthYear = parsedYear >= 1900 && parsedYear <= 2025;
         const isPagume = parsedMonth === 13 && parsedDay >= 1 && parsedDay <= 6;
         if ((isKnownEthYear || isPagume) && parsedMonth >= 1 && parsedMonth <= 13 && parsedDay >= 1 && parsedDay <= 30) {
           const pad = (n: number) => String(n).padStart(2, '0');
@@ -365,7 +365,7 @@ export function normalizeToGregorianDateStr(dateInput?: string | null): string {
       const y = parseInt(ethMatch[1], 10);
       const m = parseInt(ethMatch[2], 10);
       const d = parseInt(ethMatch[3], 10);
-      const isKnownEthYear = y >= 1900 && y <= 2022;
+      const isKnownEthYear = y >= 1900 && y <= 2025;
       const isPagume = m === 13 && d >= 1 && d <= 6;
       if ((isKnownEthYear || isPagume) && m >= 1 && m <= 13 && d >= 1 && d <= 30) {
         const g = ethiopianToGregorian(y, m, d);

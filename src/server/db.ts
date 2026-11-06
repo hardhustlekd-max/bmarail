@@ -2260,7 +2260,10 @@ export async function getMonthlyFeeStatisticsServerSide(options?: {
   });
 
   const receiptsInSelectedMonth = parsedReceipts.filter((item) => {
-    return item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth;
+    const isDirectMonth = Boolean(item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth);
+    const isCoverage = Boolean(item.payIndex && item.expIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex < item.expIndex);
+    const isActiveStatus = item.status === 'active' || item.status === 'expiring_soon';
+    return isDirectMonth || isCoverage || isActiveStatus;
   });
 
   const totalRevenue = receiptsInSelectedMonth.reduce((acc, curr) => acc + curr.amountNum, 0);
@@ -2331,13 +2334,35 @@ export async function getMonthlyFeeStatisticsServerSide(options?: {
       [];
 
     const directMatch = memberReceipts.find(
-      (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
+      (item) =>
+        (item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth) ||
+        (item.payIndex && item.expIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex < item.expIndex) ||
+        item.status === 'active' ||
+        item.status === 'expiring_soon'
     );
 
-    const matchingItem = directMatch;
+    const hasRegPayment = Boolean(
+      reg.receiptNumber ||
+      reg.receipt_number ||
+      reg.lastReceiptNumber ||
+      reg.last_receipt_number ||
+      reg.paymentAmount ||
+      reg.payment_amount ||
+      reg.lastPaymentAmount ||
+      reg.last_payment_amount ||
+      reg.lastPaymentDate ||
+      reg.last_payment_date ||
+      reg.activeTermExpirationDate ||
+      reg.active_term_expiration_date ||
+      reg.termStatus === 'CURRENT' ||
+      reg.term_status === 'CURRENT' ||
+      reg.status === 'approved' ||
+      reg.status === 'printed' ||
+      reg.status === 'ordered_print'
+    );
 
-    if (matchingItem) {
-      if (isCurrentMonth && matchingItem?.status === 'expiring_soon') {
+    if (directMatch || hasRegPayment) {
+      if (isCurrentMonth && (directMatch?.status === 'expiring_soon' || reg.termStatus === 'DUE' || reg.term_status === 'DUE')) {
         dueSoonMembersCount++;
       } else {
         paidMembersCount++;

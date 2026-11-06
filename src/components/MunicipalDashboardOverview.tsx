@@ -204,8 +204,8 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
   // Payment Expiration Metrics strictly calculated according to the current Ethiopian calendar month
   const ethiopianMonthlyMetrics = React.useMemo(() => {
-    // If fast server-side statistics are available, return immediately with zero client lag (SuperAdmin only)
-    if (isSuperAdmin && serverFeeStats) {
+    // If fast server-side statistics are available, return immediately if non-zero
+    if (isSuperAdmin && serverFeeStats && serverFeeStats.paidMembersCount > 0) {
       return {
         targetMonth: serverFeeStats.targetMonth,
         targetYear: serverFeeStats.targetYear,
@@ -380,15 +380,30 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         (regNameClean ? receiptsByName.get(regNameClean) : null) ||
         [];
 
-      // Check direct payment for this specific Ethiopian month strictly (not mixing previous month extended payments)
+      // Check direct payment for this specific Ethiopian month OR active coverage
       const directMatch = memberReceipts.find(
-        (item) => item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth
+        (item) =>
+          (item.payEth && item.payEth.year === targetYear && item.payEth.month === targetMonth) ||
+          (item.payIndex && item.expIndex && targetPeriodIndex >= item.payIndex && targetPeriodIndex < item.expIndex) ||
+          item.status === 'active' ||
+          item.status === 'expiring_soon'
       );
 
-      const matchingItem = directMatch;
+      const hasRegPayment = Boolean(
+        reg.receiptNumber ||
+        reg.lastReceiptNumber ||
+        reg.paymentAmount ||
+        reg.lastPaymentAmount ||
+        reg.lastPaymentDate ||
+        reg.activeTermExpirationDate ||
+        reg.termStatus === 'CURRENT' ||
+        reg.status === 'approved' ||
+        reg.status === 'printed' ||
+        reg.status === 'ordered_print'
+      );
 
-      if (matchingItem) {
-        if (isCurrentMonth && matchingItem?.status === 'expiring_soon') {
+      if (directMatch || hasRegPayment) {
+        if (isCurrentMonth && (directMatch?.status === 'expiring_soon' || reg.termStatus === 'DUE')) {
           dueSoonMembersCount++;
         } else {
           paidMembersCount++;

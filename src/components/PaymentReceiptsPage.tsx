@@ -1196,14 +1196,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   // Matrix member counts according to current month status
   const matrixCounts = useMemo(() => {
-    if (isSuperAdmin && serverFeeStats) {
-      return {
-        all: serverFeeStats.activeBillableCount,
-        active: serverFeeStats.paidMembersCount,
-        expiring: serverFeeStats.dueSoonMembersCount,
-        expired: serverFeeStats.unpaidMembersCount,
-      };
-    }
     let active = 0;
     let expiring = 0;
     let expired = 0;
@@ -1212,6 +1204,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       else if (r.currentMonthStatus === 'pending') expiring++;
       else if (r.currentMonthStatus === 'unpaid') expired++;
     });
+
+    if (isSuperAdmin && serverFeeStats && serverFeeStats.paidMembersCount > 0) {
+      return {
+        all: Math.max(allMatrixRows.length, serverFeeStats.activeBillableCount),
+        active: Math.max(active, serverFeeStats.paidMembersCount),
+        expiring: Math.max(expiring, serverFeeStats.dueSoonMembersCount),
+        expired: Math.max(expired, serverFeeStats.unpaidMembersCount),
+      };
+    }
+
     return {
       all: allMatrixRows.length,
       active,
@@ -1222,23 +1224,6 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
   // Ethiopian Monthly Fee Statistics metrics
   const ethiopianMonthlyMetrics = useMemo(() => {
-    // If fast server-side statistics are available, return immediately with zero client delay
-    if (isSuperAdmin && serverFeeStats) {
-      return {
-        targetMonth: serverFeeStats.targetMonth,
-        targetYear: serverFeeStats.targetYear,
-        monthName: isAmharic ? serverFeeStats.monthNameAm : serverFeeStats.monthNameEn,
-        isCurrentMonth: serverFeeStats.isCurrentMonth,
-        totalRevenue: serverFeeStats.totalRevenue,
-        totalReceiptsCount: serverFeeStats.totalReceiptsCount,
-        paidMembersCount: serverFeeStats.paidMembersCount,
-        dueSoonMembersCount: serverFeeStats.dueSoonMembersCount,
-        unpaidMembersCount: serverFeeStats.unpaidMembersCount,
-        activeBillableCount: serverFeeStats.activeBillableCount,
-        complianceRate: serverFeeStats.complianceRate,
-      };
-    }
-
     const monthObj = ETHIOPIAN_MONTHS[currentEthMonth - 1] || ETHIOPIAN_MONTHS[0];
     const monthName = isAmharic ? monthObj.am : monthObj.en;
 
@@ -1249,20 +1234,23 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
     const complianceRate =
       billableCount > 0 ? Math.round(((paidMembersCount + dueSoonMembersCount) / billableCount) * 100) : 0;
 
+    const totalRevenue = Math.max(metrics.totalRevenue, serverFeeStats?.totalRevenue || 0);
+    const totalReceiptsCount = Math.max(metrics.totalReceipts, serverFeeStats?.totalReceiptsCount || 0);
+
     return {
       targetMonth: currentEthMonth,
       targetYear: currentEthYear,
       monthName,
       isCurrentMonth: true,
-      totalRevenue: metrics.totalRevenue,
-      totalReceiptsCount: metrics.totalReceipts,
+      totalRevenue,
+      totalReceiptsCount,
       paidMembersCount,
       dueSoonMembersCount,
       unpaidMembersCount,
       activeBillableCount: billableCount,
       complianceRate,
     };
-  }, [currentEthMonth, currentEthYear, isAmharic, matrixCounts, metrics]);
+  }, [currentEthMonth, currentEthYear, isAmharic, matrixCounts, metrics, serverFeeStats]);
 
   // Reusable Tailwind-styled Date Range Picker matching table toolbar UI and controls
   const renderDateRangePicker = () => {
