@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
+import { SectionCard, FieldLabel, ActionTriggerPrimary, ActionTriggerSecondary, SelectField } from './ui/StreamlinedUI';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Language,
@@ -64,7 +65,8 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
   const canEdit = isAdmin;
 
   // Form State
-  const [activeTab, setActiveTab] = useState<'owner' | 'vehicle' | 'documents' | 'status'>('owner');
+  // Form State
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [subCity, setSubCity] = useState('Fasilo');
@@ -133,7 +135,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
       setRejectionReason(registration.rejectionReason || '');
       setHideFromOtherUsers(!!registration.hideFromOtherUsers);
 
-      setActiveTab('owner');
+      setCurrentStep(1);
       setFormError(null);
     }
   }, [registration]);
@@ -155,19 +157,19 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
     if (!fullName.trim()) {
       setFormError(isAmharic ? 'እባክዎን የባለቤቱን ሙሉ ስም ያስገቡ' : 'Please provide the owner full name');
-      setActiveTab('owner');
+      setCurrentStep(1);
       return;
     }
 
     if (!phone.trim()) {
       setFormError(isAmharic ? 'እባክዎን የስልክ ቁጥር ያስገቡ' : 'Please provide a valid phone number');
-      setActiveTab('owner');
+      setCurrentStep(1);
       return;
     }
 
     if (!plateNumber.trim() && !chassisNumber.trim() && !engineOrSerialNo.trim()) {
       setFormError(isAmharic ? 'እባክዎን የሰሌዳ ቁጥር ወይም የቻሲስ ቁጥር ያስገቡ' : 'Please provide a plate number or Chasis number');
-      setActiveTab('vehicle');
+      setCurrentStep(2);
       return;
     }
 
@@ -247,40 +249,23 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         exit={{ opacity: 0, scale: 0.96 }}
         className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden"
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">edit_document</Icon>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-outline-variant/60 bg-surface-container/30">
+          <div className="flex items-center gap-3 min-w-0">
+            <Icon name="edit_document" size={24} className="text-primary shrink-0" />
             <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-black text-sm sm:text-base text-slate-900 dark:text-white truncate">
-                  {isAmharic ? 'የአባል መረጃ ማሻሻያ' : 'Edit Member Registration'}
-                </h3>
-                {isSuperAdmin ? (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 inline-flex items-center gap-1">
-                    <Icon className="material-symbols-outlined text-[13px]">shield</Icon>
-                    <span>{isAmharic ? 'ሱፐር አድሚን' : 'Super Admin'}</span>
-                  </span>
-                ) : (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    {userRole}
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
-                ID: {registration.id} • {registration.fullName} • {registration.plateNumber || registration.chassisNumber || registration.engineOrSerialNo}
+              <h3 className="font-black text-lg text-on-surface tracking-tight">
+                {isAmharic ? 'የአባል መረጃ ማሻሻያ' : 'Edit Member Registration'}
+              </h3>
+              <p className="text-xs text-secondary font-mono mt-0.5">
+                ID: {registration.id} • {registration.fullName}
               </p>
             </div>
           </div>
-
           <button
-            id="close-edit-modal-btn"
-            type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
-            title={isAmharic ? 'ዝጋ' : 'Close'}
+            className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-surface-container-high text-secondary hover:text-on-surface transition-colors cursor-pointer"
           >
-            <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+            <Icon name="close" size={22} />
           </button>
         </div>
 
@@ -309,88 +294,25 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
           </div>
         )}
 
-        {/* Tabs Navigation */}
-        <div className="relative z-10 px-4 sm:px-6 pt-2.5 border-b border-slate-200 dark:border-slate-800 flex items-end gap-1.5 flex-nowrap overflow-x-auto scrollbar-none bg-slate-50/40 dark:bg-slate-900/40">
-          <button
-            type="button"
-            onClick={() => setActiveTab('owner')}
-            className={`px-3.5 py-2 text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
-              activeTab === 'owner'
-                ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-primary dark:text-primary rounded-t-md font-bold'
-                : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
-            }`}
-          >
-            <span>{isAmharic ? 'የባለቤት መረጃ' : 'Owner Info'}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('vehicle')}
-            className={`px-3.5 py-2 text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
-              activeTab === 'vehicle'
-                ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-primary dark:text-primary rounded-t-md font-bold'
-                : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
-            }`}
-          >
-            <span>{isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Details'}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('documents')}
-            className={`px-3.5 py-2 text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
-              activeTab === 'documents'
-                ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-primary dark:text-primary rounded-t-md font-bold'
-                : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
-            }`}
-          >
-            <span>{isAmharic ? 'ሰነዶችና ፎቶዎች' : 'Documents & Photos'}</span>
-          </button>
-
-          {(isSuperAdmin || userRole === 'admin') && (
-            <button
-              type="button"
-              onClick={() => setActiveTab('status')}
-              className={`px-3.5 py-2 text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
-                activeTab === 'status'
-                  ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-primary dark:text-primary rounded-t-md font-bold'
-                  : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold'
-              }`}
-            >
-              <span>{isAmharic ? 'የፈቃድ ሁኔታ & ቁጥጥር' : 'Status & Admin'}</span>
-            </button>
-          )}
+        {/* Wizard Stepper */}
+        <div className="px-6 py-4 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+          {[1, 2, 3, 4].map((step) => (
+            <div key={step} className="flex flex-col items-center gap-1">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${currentStep >= step ? 'bg-primary text-white' : 'bg-slate-200 text-slate-500'}`}>
+                {step}
+              </div>
+              <span className={`text-[10px] font-bold ${currentStep >= step ? 'text-primary' : 'text-slate-500'}`}>Step {step}</span>
+            </div>
+          ))}
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs">
-          {/* TAB 1: OWNER INFO */}
-          {activeTab === 'owner' && (
-            <div className="space-y-4">
-              {/* Permanent Member ID Display (Preserved and never regenerated on edits) */}
-              <div className="p-3 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px] text-primary">badge</Icon>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400  tracking-wider block">
-                      {isAmharic ? 'የአባል ቋሚ መለያ ቁጥር (Member ID)' : 'Permanent Member ID'}
-                    </span>
-                    <span className="font-mono font-black text-sm text-slate-900 dark:text-white">
-                      {registration.id}
-                    </span>
-                  </div>
-                </div>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
-                  <Icon className="material-symbols-outlined text-[13px]">lock</Icon>
-                  <span>{isAmharic ? 'የማይለወጥ / ቋሚ' : 'Preserved'}</span>
-                </span>
-              </div>
-
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+          {currentStep === 1 && (
+            <SectionCard className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የባለቤት ሙሉ ስም (የአያት ጨምሮ) *' : 'Owner Full Name (Three names) *'}
-                  </label>
+                <div>
+                  <FieldLabel required>{isAmharic ? 'የባለቤት ሙሉ ስም' : 'Owner Full Name'}</FieldLabel>
                   <input
                     type="text"
                     required
@@ -398,14 +320,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     placeholder={isAmharic ? 'ምሳሌ፡ አበበ በቀለ ከበደ' : 'e.g. Abebe Bekele Kebede'}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 border border-outline-variant rounded-lg bg-surface-container/70 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'ስልክ ቁጥር *' : 'Phone Number *'}
-                  </label>
+                <div>
+                  <FieldLabel required>{isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}</FieldLabel>
                   <input
                     type="tel"
                     required
@@ -413,353 +333,120 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     placeholder="0911234567"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 border border-outline-variant rounded-lg bg-surface-container/70 text-on-surface font-mono font-bold focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'ክፍለ ከተማ (Sub-City)' : 'Sub-City'}
-                  </label>
-                  <select
-                    disabled={!canEdit}
-                    value={subCity}
-                    onChange={(e) => setSubCity(e.target.value)}
-                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
-                  >
+                <div>
+                  <FieldLabel>{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</FieldLabel>
+                  <SelectField value={subCity} onChange={(e) => setSubCity(e.target.value)} className="w-full">
                     {BAHIR_DAR_SUBCITIES.map((sc) => (
                       <option key={sc.en} value={sc.en}>
-                        {isAmharic ? sc.am : sc.en} ({sc.en})
+                        {isAmharic ? sc.am : sc.en}
                       </option>
                     ))}
-                  </select>
+                  </SelectField>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የደም አይነት (Blood Group)' : 'Blood Group'}
-                  </label>
-                  <select
-                    disabled={!canEdit}
-                    value={bloodGroup}
-                    onChange={(e) => setBloodGroup(e.target.value)}
-                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
-                  >
+                <div>
+                  <FieldLabel>{isAmharic ? 'የደም አይነት' : 'Blood Group'}</FieldLabel>
+                  <SelectField value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)} className="w-full">
                     {BLOOD_GROUPS.map((bg) => (
                       <option key={bg} value={bg}>
                         {bg}
                       </option>
                     ))}
-                  </select>
+                  </SelectField>
                 </div>
               </div>
-
-              {/* Registration Meta Info */}
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-200 dark:border-slate-700 grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px]">
-                <div>
-                  <span className="text-slate-400 block font-medium">{isAmharic ? 'የተመዘገበበት ቀን:' : 'Registration Date:'}</span>
-                  <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
-                    {registration.registrationDate ? formatEthiopianDate(registration.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block font-medium">{isAmharic ? 'የመዘገበው ተጠቃሚ:' : 'Registered By:'}</span>
-                  <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{registration.registeredBy || '—'}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block font-medium">{isAmharic ? 'የማህደር ቁጥር:' : 'Record ID:'}</span>
-                  <span className="font-mono font-bold text-slate-700 dark:text-slate-300">{registration.id}</span>
-                </div>
-              </div>
-            </div>
+            </SectionCard>
           )}
-
-          {/* TAB 2: VEHICLE DETAILS */}
-          {activeTab === 'vehicle' && (
-            <div className="space-y-4">
+          {currentStep === 2 && (
+            <SectionCard className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የተሽከርካሪ አይነት (Category)' : 'Vehicle Category'}
-                  </label>
-                  <select
-                    disabled={!canEdit}
-                    value={vehicleCategory}
-                    onChange={(e) => setVehicleCategory(e.target.value as VehicleCategory)}
-                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-bold focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
-                  >
-                    <option value="gas_under_110cc">
-                      {isAmharic ? 'ቤንዚን ሞተር (ከ110cc በታች)' : 'Gasoline Engine (<= 110cc)'}
-                    </option>
-                    <option value="electric">
-                      {isAmharic ? 'ኤሌክትሪክ ሞተር ብስክሌት (EV)' : 'Electric Motorcycle (EV)'}
-                    </option>
-                  </select>
+                <div>
+                  <FieldLabel>{isAmharic ? 'የተሽከርካሪ አይነት' : 'Vehicle Category'}</FieldLabel>
+                  <SelectField value={vehicleCategory} onChange={(e) => setVehicleCategory(e.target.value as any)} className="w-full">
+                    <option value="gas_under_110cc">{isAmharic ? 'ቤንዚን' : 'Gasoline'}</option>
+                    <option value="electric">{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</option>
+                  </SelectField>
                 </div>
-
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የሰሌዳ ቁጥር (Plate Number) *' : 'Plate Number *'}
-                  </label>
+                <div>
+                  <FieldLabel required>{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</FieldLabel>
                   <input
                     type="text"
                     required
                     disabled={!canEdit}
-                    placeholder="e.g. 3-A12345 ወይም 2-54321"
                     value={plateNumber}
                     onChange={(e) => setPlateNumber(e.target.value)}
-                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-yellow-400 font-mono font-black text-xs sm:text-sm  focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 border border-outline-variant rounded-lg bg-surface-container/70 text-on-surface font-mono font-bold focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የሞተር ብስክሌት ብራንድ (Brand)' : 'Motorcycle Brand'}
-                  </label>
-                  <select
-                    disabled={!canEdit}
-                    value={motorBrand}
-                    onChange={(e) => setMotorBrand(e.target.value)}
-                    className="w-full px-2.5 py-1.5 sm:py-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs sm:text-sm font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
-                  >
+                <div>
+                  <FieldLabel>{isAmharic ? 'የሞተር ብስክሌት ብራንድ' : 'Motorcycle Brand'}</FieldLabel>
+                  <SelectField value={motorBrand} onChange={(e) => setMotorBrand(e.target.value)} className="w-full">
                     {ETHIOPIAN_MOTOR_BRANDS.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
+                      <option key={b} value={b}>{b}</option>
                     ))}
-                  </select>
-                  {motorBrand === 'Other' && (
-                    <input
-                      type="text"
-                      disabled={!canEdit}
-                      placeholder={isAmharic ? 'የብራንድ ስም ያስገቡ...' : 'Enter brand name...'}
-                      value={customBrand}
-                      onChange={(e) => setCustomBrand(e.target.value)}
-                      className="mt-2 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium"
-                    />
-                  )}
+                  </SelectField>
                 </div>
-
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የሞተር ሞዴል (Model)' : 'Motorcycle Model'}
-                  </label>
+                <div>
+                  <FieldLabel>{isAmharic ? 'የሞተር ሞዴል' : 'Motorcycle Model'}</FieldLabel>
                   <input
                     type="text"
                     disabled={!canEdit}
-                    placeholder="e.g. HJ110-2, Boxer 100, HL110"
                     value={motorModel}
                     onChange={(e) => setMotorModel(e.target.value)}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-medium focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
+                    className="w-full px-3 py-2.5 border border-outline-variant rounded-lg bg-surface-container/70 text-on-surface font-medium focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
                   />
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የቻሲስ ቁጥር (Chasis) *' : 'Chasis Number *'}
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!canEdit}
-                    placeholder="e.g. LBB1001293847"
-                    value={chassisNumber}
-                    onChange={(e) => {
-                      setChassisNumber(e.target.value.toUpperCase());
-                      if (!engineOrSerialNo || engineOrSerialNo === 'N/A') {
-                        setEngineOrSerialNo(e.target.value.toUpperCase());
-                      }
-                    }}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold  focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
-                    {isAmharic ? 'የሞተር ቁጥር (Engine No - አማራጭ)' : 'Engine Number (Optional)'}
-                  </label>
-                  <input
-                    type="text"
-                    disabled={!canEdit}
-                    placeholder="e.g. 152FMH-1234567"
-                    value={engineOrSerialNo === 'N/A' ? '' : engineOrSerialNo}
-                    onChange={(e) => setEngineOrSerialNo(e.target.value.toUpperCase())}
-                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono font-bold  focus:ring-2 focus:ring-yellow-500/40 disabled:opacity-60"
-                  />
-                </div>
-              </div>
-            </div>
+            </SectionCard>
           )}
-
-          {/* TAB 3: DOCUMENTS & PHOTOS */}
-          {activeTab === 'documents' && (
-            <div className="space-y-4">
+          {currentStep === 3 && (
+            <SectionCard className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <DocumentUploadInput
-                  id="edit-portrait-input"
-                  label={isAmharic ? 'የባለቤት ፎቶ (User Portrait)' : 'Owner Portrait Photo'}
-                  photoUrl={userPortraitPhoto}
-                  onPhotoChange={setUserPortraitPhoto}
-                  isAmharic={isAmharic}
-                />
-
-                <DocumentUploadInput
-                  id="edit-national-id-input"
-                  label={isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID (Front)'}
-                  photoUrl={nationalIdPhoto}
-                  onPhotoChange={setNationalIdPhoto}
-                  isAmharic={isAmharic}
-                />
-
-                <DocumentUploadInput
-                  id="edit-national-id-back-input"
-                  label={isAmharic ? 'ብሔራዊ መታወቂያ (ጀርባ)' : 'National ID (Back)'}
-                  photoUrl={nationalIdBackPhoto}
-                  onPhotoChange={setNationalIdBackPhoto}
-                  isAmharic={isAmharic}
-                />
-
-                <DocumentUploadInput
-                  id="edit-driving-license-input"
-                  label={isAmharic ? 'የመንጃ ፈቃድ' : 'Driving License'}
-                  photoUrl={drivingLicensePhoto}
-                  onPhotoChange={setDrivingLicensePhoto}
-                  isAmharic={isAmharic}
-                />
-
-                <DocumentUploadInput
-                  id="edit-driving-permit-input"
-                  label={isAmharic ? 'የመንቀሳቀሻ ፈቃድ (ሊብሬ)' : 'Driving Permit / Libre'}
-                  photoUrl={drivingPermitPhoto}
-                  onPhotoChange={setDrivingPermitPhoto}
-                  isAmharic={isAmharic}
-                />
-
-                <DocumentUploadInput
-                  id="edit-receipt-input"
-                  label={isAmharic ? 'የባንክ ደረሰኝ' : 'Bank Receipt Slip'}
-                  photoUrl={receiptScreenshot}
-                  onPhotoChange={setReceiptScreenshot}
-                  isAmharic={isAmharic}
-                />
+                <DocumentUploadInput id="edit-portrait-input" label={isAmharic ? 'የባለቤት ፎቶ' : 'Owner Photo'} photoUrl={userPortraitPhoto} onPhotoChange={setUserPortraitPhoto} isAmharic={isAmharic} />
+                <DocumentUploadInput id="edit-national-id-input" label={isAmharic ? 'ብሔራዊ መታወቂያ (ፊት)' : 'National ID (Front)'} photoUrl={nationalIdPhoto} onPhotoChange={setNationalIdPhoto} isAmharic={isAmharic} />
               </div>
-            </div>
+            </SectionCard>
           )}
-
-          {/* TAB 4: STATUS & ADMIN */}
-          {(isSuperAdmin || userRole === 'admin') && activeTab === 'status' && (
-            <div className="space-y-4">
-              <div className="p-3.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-3">
-                <h4 className="font-extrabold text-xs text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                  <Icon className="material-symbols-outlined text-[18px] text-yellow-600 dark:text-yellow-400">tune</Icon>
-                  <span>{isAmharic ? 'የማመልከቻ ፈቃድ ሁኔታ (Permit Status)' : 'Permit Approval Status'}</span>
-                </h4>
-
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                  {[
-                    { id: 'approved', am: 'የተፈቀደ', en: 'Approved', color: 'border-emerald-500 text-emerald-700 dark:text-emerald-300' },
-                    { id: 'pending_approval', am: 'የሚጠበቅ', en: 'Pending', color: 'border-slate-400 text-slate-700 dark:text-slate-300' },
-                    { id: 'ordered_print', am: 'በሕትመት', en: 'In Print', color: 'border-indigo-500 text-indigo-700 dark:text-indigo-300' },
-                    { id: 'printed', am: 'የታተመ', en: 'Printed', color: 'border-blue-500 text-slate-800 dark:text-blue-300' },
-                    { id: 'rejected', am: 'ውድቅ', en: 'Rejected', color: 'border-rose-500 text-rose-700 dark:text-rose-300' },
-                  ].map((st) => (
-                    <button
-                      key={st.id}
-                      type="button"
-                      disabled={!canEdit}
-                      onClick={() => setStatus(st.id as any)}
-                      className={`p-2.5 rounded-lg border text-center font-bold text-xs transition-all cursor-pointer ${
-                        status === st.id
-                          ? `bg-slate-900 text-white dark:bg-yellow-500 dark:text-[#1e293b] ring-2 ring-yellow-500 font-black shadow-xs`
-                          : `bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400`
-                      }`}
-                    >
-                      {isAmharic ? st.am : st.en}
-                    </button>
-                  ))}
-                </div>
-
-                {status === 'rejected' && (
-                  <div className="space-y-1 pt-2">
-                    <label className="font-bold text-rose-700 dark:text-rose-300 block">
-                      {isAmharic ? 'የተሰረዘበት / ውድቅ የተደረገበት ምክንያት *' : 'Rejection Reason *'}
-                    </label>
-                    <textarea
-                      rows={2}
-                      disabled={!canEdit}
-                      placeholder={isAmharic ? 'ምክንያቱን ይግለጹ...' : 'Specify why this permit was rejected...'}
-                      value={rejectionReason}
-                      onChange={(e) => setRejectionReason(e.target.value)}
-                      className="w-full px-3 py-2 border border-rose-300 dark:border-rose-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
-                    />
-                  </div>
-                )}
+          {currentStep === 4 && (
+            <SectionCard className="space-y-4">
+              <FieldLabel>{isAmharic ? 'የማመልከቻ ፈቃድ ሁኔታ' : 'Permit Approval Status'}</FieldLabel>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {[
+                  { id: 'approved', am: 'የተፈቀደ', en: 'Approved' },
+                  { id: 'pending_approval', am: 'የሚጠበቅ', en: 'Pending' },
+                  { id: 'rejected', am: 'ውድቅ', en: 'Rejected' },
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    type="button"
+                    onClick={() => setStatus(st.id as any)}
+                    className={`p-2.5 rounded-lg border text-center font-bold text-xs ${status === st.id ? 'bg-primary text-white' : 'bg-surface-container border-outline-variant text-on-surface'}`}
+                  >
+                    {isAmharic ? st.am : st.en}
+                  </button>
+                ))}
               </div>
-
-              {/* Super Admin Company Vehicle Toggle */}
-              {isSuperAdmin && (
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
-                  <div>
-                    <span className="font-bold text-slate-900 dark:text-white block flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[17px] text-primary">business</span>
-                      {isAmharic ? 'እንደ የማህበር ተሽከርካሪ መዝግብ' : 'Save as Association Motor'}
-                    </span>
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
-                      {isAmharic
-                        ? 'ይህ ሲበራ እንደ የማህበር ተሽከርካሪ ይመዝገባል (ከሱፐር አድሚን ውጭ በሰንጠረዥና በሜትሪክስ ተደብቆ በፍተሻ ውጤት ላይ ብቻ ይታያል)።'
-                        : 'When enabled, saved as an Association motor (hidden from lists & metrics for other users, visible for scanner result).'}
-                    </span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={hideFromOtherUsers}
-                    onChange={(e) => setHideFromOtherUsers(e.target.checked)}
-                    className="w-5 h-5 accent-primary rounded cursor-pointer"
-                  />
-                </div>
-              )}
-            </div>
+            </SectionCard>
           )}
+        </div>
 
-          {/* Modal Footer Controls */}
-          <div className="flex items-center justify-between gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
-            <button
-              id="cancel-edit-btn"
-              type="button"
-              disabled={isSubmitting}
-              onClick={onClose}
-              className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-lg font-bold cursor-pointer transition-colors"
-            >
-              {isAmharic ? 'ይቅር / ተመለስ' : 'Cancel'}
-            </button>
-
-            <div className="flex items-center gap-2">
-              <button
-                id="save-edit-registration-btn"
-                type="submit"
-                disabled={isSubmitting || !canEdit}
-                className="px-5 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs rounded-lg font-bold cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
-                    <span>{isAmharic ? 'በማስቀመጥ ላይ...' : 'Saving Changes...'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Icon className="material-symbols-outlined text-[18px]">save</Icon>
-                    <span>{isAmharic ? 'ማሻሻያዎችን አስቀምጥ' : 'Save Changes'}</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </form>
+        {/* Modal Footer Controls */}
+        <div className="flex items-center justify-between p-4 border-t border-outline-variant">
+          <ActionTriggerSecondary icon="arrow_back" label={isAmharic ? 'ተመለስ' : 'Back'} onClick={() => setCurrentStep((prev) => (prev > 1 ? (prev - 1) as any : 1))} className="text-xs" />
+          {currentStep < 4 ? (
+            <ActionTriggerPrimary icon="arrow_forward" label={isAmharic ? 'ቀጣይ' : 'Next'} onClick={() => setCurrentStep((prev) => (prev < 4 ? (prev + 1) as any : 4))} className="text-xs" />
+          ) : (
+            <ActionTriggerPrimary icon="save" label={isAmharic ? 'ማሻሻያዎችን አስቀምጥ' : 'Save Changes'} onClick={handleSave} className="text-xs" />
+          )}
+        </div>
       </motion.div>
     </div>
   );
