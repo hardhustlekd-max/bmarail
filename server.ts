@@ -1845,6 +1845,16 @@ app.post('/api/audit-logs', async (req, res) => {
   }
 });
 
+app.post('/api/audit-logs/clear', async (req, res) => {
+  try {
+    await dbClearTable('system_audit_logs');
+    broadcastSseChange({ collection: 'system_audit_logs', action: 'clear' });
+    res.json({ success: true, message: 'System audit logs cleared successfully.' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ============================================================================
 // 10. NOTIFICATION STATES & SYSTEM SETTINGS
 // ============================================================================

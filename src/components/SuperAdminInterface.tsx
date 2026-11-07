@@ -10,6 +10,8 @@ import {
   OfficerAssignment,
   SystemSettings,
   BAHIR_DAR_SUBCITIES,
+  PaymentReceipt,
+  UnregisteredVehicleReport,
 } from '../types';
 import {
   subscribeSystemUsers,
@@ -32,6 +34,8 @@ import {
   clearAllAuditLogs,
   clearAllVerificationLogs,
   importFullDatabaseBackup,
+  subscribePaymentReceipts,
+  subscribeUnregisteredReports,
 } from '../services/dbService';
 import { RolePermissionManagement } from './RolePermissionManagement';
 import { SmartImage } from './SmartImage';
@@ -68,6 +72,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [auditLogs, setAuditLogs] = useState<SystemAuditLog[]>([]);
   const [registrations, setRegistrations] = useState<MotorcycleRegistration[]>([]);
   const [officers, setOfficers] = useState<OfficerAssignment[]>([]);
+  const [paymentReceipts, setPaymentReceipts] = useState<PaymentReceipt[]>([]);
+  const [unregisteredReports, setUnregisteredReports] = useState<UnregisteredVehicleReport[]>([]);
 
   // User Filter & Search
   const [userSearch, setUserSearch] = useState('');
@@ -162,6 +168,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     const unsubAudit = subscribeAuditLogs((data) => setAuditLogs(data || []));
     const unsubRegs = subscribeRegistrations((data) => setRegistrations(data || []));
     const unsubOffs = subscribeOfficers((data) => setOfficers(data || []));
+    const unsubReceipts = subscribePaymentReceipts((data) => setPaymentReceipts(data || []));
+    const unsubReports = subscribeUnregisteredReports((data) => setUnregisteredReports(data || []));
     const unsubSettings = subscribeSettings((data) => {
       if (data) {
         setSettings(data);
@@ -176,6 +184,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       unsubAudit();
       unsubRegs();
       unsubOffs();
+      unsubReceipts();
+      unsubReports();
       unsubSettings();
     };
   }, []);
@@ -552,6 +562,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       registrations,
       officers,
       auditLogs,
+      paymentReceipts,
+      unregisteredReports,
       settings,
     };
     const jsonStr = JSON.stringify(backupData, null, 2);

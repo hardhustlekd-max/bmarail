@@ -2568,7 +2568,7 @@ export async function clearAllAuditLogs(): Promise<void> {
   saveStateToLocalStorage();
   notifyAuditLogs();
   try {
-    await safeJsonFetch('/api/reset-data', { method: 'POST' });
+    await safeJsonFetch('/api/audit-logs/clear', { method: 'POST' });
   } catch (err) {
     console.warn('Clear audit logs notice:', err);
   }
