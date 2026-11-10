@@ -168,18 +168,21 @@ export const ActionTriggerPrimary = ({
   onClick,
   className = '',
   id,
+  disabled = false,
 }: {
   icon: string;
   label: string;
   onClick: () => void;
   className?: string;
+  disabled?: boolean;
   id?: string;
 }) => (
   <button
     id={id}
     type="button"
+    disabled={disabled}
     onClick={onClick}
-    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer select-none ${className}`}
+    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
     <Icon name={icon} size={20} />
     <span className="whitespace-nowrap">{label}</span>
@@ -191,19 +194,22 @@ export const ActionTriggerSecondary = ({
   label,
   onClick,
   className = '',
+  disabled = false,
   id,
 }: {
   icon: string;
   label: string;
   onClick: () => void;
   className?: string;
+  disabled?: boolean;
   id?: string;
 }) => (
   <button
     id={id}
     type="button"
+    disabled={disabled}
     onClick={onClick}
-    className={`min-h-[48px] px-5 py-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 border border-outline-variant shadow-2xs hover:shadow-xs active:scale-98 transition-all duration-200 cursor-pointer select-none ${className}`}
+    className={`min-h-[48px] px-5 py-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 border border-outline-variant shadow-2xs hover:shadow-xs active:scale-98 transition-all duration-200 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
     <Icon name={icon} size={20} />
     <span className="whitespace-nowrap">{label}</span>
@@ -215,21 +221,24 @@ export const SelectField = ({
   onChange,
   children,
   className = '',
+  disabled = false,
   id,
 }: {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   children: React.ReactNode;
   className?: string;
+  disabled?: boolean;
   id?: string;
 }) => (
   <div className={`relative inline-flex items-center shrink-0 ${className}`}>
     <select
       id={id}
       value={value}
+      disabled={disabled}
       onChange={onChange}
       style={{ WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none' }}
-      className="w-full min-h-[32px] sm:min-h-[34px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-md pl-2.5 pr-7 py-1 font-bold text-xs shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary/20 hover:shadow-xs transition-all cursor-pointer"
+      className="w-full min-h-[32px] sm:min-h-[34px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-md pl-2.5 pr-7 py-1 font-bold text-xs shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary/20 hover:shadow-xs transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {children}
     </select>

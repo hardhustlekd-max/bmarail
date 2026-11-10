@@ -2641,8 +2641,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         userRole={userRole}
         userBadgeId={userBadgeId}
         onClose={() => setEditingRegistration(null)}
-        onSaveSuccess={() => {
+        onSaveSuccess={(updated) => {
           setEditingRegistration(null);
+          if (selectedRegForDetails && selectedRegForDetails.id === updated.id) {
+            setSelectedRegForDetails(updated);
+          }
         }}
       />
 

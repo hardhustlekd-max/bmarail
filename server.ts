@@ -1374,8 +1374,9 @@ app.post('/api/registrations/update', async (req, res) => {
         },
       });
     }
-    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: targetId, data: cleanUpdates });
-    res.json({ success: true });
+    const fullUpdated = { ...existing, ...cleanUpdates, id: targetId };
+    broadcastSseChange({ collection: 'motorcycle_registrations', action: 'upsert', docId: targetId, data: fullUpdated });
+    res.json({ success: true, registration: fullUpdated });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }

@@ -663,29 +663,29 @@ export function mergeRegistrationsPreservingPhotos(
       ...local,
       ...remote,
       userPortraitPhoto:
-        (remote.userPortraitPhoto && remote.userPortraitPhoto.length > 50
+        (remote.userPortraitPhoto && remote.userPortraitPhoto.trim() !== ''
           ? remote.userPortraitPhoto
           : local.userPortraitPhoto) || '',
       userPortraitThumbnail:
         remote.userPortraitThumbnail || local.userPortraitThumbnail || undefined,
       nationalIdPhoto:
-        (remote.nationalIdPhoto && remote.nationalIdPhoto.length > 50
+        (remote.nationalIdPhoto && remote.nationalIdPhoto.trim() !== ''
           ? remote.nationalIdPhoto
           : local.nationalIdPhoto) || '',
       nationalIdBackPhoto:
-        (remote.nationalIdBackPhoto && remote.nationalIdBackPhoto.length > 50
+        (remote.nationalIdBackPhoto && remote.nationalIdBackPhoto.trim() !== ''
           ? remote.nationalIdBackPhoto
           : local.nationalIdBackPhoto) || '',
       drivingLicensePhoto:
-        (remote.drivingLicensePhoto && remote.drivingLicensePhoto.length > 50
+        (remote.drivingLicensePhoto && remote.drivingLicensePhoto.trim() !== ''
           ? remote.drivingLicensePhoto
           : local.drivingLicensePhoto) || '',
       drivingPermitPhoto:
-        (remote.drivingPermitPhoto && remote.drivingPermitPhoto.length > 50
+        (remote.drivingPermitPhoto && remote.drivingPermitPhoto.trim() !== ''
           ? remote.drivingPermitPhoto
           : local.drivingPermitPhoto) || '',
       receiptScreenshot:
-        (remote.receiptScreenshot && remote.receiptScreenshot.length > 50
+        (remote.receiptScreenshot && remote.receiptScreenshot.trim() !== ''
           ? remote.receiptScreenshot
           : local.receiptScreenshot) || '',
     };
@@ -1140,7 +1140,7 @@ export async function updateRegistrationStatusInDb(
 export async function updateRegistrationInDb(
   id: string,
   updates: Partial<MotorcycleRegistration>
-): Promise<void> {
+): Promise<MotorcycleRegistration> {
   return trackGlobalAction(
     async () => {
       const index = inMemory.registrations.findIndex((r) => r.id === id);
@@ -1172,14 +1172,24 @@ export async function updateRegistrationInDb(
       setGlobalDbError(null);
 
       try {
-        await safeJsonFetch('/api/registrations/update', {
+        const res = await safeJsonFetch<{ success: boolean; registration?: MotorcycleRegistration }>('/api/registrations/update', {
           method: 'POST',
           body: JSON.stringify({ id, updates }),
         });
+        if (res && res.registration) {
+          const idx = inMemory.registrations.findIndex((r) => r.id === id);
+          if (idx >= 0) {
+            inMemory.registrations[idx] = { ...inMemory.registrations[idx], ...res.registration };
+            updatedRecord = inMemory.registrations[idx];
+          }
+          notifyRegistrations();
+          saveStateToLocalStorage();
+        }
         fetchPreAggregatedKPIs();
       } catch (err) {
         console.warn('PostgreSQL update registration notice:', err);
       }
+      return updatedRecord;
     },
     'መረጃው እየተዘመነ ነው...',
     'Updating registration record...'
