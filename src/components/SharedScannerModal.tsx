@@ -883,9 +883,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       />
 
       {!scannedRegResult ? (
-        <div className="flex-1 flex flex-col min-h-0 justify-between gap-0 overflow-hidden h-full max-h-full w-full relative">
-          {/* Camera View Box - Full viewpoint height & width */}
-          <div className="relative bg-slate-950 rounded-none w-full flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center border-0">
+        <div className="flex-grow flex-1 flex flex-col min-h-0 justify-between gap-0 overflow-hidden h-full max-h-full w-full relative">
+          {/* Camera View Box - Flex-grow container for full height camera feed */}
+          <div className="relative bg-slate-950 rounded-none w-full flex-grow flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center border-0">
             {isScanning ? (
               <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
                 {/* Full background camera feed/image: KEPT visible while QR floats to center, then smoothly removed */}
@@ -931,7 +931,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                 )}
 
                 {/* Custom Live Scanner Overlay UI - Full screen viewfinder & bottom controls */}
-                <div className="absolute inset-0 pointer-events-none flex flex-col justify-between z-10">
+                <div className="absolute inset-0 pointer-events-none flex flex-col justify-between overflow-hidden z-10">
                   {/* TOP SEARCH POPUP (Only shown when Search by Plate is toggled) */}
                   <div className="w-full flex flex-col pt-3 px-4 sm:px-6 z-30 shrink-0 min-h-[10px]">
                     {showTopMenu && (
@@ -981,8 +981,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     )}
                   </div>
 
-                  {/* 2. CENTER VIEWFINDER (Adaptive Reticle Size & Semi-Transparent Viewport Overlay) */}
-                  <div className="flex flex-col items-center justify-center my-auto pointer-events-none py-1">
+                  {/* 2. CENTER VIEWFINDER (Flex-grow adaptive reticle container) */}
+                  <div className="flex-grow min-h-0 flex flex-col items-center justify-center my-auto pointer-events-none py-1 z-20">
                     <div
                       ref={viewfinderReticleRef}
                       className="relative w-44 h-44 xs:w-52 xs:h-52 sm:w-64 sm:h-64 max-w-[60vw] max-h-[32vh] sm:max-h-[38vh] border border-white/25 rounded-xl shrink-0"
@@ -1051,8 +1051,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     </div>
                   </div>
 
-                  {/* 3. BOTTOM SECTION: Guide Text & ACTION BUTTONS WITH BACK BUTTON */}
-                  <div className="pointer-events-auto flex flex-col items-center w-full max-w-md mx-auto px-3 sm:px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,12px))] mb-1 z-30 shrink-0 gap-1.5 sm:gap-2">
+                  {/* 3. BOTTOM SECTION: Pinned sticky controls with safe-area bottom padding */}
+                  <div className="sticky bottom-0 pointer-events-auto flex flex-col items-center w-full max-w-md mx-auto px-3 sm:px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,12px))] mb-1 z-30 shrink-0 gap-1.5 sm:gap-2">
                     {/* Guide Text without background, positioned just above action buttons */}
                     <div className="text-center pointer-events-none select-none">
                       <span className="text-xs sm:text-sm font-semibold text-white/90 drop-shadow-md">
@@ -1858,8 +1858,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 overflow-hidden transition-all duration-200">
-      <div className="bg-surface rounded-none p-0 m-0 w-full max-w-full sm:max-w-6xl h-[100dvh] sm:h-[98vh] max-h-[100dvh] shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 overflow-hidden transition-all duration-200">
+      <div className="bg-surface rounded-none sm:rounded-2xl p-0 m-0 w-full max-w-full sm:max-w-6xl h-[100dvh] sm:h-[90vh] max-h-[100dvh] sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
         {mainCardContent}
       </div>
     </div>
