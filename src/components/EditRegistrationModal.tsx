@@ -125,12 +125,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
       setEngineOrSerialNo(registration.engineOrSerialNo && registration.engineOrSerialNo !== 'N/A' ? registration.engineOrSerialNo : resolvedChassis);
       setChassisNumber(resolvedChassis);
 
-      setUserPortraitPhoto(registration.userPortraitPhoto || (registration as any).ownerPhoto || '');
-      setNationalIdPhoto(registration.nationalIdPhoto || '');
-      setNationalIdBackPhoto(registration.nationalIdBackPhoto || '');
-      setDrivingLicensePhoto(registration.drivingLicensePhoto || '');
-      setDrivingPermitPhoto(registration.drivingPermitPhoto || '');
-      setReceiptScreenshot(registration.receiptScreenshot || '');
+      setUserPortraitPhoto(registration.userPortraitPhoto || (registration as any).user_portrait_photo || (registration as any).ownerPhoto || (registration as any).owner_photo || (registration as any).userPortraitThumbnail || (registration as any).user_portrait_thumbnail || '');
+      setNationalIdPhoto(registration.nationalIdPhoto || (registration as any).national_id_photo || (registration as any).nationalId || '');
+      setNationalIdBackPhoto(registration.nationalIdBackPhoto || (registration as any).national_id_back_photo || (registration as any).nationalIdBack || '');
+      setDrivingLicensePhoto(registration.drivingLicensePhoto || (registration as any).driving_license_photo || (registration as any).driverLicensePhoto || '');
+      setDrivingPermitPhoto(registration.drivingPermitPhoto || (registration as any).driving_permit_photo || (registration as any).policePermitPhoto || '');
+      setReceiptScreenshot(registration.receiptScreenshot || (registration as any).receipt_screenshot || '');
 
       setStatus(registration.status || 'approved');
       setRejectionReason(registration.rejectionReason || '');
@@ -216,7 +216,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
       const finalBrand = motorBrand === 'Other' ? customBrand.trim() || 'Other' : motorBrand;
       const finalChassis = chassisNumber.trim().toUpperCase() || engineOrSerialNo.trim().toUpperCase();
 
-      const updates: Partial<MotorcycleRegistration> = {
+      const updates: Partial<MotorcycleRegistration> & Record<string, any> = {
         fullName: fullName.trim(),
         phone: phone.trim(),
         subCity,
@@ -228,12 +228,21 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         engineOrSerialNo: finalChassis || 'N/A',
         chassisNumber: finalChassis,
         userPortraitPhoto: upPortrait,
+        user_portrait_photo: upPortrait,
+        userPortraitThumbnail: upPortrait,
+        user_portrait_thumbnail: upPortrait,
         ownerPhoto: upPortrait,
+        owner_photo: upPortrait,
         nationalIdPhoto: upNatIdFront,
+        national_id_photo: upNatIdFront,
         nationalIdBackPhoto: upNatIdBack,
+        national_id_back_photo: upNatIdBack,
         drivingLicensePhoto: upLicense,
+        driving_license_photo: upLicense,
         drivingPermitPhoto: upPermit,
+        driving_permit_photo: upPermit,
         receiptScreenshot: upReceipt,
+        receipt_screenshot: upReceipt,
         status,
         rejectionReason: status === 'rejected' ? rejectionReason.trim() : '',
         hideFromOtherUsers: isSuperAdmin ? hideFromOtherUsers : registration.hideFromOtherUsers,

@@ -1053,7 +1053,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                   roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                                   badgeId={reg.plateNumber || reg.id}
                                   status={reg.status}
-                                  portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                                  portraitUrl={reg.userPortraitPhoto || reg.ownerPhoto || reg.userPortraitThumbnail}
                                   isAmharic={isAmharic}
                                   fields={[
                                     { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },
@@ -1202,9 +1202,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                         {/* Clean Portrait Avatar */}
                         <div className="w-10 h-13 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
-                          {(reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto) ? (
+                          {(reg.userPortraitPhoto || reg.ownerPhoto || reg.userPortraitThumbnail) ? (
                             <img
-                              src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                              src={reg.userPortraitPhoto || reg.ownerPhoto || reg.userPortraitThumbnail}
                               alt={reg.fullName || 'Avatar'}
                               className="w-full h-full object-cover"
                               onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
@@ -1303,7 +1303,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                           roleOrTitle={reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                           badgeId={reg.plateNumber || reg.id}
                           status={reg.status}
-                          portraitUrl={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                          portraitUrl={reg.userPortraitPhoto || reg.ownerPhoto || reg.userPortraitThumbnail}
                           isAmharic={isAmharic}
                           fields={[
                             { label: isAmharic ? 'የአባል መለያ:' : 'Member ID:', value: reg.id },

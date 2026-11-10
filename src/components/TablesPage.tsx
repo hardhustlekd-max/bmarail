@@ -212,6 +212,16 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     }
   }, [initialTableTab]);
 
+  // Keep selectedRegForDetails synchronized when registrations array changes
+  React.useEffect(() => {
+    if (selectedRegForDetails) {
+      const match = registrations.find((r) => r.id === selectedRegForDetails.id);
+      if (match) {
+        setSelectedRegForDetails(match);
+      }
+    }
+  }, [registrations]);
+
   // Search & secondary filter states
   const [regSearchQuery, setRegSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -1230,9 +1240,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   className="w-8 h-10 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs shrink-0 overflow-hidden flex items-center justify-center cursor-pointer group relative"
                                   title={isAmharic ? 'የአባሉን ሰነዶችና ፎቶዎች በሙሉ ማያ እይ' : 'Click to view member photos and documents'}
                                 >
-                                  {((reg as any).userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || (reg as any).user_portrait_thumbnail) ? (
+                                  {(reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || (reg as any).userPortraitThumbnail || (reg as any).user_portrait_thumbnail) ? (
                                     <img
-                                      src={(reg as any).userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || (reg as any).user_portrait_thumbnail}
+                                      src={reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || (reg as any).userPortraitThumbnail || (reg as any).user_portrait_thumbnail}
                                       alt={displayName}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                       onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
@@ -1414,9 +1424,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                           {/* Clean Portrait Avatar without status-border */}
                           <div className="w-10 h-13 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs shrink-0 overflow-hidden flex items-center justify-center">
-                            {(reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto) ? (
+                            {(reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || reg.userPortraitThumbnail) ? (
                               <img
-                                src={reg.userPortraitThumbnail || reg.userPortraitPhoto || reg.ownerPhoto}
+                                src={reg.userPortraitPhoto || reg.ownerPhoto || (reg as any).user_portrait_photo || reg.userPortraitThumbnail}
                                 alt={getDisplayName(reg)}
                                 className="w-full h-full object-cover"
                                 onError={(e) => { (e.target as HTMLImageElement).src = '/logo.png'; }}
@@ -1785,7 +1795,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       >
                         {(() => {
                           const r = selectedRegForDetails as any;
-                          const photo = r.userPortraitThumbnail || r.user_portrait_thumbnail || r.userPortraitPhoto || r.user_portrait_photo || r.ownerPhoto || r.owner_photo;
+                          const photo = r.userPortraitPhoto || r.user_portrait_photo || r.ownerPhoto || r.owner_photo || r.userPortraitThumbnail || r.user_portrait_thumbnail;
                           return photo ? (
                             <>
                               <img
@@ -2643,9 +2653,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         onClose={() => setEditingRegistration(null)}
         onSaveSuccess={(updated) => {
           setEditingRegistration(null);
-          if (selectedRegForDetails && selectedRegForDetails.id === updated.id) {
-            setSelectedRegForDetails(updated);
-          }
+          setSelectedRegForDetails(updated);
         }}
       />
 
