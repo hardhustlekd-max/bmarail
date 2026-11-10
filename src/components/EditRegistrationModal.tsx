@@ -304,40 +304,41 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
   return (
     <div
       id="edit-registration-modal-backdrop"
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center sm:items-start justify-center p-0 sm:p-4 overflow-hidden sm:overflow-y-auto"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden"
+        className="bg-white dark:bg-slate-900 border-0 sm:border border-slate-200 dark:border-slate-800 rounded-none sm:rounded-xl max-w-3xl w-full h-[100dvh] sm:h-auto max-h-[100dvh] sm:max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-outline-variant/60 bg-surface-container/30">
-          <div className="flex items-center gap-3 min-w-0">
-            <Icon name="edit_document" size={24} className="text-primary shrink-0" />
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-outline-variant/60 bg-surface-container/30 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <Icon name="edit_document" size={22} className="text-primary shrink-0" />
             <div className="min-w-0">
-              <h3 className="font-black text-lg text-on-surface tracking-tight">
+              <h3 className="font-black text-base sm:text-lg text-on-surface tracking-tight truncate">
                 {isAmharic ? 'የአባል መረጃ ማሻሻያ' : 'Edit Member Registration'}
               </h3>
-              <p className="text-xs text-secondary font-mono mt-0.5 truncate">
+              <p className="text-[11px] sm:text-xs text-secondary font-mono mt-0.5 truncate">
                 ID: {registration.id} • {registration.fullName}
               </p>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-surface-container-high text-secondary hover:text-on-surface transition-colors cursor-pointer disabled:opacity-50"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center hover:bg-surface-container-high text-secondary hover:text-on-surface transition-colors cursor-pointer disabled:opacity-50 shrink-0"
           >
-            <Icon name="close" size={22} />
+            <Icon name="close" size={20} />
           </button>
         </div>
 
         {/* RBAC Warning Banner if user is not authorized */}
         {!canEdit && (
-          <div className="mx-4 sm:mx-6 mt-3 p-3 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg flex items-start gap-2.5 text-xs text-slate-800 dark:text-slate-200">
-            <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
+          <div className="mx-3 sm:mx-6 mt-2.5 sm:mt-3 p-2.5 sm:p-3 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg flex items-start gap-2.5 text-xs text-slate-800 dark:text-slate-200 shrink-0">
+            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px] text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
             <div>
               <p className="font-black">
                 {isAmharic ? 'የማስተካከል ፈቃድ አልተሰጠም' : 'Editing Disabled'}
@@ -353,7 +354,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
         {/* Form Error Banner */}
         {formError && (
-          <div className="mx-4 sm:mx-6 mt-3 p-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 rounded-lg text-xs text-rose-900 dark:text-rose-200 flex items-center gap-2">
+          <div className="mx-3 sm:mx-6 mt-2.5 sm:mt-3 p-2.5 sm:p-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 rounded-lg text-xs text-rose-900 dark:text-rose-200 flex items-center gap-2 shrink-0">
             <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
             <span>{formError}</span>
           </div>
@@ -361,14 +362,14 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
         {/* In-Flight Upload Status Banner */}
         {uploadProgressText && (
-          <div className="mx-4 sm:mx-6 mt-3 p-3 bg-primary/10 border border-primary/30 rounded-lg text-xs text-primary font-bold flex items-center gap-2">
+          <div className="mx-3 sm:mx-6 mt-2.5 sm:mt-3 p-2.5 sm:p-3 bg-primary/10 border border-primary/30 rounded-lg text-xs text-primary font-bold flex items-center gap-2 shrink-0">
             <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
             <span>{uploadProgressText}</span>
           </div>
         )}
 
         {/* 4-Step Stepper Navigation */}
-        <div className="px-6 py-3.5 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 border-b border-outline-variant/60">
+        <div className="px-2 sm:px-6 py-2 sm:py-3.5 flex items-center justify-between sm:justify-between gap-1 overflow-x-auto [scrollbar-width:none] shrink-0 bg-slate-50 dark:bg-slate-800/50 border-b border-outline-variant/60">
           {[
             { step: 1, am: '1. የግል መረጃ', en: '1. Personal' },
             { step: 2, am: '2. የተሽከርካሪ', en: '2. Vehicle' },
@@ -380,10 +381,10 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               type="button"
               disabled={isSubmitting}
               onClick={() => setCurrentStep(item.step as any)}
-              className="flex flex-col items-center gap-1 cursor-pointer transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="flex flex-col items-center gap-0.5 sm:gap-1 cursor-pointer transition-opacity hover:opacity-90 disabled:opacity-50 shrink-0 px-1 sm:px-2"
             >
               <div
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-black transition-colors ${
+                className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-black transition-colors ${
                   currentStep === item.step
                     ? 'bg-primary text-white shadow-sm ring-2 ring-primary/30'
                     : currentStep > item.step
@@ -392,13 +393,13 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 }`}
               >
                 {currentStep > item.step ? (
-                  <Icon className="material-symbols-outlined text-[16px]">check</Icon>
+                  <Icon className="material-symbols-outlined text-[14px] sm:text-[16px]">check</Icon>
                 ) : (
                   item.step
                 )}
               </div>
               <span
-                className={`text-[10px] sm:text-[11px] font-bold ${
+                className={`text-[9.5px] sm:text-[11px] font-bold whitespace-nowrap ${
                   currentStep === item.step
                     ? 'text-primary'
                     : 'text-slate-500 dark:text-slate-400'
@@ -411,7 +412,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-3.5 sm:space-y-4 overscroll-contain min-h-0">
           {/* STEP 1: PERSONAL INFORMATION */}
           {currentStep === 1 && (
             <SectionCard className="space-y-4">
@@ -767,7 +768,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="flex items-center justify-between p-4 border-t border-outline-variant bg-surface-container/20">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-t border-outline-variant bg-surface-container/20 shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom,12px))]">
           <ActionTriggerSecondary
             icon="arrow_back"
             label={isAmharic ? 'ተመለስ' : 'Back'}

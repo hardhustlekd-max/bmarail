@@ -985,7 +985,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <div className="flex flex-col items-center justify-center my-auto pointer-events-none py-1">
                     <div
                       ref={viewfinderReticleRef}
-                      className="relative w-48 h-48 xs:w-56 xs:h-56 sm:w-64 sm:h-64 max-w-[65vw] max-h-[38vh] border border-white/25 rounded-xl flex-shrink-0"
+                      className="relative w-44 h-44 xs:w-52 xs:h-52 sm:w-64 sm:h-64 max-w-[60vw] max-h-[32vh] sm:max-h-[38vh] border border-white/25 rounded-xl shrink-0"
                       style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
                     >
                       {/* Inside scanner box: Extracted QR Code picked from fullscreen image */}
@@ -1288,7 +1288,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             return (
               <>
                 {/* TOP HEADER STATUS BAR WITH VERIFICATION BADGE */}
-                <div className={`flex items-center justify-between py-3.5 px-4 shrink-0 border-b-2 z-10 shadow-sm transition-colors duration-200 ${
+                <div className={`flex items-center justify-between py-2 sm:py-3 px-2.5 sm:px-4 shrink-0 border-b-2 z-10 shadow-sm transition-colors duration-200 gap-2 ${
                   isApproved 
                     ? activeTheme.headerApproved 
                     : isExpired || isPending 
@@ -1299,18 +1299,18 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <button
                     type="button"
                     onClick={handleRescan}
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white active:scale-95 touch-manipulation transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
+                    className="w-9 h-9 sm:w-11 sm:h-11 min-w-[36px] sm:min-w-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white active:scale-95 touch-manipulation transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
                     title={isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}
                   >
-                    <Icon className="material-symbols-outlined text-[24px] font-bold">chevron_left</Icon>
+                    <Icon className="material-symbols-outlined text-[20px] sm:text-[24px] font-bold">chevron_left</Icon>
                   </button>
 
                   {/* Center Verification Status Pill matching the uploaded screenshot */}
-                  <div className="flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-[26px] text-white">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1 justify-center">
+                    <Icon className="material-symbols-outlined text-[20px] sm:text-[26px] text-white shrink-0">
                       {isApproved ? 'check_circle' : isPending ? 'warning' : 'cancel'}
                     </Icon>
-                    <span className="font-black text-base sm:text-lg tracking-tight text-white">
+                    <span className="font-black text-xs sm:text-base md:text-lg tracking-tight text-white truncate text-center">
                       {isApproved
                         ? (isAmharic ? 'ለመንቀሳቀስ የተፈቀደለት ነው' : 'Permitted to Move')
                         : isExpired
@@ -1325,21 +1325,21 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowNotesSection(!showNotesSection)}
-                    className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm active:scale-95 touch-manipulation ${
+                    className={`w-9 h-9 sm:w-11 sm:h-11 min-w-[36px] sm:min-w-[44px] rounded-lg transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm active:scale-95 touch-manipulation ${
                       showNotesSection
                         ? 'bg-white text-slate-900 border border-white font-bold'
                         : 'bg-white/20 hover:bg-white/30 text-white border border-white/40'
                     }`}
                     title={isAmharic ? 'ማስታወሻ ጨምር' : 'Add Inspection Note'}
                   >
-                    <Icon className="material-symbols-outlined text-[22px] font-bold">
+                    <Icon className="material-symbols-outlined text-[18px] sm:text-[22px] font-bold">
                       {showNotesSection ? 'edit_note' : 'note_add'}
                     </Icon>
                   </button>
                 </div>
 
                 {/* 2. MIDDLE SCROLLABLE BODY CONTENT */}
-                <div className={`flex-1 overflow-y-auto min-h-0 p-1 sm:p-1.5 md:p-2 space-y-1.5 max-w-2xl mx-auto w-full ${activeTheme.bodyBg}`}>
+                <div className={`flex-1 overflow-y-auto overscroll-contain min-h-0 p-1.5 sm:p-2.5 space-y-2 max-w-2xl mx-auto w-full ${activeTheme.bodyBg}`}>
                   
                   {/* Warning Alert for Pending Status */}
                   {isPending && (
