@@ -1859,7 +1859,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 overflow-hidden transition-all duration-200">
-      <div className="bg-surface rounded-none sm:rounded-2xl p-0 m-0 w-full max-w-full sm:max-w-6xl h-[100dvh] sm:h-[90vh] max-h-[100dvh] sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+      <div className="bg-surface rounded-none sm:rounded-2xl p-0 m-0 w-full max-w-full sm:max-w-6xl h-full h-[100dvh] sm:h-[90vh] max-h-full max-h-[100dvh] sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
         {mainCardContent}
       </div>
     </div>
