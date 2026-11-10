@@ -1268,7 +1268,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           </div>
         </div>
       ) : (
-        <div className={`flex-1 w-full ${activeTheme.containerBg} p-0 m-0 text-xs sm:text-sm flex flex-col h-full max-h-full overflow-hidden shadow-none animate-in fade-in duration-150`}>
+        <div className={`flex-1 min-h-0 w-full ${activeTheme.containerBg} p-0 m-0 text-xs sm:text-sm flex flex-col h-full max-h-full overflow-hidden shadow-none animate-in fade-in duration-150`}>
           {(() => {
             const statusLower = (scannedRegResult.status || '').toLowerCase();
             const isApproved = statusLower === 'approved' || statusLower === 'printed' || statusLower === 'ordered_print';
@@ -1858,8 +1858,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 overflow-hidden transition-all duration-200">
-      <div className="bg-surface rounded-none sm:rounded-2xl p-0 m-0 w-full max-w-full sm:max-w-6xl h-full h-[100dvh] sm:h-[90vh] max-h-full max-h-[100dvh] sm:max-h-[90vh] shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 overflow-hidden touch-none select-none transition-all duration-200">
+      <div className="bg-surface rounded-none sm:rounded-2xl p-0 m-0 w-full max-w-full sm:max-w-6xl h-full h-[100dvh] sm:h-[90vh] max-h-full max-h-[100dvh] sm:max-h-[90vh] shadow-2xl flex flex-col min-h-0 overflow-hidden">
         {mainCardContent}
       </div>
     </div>
