@@ -1,6 +1,9 @@
 import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
+import { BaseModal } from './ui/BaseModal';
+import { TACTILE_SPRING, TAP_SCALE, POPOVER_TRANSITION } from '../utils/motionPresets';
 import {
   Language,
   UserRole,
@@ -915,7 +918,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`group flex items-center gap-1.5 py-2 px-3 text-xs transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                  className={`group flex items-center gap-1.5 min-h-[44px] sm:min-h-0 py-2 px-3 text-xs transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                     isActive
                       ? 'relative top-[1px] z-10 border-t border-l border-r border-outline-variant border-b-0 bg-surface-container-lowest text-primary font-bold rounded-t-md'
                       : 'border border-transparent text-secondary hover:text-on-surface font-medium'
@@ -940,20 +943,28 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
           
           {activeTab === 'maintenance' && (
             <div className="flex items-center gap-2">
-              <button
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={handleForceSyncDatabase}
-                className="px-3 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant rounded-lg text-[11px] font-bold transition-all flex items-center gap-1"
+                className="min-h-[44px] sm:min-h-0 px-3 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[15px]">sync</Icon>
                 <span>{isAmharic ? 'ዳታቤዝ አድስ' : 'Sync DB'}</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={handleExportFullDatabaseBackup}
-                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg text-[11px] font-black transition-all flex items-center gap-1"
+                className="min-h-[44px] sm:min-h-0 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg text-[11px] font-black transition-all flex items-center gap-1 cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[15px]">download</Icon>
                 <span>{isAmharic ? 'ባክአፕ አውርድ' : 'Export'}</span>
-              </button>
+              </motion.button>
             </div>
           )}
         </div>
@@ -998,10 +1009,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </div>
 
                 {/* Filter Drawer Toggle Button */}
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => setIsUserFilterDrawerOpen((prev) => !prev)}
-                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                  className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3 sm:px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
                     isUserFilterDrawerOpen || hasActiveUserSecondaryFilters
                       ? 'border-primary bg-primary/10 text-primary'
                       : 'border-outline-variant bg-surface-container text-secondary hover:text-on-surface'
@@ -1013,96 +1027,118 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   {hasActiveUserSecondaryFilters && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                   )}
-                </button>
+                </motion.button>
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 shrink-0">
-                <button
+                <motion.button
+                  type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => setActiveTab('roles')}
-                  className="w-full sm:w-auto h-8 px-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full sm:w-auto min-h-[44px] sm:min-h-0 sm:h-8 px-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">shield_person</Icon>
                   <span>{isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}</span>
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
+                  type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => setShowAddUserModal(true)}
-                  className="w-full sm:w-auto h-8 px-3.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 shadow-xs active:scale-95 shrink-0 cursor-pointer"
+                  className="w-full sm:w-auto min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-extrabold transition-colors flex items-center justify-center gap-1.5 shadow-xs shrink-0 cursor-pointer"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">person_add</Icon>
                   <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
-                </button>
+                </motion.button>
               </div>
             </div>
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
-            {isUserFilterDrawerOpen && (
-              <div className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="flex flex-wrap items-center gap-2.5 text-xs">
-                  {/* Role Filter */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
-                      {isAmharic ? 'ሚና:' : 'Role:'}
-                    </span>
-                    <select
-                      value={roleFilter}
-                      onChange={(e) => setRoleFilter(e.target.value)}
-                      className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
-                    >
-                      <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
-                      <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
-                      <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin/Manager)' : 'Admin / Manager'}</option>
-                      <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
-                      <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Traffic Officer)' : 'Traffic Officer'}</option>
-                    </select>
+            <AnimatePresence>
+              {isUserFilterDrawerOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={POPOVER_TRANSITION}
+                  className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md"
+                >
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                    {/* Role Filter */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'ሚና:' : 'Role:'}
+                      </span>
+                      <select
+                        value={roleFilter}
+                        onChange={(e) => setRoleFilter(e.target.value)}
+                        className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                      >
+                        <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
+                        <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
+                        <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin/Manager)' : 'Admin / Manager'}</option>
+                        <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
+                        <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Traffic Officer)' : 'Traffic Officer'}</option>
+                      </select>
+                    </div>
+
+                    {/* Sort Field */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
+                      </span>
+                      <select
+                        value={userSortField}
+                        onChange={(e) => setUserSortField(e.target.value as any)}
+                        className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs text-on-surface font-medium focus:outline-hidden focus:border-primary"
+                      >
+                        <option value="name">{isAmharic ? 'በስም' : 'Name'}</option>
+                        <option value="badge">{isAmharic ? 'በመታወቂያ' : 'Badge ID'}</option>
+                        <option value="role">{isAmharic ? 'በሚና' : 'Role'}</option>
+                      </select>
+
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={() => setUserSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                        className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-7 sm:w-7 flex items-center justify-center bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer"
+                        title={userSortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">
+                          {userSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                        </Icon>
+                      </motion.button>
+                    </div>
+
+                    {/* Reset All Filters in Drawer */}
+                    {(hasActiveUserSecondaryFilters || userSearch) && (
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={() => {
+                          setRoleFilter('all');
+                          setUserSortField('name');
+                          setUserSortOrder('asc');
+                          setUserSearch('');
+                        }}
+                        className="min-h-[44px] sm:min-h-0 sm:h-7 px-3 sm:px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                      >
+                        <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                        <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                      </motion.button>
+                    )}
                   </div>
-
-                  {/* Sort Field */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
-                      {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
-                    </span>
-                    <select
-                      value={userSortField}
-                      onChange={(e) => setUserSortField(e.target.value as any)}
-                      className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs text-on-surface font-medium focus:outline-hidden focus:border-primary"
-                    >
-                      <option value="name">{isAmharic ? 'በስም' : 'Name'}</option>
-                      <option value="badge">{isAmharic ? 'በመታወቂያ' : 'Badge ID'}</option>
-                      <option value="role">{isAmharic ? 'በሚና' : 'Role'}</option>
-                    </select>
-
-                    <button
-                      type="button"
-                      onClick={() => setUserSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                      className="h-7 w-7 flex items-center justify-center bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer"
-                      title={userSortOrder === 'asc' ? 'Ascending' : 'Descending'}
-                    >
-                      <Icon className="material-symbols-outlined text-[15px]">
-                        {userSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
-                      </Icon>
-                    </button>
-                  </div>
-
-                  {/* Reset All Filters in Drawer */}
-                  {(hasActiveUserSecondaryFilters || userSearch) && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRoleFilter('all');
-                        setUserSortField('name');
-                        setUserSortOrder('asc');
-                        setUserSearch('');
-                      }}
-                      className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
-                    >
-                      <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
-                      <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
               {/* Users Responsive Table & Mobile Cards (Semantic Design Tokens) */}
@@ -1622,10 +1658,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     )}
                   </div>
 
-                  <button
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={() => setIsAuditFilterDrawerOpen((prev) => !prev)}
-                    className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                    className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3 sm:px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
                       isAuditFilterDrawerOpen || hasActiveAuditSecondaryFilters
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-outline-variant bg-surface-container text-secondary hover:text-on-surface'
@@ -1637,83 +1676,97 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     {hasActiveAuditSecondaryFilters && (
                       <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                     )}
-                  </button>
+                  </motion.button>
                 </div>
               </div>
 
               {/* Collapsible Filter Drawer for Audit Trail */}
-              {isAuditFilterDrawerOpen && (
-                <div className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md animate-in fade-in slide-in-from-top-1 duration-150">
-                  <div className="flex flex-wrap items-center gap-2.5 text-xs">
-                    {/* Severity Filter */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
-                        {isAmharic ? 'ስጋት ደረጃ:' : 'Severity:'}
-                      </span>
-                      <select
-                        value={auditSeverityFilter}
-                        onChange={(e) => setAuditSeverityFilter(e.target.value as any)}
-                        className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
-                      >
-                        <option value="all">{isAmharic ? 'ሁሉም ደረጃዎች' : 'All Severities'}</option>
-                        <option value="info">Info</option>
-                        <option value="warning">Warning</option>
-                        <option value="critical">Critical</option>
-                      </select>
-                    </div>
+              <AnimatePresence>
+                {isAuditFilterDrawerOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={POPOVER_TRANSITION}
+                    className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md"
+                  >
+                    <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                      {/* Severity Filter */}
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                          {isAmharic ? 'ስጋት ደረጃ:' : 'Severity:'}
+                        </span>
+                        <select
+                          value={auditSeverityFilter}
+                          onChange={(e) => setAuditSeverityFilter(e.target.value as any)}
+                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                        >
+                          <option value="all">{isAmharic ? 'ሁሉም ደረጃዎች' : 'All Severities'}</option>
+                          <option value="info">Info</option>
+                          <option value="warning">Warning</option>
+                          <option value="critical">Critical</option>
+                        </select>
+                      </div>
 
-                    {/* Limit */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
-                        {isAmharic ? 'ገደብ:' : 'Limit:'}
-                      </span>
-                      <select
-                        value={auditViewLimit}
-                        onChange={(e) => setAuditViewLimit(Number(e.target.value))}
-                        className="h-7 px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
-                      >
-                        <option value={25}>25</option>
-                        <option value={50}>50</option>
-                        <option value={100}>100</option>
-                      </select>
-                    </div>
+                      {/* Limit */}
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                          {isAmharic ? 'ገደብ:' : 'Limit:'}
+                        </span>
+                        <select
+                          value={auditViewLimit}
+                          onChange={(e) => setAuditViewLimit(Number(e.target.value))}
+                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                        >
+                          <option value={25}>25</option>
+                          <option value={50}>50</option>
+                          <option value={100}>100</option>
+                        </select>
+                      </div>
 
-                    {/* Sort Order Toggle */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
-                        {isAmharic ? 'ቅደም ተከተል:' : 'Order:'}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => setAuditSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                        className="h-7 px-2 flex items-center gap-1 bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer font-medium"
-                      >
-                        <Icon className="material-symbols-outlined text-[15px]">
-                          {auditSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
-                        </Icon>
-                        <span>{auditSortOrder === 'asc' ? 'Oldest First' : 'Newest First'}</span>
-                      </button>
-                    </div>
+                      {/* Sort Order Toggle */}
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-secondary text-[11px] font-bold uppercase tracking-wider">
+                          {isAmharic ? 'ቅደም ተከተል:' : 'Order:'}
+                        </span>
+                        <motion.button
+                          type="button"
+                          data-motion-control="true"
+                          whileTap={TAP_SCALE}
+                          transition={TACTILE_SPRING}
+                          onClick={() => setAuditSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 flex items-center gap-1 bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer font-medium"
+                        >
+                          <Icon className="material-symbols-outlined text-[15px]">
+                            {auditSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                          </Icon>
+                          <span>{auditSortOrder === 'asc' ? 'Oldest First' : 'Newest First'}</span>
+                        </motion.button>
+                      </div>
 
-                    {/* Reset Button */}
-                    {(hasActiveAuditSecondaryFilters || auditSearch) && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAuditSearch('');
-                          setAuditSeverityFilter('all');
-                          setAuditViewLimit(25);
-                          setAuditSortOrder('desc');
-                        }}
-                        className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
-                      >
-                        <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
-                        <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
+                      {/* Reset Button */}
+                      {(hasActiveAuditSecondaryFilters || auditSearch) && (
+                        <motion.button
+                          type="button"
+                          data-motion-control="true"
+                          whileTap={TAP_SCALE}
+                          transition={TACTILE_SPRING}
+                          onClick={() => {
+                            setAuditSearch('');
+                            setAuditSeverityFilter('all');
+                            setAuditViewLimit(25);
+                            setAuditSortOrder('desc');
+                          }}
+                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-3 sm:px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                        >
+                          <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                          <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                        </motion.button>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="overflow-x-auto">
@@ -1821,11 +1874,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </h3>
               </div>
 
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={handleForceSyncDatabase}
                 disabled={isSyncingLiveDb}
-                className="hidden sm:inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer disabled:opacity-50"
+                className="hidden sm:inline-flex items-center justify-center gap-2 min-h-[36px] px-4 py-2 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer disabled:opacity-50"
               >
                 <Icon className={`material-symbols-outlined text-[18px] ${isSyncingLiveDb ? 'animate-spin' : ''}`}>
                   sync
@@ -1835,7 +1891,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     ? isAmharic ? 'በማመሳሰል ላይ...' : 'Synchronizing...'
                     : isAmharic ? 'አሁን ዳታቤዙን አድስ' : 'Resync Live Database'}
                 </span>
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -1854,11 +1910,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </p>
               </div>
 
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={handleRunStorageMaintenance}
                 disabled={isStorageMaintenanceRunning}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 min-h-[44px] sm:min-h-[36px] px-4 py-2 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer disabled:opacity-50"
               >
                 <Icon className={`material-symbols-outlined text-[18px] ${isStorageMaintenanceRunning ? 'animate-spin' : ''}`}>
                   {isStorageMaintenanceRunning ? 'sync' : 'play_circle'}
@@ -1868,7 +1927,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     ? isAmharic ? 'ጥገና በመካሄድ ላይ...' : 'Running Maintenance...'
                     : isAmharic ? 'ጥገናውን አስጀምር' : 'Run Storage Maintenance'}
                 </span>
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -1901,21 +1960,24 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </p>
                 </div>
 
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={handleExportFullDatabaseBackup}
-                  className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full min-h-[44px] sm:min-h-[38px] py-2.5 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Icon className="material-symbols-outlined text-[18px]">cloud_download</Icon>
                   <span>{isAmharic ? 'ባክአፕ ፋይል አውርድ (JSON)' : 'Download Backup (.JSON)'}</span>
-                </button>
+                </motion.button>
               </div>
 
               {/* Restore Card */}
               <div className="p-4 rounded-lg border border-outline-variant bg-surface-container/40 flex flex-col justify-between space-y-3">
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-slate-700 text-[20px]">upload_file</Icon>
+                    <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[20px]">upload_file</Icon>
                     <h4 className="font-bold text-sm text-on-surface">
                       {isAmharic ? 'ከባክአፕ ፋይል መልስ (Restore)' : 'Restore / Import from Backup'}
                     </h4>
@@ -1927,7 +1989,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   </p>
                 </div>
 
-                <label className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                <label className="w-full min-h-[44px] sm:min-h-[38px] py-2.5 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors flex items-center justify-center gap-2 cursor-pointer">
                   <Icon className={`material-symbols-outlined text-[18px] ${isRestoringBackup ? 'animate-spin' : ''}`}>
                     {isRestoringBackup ? 'sync' : 'restore_page'}
                   </Icon>
@@ -2311,69 +2373,78 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       : 'Resets database records back to factory state.'}
                   </p>
                 </div>
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => {
                     setDangerActionType('reset');
                     setDangerConfirmInput('');
                     setDangerError('');
                   }}
-                  className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-98"
+                  className="w-full min-h-[44px] sm:min-h-[36px] py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   {isAmharic ? 'ሙሉ ሪሴት አድርግ' : 'Execute System Reset'}
-                </button>
+                </motion.button>
               </div>
 
               {/* Danger Option 2: Purge Rejected Permits */}
-              <div className="p-4 rounded-lg bg-white border border-red-200 shadow-xs flex flex-col justify-between space-y-3">
+              <div className="p-4 rounded-lg bg-white dark:bg-[#1C2434] border border-red-200 dark:border-red-900/50 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="space-y-1">
-                  <h4 className="font-extrabold text-xs text-red-900 flex items-center gap-1.5">
+                  <h4 className="font-extrabold text-xs text-red-900 dark:text-red-300 flex items-center gap-1.5">
                     <Icon className="material-symbols-outlined text-[16px] text-red-600">cleaning_services</Icon>
                     {isAmharic ? 'ውድቅ የተደረጉ ፈቃዶችን አፅዳ' : 'Purge Rejected Permits'}
                   </h4>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                     {isAmharic
                       ? 'ውድቅ የሆኑ ማመልከቻዎችን በዘላቂነት ይሰርዛል።'
                       : 'Permanently removes all rejected applications.'}
                   </p>
                 </div>
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => {
                     setDangerActionType('purge_rejected');
                     setDangerConfirmInput('');
                     setDangerError('');
                   }}
-                  className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-98"
+                  className="w-full min-h-[44px] sm:min-h-[36px] py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   {isAmharic ? 'ውድቅ የሆኑትን ሰርዝ' : 'Purge Rejected Permits'}
-                </button>
+                </motion.button>
               </div>
 
               {/* Danger Option 3: Clear Verification Logs */}
-              <div className="p-4 rounded-lg bg-white border border-red-200 shadow-xs flex flex-col justify-between space-y-3">
+              <div className="p-4 rounded-lg bg-white dark:bg-[#1C2434] border border-red-200 dark:border-red-900/50 shadow-xs flex flex-col justify-between space-y-3">
                 <div className="space-y-1">
-                  <h4 className="font-extrabold text-xs text-red-900 flex items-center gap-1.5">
+                  <h4 className="font-extrabold text-xs text-red-900 dark:text-red-300 flex items-center gap-1.5">
                     <Icon className="material-symbols-outlined text-[16px] text-red-600">delete_sweep</Icon>
                     {isAmharic ? 'የመንገድ ላይ ፍተሻ ታሪክን አጥፋ' : 'Clear Verification History'}
                   </h4>
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
                     {isAmharic
                       ? 'የመንገድ ላይ ፍተሻ ታሪኮችን በሙሉ ያጸዳል።'
                       : 'Deletes all roadside scan verification logs.'}
                   </p>
                 </div>
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => {
                     setDangerActionType('clear_verifications');
                     setDangerConfirmInput('');
                     setDangerError('');
                   }}
-                  className="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-bold shadow-xs transition-all cursor-pointer active:scale-98"
+                  className="w-full min-h-[44px] sm:min-h-[36px] py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-bold shadow-xs transition-colors cursor-pointer"
                 >
                   {isAmharic ? 'የፍተሻ ታሪክ አጥፋ' : 'Clear Scan Logs'}
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>
@@ -2384,15 +2455,189 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       </div> {/* End of Container with header with icon and header text */}
 
       {/* ================= MODAL: ADD SYSTEM USER ================= */}
-      {showAddUserModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-outline-variant pb-3">
-              <h3 className="font-black text-base text-on-surface flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-primary text-[20px]">person_add</Icon>
-                {isAmharic ? 'አዲስ የሲስተም ተጠቃሚ መመዝገቢያ' : 'Register New System User'}
-              </h3>
-              <button
+      <BaseModal
+        isOpen={showAddUserModal}
+        onClose={() => {
+          setShowAddUserModal(false);
+          setPasswordMismatchError('');
+          setNewPassword('');
+          setNewConfirmPassword('');
+          setShowNewPassword(false);
+          setShowConfirmPassword(false);
+        }}
+        mobileSheet={true}
+        className="max-w-md bg-surface-container-lowest border border-outline-variant rounded-2xl md:rounded-lg shadow-2xl overflow-hidden"
+      >
+        <div className="p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-outline-variant pb-3">
+            <h3 className="font-black text-base text-on-surface flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-primary text-[20px]">person_add</Icon>
+              {isAmharic ? 'አዲስ የሲስተም ተጠቃሚ መመዝገቢያ' : 'Register New System User'}
+            </h3>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => {
+                setShowAddUserModal(false);
+                setPasswordMismatchError('');
+                setNewPassword('');
+                setNewConfirmPassword('');
+                setShowNewPassword(false);
+                setShowConfirmPassword(false);
+              }}
+              className="w-10 h-10 flex items-center justify-center text-outline hover:text-on-surface rounded-lg cursor-pointer"
+              aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+            >
+              <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+            </motion.button>
+          </div>
+
+          <form onSubmit={handleCreateUser} className="space-y-3.5">
+            <div>
+              <label className="block text-xs font-bold text-on-surface mb-1">
+                {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
+              </label>
+              <input
+                type="text"
+                required
+                value={newFullName}
+                onChange={(e) => setNewFullName(e.target.value)}
+                placeholder="e.g. ዮሐንስ ተስፋዬ"
+                className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-primary"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-on-surface mb-1">
+                  {isAmharic ? 'መታወቂያ ቁጥር' : 'Badge ID'}
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newBadgeId}
+                  onChange={(e) => setNewBadgeId(e.target.value)}
+                  placeholder="e.g. CLERK-501"
+                  className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold focus:outline-hidden focus:border-primary"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-on-surface mb-1">
+                  {isAmharic ? 'የተጠቃሚ ሚና' : 'User Role'}
+                </label>
+                <select
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value as UserRole)}
+                  className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-primary"
+                >
+                  <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
+                  <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin)' : 'Admin'}</option>
+                  <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Officer)' : 'Officer'}</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-on-surface mb-1">
+                {isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}
+              </label>
+              <input
+                type="tel"
+                required
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="e.g. 0918123456"
+                className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-primary"
+              />
+            </div>
+
+            {/* Password: and Confirm password: fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-on-surface mb-1">
+                  {isAmharic ? 'የይለፍ ቃል:' : 'Password:'}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    required
+                    value={newPassword}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      if (passwordMismatchError) setPasswordMismatchError('');
+                    }}
+                    placeholder={isAmharic ? 'የይለፍ ቃል ያስገቡ' : 'Enter password'}
+                    className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-primary pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-0.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-outline hover:text-on-surface cursor-pointer rounded-md"
+                  >
+                    <Icon className="material-symbols-outlined text-[18px]">
+                      {showNewPassword ? 'visibility_off' : 'visibility'}
+                    </Icon>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-on-surface mb-1">
+                  {isAmharic ? 'የይለፍ ቃል አረጋግጥ:' : 'Confirm password:'}
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    value={newConfirmPassword}
+                    onChange={(e) => {
+                      setNewConfirmPassword(e.target.value);
+                      if (passwordMismatchError) setPasswordMismatchError('');
+                    }}
+                    placeholder={isAmharic ? 'የይለፍ ቃል በድጋሚ ያስገቡ' : 'Confirm password'}
+                    className={`w-full min-h-[44px] sm:min-h-0 bg-surface-container border rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden pr-11 ${
+                      passwordMismatchError ? 'border-red-500 focus:border-red-500' : 'border-outline-variant focus:border-primary'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-0.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-outline hover:text-on-surface cursor-pointer rounded-md"
+                  >
+                    <Icon className="material-symbols-outlined text-[18px]">
+                      {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                    </Icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <AnimatePresence>
+              {passwordMismatchError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={POPOVER_TRANSITION}
+                  className="text-[11px] font-bold text-red-600 flex items-center gap-1.5"
+                >
+                  <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                  <span>{passwordMismatchError}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="pt-3 flex items-center justify-end gap-2">
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => {
                   setShowAddUserModal(false);
                   setPasswordMismatchError('');
@@ -2401,182 +2646,50 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   setShowNewPassword(false);
                   setShowConfirmPassword(false);
                 }}
-                className="text-outline hover:text-on-surface p-1 rounded-lg"
+                className="min-h-[44px] sm:min-h-[36px] px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface cursor-pointer"
               >
-                <Icon className="material-symbols-outlined text-[20px]">close</Icon>
-              </button>
+                {isAmharic ? 'ሰርዝ' : 'Cancel'}
+              </motion.button>
+
+              <motion.button
+                type="submit"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
+                className="min-h-[44px] sm:min-h-[36px] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer"
+              >
+                {isAmharic ? 'ተጠቃሚውን አስመዝግብ' : 'Create User Account'}
+              </motion.button>
             </div>
-
-            <form onSubmit={handleCreateUser} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">
-                  {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newFullName}
-                  onChange={(e) => setNewFullName(e.target.value)}
-                  placeholder="e.g. ዮሐንስ ተስፋዬ"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">
-                    {isAmharic ? 'መታወቂያ ቁጥር' : 'Badge ID'}
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={newBadgeId}
-                    onChange={(e) => setNewBadgeId(e.target.value)}
-                    placeholder="e.g. CLERK-501"
-                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold focus:outline-hidden focus:border-[#1e293b]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">
-                    {isAmharic ? 'የተጠቃሚ ሚና' : 'User Role'}
-                  </label>
-                  <select
-                    value={newRole}
-                    onChange={(e) => setNewRole(e.target.value as UserRole)}
-                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#1e293b]"
-                  >
-                    <option value="clerk">{isAmharic ? 'ፀሀፊ (Clerk)' : 'Clerk'}</option>
-                    <option value="admin">{isAmharic ? 'ሥራ አስኪያጅ (Admin)' : 'Admin'}</option>
-                    <option value="officer">{isAmharic ? 'ተቆጣጣሪ (Officer)' : 'Officer'}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">
-                  {isAmharic ? 'ስልክ ቁጥር' : 'Mobile Number'}
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={newPhone}
-                  onChange={(e) => setNewPhone(e.target.value)}
-                  placeholder="e.g. 0918123456"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b]"
-                />
-              </div>
-
-              {/* Password: and Confirm password: fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">
-                    {isAmharic ? 'የይለፍ ቃል:' : 'Password:'}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showNewPassword ? 'text' : 'password'}
-                      required
-                      value={newPassword}
-                      onChange={(e) => {
-                        setNewPassword(e.target.value);
-                        if (passwordMismatchError) setPasswordMismatchError('');
-                      }}
-                      placeholder={isAmharic ? 'የይለፍ ቃል ያስገቡ' : 'Enter password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b] pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPassword(!showNewPassword)}
-                      aria-label={showNewPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
-                    >
-                      <Icon className="material-symbols-outlined text-[18px]">
-                        {showNewPassword ? 'visibility_off' : 'visibility'}
-                      </Icon>
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">
-                    {isAmharic ? 'የይለፍ ቃል አረጋግጥ:' : 'Confirm password:'}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      required
-                      value={newConfirmPassword}
-                      onChange={(e) => {
-                        setNewConfirmPassword(e.target.value);
-                        if (passwordMismatchError) setPasswordMismatchError('');
-                      }}
-                      placeholder={isAmharic ? 'የይለፍ ቃል በድጋሚ ያስገቡ' : 'Confirm password'}
-                      className={`w-full bg-surface-container border rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden pr-10 ${
-                        passwordMismatchError ? 'border-red-500 focus:border-red-500' : 'border-outline-variant focus:border-[#1e293b]'
-                      }`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
-                    >
-                      <Icon className="material-symbols-outlined text-[18px]">
-                        {showConfirmPassword ? 'visibility_off' : 'visibility'}
-                      </Icon>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {passwordMismatchError && (
-                <div className="text-[11px] font-bold text-red-600 flex items-center gap-1.5 animate-in fade-in">
-                  <Icon className="material-symbols-outlined text-[14px]">error</Icon>
-                  <span>{passwordMismatchError}</span>
-                </div>
-              )}
-
-              <div className="pt-3 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddUserModal(false);
-                    setPasswordMismatchError('');
-                    setNewPassword('');
-                    setNewConfirmPassword('');
-                    setShowNewPassword(false);
-                    setShowConfirmPassword(false);
-                  }}
-                  className="px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface"
-                >
-                  {isAmharic ? 'ሰርዝ' : 'Cancel'}
-                </button>
-
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors"
-                >
-                  {isAmharic ? 'ተጠቃሚውን አስመዝግብ' : 'Create User Account'}
-                </button>
-              </div>
-            </form>
-          </div>
+          </form>
         </div>
-      )}
+      </BaseModal>
 
       {/* ================= MODAL: EDIT USER ================= */}
-      {editingUser && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest w-full max-w-md rounded-lg border border-outline-variant shadow-2xl p-6 space-y-4">
+      <BaseModal
+        isOpen={!!editingUser}
+        onClose={handleCloseEditUserModal}
+        mobileSheet={true}
+        className="max-w-md bg-surface-container-lowest border border-outline-variant rounded-2xl md:rounded-lg shadow-2xl overflow-hidden"
+      >
+        {editingUser && (
+          <div className="p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-outline-variant pb-3">
               <h3 className="font-black text-base text-on-surface flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-slate-700 text-[20px]">edit</Icon>
+                <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[20px]">edit</Icon>
                 {isAmharic ? 'የተጠቃሚ መረጃ ማስተካከያ' : 'Edit System User Profile'}
               </h3>
-              <button onClick={handleCloseEditUserModal} className="text-outline hover:text-on-surface p-1 rounded-lg">
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
+                onClick={handleCloseEditUserModal}
+                className="w-10 h-10 flex items-center justify-center text-outline hover:text-on-surface rounded-lg cursor-pointer"
+                aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+              >
                 <Icon className="material-symbols-outlined text-[20px]">close</Icon>
-              </button>
+              </motion.button>
             </div>
 
             <form onSubmit={handleUpdateUser} className="space-y-3.5">
@@ -2587,7 +2700,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   required
                   value={editingUser.fullName}
                   onChange={(e) => setEditingUser({ ...editingUser, fullName: e.target.value })}
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
+                  className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-semibold focus:outline-hidden focus:border-primary"
                 />
               </div>
 
@@ -2602,7 +2715,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     value={editingUser.badgeId || ''}
                     onChange={(e) => setEditingUser({ ...editingUser, badgeId: e.target.value.toUpperCase() })}
                     placeholder={isAmharic ? 'መታወቂያ ቁጥር' : 'e.g. CLERK-001'}
-                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold text-on-surface focus:outline-hidden focus:border-[#1e293b]"
+                    className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-bold text-on-surface focus:outline-hidden focus:border-primary"
                   />
                 </div>
 
@@ -2611,7 +2724,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   <select
                     value={editingUser.role}
                     onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value as UserRole })}
-                    className="w-full bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-[#1e293b]"
+                    className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3 py-2 text-xs font-bold focus:outline-hidden focus:border-primary"
                   >
                     <option value="clerk">Clerk</option>
                     <option value="admin">Admin</option>
@@ -2630,7 +2743,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   value={editingUser.phone || ''}
                   onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
                   placeholder="e.g. 0918123456"
-                  className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b]"
+                  className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-primary"
                 />
               </div>
 
@@ -2649,13 +2762,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         if (editPasswordMismatchError) setEditPasswordMismatchError('');
                       }}
                       placeholder={isAmharic ? 'አዲስ የይለፍ ቃል ያስገቡ (ለመቀየር)' : 'Enter new password'}
-                      className="w-full bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-[#1e293b] pr-10"
+                      className="w-full min-h-[44px] sm:min-h-0 bg-surface-container border border-outline-variant rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden focus:border-primary pr-11"
                     />
                     <button
                       type="button"
                       onClick={() => setShowEditPassword(!showEditPassword)}
                       aria-label={showEditPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
+                      className="absolute right-0.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-outline hover:text-on-surface cursor-pointer rounded-md"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">
                         {showEditPassword ? 'visibility_off' : 'visibility'}
@@ -2677,15 +2790,15 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         if (editPasswordMismatchError) setEditPasswordMismatchError('');
                       }}
                       placeholder={isAmharic ? 'የይለፍ ቃል በድጋሚ ያስገቡ' : 'Confirm new password'}
-                      className={`w-full bg-surface-container border rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden pr-10 ${
-                        editPasswordMismatchError ? 'border-red-500 focus:border-red-500' : 'border-outline-variant focus:border-[#1e293b]'
+                      className={`w-full min-h-[44px] sm:min-h-0 bg-surface-container border rounded-md px-3.5 py-2 text-xs font-mono font-semibold focus:outline-hidden pr-11 ${
+                        editPasswordMismatchError ? 'border-red-500 focus:border-red-500' : 'border-outline-variant focus:border-primary'
                       }`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowEditConfirmPassword(!showEditConfirmPassword)}
                       aria-label={showEditConfirmPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface cursor-pointer p-0.5"
+                      className="absolute right-0.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-outline hover:text-on-surface cursor-pointer rounded-md"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">
                         {showEditConfirmPassword ? 'visibility_off' : 'visibility'}
@@ -2695,38 +2808,57 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                 </div>
               </div>
 
-              {editPasswordMismatchError && (
-                <div className="text-[11px] font-bold text-red-600 flex items-center gap-1.5 animate-in fade-in">
-                  <Icon className="material-symbols-outlined text-[14px]">error</Icon>
-                  <span>{editPasswordMismatchError}</span>
-                </div>
-              )}
+              <AnimatePresence>
+                {editPasswordMismatchError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={POPOVER_TRANSITION}
+                    className="text-[11px] font-bold text-red-600 flex items-center gap-1.5"
+                  >
+                    <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                    <span>{editPasswordMismatchError}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="pt-3 flex items-center justify-end gap-2">
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={handleCloseEditUserModal}
-                  className="px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface"
+                  className="min-h-[44px] sm:min-h-[36px] px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface cursor-pointer"
                 >
                   {isAmharic ? 'ሰርዝ' : 'Cancel'}
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   type="submit"
-                  className="px-5 py-2 bg-primary hover:bg-primary-hover text-white rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
+                  className="min-h-[44px] sm:min-h-[36px] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-extrabold border-0 shadow-none hover:shadow-none transition-colors cursor-pointer"
                 >
                   {isAmharic ? 'ለውጦችን መዝግብ' : 'Save Changes'}
-                </button>
+                </motion.button>
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
+      </BaseModal>
 
       {/* ================= MODAL: DELETE CONFIRM ================= */}
-      {deletingUser && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
-          <div className="bg-surface-container-lowest w-full max-w-sm rounded-lg border border-red-200 shadow-2xl p-6 space-y-4 text-center">
+      <BaseModal
+        isOpen={!!deletingUser}
+        onClose={() => setDeletingUser(null)}
+        mobileSheet={true}
+        className="max-w-sm bg-surface-container-lowest border border-red-200 dark:border-red-900/50 rounded-2xl md:rounded-lg shadow-2xl overflow-hidden"
+      >
+        {deletingUser && (
+          <div className="p-6 space-y-4 text-center">
             <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto">
               <Icon className="material-symbols-outlined text-[28px]">warning</Icon>
             </div>
@@ -2743,34 +2875,53 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
             </div>
 
             <div className="flex items-center justify-center gap-2 pt-2">
-              <button
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => setDeletingUser(null)}
-                className="px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface"
+                className="min-h-[44px] sm:min-h-[36px] px-4 py-2 bg-surface-container hover:bg-surface-container-high rounded-md text-xs font-bold text-on-surface cursor-pointer"
               >
                 {isAmharic ? 'ተመለስ' : 'Cancel'}
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={handleDeleteUser}
-                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-extrabold shadow-md active:scale-95"
+                className="min-h-[44px] sm:min-h-[36px] px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-extrabold shadow-md cursor-pointer"
               >
                 {isAmharic ? 'በዘላቂነት ሰርዝ' : 'Confirm Delete'}
-              </button>
+              </motion.button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </BaseModal>
 
       {/* ================= MODAL: DANGER ZONE CONFIRMATION ================= */}
-      {dangerActionType && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
-          <div className="bg-white w-full max-w-md rounded-lg border border-red-400 shadow-2xl p-6 space-y-4">
-            <div className="flex items-center gap-3 border-b border-red-100 pb-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+      <BaseModal
+        isOpen={!!dangerActionType}
+        onClose={() => {
+          if (!isDangerExecuting) {
+            setDangerActionType(null);
+            setDangerConfirmInput('');
+            setDangerError('');
+          }
+        }}
+        mobileSheet={true}
+        className="max-w-md bg-white dark:bg-[#1C2434] border border-red-400 dark:border-red-800 rounded-2xl md:rounded-lg shadow-2xl overflow-hidden"
+      >
+        {dangerActionType && (
+          <div className="p-5 sm:p-6 space-y-4">
+            <div className="flex items-center gap-3 border-b border-red-100 dark:border-red-900/40 pb-3">
+              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center shrink-0">
                 <Icon className="material-symbols-outlined text-[24px]">warning</Icon>
               </div>
               <div>
-                <h3 className="font-black text-base text-red-900">
+                <h3 className="font-black text-base text-red-900 dark:text-red-300">
                   {dangerActionType === 'reset'
                     ? isAmharic ? 'ሙሉ የሲስተም ሪሴት ማረጋገጫ' : 'Confirm Factory Reset'
                     : dangerActionType === 'purge_rejected'
@@ -2779,13 +2930,13 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     ? isAmharic ? 'የኦዲት ማህደር የማጥፋት ማረጋገጫ' : 'Confirm Clearing Audit Logs'
                     : isAmharic ? 'የፍተሻ ታሪክ የማጥፋት ማረጋገጫ' : 'Confirm Clearing Verification History'}
                 </h3>
-                <p className="text-[11px] text-red-700">
+                <p className="text-[11px] text-red-700 dark:text-red-400">
                   {isAmharic ? 'ይህ ተግባር ወደኋላ አይመለስም!' : 'This action is permanent and irreversible.'}
                 </p>
               </div>
             </div>
 
-            <div className="space-y-2 text-xs text-slate-700 bg-red-50/50 p-3 rounded-md border border-red-200">
+            <div className="space-y-2 text-xs text-slate-700 dark:text-slate-300 bg-red-50/50 dark:bg-red-950/30 p-3 rounded-md border border-red-200 dark:border-red-900/40">
               {dangerActionType === 'reset' && (
                 <p>
                   {isAmharic
@@ -2818,7 +2969,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
             {(dangerActionType === 'reset' || dangerActionType === 'purge_rejected') && (
               <div className="space-y-1.5 pt-1">
-                <label className="block text-xs font-bold text-slate-800">
+                <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
                   {dangerActionType === 'reset'
                     ? isAmharic
                       ? 'ለማረጋገጥ "RESET" ወይም "ሪሴት" ብለው ይጻፉ፡'
@@ -2839,37 +2990,51 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       ? isAmharic ? 'ሪሴት ወይም RESET' : 'RESET'
                       : isAmharic ? 'አጥፋ ወይም PURGE' : 'PURGE'
                   }
-                  className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-hidden focus:border-red-500 "
+                  className="w-full min-h-[44px] sm:min-h-0 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-hidden focus:border-red-500"
                 />
               </div>
             )}
 
-            {dangerError && (
-              <div className="p-2 bg-red-100 border border-red-300 text-red-800 text-xs rounded-md font-semibold flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-[16px]">error</Icon>
-                <span>{dangerError}</span>
-              </div>
-            )}
+            <AnimatePresence>
+              {dangerError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={POPOVER_TRANSITION}
+                  className="p-2 bg-red-100 dark:bg-red-950/60 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200 text-xs rounded-md font-semibold flex items-center gap-1.5"
+                >
+                  <Icon className="material-symbols-outlined text-[16px]">error</Icon>
+                  <span>{dangerError}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
-              <button
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => {
                   setDangerActionType(null);
                   setDangerConfirmInput('');
                   setDangerError('');
                 }}
                 disabled={isDangerExecuting}
-                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-bold transition-all cursor-pointer"
+                className="min-h-[44px] sm:min-h-[36px] px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-md text-xs font-bold transition-colors cursor-pointer"
               >
                 {isAmharic ? 'ተመለስ' : 'Cancel'}
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={handleExecuteDangerAction}
                 disabled={isDangerExecuting}
-                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-extrabold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-98"
+                className="min-h-[44px] sm:min-h-[36px] px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-extrabold shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
                 {isDangerExecuting && (
                   <Icon className="material-symbols-outlined text-[16px] animate-spin">sync</Icon>
@@ -2879,11 +3044,11 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     ? isAmharic ? 'በመፈጸም ላይ...' : 'Executing...'
                     : isAmharic ? 'አረጋግጥና ፈጽም' : 'Confirm & Execute'}
                 </span>
-              </button>
+              </motion.button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </BaseModal>
     </div>
   );
 };

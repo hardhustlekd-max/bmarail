@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
+import {
+  TACTILE_SPRING,
+  SHEET_SPRING,
+  TAP_SCALE,
+  POPOVER_TRANSITION,
+  BACKDROP_VARIANTS,
+} from '../utils/motionPresets';
 import { formatEthiopianDateTime, getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
 import jsQR from 'jsqr';
 import { Language, MotorcycleRegistration, UserRole, VerificationLog } from '../types';
@@ -425,48 +433,59 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
           <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
             {!showInlineScanner && (
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => setShowInlineScanner(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center min-h-[44px] sm:min-h-[34px] gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold transition-colors shadow-2xs cursor-pointer touch-manipulation"
               >
                 <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
                 <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch Scanner'}</span>
-              </button>
+              </motion.button>
             )}
           </div>
         </div>
 
         {/* 2. INLINE LIVE SCANNER CONTAINER (IF EXPANDED) */}
-        {showInlineScanner && (
-          <div className="bg-white dark:bg-[#1C2434] p-4 space-y-3 animate-in slide-in-from-top-4 duration-200">
-            <div className="flex justify-between items-center pb-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-              <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-primary text-[20px]">qr_code_scanner</Icon>
-                <h3 className="font-bold text-sm text-[#1C2434] dark:text-white">
-                  {isAmharic ? 'የቀጥታ ማረጋገጫ ፍተሻ ካሜራ' : 'Live Checkpoint Verification Scanner'}
-                </h3>
+        <AnimatePresence>
+          {showInlineScanner && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={POPOVER_TRANSITION}
+              className="bg-white dark:bg-[#1C2434] p-4 space-y-3"
+            >
+              <div className="flex justify-between items-center pb-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                <div className="flex items-center gap-2">
+                  <Icon className="material-symbols-outlined text-primary text-[20px]">qr_code_scanner</Icon>
+                  <h3 className="font-bold text-sm text-[#1C2434] dark:text-white">
+                    {isAmharic ? 'የቀጥታ ማረጋገጫ ፍተሻ ካሜራ' : 'Live Checkpoint Verification Scanner'}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowInlineScanner(false)}
+                  className="min-h-[44px] sm:min-h-[34px] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#24303F] text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer touch-manipulation"
+                >
+                  <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                  <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowInlineScanner(false)}
-                className="text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#24303F] text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-                <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
-              </button>
-            </div>
-            <SharedScannerModal
-              isOpen={true}
-              onClose={() => setShowInlineScanner(false)}
-              lang={lang}
-              registrations={registrations}
-              userBadgeId={userBadgeId || 'OFF-8842'}
-              onAddVerificationLog={onAddVerificationLog || (() => {})}
-              isPage={true}
-            />
-          </div>
-        )}
+              <SharedScannerModal
+                isOpen={true}
+                onClose={() => setShowInlineScanner(false)}
+                lang={lang}
+                registrations={registrations}
+                userBadgeId={userBadgeId || 'OFF-8842'}
+                onAddVerificationLog={onAddVerificationLog || (() => {})}
+                isPage={true}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* 3. SEARCH & STATUS FILTER TOOLBAR WITH COLLAPSIBLE DRAWER */}
         <div className="flex flex-col w-full bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
@@ -539,17 +558,17 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         setStatusFilter(tab.id);
                         setCurrentPage(1);
                       }}
-                      className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
+                      className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
                         isActive
-                          ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
+                          ? 'bg-white dark:bg-primary text-primary dark:text-on-primary shadow-2xs font-extrabold'
                           : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                       }`}
                     >
                       <span>{tab.label}</span>
                       <span
-                        className={`text-[10px] px-1 rounded-full font-mono font-bold ${
+                        className={`text-[10px] px-1 rounded-full font-mono font-bold tabular-nums ${
                           isActive
-                            ? 'bg-primary/10 text-primary dark:bg-white/20 dark:text-white'
+                            ? 'bg-primary/10 text-primary dark:bg-black/15 dark:text-on-primary'
                             : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
                         }`}
                       >
@@ -563,8 +582,15 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
           </div>
 
           {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
-          {isFilterDrawerOpen && (
-            <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] animate-in fade-in slide-in-from-top-1 duration-150">
+          <AnimatePresence>
+            {isFilterDrawerOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={POPOVER_TRANSITION}
+                className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C]"
+              >
               <div className="flex flex-wrap items-center gap-2.5 text-xs">
                 {/* Category Dropdown */}
                 <div className="flex items-center gap-1.5">
@@ -631,8 +657,9 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   </button>
                 )}
               </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* TABLE CONTENT / EMPTY STATE */}
@@ -803,7 +830,8 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                       {/* Expand Chevron */}
                       <button
                         type="button"
-                        className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0"
+                        aria-label={isExpanded ? (isAmharic ? 'ዝጋ' : 'Collapse') : (isAmharic ? 'ዘርጋ' : 'Expand')}
+                        className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0 touch-manipulation"
                       >
                         <Icon className="material-symbols-outlined text-[18px]">
                           {isExpanded ? 'expand_less' : 'expand_more'}
@@ -812,43 +840,54 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                     </div>
 
                     {/* Expandable Card Body */}
-                    {isExpanded && (
-                      <div className="mt-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47] space-y-2 text-xs animate-in fade-in duration-150">
-                        <div className="grid grid-cols-2 gap-2 bg-[#F7F9FC] dark:bg-[#1C2434] p-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47]">
-                          <div>
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</span>
-                            <span className="font-mono text-xs text-[#1C2434] dark:text-white font-bold">{log.phone || '—'}</span>
-                          </div>
-                          <div>
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የተቆጣጣሪው ባጅ' : 'Officer Badge'}</span>
-                            <span className="font-mono text-xs text-[#1C2434] dark:text-white font-bold">{log.officerBadgeId || userBadgeId || 'OFF-8842'}</span>
-                          </div>
-                          <div className="col-span-2">
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የፍተሻ ማስታወሻ' : 'Officer Notes'}</span>
-                            <span className="text-xs text-slate-800 dark:text-slate-200 italic">{log.officerNotes || (isAmharic ? 'ምንም ተጨማሪ ማስታወሻ አልተያያዘም' : 'No officer notes recorded.')}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 pt-1">
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold">{isAmharic ? 'የፍተሻ ውጤት:' : 'Result:'}</span>
-                            {renderVerificationBadge(log.verificationStatus)}
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={POPOVER_TRANSITION}
+                          className="mt-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47] space-y-2 text-xs"
+                        >
+                          <div className="grid grid-cols-2 gap-2 bg-[#F7F9FC] dark:bg-[#1C2434] p-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47]">
+                            <div>
+                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</span>
+                              <span className="font-mono text-xs text-[#1C2434] dark:text-white font-bold">{log.phone || '—'}</span>
+                            </div>
+                            <div>
+                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የተቆጣጣሪው ባጅ' : 'Officer Badge'}</span>
+                              <span className="font-mono text-xs text-[#1C2434] dark:text-white font-bold">{log.officerBadgeId || userBadgeId || 'OFF-8842'}</span>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የፍተሻ ማስታወሻ' : 'Officer Notes'}</span>
+                              <span className="text-xs text-slate-800 dark:text-slate-200 italic">{log.officerNotes || (isAmharic ? 'ምንም ተጨማሪ ማስታወሻ አልተያያዘም' : 'No officer notes recorded.')}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 pt-1">
+                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold">{isAmharic ? 'የፍተሻ ውጤት:' : 'Result:'}</span>
+                              {renderVerificationBadge(log.verificationStatus)}
+                            </div>
+
                           </div>
 
-                        </div>
-
-                        <div className="pt-1 flex justify-end">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedLogForDetails(log);
-                            }}
-                            className="w-full py-2 bg-primary hover:bg-primary-hover text-white font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                          >
-                            <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
-                            <span>{isAmharic ? 'ሙሉ የተፈተሸ ተሽከርካሪ መረጃ እይ' : 'View Scanned Vehicle'}</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                          <div className="pt-1 flex justify-end">
+                            <motion.button
+                              type="button"
+                              data-motion-control="true"
+                              whileTap={TAP_SCALE}
+                              transition={TACTILE_SPRING}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedLogForDetails(log);
+                              }}
+                              className="w-full min-h-[44px] py-2 bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer touch-manipulation"
+                            >
+                              <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
+                              <span>{isAmharic ? 'ሙሉ የተፈተሸ ተሽከርካሪ መረጃ እይ' : 'View Scanned Vehicle'}</span>
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
@@ -882,13 +921,13 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   type="button"
                   disabled={activePageNum <= 1}
                   onClick={() => handlePageChange(activePageNum - 1)}
-                  className="px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
                   <span>{isAmharic ? 'ቀዳሚ' : 'Prev'}</span>
                 </button>
 
-                <span className="px-3 py-1.5 font-bold font-mono text-[#1C2434] dark:text-white bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm">
+                <span className="px-3 py-1.5 font-bold font-mono text-[#1C2434] dark:text-white bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm tabular-nums">
                   {activePageNum} / {totalPages}
                 </span>
 
@@ -896,7 +935,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   type="button"
                   disabled={activePageNum >= totalPages}
                   onClick={() => handlePageChange(activePageNum + 1)}
-                  className="px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
                 >
                   <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
                   <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
@@ -907,169 +946,204 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         )}
       </div>
 
-      {/* MODAL 1: DETAILED SCANNED VEHICLE INSPECTION (MATCHING MEMBER DETAILS DRAWER) */}
-      {selectedLogForDetails && selectedRegForCard && (
-        <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
-          {/* Backdrop */}
-          <div
-            onClick={() => setSelectedLogForDetails(null)}
-            className="fixed inset-0 bg-slate-950/40 dark:bg-black/60 transition-opacity"
-          />
+      {/* MODAL 1: DETAILED SCANNED VEHICLE INSPECTION (SWIPE-TO-DISMISS DRAWER) */}
+      <AnimatePresence>
+        {selectedLogForDetails && selectedRegForCard && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            {/* Backdrop */}
+            <motion.div
+              variants={BACKDROP_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={POPOVER_TRANSITION}
+              onClick={() => setSelectedLogForDetails(null)}
+              className="fixed inset-0 bg-slate-950/40 dark:bg-black/60 backdrop-blur-xs"
+            />
 
-          {/* Side-Sheet Drawer Content */}
-          <div className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-300 dark:border-slate-800 shadow-2xl z-10 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
-            {/* Drawer Header */}
-            <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
-                  <Icon name="analytics" size={24} />
-                </div>
-                <div className="space-y-0.5 min-w-0">
-                  <h3 className="text-sm sm:text-base font-black tracking-wide truncate flex items-center gap-2">
-                    <span>{isAmharic ? 'የተፈተሸ ተሽከርካሪ ማረጋገጫ ዝርዝር' : 'Scanned Inspection Audit'}</span>
-                  </h3>
-                  <p className="text-xs text-slate-300 font-medium truncate">
-                    {selectedLogForDetails.fullName}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                {selectedLogForDetails.plateNumber && (
-                  <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-slate-100">
-                    {selectedLogForDetails.plateNumber}
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setSelectedLogForDetails(null)}
-                  className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-sm font-bold shrink-0"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            {/* Drawer Body: Scrollable */}
-            <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs">
-              {/* Officer Audit Badge */}
-              <div className="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="space-y-0.5">
-                    <p className="font-extrabold text-[#1C2434] dark:text-white flex items-center gap-1.5">
-                      <Icon className="material-symbols-outlined text-[16px] text-primary">location_on</Icon>
-                      <span>{selectedLogForDetails.locationName || 'Checkpoint Station'}</span>
-                    </p>
-                    <p className="text-[#64748B] dark:text-[#8A99AD] text-[11px]">
-                      {isAmharic ? 'የተፈተሸበት ቀን፡' : 'Scanned At:'} <span className="font-mono font-bold">{formatEthiopianDateTime(selectedLogForDetails.scannedAt, isAmharic ? 'am' : 'en')}</span>
+            {/* Side-Sheet Drawer Content (swipe right to dismiss on touch devices) */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={SHEET_SPRING}
+              drag="x"
+              dragConstraints={{ left: 0 }}
+              dragElastic={{ left: 0, right: 0.35 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > 100 || info.velocity.x > 450) {
+                  setSelectedLogForDetails(null);
+                }
+              }}
+              className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-300 dark:border-slate-800 shadow-2xl z-10 flex flex-col h-full overflow-hidden"
+            >
+              {/* Drawer Header */}
+              <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
+                    <Icon name="analytics" size={24} />
+                  </div>
+                  <div className="space-y-0.5 min-w-0">
+                    <h3 className="text-sm sm:text-base font-black tracking-wide truncate flex items-center gap-2">
+                      <span>{isAmharic ? 'የተፈተሸ ተሽከርካሪ ማረጋገጫ ዝርዝር' : 'Scanned Inspection Audit'}</span>
+                    </h3>
+                    <p className="text-xs text-slate-300 font-medium truncate">
+                      {selectedLogForDetails.fullName}
                     </p>
                   </div>
-                  <div>
-                    {renderVerificationBadge(selectedLogForDetails.verificationStatus)}
-                  </div>
                 </div>
 
-                {/* Driver Portrait Photo & ID Banner */}
-                <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3.5">
-                  <div
-                    onClick={() => {
-                      const imgUrl = selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto;
-                      if (imgUrl) {
-                        setZoomedImage({
-                          url: imgUrl,
-                          title: `${selectedLogForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Driver Portrait'}`
-                        });
-                      }
-                    }}
-                    className="relative w-16 h-20 rounded-md overflow-hidden border border-primary/40 shadow-xs shrink-0 bg-slate-200 dark:bg-slate-700 cursor-pointer group hover:opacity-90 transition-all"
-                    title={isAmharic ? 'ለማጉላት ይጫኑ' : 'Click to Zoom Photo'}
+                <div className="flex items-center gap-2">
+                  {selectedLogForDetails.plateNumber && (
+                    <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-slate-100">
+                      {selectedLogForDetails.plateNumber}
+                    </span>
+                  )}
+                  <motion.button
+                    type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
+                    onClick={() => setSelectedLogForDetails(null)}
+                    aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+                    className="w-11 h-11 sm:w-9 sm:h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 touch-manipulation"
                   >
-                    <SmartImage
-                      src={selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto}
-                      alt={selectedLogForDetails.fullName}
-                      fallbackIcon="person"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                      <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
+                    <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Drawer Body: Scrollable */}
+              <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs pb-[max(1rem,env(safe-area-inset-bottom,16px))]">
+                {/* Officer Audit Badge */}
+                <div className="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="space-y-0.5">
+                      <p className="font-extrabold text-[#1C2434] dark:text-white flex items-center gap-1.5">
+                        <Icon className="material-symbols-outlined text-[16px] text-primary">location_on</Icon>
+                        <span>{selectedLogForDetails.locationName || 'Checkpoint Station'}</span>
+                      </p>
+                      <p className="text-[#64748B] dark:text-[#8A99AD] text-[11px]">
+                        {isAmharic ? 'የተፈተሸበት ቀን፡' : 'Scanned At:'} <span className="font-mono font-bold">{formatEthiopianDateTime(selectedLogForDetails.scannedAt, isAmharic ? 'am' : 'en')}</span>
+                      </p>
+                    </div>
+                    <div>
+                      {renderVerificationBadge(selectedLogForDetails.verificationStatus)}
                     </div>
                   </div>
-                  <div className="space-y-1 text-xs min-w-0">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-md">
-                      <Icon className="material-symbols-outlined text-[14px]">badge</Icon>
-                      <span>{isAmharic ? 'የባለቤት መታወቂያ ፎቶ' : 'Driver / Owner ID Portrait'}</span>
-                    </span>
-                    <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white leading-tight truncate">
-                      {selectedLogForDetails.fullName}
-                    </h4>
-                    <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium">
-                      {isAmharic ? 'ሰሌዳ:' : 'Plate:'} <span className="font-mono font-bold text-primary">{selectedLogForDetails.plateNumber}</span> • {selectedLogForDetails.phone}
-                    </p>
-                    <p className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-medium">
-                      {isAmharic ? 'የተቆጣጣሪው ባጅ:' : 'Inspector Officer:'} <span className="font-mono font-bold">{selectedLogForDetails.officerBadgeId || userBadgeId || 'OFF-8842'}</span>
-                    </p>
+
+                  {/* Driver Portrait Photo & ID Banner */}
+                  <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3.5">
+                    <div
+                      onClick={() => {
+                        const imgUrl = selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto;
+                        if (imgUrl) {
+                          setZoomedImage({
+                            url: imgUrl,
+                            title: `${selectedLogForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Driver Portrait'}`
+                          });
+                        }
+                      }}
+                      className="relative w-16 h-20 rounded-md overflow-hidden border border-primary/40 shadow-xs shrink-0 bg-slate-200 dark:bg-slate-700 cursor-pointer group hover:opacity-90 transition-all"
+                      title={isAmharic ? 'ለማጉላት ይጫኑ' : 'Click to Zoom Photo'}
+                    >
+                      <SmartImage
+                        src={selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto}
+                        alt={selectedLogForDetails.fullName}
+                        fallbackIcon="person"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                        <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
+                      </div>
+                    </div>
+                    <div className="space-y-1 text-xs min-w-0">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-md">
+                        <Icon className="material-symbols-outlined text-[14px]">badge</Icon>
+                        <span>{isAmharic ? 'የባለቤት መታወቂያ ፎቶ' : 'Driver / Owner ID Portrait'}</span>
+                      </span>
+                      <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white leading-tight truncate">
+                        {selectedLogForDetails.fullName}
+                      </h4>
+                      <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium">
+                        {isAmharic ? 'ሰሌዳ:' : 'Plate:'} <span className="font-mono font-bold text-primary">{selectedLogForDetails.plateNumber}</span> • {selectedLogForDetails.phone}
+                      </p>
+                      <p className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-medium">
+                        {isAmharic ? 'የተቆጣጣሪው ባጅ:' : 'Inspector Officer:'} <span className="font-mono font-bold">{selectedLogForDetails.officerBadgeId || userBadgeId || 'OFF-8842'}</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Digital Permit QR Badge Preview */}
-              <div className="w-full">
-                <ZoomableDocumentContainer
-                  lang={lang}
-                  userRole={userRole}
-                  title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
-                  onClose={() => setSelectedLogForDetails(null)}
-                >
-                  <QRCodeCard registration={selectedRegForCard} lang={lang} />
-                </ZoomableDocumentContainer>
-              </div>
-
-              {/* Officer Notes */}
-              {selectedLogForDetails.officerNotes && (
-                <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs space-y-1 border border-slate-200 dark:border-slate-700">
-                  <p className="font-bold text-[#1C2434] dark:text-white">{isAmharic ? 'የተቆጣጣሪው ማረጋገጫ ማስታወሻ:' : 'Officer Field Verification Notes:'}</p>
-                  <p className="text-[#64748B] dark:text-[#8A99AD] italic">"{selectedLogForDetails.officerNotes}"</p>
+                {/* Digital Permit QR Badge Preview */}
+                <div className="w-full">
+                  <ZoomableDocumentContainer
+                    lang={lang}
+                    userRole={userRole}
+                    title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
+                    onClose={() => setSelectedLogForDetails(null)}
+                  >
+                    <QRCodeCard registration={selectedRegForCard} lang={lang} />
+                  </ZoomableDocumentContainer>
                 </div>
-              )}
 
-              {/* Drawer Footer Close Action */}
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setSelectedLogForDetails(null)}
-                  className="w-full bg-primary text-white font-bold py-2.5 rounded-lg text-xs cursor-pointer hover:bg-primary-hover transition-colors shadow-xs"
-                >
-                  {isAmharic ? 'ዝጋ' : 'Close Details'}
-                </button>
+                {/* Officer Notes */}
+                {selectedLogForDetails.officerNotes && (
+                  <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs space-y-1 border border-slate-200 dark:border-slate-700">
+                    <p className="font-bold text-[#1C2434] dark:text-white">{isAmharic ? 'የተቆጣጣሪው ማረጋገጫ ማስታወሻ:' : 'Officer Field Verification Notes:'}</p>
+                    <p className="text-[#64748B] dark:text-[#8A99AD] italic">"{selectedLogForDetails.officerNotes}"</p>
+                  </div>
+                )}
+
+                {/* Drawer Footer Close Action */}
+                <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <motion.button
+                    type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
+                    onClick={() => setSelectedLogForDetails(null)}
+                    className="w-full min-h-[44px] bg-primary text-on-primary font-bold py-2.5 rounded-lg text-xs cursor-pointer hover:bg-primary-hover transition-colors shadow-xs touch-manipulation"
+                  >
+                    {isAmharic ? 'ዝጋ' : 'Close Details'}
+                  </motion.button>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* LIGHTBOX MODAL FOR EXPANDED DOCUMENT INSPECTION */}
-      {zoomedImage && (
-        <div
-          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
-          onClick={() => setZoomedImage(null)}
-        >
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
-            <ZoomableDocumentContainer
-              lang={lang}
-              title={zoomedImage.title}
-              onClose={() => setZoomedImage(null)}
-              requireClerkRequest={false}
-            >
-              <img
-                src={zoomedImage.url}
-                alt={zoomedImage.title}
-                referrerPolicy="no-referrer"
-                className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg mx-auto"
-              />
-            </ZoomableDocumentContainer>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {zoomedImage && (
+          <motion.div
+            variants={BACKDROP_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={POPOVER_TRANSITION}
+            className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
+            onClick={() => setZoomedImage(null)}
+          >
+            <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
+              <ZoomableDocumentContainer
+                lang={lang}
+                title={zoomedImage.title}
+                onClose={() => setZoomedImage(null)}
+                requireClerkRequest={false}
+              >
+                <img
+                  src={zoomedImage.url}
+                  alt={zoomedImage.title}
+                  referrerPolicy="no-referrer"
+                  className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg mx-auto"
+                />
+              </ZoomableDocumentContainer>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

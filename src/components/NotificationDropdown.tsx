@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
 import { ActiveHomePage } from './HomePage';
+import { POPOVER_TRANSITION, TACTILE_SPRING, TAP_SCALE } from '../utils/motionPresets';
 
 export interface NotificationSubItem {
   id: string;
@@ -43,7 +45,6 @@ interface NotificationDropdownProps {
 export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   notifications,
   readIds,
-  onMarkAllAsRead,
   onClearAll,
   onSelectNotification,
   onClose,
@@ -71,20 +72,20 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
   return (
     <div
-      className="flex flex-col bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] select-none rounded-sm shadow-xl overflow-hidden w-full"
+      className="flex flex-col bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] select-none rounded-lg shadow-xl overflow-hidden w-full"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
     >
       {/* Header Bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#F1F5F9] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
-          <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">notifications_active</Icon>
+          <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">notifications_active</Icon>
           <div className="min-w-0">
             <h3 className="font-extrabold text-xs sm:text-sm tracking-tight break-words text-[#1C2434] dark:text-white">
               {isAmharic ? 'የስርዓት ማሳወቂያዎች' : 'System Notifications'}
             </h3>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold break-words">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold break-words">
               {unreadCount > 0
                 ? isAmharic
                   ? `${unreadCount} ያልተነበቡ ማሳወቂያዎች`
@@ -103,7 +104,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
               e.stopPropagation();
               onClose();
             }}
-            className="w-7 h-7 rounded-sm text-slate-400 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47] transition-colors flex items-center justify-center cursor-pointer"
+            className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg text-slate-400 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47] transition-colors flex items-center justify-center cursor-pointer"
             aria-label="Close"
           >
             <Icon className="material-symbols-outlined text-[18px]">close</Icon>
@@ -112,35 +113,41 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       </div>
 
       {/* Filter Tabs */}
-      <div 
-        className="flex items-center gap-1.5 px-4 py-2 border-b border-[#F1F5F9] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-xs shrink-0 flex-nowrap overflow-x-auto scrollbar-none max-w-full"
+      <div
+        className="flex items-center gap-1.5 px-4 py-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-xs shrink-0 flex-nowrap overflow-x-auto scrollbar-none max-w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
+        <motion.button
           type="button"
+          data-motion-control="true"
+          whileTap={TAP_SCALE}
+          transition={TACTILE_SPRING}
           onClick={(e) => {
             e.stopPropagation();
             setFilter('all');
           }}
-          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+          className={`px-3 min-h-[40px] sm:min-h-[32px] rounded-md font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             filter === 'all'
               ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700/90'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#2E3A47] border border-transparent'
           }`}
         >
           <span>{isAmharic ? 'ሁሉም' : 'All'}</span>
-          <span className={`px-1.5 rounded-full text-[9px] font-mono font-bold ${filter === 'all' ? 'bg-white dark:bg-[#1C2434] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60' : 'bg-slate-100 dark:bg-[#2E3A47] text-slate-600 dark:text-slate-300'}`}>
+          <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${filter === 'all' ? 'bg-white dark:bg-[#1C2434] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60' : 'bg-slate-100 dark:bg-[#2E3A47] text-slate-600 dark:text-slate-300'}`}>
             {notifications.length}
           </span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           type="button"
+          data-motion-control="true"
+          whileTap={TAP_SCALE}
+          transition={TACTILE_SPRING}
           onClick={(e) => {
             e.stopPropagation();
             setFilter('unread');
           }}
-          className={`px-3 py-1 rounded-sm font-bold text-[11px] transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+          className={`px-3 min-h-[40px] sm:min-h-[32px] rounded-md font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             filter === 'unread'
               ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700/90'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#2E3A47] border border-transparent'
@@ -148,15 +155,15 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         >
           <span>{isAmharic ? 'ያልተነበቡ' : 'Unread'}</span>
           {unreadCount > 0 && (
-            <span className="bg-rose-500 text-white px-1.5 py-0.2 rounded-full text-[9px] font-black">
+            <span className="bg-rose-500 text-white px-1.5 py-0.5 rounded-md text-[10px] font-black leading-none">
               {unreadCount}
             </span>
           )}
-        </button>
+        </motion.button>
       </div>
 
       {/* Notification List Body */}
-      <div className="overflow-y-auto max-h-[380px] sm:max-h-[440px] divide-y divide-[#F1F5F9] dark:divide-[#2E3A47]/40 bg-white dark:bg-[#1C2434]">
+      <div className="overflow-y-auto max-h-[60dvh] sm:max-h-[440px] divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]/60 bg-white dark:bg-[#1C2434]">
         {filteredNotifications.length === 0 ? (
           <div className="py-10 px-4 text-center space-y-2 bg-white dark:bg-[#1C2434]">
             <div className="w-12 h-12 mx-auto rounded-full bg-slate-50 dark:bg-[#24303F] flex items-center justify-center text-slate-400 dark:text-slate-500">
@@ -191,7 +198,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 {/* Main Notification Header Card */}
                 <div
                   onClick={() => onSelectNotification(item)}
-                  className="p-3 sm:p-3.5 flex items-start gap-3 transition-colors cursor-pointer hover:bg-slate-50/80 dark:hover:bg-[#24303F]/50"
+                  className="p-3 sm:p-3.5 flex items-start gap-3 transition-colors cursor-pointer hover:bg-slate-50/80 dark:hover:bg-[#24303F]/50 active:bg-slate-100/70 dark:active:bg-[#24303F]"
                 >
                   {/* Category Icon */}
                   <div
@@ -203,7 +210,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                   {/* Content Block */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-1.5 flex-wrap">
-                      <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-black  tracking-wider ${item.badgeBg} ${item.badgeText}`}>
+                      <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-black tracking-wider ${item.badgeBg} ${item.badgeText}`}>
                         {item.badgeLabel}
                       </span>
                       {item.time && (
@@ -213,7 +220,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       )}
                     </div>
 
-                    <h4 className="text-xs font-extrabold text-[#1C2434] dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors leading-snug break-words text-wrap">
+                    <h4 className="text-xs font-extrabold text-[#1C2434] dark:text-white leading-snug break-words text-wrap">
                       {item.title}
                     </h4>
 
@@ -223,19 +230,19 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
                     {/* Expand/Collapse Toggle Button for Nested Sub-items */}
                     {hasSubItems && (
-                      <div className="pt-1 flex items-center justify-between">
+                      <div className="pt-0.5 flex items-center justify-between">
                         <button
                           type="button"
                           onClick={(e) => toggleGroupExpand(e, item.id)}
-                          className="inline-flex items-center gap-1 text-[10px] font-extrabold text-primary dark:text-primary hover:underline cursor-pointer"
+                          className="inline-flex items-center gap-1 min-h-[36px] py-1 px-1.5 -ml-1.5 rounded-md text-[11px] font-extrabold text-primary hover:bg-primary/5 hover:underline cursor-pointer"
                         >
                           <span>
                             {isExpanded
                               ? (isAmharic ? 'ዝርዝሮችን ደብቅ' : 'Hide items')
                               : (isAmharic ? `${item.subItems!.length} ዝርዝር ማመልከቻዎችን አሳይ` : `Show ${item.subItems!.length} sub-items`)}
                           </span>
-                          <Icon className="material-symbols-outlined text-[14px]">
-                            {isExpanded ? 'expand_less' : 'expand_more'}
+                          <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`}>
+                            expand_more
                           </Icon>
                         </button>
                       </div>
@@ -249,53 +256,61 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 </div>
 
                 {/* Nested Sub-items (Grouped Under Main Notification) */}
-                {hasSubItems && isExpanded && (
-                  <div className="pl-11 pr-3.5 pb-2 pt-1 space-y-1.5 border-t border-[#F1F5F9] dark:border-[#2E3A47]/40 bg-slate-50/50 dark:bg-[#1A2232]/50">
-                    <div className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500  tracking-wider mb-1">
-                      {isAmharic ? 'የተካተቱ ማመልከቻዎችና ሪፖርቶች:' : 'Nested Submissions & Items:'}
-                    </div>
-                    {item.subItems!.map((sub) => (
-                      <div
-                        key={sub.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectNotification({
-                            id: sub.id,
-                            parentId: item.id,
-                            title: sub.title,
-                            description: sub.description,
-                            type: item.type,
-                            icon: item.icon,
-                            iconBg: item.iconBg,
-                            badgeLabel: item.badgeLabel,
-                            badgeBg: item.badgeBg,
-                            badgeText: item.badgeText,
-                            actionPage: sub.actionPage || item.actionPage,
-                            actionTab: sub.actionTab || item.actionTab,
-                          });
-                        }}
-                        className="p-2 rounded-sm bg-white dark:bg-[#1C2434] border border-[#F1F5F9] dark:border-[#2E3A47] hover:border-primary/30 transition-all cursor-pointer flex items-start gap-2 shadow-2xs"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-1 flex-wrap">
-                            <span className="text-[11px] font-extrabold text-[#1C2434] dark:text-white break-words text-wrap">
-                              {sub.title}
-                            </span>
-                            {sub.time && (
-                              <span className="text-[9px] text-slate-400 font-mono shrink-0">
-                                {sub.time}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal break-words text-wrap">
-                            {sub.description}
-                          </p>
-                        </div>
+                <AnimatePresence initial={false}>
+                  {hasSubItems && isExpanded && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -4 }}
+                      transition={POPOVER_TRANSITION}
+                      className="pl-11 pr-3.5 pb-2.5 pt-1.5 space-y-1.5 border-t border-[#E2E8F0] dark:border-[#2E3A47]/60 bg-slate-50/70 dark:bg-[#1A2232]/70"
+                    >
+                      <div className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 tracking-wider mb-1">
+                        {isAmharic ? 'የተካተቱ ማመልከቻዎችና ሪፖርቶች:' : 'Nested Submissions & Items:'}
                       </div>
-                    ))}
-                  </div>
-                )}
+                      {item.subItems!.map((sub) => (
+                        <div
+                          key={sub.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectNotification({
+                              id: sub.id,
+                              parentId: item.id,
+                              title: sub.title,
+                              description: sub.description,
+                              type: item.type,
+                              icon: item.icon,
+                              iconBg: item.iconBg,
+                              badgeLabel: item.badgeLabel,
+                              badgeBg: item.badgeBg,
+                              badgeText: item.badgeText,
+                              actionPage: sub.actionPage || item.actionPage,
+                              actionTab: sub.actionTab || item.actionTab,
+                            });
+                          }}
+                          className="p-2.5 rounded-md bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary/40 transition-colors cursor-pointer flex items-start gap-2 shadow-2xs"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1 flex-wrap">
+                              <span className="text-[11px] font-extrabold text-[#1C2434] dark:text-white break-words text-wrap">
+                                {sub.title}
+                              </span>
+                              {sub.time && (
+                                <span className="text-[9px] text-slate-400 font-mono shrink-0">
+                                  {sub.time}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal break-words text-wrap">
+                              {sub.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             );
           })
@@ -304,13 +319,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
       {/* Footer Bar */}
       {notifications.length > 0 && (
-        <div className="p-2.5 bg-white dark:bg-[#1C2434] border-t border-[#F1F5F9] dark:border-[#2E3A47] flex items-center justify-between shrink-0 text-xs">
+        <div className="p-2.5 bg-white dark:bg-[#1C2434] border-t border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between shrink-0 text-xs">
           <button
             type="button"
             onClick={onClearAll}
-            className="text-[11px] font-bold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1 px-2 py-1 rounded-sm hover:bg-rose-500/10"
+            className="text-[11px] font-bold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1 px-2.5 min-h-[38px] sm:min-h-[32px] rounded-md hover:bg-rose-500/10"
           >
-            <Icon className="material-symbols-outlined text-[14px]">delete_sweep</Icon>
+            <Icon className="material-symbols-outlined text-[15px]">delete_sweep</Icon>
             <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Clear all'}</span>
           </button>
 

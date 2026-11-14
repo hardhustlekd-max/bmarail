@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Icon } from './ui/Icon';
 import { motion, AnimatePresence } from 'motion/react';
+import {
+  POPOVER_TRANSITION,
+  TACTILE_SPRING,
+  TAP_SCALE,
+  SUBTLE_TAP_SCALE,
+} from '../utils/motionPresets';
 import { MotorcycleRegistration, VerificationLog, Language, SystemSettings } from '../types';
 import { QRCodeCard } from './QRCodeCard';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
@@ -922,7 +928,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                 {/* Top Active Scanning Status Badge */}
                 {isProcessingScan && !uploadedImageSrc && !croppedQrSrc && (
-                  <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-white font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md">
+                  <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-on-primary font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md">
                     <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
                     <span>
                       {isAmharic ? 'QR ኮድ በመተንተን እና በመቃኘት ላይ...' : 'Capturing & Processing QR Code...'}
@@ -934,51 +940,63 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                 <div className="absolute inset-0 pointer-events-none flex flex-col justify-between overflow-hidden z-10">
                   {/* TOP SEARCH POPUP (Only shown when Search by Plate is toggled) */}
                   <div className="w-full flex flex-col pt-3 px-4 sm:px-6 z-30 shrink-0 min-h-[10px]">
-                    {showTopMenu && (
-                      <div className="pointer-events-auto w-full max-w-md mx-auto bg-slate-900/95 border border-slate-700/80 rounded-xl shadow-2xl p-3 text-white backdrop-blur-xl animate-in slide-in-from-top-3 duration-200">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                            <Icon className="material-symbols-outlined text-[18px] text-primary">search</Icon>
-                            <span>{isAmharic ? 'በሰሌዳ ቁጥር ወይም በስም ፈልግ' : 'Search by Plate No or Owner Name'}</span>
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setShowTopMenu(false)}
-                            className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
-                          >
-                            <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-                          </button>
-                        </div>
-                        <form
-                          onSubmit={(e) => {
-                            handleSearchLookup(e);
-                            setShowTopMenu(false);
-                          }}
-                          className="flex gap-2 items-center"
+                    <AnimatePresence>
+                      {showTopMenu && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                          transition={POPOVER_TRANSITION}
+                          className="pointer-events-auto w-full max-w-md mx-auto bg-slate-900/95 border border-slate-700/80 rounded-xl shadow-2xl p-3 text-white backdrop-blur-xl"
                         >
-                          <div className="relative flex-1">
-                            <div className="absolute inset-y-0 left-3 flex items-center justify-center pointer-events-none text-slate-400">
-                              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
-                            </div>
-                            <input
-                              type="text"
-                              value={searchPlate}
-                              onChange={(e) => setSearchPlate(e.target.value)}
-                              placeholder={isAmharic ? 'የሰሌዳ ቁጥር ወይም ስም ያስገቡ...' : 'Enter Plate No or Name...'}
-                              className="w-full bg-slate-800 border border-slate-700 rounded-md pl-10 pr-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary shadow-xs"
-                              autoFocus
-                            />
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                              <Icon className="material-symbols-outlined text-[18px] text-primary">search</Icon>
+                              <span>{isAmharic ? 'በሰሌዳ ቁጥር ወይም በስም ፈልግ' : 'Search by Plate No or Owner Name'}</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setShowTopMenu(false)}
+                              className="text-slate-400 hover:text-white w-9 h-9 flex items-center justify-center rounded-lg transition-colors cursor-pointer touch-manipulation"
+                              aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+                            >
+                              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                            </button>
                           </div>
-                          <button
-                            type="submit"
-                            className="bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm px-3.5 py-2 rounded-md transition-colors cursor-pointer flex items-center gap-1 shrink-0 shadow-xs"
+                          <form
+                            onSubmit={(e) => {
+                              handleSearchLookup(e);
+                              setShowTopMenu(false);
+                            }}
+                            className="flex gap-2 items-center"
                           >
-                            <Icon className="material-symbols-outlined text-[18px]">search</Icon>
-                            <span>{isAmharic ? 'ፈልግ' : 'Search'}</span>
-                          </button>
-                        </form>
-                      </div>
-                    )}
+                            <div className="relative flex-1">
+                              <div className="absolute inset-y-0 left-3 flex items-center justify-center pointer-events-none text-slate-400">
+                                <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+                              </div>
+                              <input
+                                type="text"
+                                value={searchPlate}
+                                onChange={(e) => setSearchPlate(e.target.value)}
+                                placeholder={isAmharic ? 'የሰሌዳ ቁጥር ወይም ስም ያስገቡ...' : 'Enter Plate No or Name...'}
+                                className="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-md pl-10 pr-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary shadow-xs"
+                                autoFocus
+                              />
+                            </div>
+                            <motion.button
+                              type="submit"
+                              data-motion-control="true"
+                              whileTap={TAP_SCALE}
+                              transition={TACTILE_SPRING}
+                              className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs sm:text-sm px-3.5 py-2 rounded-md transition-colors cursor-pointer flex items-center gap-1 shrink-0 shadow-xs touch-manipulation"
+                            >
+                              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+                              <span>{isAmharic ? 'ፈልግ' : 'Search'}</span>
+                            </motion.button>
+                          </form>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {/* 2. CENTER VIEWFINDER (Flex-grow adaptive reticle container) */}
@@ -1018,18 +1036,26 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                               className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
                             />
                             {/* Verification Success Animation Overlay inside reticle */}
-                            {scannedVerificationState === 'verified' && (
-                              <div className="absolute inset-0 bg-emerald-500/25 backdrop-blur-[2px] rounded-xl flex items-center justify-center z-30 animate-in fade-in duration-200">
+                            <AnimatePresence>
+                              {scannedVerificationState === 'verified' && (
                                 <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                                  className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  exit={{ opacity: 0 }}
+                                  transition={{ duration: 0.16 }}
+                                  className="absolute inset-0 bg-emerald-500/25 backdrop-blur-[2px] rounded-xl flex items-center justify-center z-30"
                                 >
-                                  <Icon className="material-symbols-outlined text-[32px] text-white">check</Icon>
+                                  <motion.div
+                                    initial={{ scale: 0.5, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={TACTILE_SPRING}
+                                    className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg"
+                                  >
+                                    <Icon className="material-symbols-outlined text-[32px] text-white">check</Icon>
+                                  </motion.div>
                                 </motion.div>
-                              </div>
-                            )}
+                              )}
+                            </AnimatePresence>
                           </motion.div>
                         </div>
                       )}
@@ -1040,13 +1066,15 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-bl-sm z-20" />
                       <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-br-sm z-20" />
 
-                      {/* Scanning Line: Keep existing blue color with smooth, high-precision sweep */}
+                      {/* Scanning Line: Compositor-only transform sweep (0% layout thrash) */}
                       {scannedVerificationState === 'idle' && (
                         <motion.div
-                          className="absolute left-2 right-2 h-[2.5px] bg-[#3b82f6] shadow-[0_0_16px_#3b82f6] rounded-full z-20"
-                          animate={{ top: ['8%', '88%', '8%'] }}
+                          className="absolute inset-x-2 top-[8%] bottom-[8%] pointer-events-none z-20"
+                          animate={{ y: ['0%', '96%', '0%'] }}
                           transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }}
-                        />
+                        >
+                          <div className="w-full h-[2.5px] bg-[#3b82f6] shadow-[0_0_16px_#3b82f6] rounded-full" />
+                        </motion.div>
                       )}
                     </div>
                   </div>
@@ -1073,49 +1101,61 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     {/* Bottom Action Buttons Row with Opaque Dark Background & Blur */}
                     <div className="w-full bg-black/80 backdrop-blur-md border border-white/15 rounded-xl p-2 sm:p-2.5 flex items-center justify-between sm:justify-evenly shadow-2xl gap-1 sm:gap-2">
                       {/* 1. Back Button */}
-                      <button
+                      <motion.button
                         type="button"
+                        data-motion-control="true"
+                        whileTap={{ scale: 0.9 }}
+                        transition={TACTILE_SPRING}
                         onClick={onClose}
-                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer border border-white/15"
+                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer border border-white/15"
                         title={isAmharic ? 'ተመለስ' : 'Back'}
                       >
                         <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">arrow_back</Icon>
-                      </button>
+                      </motion.button>
 
                       {/* 2. Search Button */}
-                      <button
+                      <motion.button
                         type="button"
+                        data-motion-control="true"
+                        whileTap={{ scale: 0.9 }}
+                        transition={TACTILE_SPRING}
                         onClick={() => setShowTopMenu(!showTopMenu)}
-                        className={`w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           showTopMenu
-                            ? 'bg-primary text-white shadow-primary/40 ring-4 ring-primary/50'
+                            ? 'bg-primary text-on-primary shadow-primary/40 ring-4 ring-primary/50'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
                         }`}
                         title={isAmharic ? 'ፈልግ' : 'Search'}
                       >
                         <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">search</Icon>
-                      </button>
+                      </motion.button>
 
                       {/* 3. Photo Gallery Upload */}
-                      <button
+                      <motion.button
                         type="button"
+                        data-motion-control="true"
+                        whileTap={{ scale: 0.9 }}
+                        transition={TACTILE_SPRING}
                         onClick={() => {
                           if (fileInputRef.current) {
                             fileInputRef.current.value = '';
                             fileInputRef.current.click();
                           }
                         }}
-                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ምስል ስካን' : 'Select Photo'}
                       >
                         <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">image</Icon>
-                      </button>
+                      </motion.button>
 
                       {/* 4. Flashlight / Torch Toggle */}
-                      <button
+                      <motion.button
                         type="button"
+                        data-motion-control="true"
+                        whileTap={{ scale: 0.9 }}
+                        transition={TACTILE_SPRING}
                         onClick={handleToggleTorch}
-                        className={`w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
+                        className={`w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer backdrop-blur-md ${
                           isTorchOn
                             ? 'bg-amber-400 text-amber-950 shadow-amber-400/40 ring-4 ring-amber-300/60'
                             : 'bg-white/20 hover:bg-white/30 active:bg-white/40 text-white'
@@ -1125,67 +1165,87 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">
                           {isTorchOn ? 'flashlight_on' : 'flashlight_off'}
                         </Icon>
-                      </button>
+                      </motion.button>
 
                       {/* 5. Switch Camera (Front/Rear) */}
-                      <button
+                      <motion.button
                         type="button"
+                        data-motion-control="true"
+                        whileTap={{ scale: 0.9 }}
+                        transition={TACTILE_SPRING}
                         onClick={() => setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'))}
-                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[42px] min-h-[42px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-all active:scale-90 touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
+                        className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ካሜራ ቀይር' : 'Switch Camera'}
                       >
                         <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">cameraswitch</Icon>
-                      </button>
+                      </motion.button>
                     </div>
                   </div>
                 </div>
 
 
                 {/* Camera Error & Permission Denied UI */}
-                {cameraError && (
-                  <div className="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-6 text-center z-40 space-y-4 pointer-events-auto">
-                    <div className="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-lg">
-                      <Icon className="material-symbols-outlined text-[36px]">videocam_off</Icon>
-                    </div>
-                    <div className="space-y-1 max-w-sm">
-                      <h4 className="text-white font-black text-sm">
-                        {isAmharic ? 'የካሜራ ችግር ተፈጥሯል' : 'Camera Unavailable'}
-                      </h4>
-                      <p className="text-rose-300/90 text-xs font-medium leading-relaxed">{cameraError}</p>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                      <button
-                        type="button"
-                        onClick={handleStartCameraScan}
-                        className="bg-primary hover:bg-primary-hover text-white px-4 py-2.5 rounded-lg text-xs font-bold transition-all cursor-pointer shadow-md flex items-center gap-1.5 active:scale-95"
-                      >
-                        <Icon className="material-symbols-outlined text-[16px]">refresh</Icon>
-                        <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry Camera'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = '';
-                            fileInputRef.current.click();
-                          }
-                        }}
-                        className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all border border-slate-700 flex items-center gap-1.5 active:scale-95"
-                      >
-                        <Icon className="material-symbols-outlined text-[16px]">image</Icon>
-                        <span>{isAmharic ? 'ምስል ስካን' : 'Select Photo'}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowTopMenu(true)}
-                        className="bg-slate-800 hover:bg-slate-700 text-amber-400 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-all border border-slate-700 flex items-center gap-1.5 active:scale-95"
-                      >
-                        <Icon className="material-symbols-outlined text-[16px]">search</Icon>
-                        <span>{isAmharic ? 'በሰሌዳ ፈልግ' : 'Search by Plate'}</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <AnimatePresence>
+                  {cameraError && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.16 }}
+                      className="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-6 text-center z-40 space-y-4 pointer-events-auto"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-lg">
+                        <Icon className="material-symbols-outlined text-[36px]">videocam_off</Icon>
+                      </div>
+                      <div className="space-y-1 max-w-sm">
+                        <h4 className="text-white font-black text-sm">
+                          {isAmharic ? 'የካሜራ ችግር ተፈጥሯል' : 'Camera Unavailable'}
+                        </h4>
+                        <p className="text-rose-300/90 text-xs font-medium leading-relaxed">{cameraError}</p>
+                      </div>
+                      <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                        <motion.button
+                          type="button"
+                          data-motion-control="true"
+                          whileTap={TAP_SCALE}
+                          transition={TACTILE_SPRING}
+                          onClick={handleStartCameraScan}
+                          className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary px-4 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-md flex items-center gap-1.5 touch-manipulation"
+                        >
+                          <Icon className="material-symbols-outlined text-[16px]">refresh</Icon>
+                          <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry Camera'}</span>
+                        </motion.button>
+                        <motion.button
+                          type="button"
+                          data-motion-control="true"
+                          whileTap={SUBTLE_TAP_SCALE}
+                          transition={TACTILE_SPRING}
+                          onClick={() => {
+                            if (fileInputRef.current) {
+                              fileInputRef.current.value = '';
+                              fileInputRef.current.click();
+                            }
+                          }}
+                          className="min-h-[44px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border border-slate-700 flex items-center gap-1.5 touch-manipulation"
+                        >
+                          <Icon className="material-symbols-outlined text-[16px]">image</Icon>
+                          <span>{isAmharic ? 'ምስል ስካን' : 'Select Photo'}</span>
+                        </motion.button>
+                        <motion.button
+                          type="button"
+                          data-motion-control="true"
+                          whileTap={SUBTLE_TAP_SCALE}
+                          transition={TACTILE_SPRING}
+                          onClick={() => setShowTopMenu(true)}
+                          className="min-h-[44px] bg-slate-800 hover:bg-slate-700 text-amber-400 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border border-slate-700 flex items-center gap-1.5 touch-manipulation"
+                        >
+                          <Icon className="material-symbols-outlined text-[16px]">search</Icon>
+                          <span>{isAmharic ? 'በሰሌዳ ፈልግ' : 'Search by Plate'}</span>
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <div className="space-y-2 p-3 w-full max-w-md mx-auto flex flex-col items-center justify-center">
@@ -1198,34 +1258,45 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {isAmharic ? 'የQR ኮድ ፍተሻ' : 'QR Verification'}
                 </h4>
                 <div className="grid grid-cols-2 gap-2 w-full pt-0.5">
-                  <button
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={handleStartCameraScan}
-                    className="bg-primary hover:bg-primary-hover text-white px-3 py-1.5 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 shadow-xs"
+                    className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
                   >
                     <Icon className="material-symbols-outlined text-[18px]">photo_camera</Icon>
                     <span>{isAmharic ? 'ካሜራ' : 'Camera'}</span>
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={SUBTLE_TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={() => {
                       if (fileInputRef.current) {
                         fileInputRef.current.value = '';
                         fileInputRef.current.click();
                       }
                     }}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 border border-slate-700"
+                    className="min-h-[44px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 border border-slate-700 touch-manipulation"
                   >
                     <Icon className="material-symbols-outlined text-[18px]">image</Icon>
                     <span>{isAmharic ? 'ምስል ስካን' : 'Image Scan'}</span>
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             )}
           </div>
         </div>
       ) : scannedRegResult === 'not_found' ? (
-        <div className="flex-1 w-full bg-transparent p-4 sm:p-6 m-0 rounded-none border-0 text-xs sm:text-sm shadow-none space-y-3 animate-in fade-in duration-150 flex flex-col h-full max-h-full overflow-hidden justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.16 }}
+          className="flex-1 w-full bg-transparent p-4 sm:p-6 m-0 rounded-none border-0 text-xs sm:text-sm shadow-none space-y-3 flex flex-col h-full max-h-full overflow-hidden justify-center"
+        >
           {/* Top Status Header Bar inside the container */}
           <div className="flex items-center justify-between gap-2 w-full">
             <div className="flex-1 flex items-center justify-between bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 text-red-950 dark:text-red-300 rounded-md px-3.5 py-1.5 shadow-2xs">
@@ -1237,7 +1308,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {isAmharic ? 'ያልተፈቀደለት የሞተር ፈቃድ' : 'Motor Permit Status'}
                 </span>
               </div>
-              <div className="bg-red-200/60 dark:bg-red-900/60 text-red-900 dark:text-red-200 border border-red-300 dark:border-red-700 text-xs px-2.5 py-0.5 rounded-lg  tracking-wider font-extrabold shadow-2xs">
+              <div className="bg-red-200/60 dark:bg-red-900/60 text-red-900 dark:text-red-200 border border-red-300 dark:border-red-700 text-xs px-2.5 py-0.5 rounded-lg tracking-wider font-extrabold shadow-2xs">
                 {isAmharic ? 'ያልተመዘገበ' : 'UNREGISTERED'}
               </div>
             </div>
@@ -1257,18 +1328,26 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                 ? 'የቃኙት QR ኮድ ወይም ያስገቡት መረጃ አልተገኘም። እባክዎ በድጋሚ ይሞክሩ።' 
                 : 'Scanned record not found in system registry.'}
             </p>
-            <button
+            <motion.button
                type="button"
+               data-motion-control="true"
+               whileTap={TAP_SCALE}
+               transition={TACTILE_SPRING}
                onClick={handleRescan}
-               className="bg-primary hover:bg-primary-hover text-white px-4 py-1.5 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-xs"
+               className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary px-5 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-xs touch-manipulation"
              >
                <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
                <span>{isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}</span>
-             </button>
+             </motion.button>
           </div>
-        </div>
+        </motion.div>
       ) : (
-        <div className={`flex-1 min-h-0 w-full ${activeTheme.containerBg} p-0 m-0 text-xs sm:text-sm flex flex-col h-full max-h-full overflow-hidden shadow-none animate-in fade-in duration-150`}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.18 }}
+          className={`flex-1 min-h-0 w-full ${activeTheme.containerBg} p-0 m-0 text-xs sm:text-sm flex flex-col h-full max-h-full overflow-hidden shadow-none`}
+        >
           {(() => {
             const statusLower = (scannedRegResult.status || '').toLowerCase();
             const isApproved = statusLower === 'approved' || statusLower === 'printed' || statusLower === 'ordered_print';
@@ -1296,14 +1375,17 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     : activeTheme.headerRejected
                 }`}>
                   {/* Rescan Button on Left */}
-                  <button
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={handleRescan}
-                    className="w-9 h-9 sm:w-11 sm:h-11 min-w-[36px] sm:min-w-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white active:scale-95 touch-manipulation transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white touch-manipulation transition-colors cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
                     title={isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}
                   >
-                    <Icon className="material-symbols-outlined text-[20px] sm:text-[24px] font-bold">chevron_left</Icon>
-                  </button>
+                    <Icon className="material-symbols-outlined text-[22px] sm:text-[24px] font-bold">chevron_left</Icon>
+                  </motion.button>
 
                   {/* Center Verification Status Pill matching the uploaded screenshot */}
                   <div className="flex items-center gap-1.5 min-w-0 flex-1 justify-center">
@@ -1322,20 +1404,23 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   </div>
 
                   {/* Add Note Button on Right */}
-                  <button
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={() => setShowNotesSection(!showNotesSection)}
-                    className={`w-9 h-9 sm:w-11 sm:h-11 min-w-[36px] sm:min-w-[44px] rounded-lg transition-all cursor-pointer flex items-center justify-center shrink-0 shadow-sm active:scale-95 touch-manipulation ${
+                    className={`w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg transition-colors cursor-pointer flex items-center justify-center shrink-0 shadow-sm touch-manipulation ${
                       showNotesSection
                         ? 'bg-white text-slate-900 border border-white font-bold'
                         : 'bg-white/20 hover:bg-white/30 text-white border border-white/40'
                     }`}
                     title={isAmharic ? 'ማስታወሻ ጨምር' : 'Add Inspection Note'}
                   >
-                    <Icon className="material-symbols-outlined text-[18px] sm:text-[22px] font-bold">
+                    <Icon className="material-symbols-outlined text-[20px] sm:text-[22px] font-bold">
                       {showNotesSection ? 'edit_note' : 'note_add'}
                     </Icon>
-                  </button>
+                  </motion.button>
                 </div>
 
                 {/* 2. MIDDLE SCROLLABLE BODY CONTENT */}
@@ -1723,39 +1808,45 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                   {/* Action Buttons: Scan Again / Back */}
                   <div className="pt-2 pb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={handleRescan}
-                      className="flex-1 bg-surface-container-high hover:bg-surface-container-highest active:scale-[0.98] text-on-surface font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer border border-outline-variant/60 shadow-xs touch-manipulation"
+                      className="flex-1 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer border border-outline-variant/60 shadow-xs touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[20px]">qr_code_scanner</Icon>
                       <span>{isAmharic ? 'ሌላ QR ኮድ ቃኝ' : 'Scan Next QR'}</span>
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={SUBTLE_TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => setShowNotesSection(!showNotesSection)}
-                      className="bg-primary/10 hover:bg-primary/20 active:scale-[0.98] text-primary border border-primary/30 font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs touch-manipulation"
+                      className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
                       <span>{isAmharic ? 'ማስታወሻ ጨምር' : 'Add Notes'}</span>
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
 
                 {/* 3. FIXED BOTTOM SECTION WITH SLIDEOUT INSPECTION NOTES */}
                 <div className="shrink-0 bg-surface-container-lowest border-t border-outline-variant/60 z-20 shadow-lg relative flex flex-col">
-                  {/* Slideout Inspection Notes Form */}
+                  {/* Slideout Inspection Notes Form (GPU transform+opacity reveal) */}
                   <AnimatePresence>
                     {showNotesSection && (
                       <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25, ease: 'easeInOut' }}
-                        className="overflow-hidden bg-surface-container-low/70 border-b border-outline-variant/40"
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={TACTILE_SPRING}
+                        className="bg-surface-container-low/70 border-b border-outline-variant/40"
                       >
-                        <div className="p-3.5 sm:p-4 space-y-2.5">
+                        <div className="p-3.5 sm:p-4 pb-[max(0.875rem,env(safe-area-inset-bottom,12px))] space-y-2.5">
                           <div className="flex items-center justify-between">
                             <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
                               <Icon className="material-symbols-outlined text-[18px] text-primary">edit_note</Icon>
@@ -1764,7 +1855,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                             <button
                               type="button"
                               onClick={() => setShowNotesSection(false)}
-                              className="text-secondary hover:text-on-surface p-1 rounded-lg hover:bg-surface-container text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                              className="min-h-[40px] text-secondary hover:text-on-surface px-2.5 py-1 rounded-lg hover:bg-surface-container text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
                             >
                               <Icon className="material-symbols-outlined text-[18px]">keyboard_arrow_down</Icon>
                               <span>{isAmharic ? 'ደብቅ' : 'Hide'}</span>
@@ -1781,8 +1872,11 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                           
                           {/* Record Button ('መዝግብ' / 'Record') inside inspection notes container */}
                           <div className="flex justify-end pt-1">
-                            <button
+                            <motion.button
                               type="button"
+                              data-motion-control="true"
+                              whileTap={TAP_SCALE}
+                              transition={TACTILE_SPRING}
                               onClick={() => {
                                 if (currentLog && onAddVerificationLog) {
                                   const finalLog: VerificationLog = {
@@ -1795,46 +1889,57 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                 onClose();
                                 handleRescan();
                               }}
-                              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-md transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
+                              className="w-full sm:w-auto min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-md transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
                             >
                               <Icon className="material-symbols-outlined text-[18px] shrink-0">check_circle</Icon>
                               <span>{isAmharic ? 'መዝግብ' : 'Record'}</span>
-                            </button>
+                            </motion.button>
                           </div>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-
-
                 </div>
               </>
             );
           })()}
-        </div>
+        </motion.div>
       )}
 
       {/* DIGITAL ID LIGHTBOX MODAL (SuperAdmin Only) */}
-      {showDigitalIdModal && isSuperAdmin && scannedRegResult && scannedRegResult !== 'not_found' && (
-        <div
-          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
-          onClick={() => setShowDigitalIdModal(false)}
-        >
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl">
-            <ZoomableDocumentContainer
-              lang={lang}
-              userRole={userRole as any}
-              title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
-              onClose={() => setShowDigitalIdModal(false)}
-              requireClerkRequest={false}
+      <AnimatePresence>
+        {showDigitalIdModal && isSuperAdmin && scannedRegResult && scannedRegResult !== 'not_found' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.16 }}
+            className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
+            onClick={() => setShowDigitalIdModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 10 }}
+              transition={POPOVER_TRANSITION}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl"
             >
-              <div className="p-4 bg-white dark:bg-slate-900 flex items-center justify-center">
-                <QRCodeCard registration={scannedRegResult} lang={lang} />
-              </div>
-            </ZoomableDocumentContainer>
-          </div>
-        </div>
-      )}
+              <ZoomableDocumentContainer
+                lang={lang}
+                userRole={userRole as any}
+                title={isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር መታወቂያ' : 'Bahirdar Motorist Association ID'}
+                onClose={() => setShowDigitalIdModal(false)}
+                requireClerkRequest={false}
+              >
+                <div className="p-4 bg-white dark:bg-slate-900 flex items-center justify-center">
+                  <QRCodeCard registration={scannedRegResult} lang={lang} />
+                </div>
+              </ZoomableDocumentContainer>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 100% VIEWPORT FILLING CAROUSEL DOCUMENT ZOOM VIEWER */}
       {carouselModal && (

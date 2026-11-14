@@ -1,4 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { TACTILE_SPRING, TAP_SCALE, SUBTLE_TAP_SCALE, BACKDROP_VARIANTS } from '../utils/motionPresets';
 import { Icon } from './ui/Icon';
 import { imageUploadManager, UploadStatus } from '../services/imageUploadManager';
 import { compressImageToBlob } from '../utils/imageCompressor';
@@ -218,22 +220,22 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               ? 'border-red-500 bg-red-50/70 dark:bg-red-950/30 ring-2 ring-red-500/30'
               : isDraggingOver
               ? 'border-primary bg-primary/10 ring-2 ring-primary/30'
-              : 'border-outline-variant hover:border-[#1e293b] bg-surface-container/30 hover:bg-[#1e293b]/5'
+              : 'border-outline-variant hover:border-primary bg-surface-container/30 hover:bg-surface-container/70'
           }`}
         >
           {isBusy ? (
             <div className="flex flex-col items-center justify-center space-y-2 py-2">
-              <Icon className="material-symbols-outlined animate-spin text-[#1e293b] text-[24px]">progress_activity</Icon>
-              <span className="text-[11px] font-bold text-[#1e293b]">
+              <Icon className="material-symbols-outlined animate-spin text-primary text-[24px]">progress_activity</Icon>
+              <span className="text-[11px] font-bold text-on-surface">
                 {status === 'compressing'
                   ? isAmharic ? 'ምስሉ እየተስተካከለ ነው...' : 'Compressing image...'
                   : isAmharic ? `እየተጫነ ነው (${uploadProgress}%)...` : `Uploading (${uploadProgress}%)...`}
               </span>
-              {/* Progress bar */}
+              {/* GPU scaleX Progress bar */}
               <div className="w-28 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#1e293b] transition-all duration-300 rounded-full"
-                  style={{ width: `${uploadProgress}%` }}
+                  className="h-full w-full bg-primary transition-transform duration-200 origin-left rounded-full"
+                  style={{ transform: `scaleX(${Math.max(0.05, uploadProgress / 100)})` }}
                 />
               </div>
             </div>
@@ -242,13 +244,13 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
               <div className={`w-10 h-10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform ${
                 hasError
                   ? 'bg-red-500/10 text-red-600 dark:text-red-400'
-                  : 'bg-[#1e293b]/10 text-[#1e293b]'
+                  : 'bg-[#1e293b]/10 dark:bg-slate-700/60 text-[#1e293b] dark:text-slate-200'
               }`}>
                 <Icon className="material-symbols-outlined text-[22px]">
                   {hasError ? 'warning' : 'add_a_photo'}
                 </Icon>
               </div>
-              <p className={`text-xs font-black ${hasError ? 'text-red-600 dark:text-red-400' : 'text-[#1e293b]'}`}>
+              <p className={`text-xs font-black ${hasError ? 'text-red-600 dark:text-red-400' : 'text-on-surface'}`}>
                 {hasError
                   ? isAmharic ? 'እባክዎ ሰነዱን ይጫኑ' : 'Please upload document'
                   : isAmharic ? 'ፎቶ/ምስል ይጫኑ' : 'Upload Photo'}
@@ -282,8 +284,8 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                 </span>
                 <div className="w-20 h-1 bg-white/30 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-white transition-all duration-300 rounded-full"
-                    style={{ width: `${uploadProgress}%` }}
+                    className="h-full w-full bg-white transition-transform duration-200 origin-left rounded-full"
+                    style={{ transform: `scaleX(${Math.max(0.05, uploadProgress / 100)})` }}
                   />
                 </div>
               </div>
@@ -292,34 +294,43 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
             {/* Quick Actions Hover Overlay */}
             {!isBusy && (
               <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-2 z-10">
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={(e) => {
                     e.stopPropagation();
                     setShowZoom(true);
                   }}
-                  className="bg-primary hover:bg-primary-hover text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform active:scale-95 touch-manipulation"
+                  className="min-h-[36px] bg-primary hover:bg-primary-hover text-on-primary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
                   title={isAmharic ? 'አጉላ' : 'Zoom Image'}
                 >
                   <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
                   <span>{isAmharic ? 'አጉላ' : 'Zoom'}</span>
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={SUBTLE_TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={triggerSelect}
-                  className="bg-white/90 hover:bg-white text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform active:scale-95 touch-manipulation"
+                  className="min-h-[36px] bg-white/90 hover:bg-white text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
                   <span>{isAmharic ? 'ቀይር' : 'Change'}</span>
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={handleClear}
-                  className="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer transition-transform active:scale-95 touch-manipulation"
+                  className="min-h-[36px] bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
                   <span>{isAmharic ? 'ሰርዝ' : 'Remove'}</span>
-                </button>
+                </motion.button>
               </div>
             )}
           </div>
@@ -328,58 +339,73 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
           <div className="px-2.5 py-2 bg-surface-container/70 border-t border-outline-variant flex items-center justify-between gap-1 text-[11px]">
             <span className="text-secondary font-medium truncate max-w-[110px] sm:max-w-[140px]">{label}</span>
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => setShowZoom(true)}
-                className="text-primary font-bold px-2 py-1.5 rounded-md hover:bg-primary/10 active:scale-95 transition-all cursor-pointer flex items-center gap-1 min-h-[36px] touch-manipulation"
+                className="text-primary font-bold px-2.5 py-1.5 rounded-md hover:bg-primary/10 transition-colors cursor-pointer flex items-center gap-1 min-h-[44px] sm:min-h-[36px] touch-manipulation"
               >
                 <Icon className="material-symbols-outlined text-[15px]">zoom_in</Icon>
                 <span>{isAmharic ? 'አጉላ' : 'Zoom'}</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={triggerSelect}
-                className="text-[#1e293b] dark:text-blue-400 font-bold px-2 py-1.5 rounded-md hover:bg-[#1e293b]/10 active:scale-95 transition-all cursor-pointer flex items-center gap-1 min-h-[36px] touch-manipulation"
+                className="text-[#1e293b] dark:text-blue-400 font-bold px-2.5 py-1.5 rounded-md hover:bg-[#1e293b]/10 dark:hover:bg-blue-400/10 transition-colors cursor-pointer flex items-center gap-1 min-h-[44px] sm:min-h-[36px] touch-manipulation"
               >
                 <Icon className="material-symbols-outlined text-[15px]">photo_camera</Icon>
                 <span>{isAmharic ? 'ቀይር' : 'Change'}</span>
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={handleClear}
-                className="text-rose-600 font-bold px-1.5 py-1.5 rounded-md hover:bg-rose-500/10 active:scale-95 transition-all cursor-pointer flex items-center gap-0.5 min-h-[36px] touch-manipulation"
+                className="text-rose-600 dark:text-rose-400 font-bold px-2 py-1.5 rounded-md hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] touch-manipulation"
                 title={isAmharic ? 'ሰርዝ' : 'Remove'}
               >
-                <Icon className="material-symbols-outlined text-[15px]">delete</Icon>
-              </button>
+                <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
+              </motion.button>
             </div>
           </div>
         </div>
       )}
 
       {/* Lightbox Modal */}
-      {showZoom && hasPhoto && (
-        <div
-          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
-          onClick={() => setShowZoom(false)}
-        >
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
-            <ZoomableDocumentContainer
-              lang={isAmharic ? 'am' : 'en'}
-              title={label}
-              onClose={() => setShowZoom(false)}
-              requireClerkRequest={false}
-            >
-              <img
-                src={localDisplayUrl}
-                alt={label}
-                referrerPolicy="no-referrer"
-                className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg"
-              />
-            </ZoomableDocumentContainer>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showZoom && hasPhoto && (
+          <motion.div
+            variants={BACKDROP_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
+            onClick={() => setShowZoom(false)}
+          >
+            <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
+              <ZoomableDocumentContainer
+                lang={isAmharic ? 'am' : 'en'}
+                title={label}
+                onClose={() => setShowZoom(false)}
+                requireClerkRequest={false}
+              >
+                <img
+                  src={localDisplayUrl}
+                  alt={label}
+                  referrerPolicy="no-referrer"
+                  className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg"
+                />
+              </ZoomableDocumentContainer>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

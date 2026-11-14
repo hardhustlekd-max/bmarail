@@ -1,5 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Icon } from './ui/Icon';
+import { BaseModal } from './ui/BaseModal';
+import { TACTILE_SPRING, TAP_SCALE, SUBTLE_TAP_SCALE } from '../utils/motionPresets';
 import { Language, UserRole, SystemUser, SystemSettings } from '../types';
 import { addAuditLogToDb, subscribeSettings, saveSettingsToDb, DEFAULT_SETTINGS } from '../services/dbService';
 
@@ -652,14 +655,17 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
           <span className="text-xs font-black  tracking-wider text-secondary">
             {isAmharic ? 'የስርዓት ሚናዎች' : 'System Roles'}
           </span>
-          <button
+          <motion.button
             type="button"
+            data-motion-control="true"
+            whileTap={TAP_SCALE}
+            transition={TACTILE_SPRING}
             onClick={() => setShowNewRoleModal(true)}
-            className="px-3 py-1.5 bg-[#0f172a] hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+            className="min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 bg-[#0f172a] dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer border border-transparent dark:border-slate-700 touch-manipulation"
           >
             <Icon className="material-symbols-outlined text-[16px]">add</Icon>
             <span>{isAmharic ? 'አዲስ ሚና' : 'Add Role'}</span>
-          </button>
+          </motion.button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
@@ -667,20 +673,23 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             const isSelected = r.id === selectedRoleId;
 
             return (
-              <button
+              <motion.button
                 key={r.id}
                 type="button"
+                data-motion-control="true"
+                whileTap={SUBTLE_TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => setSelectedRoleId(r.id)}
-                className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between gap-2 ${
+                className={`min-h-[54px] p-3 rounded-xl border text-left transition-colors cursor-pointer relative flex flex-col justify-between gap-2 touch-manipulation ${
                   isSelected
-                    ? 'bg-surface-container-lowest border-[#0f172a] dark:border-blue-400 ring-2 ring-[#0f172a]/20 shadow-xs'
+                    ? 'bg-surface-container-lowest border-[#0f172a] dark:border-blue-400 ring-2 ring-[#0f172a]/20 dark:ring-blue-400/20 shadow-xs'
                     : 'bg-surface border-outline-variant/60 hover:border-slate-400 hover:bg-surface-container-lowest'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${r.avatarBg}`} />
                   <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
-                    isSelected ? 'bg-[#0f172a] text-white' : 'bg-surface-container text-secondary'
+                    isSelected ? 'bg-[#0f172a] dark:bg-primary text-white dark:text-on-primary' : 'bg-surface-container text-secondary'
                   }`}>
                     {r.userCountText}
                   </span>
@@ -694,7 +703,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                     {r.titleEn}
                   </div>
                 </div>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -871,108 +880,123 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
 
         {/* Action Footer Bar */}
         <div className="p-3.5 sm:px-5 bg-white dark:bg-[#1C2434] flex items-center justify-end gap-2.5">
-          <button
+          <motion.button
             type="button"
+            data-motion-control="true"
+            whileTap={SUBTLE_TAP_SCALE}
+            transition={TACTILE_SPRING}
             onClick={handleResetPermissions}
-            className="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-lg transition-all cursor-pointer"
+            className="min-h-[44px] sm:min-h-[38px] px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-lg transition-colors cursor-pointer touch-manipulation"
           >
             {isAmharic ? 'ዳግም አስጀምር' : 'Reset Defaults'}
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            data-motion-control="true"
+            whileTap={TAP_SCALE}
+            transition={TACTILE_SPRING}
             onClick={handleSavePermissions}
-            className="px-5 py-2 bg-primary hover:bg-primary-hover text-white font-black text-xs rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+            className="min-h-[44px] sm:min-h-[38px] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary font-black text-xs rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs touch-manipulation"
           >
             <Icon className="material-symbols-outlined text-[16px]">save</Icon>
             <span>{isAmharic ? 'ፈቃዶች አስቀምጥ' : 'Save Permissions'}</span>
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      {/* Modal for Creating Custom Role */}
-      {showNewRoleModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-surface border border-outline-variant rounded-xl max-w-md w-full p-5 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
-              <h3 className="text-sm font-black text-on-surface">
-                {isAmharic ? 'አዲስ የስራ ሚና መፍጠር' : 'Create Custom Role'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowNewRoleModal(false)}
-                className="p-1 rounded-md text-slate-400 hover:text-on-surface cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[20px]">close</Icon>
-              </button>
+      {/* Modal for Creating Custom Role (Adaptive Mobile Bottom Sheet + Desktop Modal) */}
+      <BaseModal
+        isOpen={showNewRoleModal}
+        onClose={() => setShowNewRoleModal(false)}
+        className="max-w-md"
+      >
+        <div className="p-4 sm:p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-3">
+            <h3 className="text-sm font-black text-on-surface">
+              {isAmharic ? 'አዲስ የስራ ሚና መፍጠር' : 'Create Custom Role'}
+            </h3>
+            <button
+              type="button"
+              onClick={() => setShowNewRoleModal(false)}
+              className="w-10 h-10 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer touch-manipulation"
+              aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+            >
+              <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+            </button>
+          </div>
+
+          <form onSubmit={handleCreateNewRole} className="space-y-3.5">
+            <div>
+              <label className="block text-xs font-black text-on-surface mb-1">
+                {isAmharic ? 'የሚናው ስም በአማርኛ' : 'Role Title (Amharic)'} *
+              </label>
+              <input
+                type="text"
+                required
+                value={newRoleTitleAm}
+                onChange={(e) => setNewRoleTitleAm(e.target.value)}
+                placeholder="ምሳሌ፡ የክፍያ ተቆጣጣሪ"
+                className="w-full min-h-[44px] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-primary"
+              />
             </div>
 
-            <form onSubmit={handleCreateNewRole} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-black text-on-surface mb-1">
-                  {isAmharic ? 'የሚናው ስም በአማርኛ' : 'Role Title (Amharic)'} *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newRoleTitleAm}
-                  onChange={(e) => setNewRoleTitleAm(e.target.value)}
-                  placeholder="ምሳሌ፡ የክፍያ ተቆጣጣሪ"
-                  className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-blue-600"
-                />
-              </div>
+            <div>
+              <label className="block text-xs font-black text-on-surface mb-1">
+                {isAmharic ? 'የሚናው ስም በእንግሊዘኛ' : 'Role Title (English)'}
+              </label>
+              <input
+                type="text"
+                value={newRoleTitleEn}
+                onChange={(e) => setNewRoleTitleEn(e.target.value)}
+                placeholder="e.g. Revenue Inspector"
+                className="w-full min-h-[44px] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-primary"
+              />
+            </div>
 
-              <div>
-                <label className="block text-xs font-black text-on-surface mb-1">
-                  {isAmharic ? 'የሚናው ስም በእንግሊዘኛ' : 'Role Title (English)'}
-                </label>
-                <input
-                  type="text"
-                  value={newRoleTitleEn}
-                  onChange={(e) => setNewRoleTitleEn(e.target.value)}
-                  placeholder="e.g. Revenue Inspector"
-                  className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-blue-600"
-                />
-              </div>
+            <div>
+              <label className="block text-xs font-black text-on-surface mb-1">
+                {isAmharic ? 'የመነሻ ፈቃዶች ሞዴል' : 'Template Role Permissions'}
+              </label>
+              <select
+                value={newRoleTemplate}
+                onChange={(e) => setNewRoleTemplate(e.target.value)}
+                className="w-full min-h-[44px] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold cursor-pointer focus:outline-hidden focus:border-primary"
+              >
+                {roles
+                  .filter((r) => r.roleKey !== 'superadmin' && r.id !== 'role-superadmin')
+                  .map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.titleAm} — {r.titleEn}
+                    </option>
+                  ))}
+              </select>
+            </div>
 
-              <div>
-                <label className="block text-xs font-black text-on-surface mb-1">
-                  {isAmharic ? 'የመነሻ ፈቃዶች ሞዴል' : 'Template Role Permissions'}
-                </label>
-                <select
-                  value={newRoleTemplate}
-                  onChange={(e) => setNewRoleTemplate(e.target.value)}
-                  className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold cursor-pointer focus:outline-hidden focus:border-blue-600"
-                >
-                  {roles
-                    .filter((r) => r.roleKey !== 'superadmin' && r.id !== 'role-superadmin')
-                    .map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.titleAm} — {r.titleEn}
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-outline-variant/60">
-                <button
-                  type="button"
-                  onClick={() => setShowNewRoleModal(false)}
-                  className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-extrabold text-xs rounded-md cursor-pointer"
-                >
-                  {isAmharic ? 'ሰርዝ' : 'Cancel'}
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#0f172a] hover:bg-slate-800 text-white font-black text-xs rounded-md shadow-xs cursor-pointer"
-                >
-                  {isAmharic ? 'ሚናውን ፍጠር' : 'Create Role'}
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className="pt-2 flex items-center justify-end gap-2 border-t border-outline-variant/60">
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={SUBTLE_TAP_SCALE}
+                transition={TACTILE_SPRING}
+                onClick={() => setShowNewRoleModal(false)}
+                className="min-h-[44px] px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-extrabold text-xs rounded-md cursor-pointer touch-manipulation"
+              >
+                {isAmharic ? 'ሰርዝ' : 'Cancel'}
+              </motion.button>
+              <motion.button
+                type="submit"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
+                className="min-h-[44px] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary font-black text-xs rounded-md shadow-xs cursor-pointer touch-manipulation"
+              >
+                {isAmharic ? 'ሚናውን ፍጠር' : 'Create Role'}
+              </motion.button>
+            </div>
+          </form>
         </div>
-      )}
+      </BaseModal>
     </div>
   );
 };

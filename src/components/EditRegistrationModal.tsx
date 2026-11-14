@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import { SectionCard, FieldLabel, ActionTriggerPrimary, ActionTriggerSecondary, SelectField } from './ui/StreamlinedUI';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  BACKDROP_VARIANTS,
+  MODAL_CONTENT_VARIANTS,
+  STEP_TRANSITION,
+  TACTILE_SPRING,
+  TAP_SCALE,
+} from '../utils/motionPresets';
 import {
   Language,
   UserRole,
@@ -302,14 +309,19 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
   };
 
   return (
-    <div
+    <motion.div
       id="edit-registration-modal-backdrop"
+      variants={BACKDROP_VARIANTS}
+      initial="initial"
+      animate="animate"
+      exit="exit"
       className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 overflow-hidden"
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.96 }}
+        variants={MODAL_CONTENT_VARIANTS}
+        initial="initial"
+        animate="animate"
+        exit="exit"
         className="bg-white dark:bg-slate-900 border-0 sm:border border-slate-200 dark:border-slate-800 rounded-none sm:rounded-xl max-w-3xl w-full h-full h-[100dvh] sm:h-[88vh] max-h-full max-h-[100dvh] sm:max-h-[88vh] flex flex-col shadow-2xl overflow-hidden"
       >
         {/* Header */}
@@ -325,14 +337,18 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               </p>
             </div>
           </div>
-          <button
+          <motion.button
             type="button"
+            data-motion-control="true"
+            whileTap={TAP_SCALE}
+            transition={TACTILE_SPRING}
             onClick={onClose}
             disabled={isSubmitting}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center hover:bg-surface-container-high text-secondary hover:text-on-surface transition-colors cursor-pointer disabled:opacity-50 shrink-0"
+            className="w-11 h-11 sm:w-9 sm:h-9 rounded-full flex items-center justify-center hover:bg-surface-container-high text-secondary hover:text-on-surface transition-colors cursor-pointer disabled:opacity-50 shrink-0 touch-manipulation"
+            aria-label={isAmharic ? 'ዝጋ' : 'Close'}
           >
             <Icon name="close" size={20} />
-          </button>
+          </motion.button>
         </div>
 
         {/* RBAC Warning Banner if user is not authorized */}
@@ -376,20 +392,23 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             { step: 3, am: '3. 5ቱ ሰነዶች', en: '3. Documents (5)' },
             { step: 4, am: '4. ሁኔታና ማጠቃለያ', en: '4. Status' },
           ].map((item) => (
-            <button
+            <motion.button
               key={item.step}
               type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
               disabled={isSubmitting}
               onClick={() => setCurrentStep(item.step as any)}
-              className="flex flex-col items-center gap-0.5 sm:gap-1 cursor-pointer transition-opacity hover:opacity-90 disabled:opacity-50 shrink-0 px-1 sm:px-2"
+              className="flex flex-col items-center justify-center gap-0.5 sm:gap-1 cursor-pointer transition-opacity hover:opacity-90 disabled:opacity-50 shrink-0 min-h-[44px] min-w-[44px] px-1.5 sm:px-2 touch-manipulation"
             >
               <div
-                className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-black transition-colors ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-black transition-colors ${
                   currentStep === item.step
-                    ? 'bg-primary text-white shadow-sm ring-2 ring-primary/30'
+                    ? 'bg-primary text-on-primary shadow-sm ring-2 ring-primary/30'
                     : currentStep > item.step
                     ? 'bg-emerald-600 text-white'
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                    : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                 }`}
               >
                 {currentStep > item.step ? (
@@ -407,14 +426,22 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               >
                 {isAmharic ? item.am : item.en}
               </span>
-            </button>
+            </motion.button>
           ))}
         </div>
 
         {/* Scrollable Form Body */}
         <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-3.5 sm:space-y-4 overscroll-contain min-h-0">
+          <AnimatePresence mode="wait" initial={false}>
           {/* STEP 1: PERSONAL INFORMATION */}
           {currentStep === 1 && (
+            <motion.div
+              key="edit-step-1"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={STEP_TRANSITION}
+            >
             <SectionCard className="space-y-4">
               <div className="flex items-center gap-2 border-b border-outline-variant/60 pb-2">
                 <Icon className="material-symbols-outlined text-[18px] text-primary">person</Icon>
@@ -485,10 +512,18 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 </div>
               </div>
             </SectionCard>
+            </motion.div>
           )}
 
           {/* STEP 2: VEHICLE INFORMATION */}
           {currentStep === 2 && (
+            <motion.div
+              key="edit-step-2"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={STEP_TRANSITION}
+            >
             <SectionCard className="space-y-4">
               <div className="flex items-center gap-2 border-b border-outline-variant/60 pb-2">
                 <Icon className="material-symbols-outlined text-[18px] text-primary">two_wheeler</Icon>
@@ -591,10 +626,18 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 </div>
               </div>
             </SectionCard>
+            </motion.div>
           )}
 
           {/* STEP 3: ALL 5 ATTACHED DOCUMENTS & PROOFS */}
           {currentStep === 3 && (
+            <motion.div
+              key="edit-step-3"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={STEP_TRANSITION}
+            >
             <SectionCard className="space-y-4">
               <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2">
                 <div className="flex items-center gap-2">
@@ -668,10 +711,18 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 />
               </div>
             </SectionCard>
+            </motion.div>
           )}
 
           {/* STEP 4: PERMIT STATUS & FINAL REVIEWS */}
           {currentStep === 4 && (
+            <motion.div
+              key="edit-step-4"
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={STEP_TRANSITION}
+            >
             <SectionCard className="space-y-4">
               <div className="flex items-center gap-2 border-b border-outline-variant/60 pb-2">
                 <Icon className="material-symbols-outlined text-[18px] text-primary">verified_user</Icon>
@@ -688,19 +739,22 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     { id: 'pending_approval', am: 'የሚጠበቅ (Pending)', en: 'Pending' },
                     { id: 'rejected', am: 'ውድቅ (Rejected)', en: 'Rejected' },
                   ].map((st) => (
-                    <button
+                    <motion.button
                       key={st.id}
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       disabled={!canEdit || isSubmitting}
                       onClick={() => setStatus(st.id as any)}
-                      className={`p-2.5 rounded-lg border text-center font-bold text-xs transition-colors cursor-pointer ${
+                      className={`min-h-[44px] p-2.5 rounded-lg border text-center font-bold text-xs transition-colors cursor-pointer touch-manipulation ${
                         status === st.id
-                          ? 'bg-primary text-white border-primary shadow-sm'
+                          ? 'bg-primary text-on-primary border-primary shadow-sm'
                           : 'bg-surface-container border-outline-variant text-on-surface hover:bg-surface-container-high'
                       }`}
                     >
                       {isAmharic ? st.am : st.en}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -721,7 +775,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
               {/* SuperAdmin Visibility Toggle */}
               {isSuperAdmin && (
-                <div className="flex items-center justify-between p-3 rounded-lg border border-outline-variant bg-surface-container/40">
+                <label className="flex items-center justify-between gap-3 p-3 min-h-[48px] rounded-lg border border-outline-variant bg-surface-container/40 cursor-pointer touch-manipulation">
                   <div>
                     <span className="font-bold text-xs text-on-surface block">
                       {isAmharic ? 'ከሌሎች ተጠቃሚዎች ደብቅ' : 'Hide from Other Users'}
@@ -737,9 +791,9 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                     disabled={isSubmitting}
                     checked={hideFromOtherUsers}
                     onChange={(e) => setHideFromOtherUsers(e.target.checked)}
-                    className="w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer"
+                    className="w-5 h-5 rounded text-primary focus:ring-primary cursor-pointer shrink-0"
                   />
-                </div>
+                </label>
               )}
 
               {/* Review Summary Card */}
@@ -764,7 +818,9 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 </div>
               </div>
             </SectionCard>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
 
         {/* Modal Footer Controls */}
@@ -786,11 +842,14 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               className="text-xs"
             />
           ) : (
-            <button
+            <motion.button
               type="button"
+              data-motion-control="true"
+              whileTap={!isSubmitting && canEdit ? TAP_SCALE : undefined}
+              transition={TACTILE_SPRING}
               onClick={handleSave}
               disabled={isSubmitting || !canEdit}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-xs font-bold transition-all shadow-sm cursor-pointer disabled:opacity-50"
+              className="inline-flex items-center justify-center gap-1.5 px-5 min-h-[44px] py-2 bg-primary hover:bg-primary-hover text-on-primary rounded-lg text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50 touch-manipulation"
             >
               {isSubmitting ? (
                 <>
@@ -803,10 +862,10 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                   <span>{isAmharic ? 'ማሻሻያዎችን አስቀምጥ' : 'Save Changes'}</span>
                 </>
               )}
-            </button>
+            </motion.button>
           )}
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };

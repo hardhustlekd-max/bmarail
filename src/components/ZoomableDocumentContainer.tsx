@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { toJpeg } from 'html-to-image';
+import { motion } from 'motion/react';
 import { Icon } from './ui/Icon';
 import { Language, UserRole } from '../types';
 import { triggerDocumentPrint } from '../utils/printUtils';
+import { MODAL_CONTENT_VARIANTS, TACTILE_SPRING, TAP_SCALE, SUBTLE_TAP_SCALE } from '../utils/motionPresets';
 
 interface ZoomableDocumentContainerProps {
   children: React.ReactNode;
@@ -342,7 +344,13 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
   // If clerk needs to request access before viewing
   if (requireClerkRequest && isClerk && !clerkAccessGranted) {
     return (
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 max-w-md w-full mx-auto text-center space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      <motion.div
+        variants={MODAL_CONTENT_VARIANTS}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 max-w-md w-full mx-auto text-center space-y-4 shadow-2xl"
+      >
         <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center justify-center mx-auto shadow-xs">
           <Icon className="material-symbols-outlined text-[32px]">lock_person</Icon>
         </div>
@@ -368,24 +376,30 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
 
         <div className="flex justify-center gap-2 pt-2">
           {onClose && (
-            <button
+            <motion.button
               type="button"
+              data-motion-control="true"
+              whileTap={SUBTLE_TAP_SCALE}
+              transition={TACTILE_SPRING}
               onClick={onClose}
-              className="px-4 py-2 bg-surface-container border border-outline-variant rounded-md text-xs font-bold text-secondary hover:text-on-surface transition-colors cursor-pointer"
+              className="min-h-[44px] px-4 py-2 bg-surface-container border border-outline-variant rounded-md text-xs font-bold text-secondary hover:text-on-surface transition-colors cursor-pointer touch-manipulation"
             >
               {isAmharic ? 'ሰርዝ' : 'Cancel'}
-            </button>
+            </motion.button>
           )}
-          <button
+          <motion.button
             type="button"
+            data-motion-control="true"
+            whileTap={TAP_SCALE}
+            transition={TACTILE_SPRING}
             onClick={() => setClerkAccessGranted(true)}
-            className="px-5 py-2.5 bg-primary text-white rounded-md text-xs font-extrabold flex items-center gap-2 shadow-md hover:bg-primary-hover active:scale-95 transition-all cursor-pointer"
+            className="min-h-[44px] px-5 py-2.5 bg-primary text-on-primary rounded-md text-xs font-extrabold flex items-center gap-2 shadow-md hover:bg-primary-hover transition-colors cursor-pointer touch-manipulation"
           >
             <Icon className="material-symbols-outlined text-[18px]">visibility</Icon>
             <span>{isAmharic ? 'የመመልከት ጥያቄ አቅርብና ተመልከት' : 'Request & View Document'}</span>
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -463,7 +477,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
                   triggerDocumentPrint('a4');
                 }
               }}
-              className="h-9 px-3 flex items-center justify-center bg-primary hover:bg-primary-hover text-white rounded-lg font-bold transition-all cursor-pointer shadow-xs ml-0.5"
+              className="h-10 min-w-[40px] px-3 flex items-center justify-center bg-primary hover:bg-primary-hover text-on-primary rounded-lg font-bold transition-colors cursor-pointer shadow-xs ml-0.5 touch-manipulation"
               title={isAmharic ? 'አትም' : 'Print Document'}
             >
               <Icon className="material-symbols-outlined text-[18px]">print</Icon>

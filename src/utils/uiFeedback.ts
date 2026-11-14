@@ -29,10 +29,11 @@ export function initUiFeedback(): void {
 
       if (!interactiveEl) return;
 
-      // Ignore disabled or non-interactive elements
+      // Ignore disabled, non-interactive, or motion-handled controls
       if (
         interactiveEl.hasAttribute('disabled') ||
         interactiveEl.getAttribute('aria-disabled') === 'true' ||
+        interactiveEl.getAttribute('data-motion-control') === 'true' ||
         interactiveEl.classList.contains('disabled') ||
         interactiveEl.classList.contains('cursor-default') ||
         interactiveEl.classList.contains('cursor-not-allowed') ||
@@ -56,16 +57,13 @@ function createRipple(e: PointerEvent, container: HTMLElement): void {
   const rect = container.getBoundingClientRect();
   if (rect.width === 0 || rect.height === 0) return;
 
-  // Ensure container has position and overflow hidden for the ripple effect
+  // Only inject ripples into elements that already clip overflow cleanly so focus rings & popovers never clip
   const computedStyle = window.getComputedStyle(container);
-  const originalPosition = computedStyle.position;
-  const originalOverflow = computedStyle.overflow;
-
-  if (originalPosition === 'static') {
-    container.style.position = 'relative';
+  if (computedStyle.overflow !== 'hidden' && computedStyle.overflow !== 'clip') {
+    return;
   }
-  if (originalOverflow === 'visible' && !container.classList.contains('allow-overflow')) {
-    container.style.overflow = 'hidden';
+  if (computedStyle.position === 'static') {
+    container.style.position = 'relative';
   }
 
   // Calculate coordinates relative to container

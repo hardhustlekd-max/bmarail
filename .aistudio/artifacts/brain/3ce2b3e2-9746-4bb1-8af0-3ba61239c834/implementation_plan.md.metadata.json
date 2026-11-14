@@ -1,6 +1,0 @@
-{
-  "summary":  "Comprehensive architecture plan to eliminate vertical overflow in the Scanner and Scanner Result page once for all using industry-standard viewport containment, flexbox min-h-0 discipline, and touch-action overscroll rules.",
-  "updatedAt":  "2026-11-10T08:57:43.675525460Z",
-  "requestFeedback":  true,
-  "userFacing":  true
-}

@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
+import { BaseModal } from './ui/BaseModal';
+import { TACTILE_SPRING, TAP_SCALE, POPOVER_TRANSITION } from '../utils/motionPresets';
 import {
   getStoredLastActivity,
   saveStoredLastActivity,
@@ -109,6 +112,19 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
       onAutoLogout();
     }
   }, [onAutoLogout, onManualLogout]);
+
+  // Allow Enter key anywhere while warning dialog is open to extend session
+  useEffect(() => {
+    if (!showWarning) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleKeepLoggedIn();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [showWarning, handleKeepLoggedIn]);
 
   useEffect(() => {
     // Initial sync on mount
@@ -246,165 +262,182 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
   return (
     <>
       {/* Toast Notification for Session Extension */}
-      {showExtensionToast && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed bottom-5 right-5 z-[999999] max-w-sm bg-emerald-600 border border-emerald-500 rounded-xl shadow-xl shadow-emerald-950/25 p-3.5 flex items-start gap-3 animate-toast-in text-white relative overflow-hidden animate-toast-pulse-success"
-        >
-          <div className="absolute inset-0 -translate-x-full animate-toast-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
-          <div className="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-            <Icon className="material-symbols-outlined text-[20px] animate-toast-pop">verified_user</Icon>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-black text-white">
-              {isAmharic ? 'የስራ ክፍለ ጊዜዎ ተራዝሟል!' : 'Session Successfully Extended!'}
-            </p>
-            <p className="text-[11px] text-white/90 mt-0.5 leading-relaxed">
-              {isAmharic
-                ? 'ተጨማሪ 15 ደቂቃዎች ተጨምረዋል።'
-                : '15 minutes added to session.'}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowExtensionToast(false)}
-            className="text-white/80 hover:text-white hover:bg-white/15 p-1 rounded-md cursor-pointer shrink-0 transition-colors"
-            title={isAmharic ? 'ዝጋ' : 'Dismiss'}
+      <AnimatePresence>
+        {showExtensionToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 12, scale: 0.96 }}
+            transition={POPOVER_TRANSITION}
+            drag="y"
+            dragConstraints={{ top: -20, bottom: 80 }}
+            dragElastic={0.35}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 40 || info.velocity.y > 300) {
+                setShowExtensionToast(false);
+              }
+            }}
+            role="status"
+            aria-live="polite"
+            className="fixed bottom-5 right-5 z-[999999] max-w-sm bg-emerald-600 border border-emerald-500 rounded-xl shadow-xl shadow-emerald-950/25 p-3.5 flex items-start gap-3 text-white overflow-hidden"
           >
-            <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-          </button>
-        </div>
-      )}
+            <div className="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+              <Icon className="material-symbols-outlined text-[20px]">verified_user</Icon>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-black text-white">
+                {isAmharic ? 'የስራ ክፍለ ጊዜዎ ተራዝሟል!' : 'Session Successfully Extended!'}
+              </p>
+              <p className="text-[11px] text-white/90 mt-0.5 leading-relaxed">
+                {isAmharic
+                  ? 'ተጨማሪ 15 ደቂቃዎች ተጨምረዋል።'
+                  : '15 minutes added to session.'}
+              </p>
+            </div>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setShowExtensionToast(false)}
+              className="w-9 h-9 -m-1 text-white/80 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0 flex items-center justify-center transition-colors"
+              title={isAmharic ? 'ዝጋ' : 'Dismiss'}
+            >
+              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Main Inactivity Warning Modal: Prompts "Keep me logged in" */}
-      {showWarning && (
+      {/* Main Inactivity Warning Modal: Adaptive Mobile Bottom Sheet & Desktop Modal */}
+      <BaseModal
+        isOpen={showWarning}
+        onClose={handleKeepLoggedIn}
+        className="max-w-lg border-amber-500/40 dark:border-amber-600/40"
+        mobileSheet={true}
+      >
         <div
           role="alertdialog"
           aria-modal="true"
           aria-labelledby="inactivity-prompt-title"
           aria-describedby="inactivity-prompt-desc"
-          className="fixed inset-0 z-[99999] flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              handleKeepLoggedIn();
-            }
-          }}
+          className="flex flex-col w-full"
         >
-          <div className="w-full max-w-lg bg-surface-container-lowest dark:bg-slate-900 border border-amber-500/40 dark:border-amber-600/40 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
-            
-            {/* Warning Header Bar with Pulsing Badge */}
-            <div className="bg-amber-500/15 dark:bg-amber-950/40 border-b border-amber-500/30 px-5 sm:px-6 py-4 flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-amber-500/25 dark:bg-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-xs">
-                <Icon className="material-symbols-outlined text-[26px] animate-pulse">alarm</Icon>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3
-                    id="inactivity-prompt-title"
-                    className="text-sm sm:text-base font-black text-amber-950 dark:text-amber-200 leading-tight"
-                  >
-                    {isAmharic ? 'ክፍለ ጊዜው ሊጠናቀቅ ነው' : 'Session Expiring Soon'}
-                  </h3>
-                  {isTestPreview && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-900/60 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-slate-800">
-                      Test Preview
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] text-amber-800/90 dark:text-amber-400/80 font-semibold mt-0.5">
-                  {isAmharic
-                    ? 'የእንቅስቃሴ አልባነት ማብቂያ'
-                    : 'Inactivity timeout'}
-                </p>
-              </div>
+          {/* Warning Header Bar */}
+          <div className="bg-amber-500/15 dark:bg-amber-950/40 border-b border-amber-500/30 px-5 sm:px-6 py-4 flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-amber-500/25 dark:bg-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-xs">
+              <Icon className="material-symbols-outlined text-[26px]">alarm</Icon>
             </div>
-
-            {/* Modal Body */}
-            <div className="p-5 sm:p-6 space-y-5 text-center">
-              <p
-                id="inactivity-prompt-desc"
-                className="text-xs sm:text-sm text-secondary dark:text-slate-300 leading-relaxed max-w-md mx-auto"
-              >
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3
+                  id="inactivity-prompt-title"
+                  className="text-sm sm:text-base font-black text-amber-950 dark:text-amber-200 leading-tight"
+                >
+                  {isAmharic ? 'ክፍለ ጊዜው ሊጠናቀቅ ነው' : 'Session Expiring Soon'}
+                </h3>
+                {isTestPreview && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-900/60 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-slate-800">
+                    Test Preview
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-amber-800/90 dark:text-amber-400/80 font-semibold mt-0.5">
                 {isAmharic
-                  ? 'በእንቅስቃሴ አልባነት ምክንያት ክፍለ ጊዜዎ በቅርቡ ይዘጋል፡'
-                  : 'Due to inactivity, your session will end in:'}
+                  ? 'የእንቅስቃሴ አልባነት ማብቂያ'
+                  : 'Inactivity timeout'}
               </p>
+            </div>
+          </div>
 
-              {/* Countdown Clock Display Card */}
-              <div className="p-4 rounded-xl bg-surface-container-high dark:bg-slate-800/80 border border-outline-variant/70 dark:border-slate-700 max-w-xs mx-auto shadow-inner space-y-3">
-                <div className="flex items-center justify-center gap-2">
-                  <Icon className="material-symbols-outlined text-[24px] text-amber-600 dark:text-amber-400 animate-spin">
-                    schedule
-                  </Icon>
-                  <div className="text-left">
-                    <span className="text-[10px] font-extrabold  text-outline dark:text-slate-400 block tracking-wider">
-                      {isAmharic ? 'የቀረው ጊዜ (Countdown)' : 'Automatic Logout In'}
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-black text-on-surface dark:text-white tabular-nums tracking-tight">
-                      {formattedCountdown}
-                    </span>
-                  </div>
-                </div>
+          {/* Modal Body */}
+          <div className="p-5 sm:p-6 space-y-5 text-center overflow-y-auto">
+            <p
+              id="inactivity-prompt-desc"
+              className="text-xs sm:text-sm text-secondary dark:text-slate-300 leading-relaxed max-w-md mx-auto"
+            >
+              {isAmharic
+                ? 'በእንቅስቃሴ አልባነት ምክንያት ክፍለ ጊዜዎ በቅርቡ ይዘጋል፡'
+                : 'Due to inactivity, your session will end in:'}
+            </p>
 
-                {/* Visual Progress Bar */}
-                <div className="w-full bg-surface-container-highest dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-1000 ${
-                      secondsRemaining <= 30
-                        ? 'bg-rose-500'
-                        : secondsRemaining <= 60
-                        ? 'bg-amber-500'
-                        : 'bg-emerald-500'
-                    }`}
-                    style={{ width: `${progressPercent}%` }}
-                  />
+            {/* Countdown Clock Display Card */}
+            <div className="p-4 rounded-xl bg-surface-container-high dark:bg-slate-800/80 border border-outline-variant/70 dark:border-slate-700 max-w-xs mx-auto shadow-inner space-y-3">
+              <div className="flex items-center justify-center gap-2">
+                <Icon className="material-symbols-outlined text-[24px] text-amber-600 dark:text-amber-400 animate-spin">
+                  schedule
+                </Icon>
+                <div className="text-left">
+                  <span className="text-[10px] font-extrabold text-outline dark:text-slate-400 block tracking-wider">
+                    {isAmharic ? 'የቀረው ጊዜ (Countdown)' : 'Automatic Logout In'}
+                  </span>
+                  <span className="text-2xl sm:text-3xl font-black text-on-surface dark:text-white tabular-nums tracking-tight">
+                    {formattedCountdown}
+                  </span>
                 </div>
               </div>
 
-              <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-left flex items-start gap-2.5">
-                <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
-                  info
-                </Icon>
-                <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
-                  {isAmharic
-                    ? 'ስራዎን ሳያቋርጡ ለመቀጠል ከታች ያለውን "በመለያዬ እንዳለሁ አቆየኝ" የሚለውን ይጫኑ ወይም የቁልፍ ሰሌዳዎን "Enter" ይጫኑ። ይህ ተጨማሪ 15 ደቂቃ ይሰጥዎታል።'
-                    : 'Click "Keep me logged in" below or press [Enter] to extend your session for another 15 minutes without losing any unsaved work.'}
-                </p>
+              {/* GPU-Composited Visual Progress Bar */}
+              <div className="w-full bg-surface-container-highest dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div
+                  className={`h-full w-full origin-left transition-transform duration-1000 ${
+                    secondsRemaining <= 30
+                      ? 'bg-rose-500'
+                      : secondsRemaining <= 60
+                      ? 'bg-amber-500'
+                      : 'bg-emerald-500'
+                  }`}
+                  style={{ transform: `scaleX(${progressPercent / 100})` }}
+                />
               </div>
             </div>
 
-            {/* Modal Actions */}
-            <div className="p-4 sm:p-5 bg-surface-container/60 dark:bg-slate-800/60 border-t border-outline-variant/60 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={handleImmediateLogout}
-                className="order-2 sm:order-1 px-4 py-2.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-              >
-                <Icon className="material-symbols-outlined text-[16px]">logout</Icon>
-                <span>{isAmharic ? 'አሁን ውጣ' : 'Sign Out Now'}</span>
-              </button>
-
-              <button
-                ref={keepLoggedInButtonRef}
-                type="button"
-                onClick={handleKeepLoggedIn}
-                className="order-1 sm:order-2 px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-primary hover:bg-primary-hover text-white border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer flex items-center justify-center gap-2 group"
-              >
-                <Icon className="material-symbols-outlined text-[18px] text-yellow-400 group-hover:rotate-180 transition-transform duration-500">
-                  lock_reset
-                </Icon>
-                <span>{isAmharic ? 'በመለያዬ እንዳለሁ አቆየኝ' : 'Keep me logged in'}</span>
-                <span className="ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-yellow-400/20 text-yellow-300">
-                  +15 min
-                </span>
-              </button>
+            <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-left flex items-start gap-2.5">
+              <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
+                info
+              </Icon>
+              <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+                {isAmharic
+                  ? 'ስራዎን ሳያቋርጡ ለመቀጠል ከታች ያለውን "በመለያዬ እንዳለሁ አቆየኝ" የሚለውን ይጫኑ ወይም የቁልፍ ሰሌዳዎን "Enter" ይጫኑ። ይህ ተጨማሪ 15 ደቂቃ ይሰጥዎታል።'
+                  : 'Click "Keep me logged in" below or press [Enter] to extend your session for another 15 minutes without losing any unsaved work.'}
+              </p>
             </div>
+          </div>
 
+          {/* Modal Actions */}
+          <div className="p-4 sm:p-5 pb-[max(1rem,env(safe-area-inset-bottom,16px))] bg-surface-container/60 dark:bg-slate-800/60 border-t border-outline-variant/60 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={handleImmediateLogout}
+              className="order-2 sm:order-1 min-h-[44px] px-4 py-2.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5 touch-manipulation"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">logout</Icon>
+              <span>{isAmharic ? 'አሁን ውጣ' : 'Sign Out Now'}</span>
+            </motion.button>
+
+            <motion.button
+              ref={keepLoggedInButtonRef}
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={handleKeepLoggedIn}
+              className="order-1 sm:order-2 min-h-[44px] px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-primary hover:bg-primary-hover text-on-primary border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer flex items-center justify-center gap-2 group touch-manipulation"
+            >
+              <Icon className="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform duration-500">
+                lock_reset
+              </Icon>
+              <span>{isAmharic ? 'በመለያዬ እንዳለሁ አቆየኝ' : 'Keep me logged in'}</span>
+              <span className="ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-white/15 dark:bg-black/15 text-on-primary">
+                +15 min
+              </span>
+            </motion.button>
           </div>
         </div>
-      )}
+      </BaseModal>
     </>
   );
 };

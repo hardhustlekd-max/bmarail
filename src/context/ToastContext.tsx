@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect, ReactNode } from 'react';
+import { motion, AnimatePresence, PanInfo } from 'motion/react';
 import { Icon } from '../components/ui/Icon';
+import { POPOVER_TRANSITION, TACTILE_SPRING } from '../utils/motionPresets';
 
 export type ToastType = 'success' | 'warning' | 'error' | 'info';
 
@@ -211,107 +213,126 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         aria-live="polite"
         aria-atomic="true"
       >
-        {activeToast && (
-          <div
-            key={activeToast.id}
-            className={`pointer-events-auto relative overflow-hidden w-full rounded-xl p-3 sm:p-3.5 shadow-xl text-white transition-all duration-200 animate-in fade-in slide-in-from-top-2 ${
-              activeToast.type === 'success'
-                ? 'bg-[#10B981] border border-emerald-400/60 shadow-emerald-950/25'
-                : activeToast.type === 'warning'
-                ? 'bg-slate-900 border border-amber-500/70 shadow-black/40 text-slate-100'
-                : activeToast.type === 'error'
-                ? 'bg-[#EF4444] border border-rose-400/60 shadow-rose-950/25'
-                : 'bg-slate-900 border border-slate-700 shadow-black/30'
-            }`}
-          >
-            {/* Top highlight line */}
-            <div className="absolute inset-x-0 top-0 h-[1px] bg-white/30 pointer-events-none" />
+        <AnimatePresence mode="wait">
+          {activeToast && (
+            <motion.div
+              key={activeToast.id}
+              initial={{ opacity: 0, y: -12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.96 }}
+              transition={TACTILE_SPRING}
+              drag="y"
+              dragConstraints={{ top: -60, bottom: 12 }}
+              dragElastic={0.2}
+              onDragEnd={(_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+                if (info.offset.y < -28 || info.velocity.y < -250) {
+                  nextToast();
+                }
+              }}
+              className={`pointer-events-auto relative overflow-hidden w-full rounded-xl p-3 sm:p-3.5 shadow-xl text-white touch-pan-x cursor-grab active:cursor-grabbing ${
+                activeToast.type === 'success'
+                  ? 'bg-emerald-600 border border-emerald-400/60 shadow-emerald-950/25'
+                  : activeToast.type === 'warning'
+                  ? 'bg-slate-900 border border-amber-500/70 shadow-black/40 text-slate-100'
+                  : activeToast.type === 'error'
+                  ? 'bg-rose-600 border border-rose-400/60 shadow-rose-950/25'
+                  : 'bg-slate-900 border border-slate-700 shadow-black/30'
+              }`}
+            >
+              {/* Top highlight line */}
+              <div className="absolute inset-x-0 top-0 h-[1px] bg-white/30 pointer-events-none" />
 
-            <div className="flex items-start gap-2.5 relative z-10">
-              {/* Icon badge with crisp contrasting container */}
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0 mt-0.5 shadow-xs text-white">
-                <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
-                  {activeToast.type === 'success'
-                    ? 'check_circle'
-                    : activeToast.type === 'warning'
-                    ? 'warning'
-                    : activeToast.type === 'error'
-                    ? 'error'
-                    : 'info'}
-                </Icon>
-              </div>
+              <div className="flex items-start gap-2.5 relative z-10">
+                {/* Icon badge with crisp contrasting container */}
+                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0 mt-0.5 shadow-xs text-white">
+                  <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
+                    {activeToast.type === 'success'
+                      ? 'check_circle'
+                      : activeToast.type === 'warning'
+                      ? 'warning'
+                      : activeToast.type === 'error'
+                      ? 'error'
+                      : 'info'}
+                  </Icon>
+                </div>
 
-              {/* Message text */}
-              <div className="flex-1 min-w-0 pr-1 text-left">
-                {activeToast.title && (
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="text-[11px] font-black tracking-wide opacity-95">
-                      {activeToast.title}
-                    </span>
-                    {activeToast.tag && (
-                      <span className="px-1.5 py-0.2 rounded bg-black/25 text-[10px] font-mono font-bold">
-                        {activeToast.tag}
+                {/* Message text */}
+                <div className="flex-1 min-w-0 pr-1 text-left">
+                  {activeToast.title && (
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-[11px] font-black tracking-wide opacity-95">
+                        {activeToast.title}
                       </span>
-                    )}
-                  </div>
-                )}
-                <p className="text-xs font-bold leading-snug text-white break-words">
-                  {activeToast.message}
-                </p>
+                      {activeToast.tag && (
+                        <span className="px-1.5 py-0.2 rounded bg-black/25 text-[10px] font-mono font-bold">
+                          {activeToast.tag}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <p className="text-xs font-bold leading-snug text-white break-words">
+                    {activeToast.message}
+                  </p>
 
-                {activeToast.action && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        try {
-                          activeToast.action?.onClick();
-                        } catch (e) {
-                          console.error(e);
-                        }
-                        nextToast();
-                      }}
-                      className="px-2.5 py-1 rounded bg-white/20 hover:bg-white/30 text-[11px] font-black text-white cursor-pointer transition-all border border-white/30 shadow-2xs active:scale-95"
-                    >
-                      {activeToast.action.label}
-                    </button>
-                  </div>
+                  {activeToast.action && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          try {
+                            activeToast.action?.onClick();
+                          } catch (e) {
+                            console.error(e);
+                          }
+                          nextToast();
+                        }}
+                        className="min-h-[36px] px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30 text-[11px] font-black text-white cursor-pointer transition-colors border border-white/30 active:scale-95"
+                      >
+                        {activeToast.action.label}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Queue badge counter if more notifications are waiting */}
+                {queue.length > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-md bg-black/25 text-[10px] font-mono font-bold text-white/90 shrink-0 self-center">
+                    +{queue.length}
+                  </span>
                 )}
+
+                {/* Dismiss button (ergonomic hit target) */}
+                <button
+                  type="button"
+                  onClick={() => nextToast()}
+                  className="text-white/80 hover:text-white hover:bg-white/20 w-9 h-9 -mr-1 -mt-0.5 rounded-lg shrink-0 cursor-pointer transition-colors flex items-center justify-center"
+                  title="Dismiss"
+                  aria-label="Dismiss notification"
+                >
+                  <Icon className="material-symbols-outlined text-[18px] font-bold">close</Icon>
+                </button>
               </div>
 
-              {/* Queue badge counter if more notifications are waiting */}
-              {queue.length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-black/25 text-[10px] font-mono font-bold text-white/90 shrink-0 self-center">
-                  +{queue.length}
-                </span>
-              )}
-
-              {/* Dismiss button */}
-              <button
-                type="button"
-                onClick={() => nextToast()}
-                className="text-white/80 hover:text-white hover:bg-white/20 p-1 rounded-md shrink-0 cursor-pointer transition-colors"
-                title="Dismiss"
-              >
-                <Icon className="material-symbols-outlined text-[16px] font-bold">close</Icon>
-              </button>
-            </div>
-
-            {/* Auto-dismiss countdown bar */}
-            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/20 overflow-hidden">
-              <div
-                className="h-full bg-white/40 origin-left animate-toast-countdown"
-                style={{
-                  animationDuration: `${
-                    queue.length > 0 && activeToast.durationMs === DEFAULT_DURATION_MS
-                      ? QUEUED_DURATION_MS
-                      : activeToast.durationMs
-                  }ms`,
-                }}
-              />
-            </div>
-          </div>
-        )}
+              {/* Compositor-only scaleX auto-dismiss countdown bar */}
+              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-black/20 overflow-hidden">
+                <motion.div
+                  key={`bar-${activeToast.id}`}
+                  initial={{ scaleX: 1 }}
+                  animate={{ scaleX: 0 }}
+                  transition={{
+                    duration:
+                      (queue.length > 0 && activeToast.durationMs === DEFAULT_DURATION_MS
+                        ? QUEUED_DURATION_MS
+                        : activeToast.durationMs) / 1000,
+                    ease: 'linear',
+                  }}
+                  style={{ transformOrigin: 'left center' }}
+                  className="h-full w-full bg-white/45"
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </ToastContext.Provider>
   );

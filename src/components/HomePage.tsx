@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, PanInfo } from 'motion/react';
 import { Icon } from './ui/Icon';
 import {
   Language,
@@ -65,6 +66,15 @@ import { ToastProvider, useToast } from '../context/ToastContext';
 import { DataProvider, useData } from '../context/DataContext';
 import { ActionProvider } from '../context/ActionContext';
 import { CentralPageSpinner } from './ui/CentralPageSpinner';
+import { BaseModal } from './ui/BaseModal';
+import {
+  BACKDROP_VARIANTS,
+  POPOVER_TRANSITION,
+  ROUTE_TRANSITION,
+  SHEET_SPRING,
+  TACTILE_SPRING,
+  TAP_SCALE,
+} from '../utils/motionPresets';
 import { DashboardOverviewRouter } from '../domains/dashboard/DashboardOverviewRouter';
 import { RegistryRouter } from '../domains/registry/RegistryRouter';
 import { EnforcementRouter } from '../domains/enforcement/EnforcementRouter';
@@ -1956,13 +1966,18 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </button>
 
             {/* Interactive Ethiopian Calendar Popover from Sidebar */}
-            {isDateDropdownOpen && (
-              <div
-                className={`absolute bottom-full mb-2 z-[100] w-80 sm:w-88 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-2xl p-4 animate-in fade-in slide-in-from-bottom-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE] ${
-                  isCollapsed ? 'left-12' : 'left-0'
-                }`}
-                onClick={(e) => e.stopPropagation()}
-              >
+            <AnimatePresence>
+              {isDateDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                  transition={POPOVER_TRANSITION}
+                  className={`absolute bottom-full mb-2 z-[100] w-80 sm:w-88 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-2xl p-4 text-[#1C2434] dark:text-[#DEE4EE] origin-bottom-left ${
+                    isCollapsed ? 'left-12' : 'left-0'
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                >
                 {/* Municipal Calendar Header */}
                 <div className="bg-[#1C2434] dark:bg-[#24303F] text-white p-3.5 rounded-sm border-b-2 border-slate-700 space-y-1 shadow-xs">
                   <div className="flex items-center justify-between">
@@ -2056,13 +2071,14 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsDateDropdownOpen(false)}
-                    className="px-3.5 py-1.5 rounded-sm bg-[#F1F5F9] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-xs font-semibold text-[#1C2434] dark:text-white transition-colors cursor-pointer border border-[#E2E8F0] dark:border-[#2E3A47]"
+                    className="px-3.5 py-1.5 min-h-[34px] rounded-sm bg-[#F1F5F9] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-xs font-semibold text-[#1C2434] dark:text-white transition-colors cursor-pointer border border-[#E2E8F0] dark:border-[#2E3A47]"
                   >
                     {isAmharic ? 'ዝጋ' : 'Close'}
                   </button>
                 </div>
-              </div>
-            )}
+              </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </aside>
@@ -2185,7 +2201,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       setIsNotificationOpen(!isNotificationOpen);
                       if (isMobileMenuOpen) setIsMobileMenuOpen(false);
                     }}
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all cursor-pointer shrink-0 relative touch-manipulation active:scale-95 ${
+                    className={`w-11 h-11 rounded-lg flex items-center justify-center transition-colors cursor-pointer shrink-0 relative touch-manipulation active:scale-95 ${
                       isNotificationOpen
                         ? 'text-yellow-400 bg-white/10'
                         : 'text-white hover:text-yellow-400 hover:bg-white/10'
@@ -2193,9 +2209,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     title={isAmharic ? 'ማሳወቂያዎች' : 'Notifications'}
                     aria-label="Notifications"
                   >
-                    <Icon name="notifications" size={26} className="text-[26px]">notifications</Icon>
+                    <Icon name="notifications" size={24} className="text-[24px]">notifications</Icon>
                     {unreadNotificationCount > 0 && (
-                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute top-1 right-1 shadow-2xs border-2 border-[#1e293b]">
+                      <span className="bg-rose-500 text-white text-[10px] font-black min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center absolute top-1.5 right-1.5 shadow-2xs border-2 border-[#1e293b]">
                         {unreadNotificationCount > 9 ? '9+' : unreadNotificationCount}
                       </span>
                     )}
@@ -2211,9 +2227,9 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     if (isNotificationOpen) setIsNotificationOpen(false);
                   }}
                   aria-label="Toggle Navigation Menu"
-                  className="w-10 h-10 rounded-lg flex items-center justify-center text-white hover:text-yellow-400 hover:bg-white/10 active:scale-95 touch-manipulation transition-all cursor-pointer shrink-0"
+                  className="w-11 h-11 rounded-lg flex items-center justify-center text-white hover:text-yellow-400 hover:bg-white/10 active:scale-95 touch-manipulation transition-colors cursor-pointer shrink-0"
                 >
-                  <Icon name={isMobileMenuOpen ? 'close' : 'menu'} size={26} className="text-[26px]">
+                  <Icon name={isMobileMenuOpen ? 'close' : 'menu'} size={24} className="text-[24px]">
                     {isMobileMenuOpen ? 'close' : 'menu'}
                   </Icon>
                 </button>
@@ -2223,52 +2239,78 @@ const HomePageShell: React.FC<HomePageProps> = ({
           </header>
 
         {/* Mobile Notification Modal / Drawer Overlay (Positioned directly under top header) */}
-        {isNotificationOpen && (
-          <div
-            className="fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-xs transition-opacity duration-300 animate-in fade-in md:hidden p-3 flex justify-center items-start"
-            onClick={() => setIsNotificationOpen(false)}
-          >
-            <div
-              ref={mobileNotificationModalRef}
-              className="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-3 duration-200 max-h-[85vh] flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
+        <AnimatePresence>
+          {isNotificationOpen && (
+            <motion.div
+              variants={BACKDROP_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={POPOVER_TRANSITION}
+              className="fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-xs md:hidden p-2.5 sm:p-3 flex justify-center items-start"
+              onClick={() => setIsNotificationOpen(false)}
             >
-              <NotificationDropdown
-                notifications={systemNotifications}
-                readIds={readNotificationIds}
-                onMarkAllAsRead={handleMarkAllNotificationsAsRead}
-                onClearAll={handleClearAllNotifications}
-                onSelectNotification={handleSelectNotification}
-                onQuickAction={handleSelectNotification}
-                onClose={() => setIsNotificationOpen(false)}
-                isAmharic={isAmharic}
-                isMobile={true}
-              />
-            </div>
-          </div>
-        )}
+              <motion.div
+                ref={mobileNotificationModalRef}
+                initial={{ opacity: 0, y: -12, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                transition={SHEET_SPRING}
+                className="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-2xl overflow-hidden max-h-[85dvh] flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+              >
+                <NotificationDropdown
+                  notifications={systemNotifications}
+                  readIds={readNotificationIds}
+                  onMarkAllAsRead={handleMarkAllNotificationsAsRead}
+                  onClearAll={handleClearAllNotifications}
+                  onSelectNotification={handleSelectNotification}
+                  onQuickAction={handleSelectNotification}
+                  onClose={() => setIsNotificationOpen(false)}
+                  isAmharic={isAmharic}
+                  isMobile={true}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Mobile Backdrop & Left Slide-Out Drawer Menu (Positioned BELOW top header) */}
-        <div
-          className={`fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-md md:hidden flex justify-start side-menu-backdrop ${
-            isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-          }`}
-          onClick={() => setIsMobileMenuOpen(false)}
-          onPointerDown={() => setIsMobileMenuOpen(false)}
-          onTouchStart={() => setIsMobileMenuOpen(false)}
-        >
-          {/* Left Slide-Out Drawer Panel (Light in Light Theme, Dark in Dark Theme) */}
-          <div
-            ref={mobileDrawerRef}
-            className={`relative w-64 sm:w-70 max-w-[80vw] h-full bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-r border-slate-200 dark:border-[#2E3A47] shadow-2xl flex flex-col justify-between overflow-y-auto p-3 sm:p-3.5 side-menu-drawer transition-transform duration-300 ease-in-out ${
-              isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}
-            onClick={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-          >
+        {/* Mobile Backdrop & Left Slide-Out Drawer Menu (Swipeable left-to-dismiss) */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              variants={BACKDROP_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={POPOVER_TRANSITION}
+              className="fixed top-14 inset-x-0 bottom-0 z-40 bg-slate-950/65 backdrop-blur-xs md:hidden flex justify-start"
+              onClick={() => setIsMobileMenuOpen(false)}
+              onPointerDown={() => setIsMobileMenuOpen(false)}
+            >
+              {/* Left Slide-Out Drawer Panel */}
+              <motion.div
+                ref={mobileDrawerRef}
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={SHEET_SPRING}
+                drag="x"
+                dragDirectionLock
+                dragConstraints={{ left: -320, right: 0 }}
+                dragElastic={{ left: 0.15, right: 0 }}
+                onDragEnd={(_e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+                  if (info.offset.x < -70 || info.velocity.x < -380) {
+                    setIsMobileMenuOpen(false);
+                  }
+                }}
+                className="relative w-72 max-w-[82vw] h-full bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-r border-slate-200 dark:border-[#2E3A47] shadow-2xl flex flex-col justify-between overflow-y-auto p-3 sm:p-3.5 pb-[max(1rem,env(safe-area-inset-bottom,16px))]"
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+              >
             <div className="space-y-3">
               {/* Mobile Simple Ethiopian Calendar Date & Time Widget */}
               <div className="bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 rounded-lg p-2.5 text-slate-800 dark:text-[#DEE4EE] space-y-1.5">
@@ -2305,7 +2347,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     setActivePage('dashboard');
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 min-h-[42px] rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                     activePage === 'dashboard'
                       ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                       : 'bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48]'
@@ -2325,13 +2367,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleGroup('registrations')}
-                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[40px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none"
+                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] transition-colors cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-2.5">
                       <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-[#DEE4EE]">assignment</Icon>
                       <span>{isAmharic ? 'ምዝገባ እና ፈቃዶች' : 'Registrations & Permits'}</span>
                     </div>
-                    <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-200 ${expandedGroups.registrations ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
+                    <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-150 ${expandedGroups.registrations ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
                       expand_more
                     </Icon>
                   </button>
@@ -2348,7 +2390,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                                   setActivePage('forms');
                                   setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                                   activePage === 'forms'
                                     ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                     : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2369,7 +2411,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                                   setActivePage('tables');
                                   setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                                   activePage === 'tables'
                                     ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                     : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2391,7 +2433,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                                   setActivePage('tables');
                                   setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                                   activePage === 'tables'
                                     ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                     : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2414,7 +2456,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                                   setActivePage('forms');
                                   setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                                   activePage === 'forms'
                                     ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                     : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2435,7 +2477,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                                   setActivePage('tables');
                                   setIsMobileMenuOpen(false);
                                 }}
-                                className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                                className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                                   activePage === 'tables'
                                     ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                     : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2460,13 +2502,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleGroup('verification')}
-                    className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none"
+                    className="w-full flex items-center justify-between px-2.5 py-2 min-h-[44px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] transition-colors cursor-pointer select-none"
                   >
                     <div className="flex items-center gap-2">
                       <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-[#DEE4EE]">security</Icon>
                       <span>{isAmharic ? 'ቁጥጥር እና ፍተሻ' : 'Verification & Patrol'}</span>
                     </div>
-                    <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-200 ${expandedGroups.verification ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
+                    <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-150 ${expandedGroups.verification ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
                       expand_more
                     </Icon>
                   </button>
@@ -2481,7 +2523,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('scan');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'scan'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2503,7 +2545,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('inspection_report');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'inspection_report'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2524,7 +2566,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('report_unregistered');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'report_unregistered'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2545,7 +2587,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('unregistered_list');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'unregistered_list'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2569,13 +2611,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     <button
                       type="button"
                       onClick={() => toggleGroup('revenue')}
-                      className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none"
+                      className="w-full flex items-center justify-between px-2.5 py-2 min-h-[44px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] transition-colors cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-2">
                         <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-[#DEE4EE]">payments</Icon>
                         <span>{isAmharic ? 'ገቢና ክፍያ' : 'Revenue & Payments'}</span>
                       </div>
-                      <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-200 ${expandedGroups.revenue ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
+                      <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-150 ${expandedGroups.revenue ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
                         expand_more
                       </Icon>
                     </button>
@@ -2589,7 +2631,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('payment_receipts');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'payment_receipts'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#8A99AD] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2613,13 +2655,13 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     <button
                       type="button"
                       onClick={() => toggleGroup('superadmin')}
-                      className="w-full flex items-center justify-between px-2.5 py-2 min-h-[38px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] active:scale-[0.98] transition-all cursor-pointer select-none"
+                      className="w-full flex items-center justify-between px-2.5 py-2 min-h-[44px] rounded-lg bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-xs font-semibold text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48] transition-colors cursor-pointer select-none"
                     >
                       <div className="flex items-center gap-2">
                         <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-[#DEE4EE]">admin_panel_settings</Icon>
                         <span>{isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin'}</span>
                       </div>
-                      <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-200 ${expandedGroups.superadmin ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
+                      <Icon className={`material-symbols-outlined text-[17px] transition-transform duration-150 ${expandedGroups.superadmin ? 'rotate-180 text-slate-900 dark:text-white' : 'text-slate-400'}`}>
                         expand_more
                       </Icon>
                     </button>
@@ -2633,7 +2675,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('superadmin_users');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'superadmin_users' || activePage === 'superadmin'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2652,7 +2694,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('superadmin_roles');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'superadmin_roles'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2671,7 +2713,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('superadmin_subcities');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'superadmin_subcities'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2690,7 +2732,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('superadmin_permits');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'superadmin_permits'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2709,7 +2751,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                               setActivePage('superadmin_maintenance');
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.97] ${
+                            className={`w-full flex items-center justify-between px-2.5 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                               activePage === 'superadmin_maintenance'
                                 ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                                 : 'text-slate-700 dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#333A48]/60 hover:text-slate-900 dark:hover:text-white'
@@ -2735,7 +2777,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                       setActivePage('settings');
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`w-full flex items-center justify-between px-2.5 py-2 min-h-[40px] rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation active:scale-[0.98] ${
+                    className={`w-full flex items-center justify-between px-2.5 py-2 min-h-[44px] rounded-lg text-xs font-medium transition-colors cursor-pointer touch-manipulation ${
                       activePage === 'settings'
                         ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary font-bold shadow-2xs border-l-2 border-primary'
                         : 'bg-slate-100/90 dark:bg-white/5 border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-[#DEE4EE] hover:bg-slate-200 dark:hover:bg-[#333A48]'
@@ -2763,7 +2805,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                   <button
                     type="button"
                     onClick={onToggleLang}
-                    className="flex items-center justify-center gap-1.5 px-2.5 py-2 min-h-[38px] rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-200 dark:border-white/20 text-xs font-semibold text-slate-800 dark:text-white active:scale-95 touch-manipulation transition-all cursor-pointer"
+                    className="flex items-center justify-center gap-1.5 px-2.5 min-h-[44px] rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-200 dark:border-white/20 text-xs font-semibold text-slate-800 dark:text-white touch-manipulation transition-colors cursor-pointer"
                   >
                     <Icon className="material-symbols-outlined text-[16px]">translate</Icon>
                     <span>{currentLang === 'am' ? 'English' : 'አማርኛ'}</span>
@@ -2774,7 +2816,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     <button
                       type="button"
                       onClick={onToggleTheme}
-                      className="flex items-center justify-center gap-1.5 px-2.5 py-2 min-h-[38px] rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-200 dark:border-white/20 text-xs font-semibold text-slate-800 dark:text-white active:scale-95 touch-manipulation transition-all cursor-pointer"
+                      className="flex items-center justify-center gap-1.5 px-2.5 min-h-[44px] rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 border border-slate-200 dark:border-white/20 text-xs font-semibold text-slate-800 dark:text-white touch-manipulation transition-colors cursor-pointer"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">
                         {currentTheme === 'dark' ? 'dark_mode' : 'light_mode'}
@@ -2791,7 +2833,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     setIsMobileMenuOpen(false);
                     setIsLogoutModalOpen(true);
                   }}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 min-h-[40px] bg-[#132A5E] hover:bg-[#1A387C] active:scale-[0.98] border border-[#2A4E9B] text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-xs touch-manipulation"
+                  className="w-full flex items-center justify-center gap-2 px-3 min-h-[44px] bg-[#132A5E] hover:bg-[#1A387C] border border-[#2A4E9B] text-white rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-xs touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[18px] text-slate-300">logout</Icon>
                   <span>{isAmharic ? 'ውጣ' : 'Sign Out'}</span>
@@ -2799,8 +2841,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
               </div>
 
             </div>
-          </div>
-        </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* DESKTOP TOP BAR (hidden md:flex) - Clean Unboxed Design */}
         <header className="hidden md:flex items-center justify-between px-4 sm:px-6 md:px-8 h-14 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-[#DEE4EE] border-b border-[#E2E8F0]/80 dark:border-[#2E3A47] sticky top-0 z-40 relative transition-colors">
@@ -2863,26 +2907,32 @@ const HomePageShell: React.FC<HomePageProps> = ({
               </button>
 
               {/* Desktop Notification Dropdown */}
-              {isNotificationOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-84 sm:w-96 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                >
-                  <NotificationDropdown
-                    notifications={systemNotifications}
-                    readIds={readNotificationIds}
-                    onMarkAllAsRead={handleMarkAllNotificationsAsRead}
-                    onClearAll={handleClearAllNotifications}
-                    onSelectNotification={handleSelectNotification}
-                    onQuickAction={handleSelectNotification}
-                    onClose={() => setIsNotificationOpen(false)}
-                    isAmharic={isAmharic}
-                    isMobile={false}
-                  />
-                </div>
-              )}
+              <AnimatePresence>
+                {isNotificationOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                    transition={POPOVER_TRANSITION}
+                    className="absolute right-0 mt-2 w-84 sm:w-96 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-xl z-50 overflow-hidden text-[#1C2434] dark:text-[#DEE4EE] origin-top-right"
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                  >
+                    <NotificationDropdown
+                      notifications={systemNotifications}
+                      readIds={readNotificationIds}
+                      onMarkAllAsRead={handleMarkAllNotificationsAsRead}
+                      onClearAll={handleClearAllNotifications}
+                      onSelectNotification={handleSelectNotification}
+                      onQuickAction={handleSelectNotification}
+                      onClose={() => setIsNotificationOpen(false)}
+                      isAmharic={isAmharic}
+                      isMobile={false}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Top-Right Active User Profile Trigger (Unboxed) */}
@@ -2899,7 +2949,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     return next;
                   });
                 }}
-                className={`h-10 px-2.5 rounded-lg flex items-center gap-2.5 transition-all cursor-pointer ${
+                className={`h-10 px-2.5 rounded-lg flex items-center gap-2.5 transition-colors cursor-pointer ${
                   isUserDropdownOpen
                     ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white'
                     : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-slate-100 dark:hover:bg-[#24303F]'
@@ -2915,63 +2965,69 @@ const HomePageShell: React.FC<HomePageProps> = ({
                     {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
                   </span>
                 </div>
-                <Icon className={`material-symbols-outlined text-[#8A99AD] text-[16px] transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''}`}>
+                <Icon className={`material-symbols-outlined text-[#8A99AD] text-[16px] transition-transform duration-150 ${isUserDropdownOpen ? 'rotate-180' : ''}`}>
                   expand_more
                 </Icon>
               </button>
 
               {/* User Dropdown Menu */}
-              {isUserDropdownOpen && (
-                <div
-                  className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-xl py-1.5 z-[100] animate-in fade-in slide-in-from-top-2 duration-150 text-[#1C2434] dark:text-[#DEE4EE]"
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                >
-                  <div className="px-4 py-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <p className="text-xs font-bold text-[#1C2434] dark:text-white truncate">
-                      {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
-                    </p>
-                    <p className="text-[11px] text-[#8A99AD] font-medium mt-0.5">
-                      {userRole === 'superadmin'
-                        ? (isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin')
-                        : userRole === 'admin'
-                        ? (isAmharic ? 'ስራ አስኪያጅ' : 'Manager')
-                        : userRole === 'clerk'
-                        ? (isAmharic ? 'መዝጋቢ' : 'Clerk')
-                        : (isAmharic ? 'ኦፊሰር' : 'Officer')}
-                    </p>
-                  </div>
+              <AnimatePresence>
+                {isUserDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                    transition={POPOVER_TRANSITION}
+                    className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-xl py-1.5 z-[100] text-[#1C2434] dark:text-[#DEE4EE] origin-top-right"
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                  >
+                    <div className="px-4 py-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <p className="text-xs font-bold text-[#1C2434] dark:text-white truncate">
+                        {userBadgeId ? userBadgeId : (isAmharic ? 'አቶ መፈሪያ' : 'Mr. Meferiya')}
+                      </p>
+                      <p className="text-[11px] text-[#8A99AD] font-medium mt-0.5">
+                        {userRole === 'superadmin'
+                          ? (isAmharic ? 'ዋና አስተዳዳሪ' : 'Super Admin')
+                          : userRole === 'admin'
+                          ? (isAmharic ? 'ስራ አስኪያጅ' : 'Manager')
+                          : userRole === 'clerk'
+                          ? (isAmharic ? 'መዝጋቢ' : 'Clerk')
+                          : (isAmharic ? 'ኦፊሰር' : 'Officer')}
+                      </p>
+                    </div>
 
-                  {/* Settings and Sign out options in User Dropdown */}
-                  <div className="py-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActivePage('settings');
-                        setIsUserDropdownOpen(false);
-                      }}
-                      className="w-full px-4 py-2.5 text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] flex items-center gap-2.5 text-left cursor-pointer transition-colors"
-                    >
-                      <Icon className="material-symbols-outlined text-[18px] text-[#8A99AD]">settings</Icon>
-                      <span>{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
-                    </button>
-                    {/* Logout Option */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsUserDropdownOpen(false);
-                        setIsLogoutModalOpen(true);
-                      }}
-                      className="w-full px-4 py-2.5 text-xs font-semibold text-[#F87171] hover:bg-rose-500/10 dark:hover:bg-rose-500/15 flex items-center gap-2.5 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
-                      title={isAmharic ? 'ውጣ' : 'Sign Out'}
-                    >
-                      <Icon className="material-symbols-outlined text-[18px] text-[#F87171]">logout</Icon>
-                      <span>{isAmharic ? 'ውጣ' : 'Sign Out'}</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+                    {/* Settings and Sign out options in User Dropdown */}
+                    <div className="py-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActivePage('settings');
+                          setIsUserDropdownOpen(false);
+                        }}
+                        className="w-full px-4 py-2.5 min-h-[40px] text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] flex items-center gap-2.5 text-left cursor-pointer transition-colors"
+                      >
+                        <Icon className="material-symbols-outlined text-[18px] text-[#8A99AD]">settings</Icon>
+                        <span>{isAmharic ? 'ቅንብሮች' : 'Settings'}</span>
+                      </button>
+                      {/* Logout Option */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsUserDropdownOpen(false);
+                          setIsLogoutModalOpen(true);
+                        }}
+                        className="w-full px-4 py-2.5 min-h-[40px] text-xs font-semibold text-[#F87171] hover:bg-rose-500/10 dark:hover:bg-rose-500/15 flex items-center gap-2.5 text-left cursor-pointer transition-colors border-t border-[#E2E8F0] dark:border-[#2E3A47]"
+                        title={isAmharic ? 'ውጣ' : 'Sign Out'}
+                      >
+                        <Icon className="material-symbols-outlined text-[18px] text-[#F87171]">logout</Icon>
+                        <span>{isAmharic ? 'ውጣ' : 'Sign Out'}</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </header>
@@ -3014,76 +3070,82 @@ const HomePageShell: React.FC<HomePageProps> = ({
             </nav>
           )}
 
-          <div
-            key={activePage}
-            className={
-              activePage === 'scan'
-                ? "flex-1 w-full h-full min-h-0 flex flex-col overflow-hidden"
-                : "flex-none flex flex-col"
-            }
-          >
-            {/* Domain 1: Universal Dashboard Overview */}
-            {activePage === 'dashboard' && (
-              <DashboardOverviewRouter
-                lang={currentLang}
-                userRole={userRole}
-                userBadgeId={userBadgeId}
-                onQuickAction={handleQuickAction}
-                isLoading={isInitialLoading || pageLoading}
-              />
-            )}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={activePage}
+              initial={activePage === 'scan' ? { opacity: 0 } : { opacity: 0, y: 6 }}
+              animate={activePage === 'scan' ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              exit={activePage === 'scan' ? { opacity: 0 } : { opacity: 0, y: -4 }}
+              transition={ROUTE_TRANSITION}
+              className={
+                activePage === 'scan'
+                  ? "flex-1 w-full h-full min-h-0 flex flex-col overflow-hidden"
+                  : "flex-none flex flex-col"
+              }
+            >
+              {/* Domain 1: Universal Dashboard Overview */}
+              {activePage === 'dashboard' && (
+                <DashboardOverviewRouter
+                  lang={currentLang}
+                  userRole={userRole}
+                  userBadgeId={userBadgeId}
+                  onQuickAction={handleQuickAction}
+                  isLoading={isInitialLoading || pageLoading}
+                />
+              )}
 
-            {/* Domain 2: Registry Domain (Forms, Today's Submissions, Tables) */}
-            {['forms', 'today_submissions_adjust', 'tables'].includes(activePage) && (
-              <RegistryRouter
-                activePage={activePage}
-                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                lang={currentLang}
-                userRole={userRole}
-                userBadgeId={userBadgeId}
-                tableInitialTab={tableInitialTab}
-              />
-            )}
+              {/* Domain 2: Registry Domain (Forms, Today's Submissions, Tables) */}
+              {['forms', 'today_submissions_adjust', 'tables'].includes(activePage) && (
+                <RegistryRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                  lang={currentLang}
+                  userRole={userRole}
+                  userBadgeId={userBadgeId}
+                  tableInitialTab={tableInitialTab}
+                />
+              )}
 
-            {/* Domain 3: Enforcement (Field) Domain (Scanner, Inspection Reports, Unregistered Reports) */}
-            {['scan', 'inspection_report', 'report_unregistered', 'unregistered_list'].includes(activePage) && (
-              <EnforcementRouter
-                activePage={activePage}
-                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                lang={currentLang}
-                userRole={userRole}
-                userBadgeId={userBadgeId}
-              />
-            )}
+              {/* Domain 3: Enforcement (Field) Domain (Scanner, Inspection Reports, Unregistered Reports) */}
+              {['scan', 'inspection_report', 'report_unregistered', 'unregistered_list'].includes(activePage) && (
+                <EnforcementRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                  lang={currentLang}
+                  userRole={userRole}
+                  userBadgeId={userBadgeId}
+                />
+              )}
 
-            {/* Domain 4: Revenue (Treasury) Domain (Payment Receipts & Ledger Metrics) */}
-            {activePage === 'payment_receipts' && (
-              <RevenueRouter
-                activePage={activePage}
-                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                lang={currentLang}
-                userRole={userRole}
-                userBadgeId={userBadgeId}
-                paymentReceipts={paymentReceipts}
-                registrations={registrations}
-              />
-            )}
+              {/* Domain 4: Revenue (Treasury) Domain (Payment Receipts & Ledger Metrics) */}
+              {activePage === 'payment_receipts' && (
+                <RevenueRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                  lang={currentLang}
+                  userRole={userRole}
+                  userBadgeId={userBadgeId}
+                  paymentReceipts={paymentReceipts}
+                  registrations={registrations}
+                />
+              )}
 
-            {/* Domain 5: Governance Domain (SuperAdmin Governance & Settings) */}
-            {(activePage.startsWith('superadmin') || activePage === 'settings') && (
-              <GovernanceRouter
-                activePage={activePage}
-                setActivePage={(p) => setActivePage(p as ActiveHomePage)}
-                lang={currentLang}
-                userRole={userRole}
-                userBadgeId={userBadgeId}
-                currentTheme={currentTheme}
-                onToggleLang={onToggleLang}
-                onToggleTheme={onToggleTheme}
-                onLogoutClick={() => setIsLogoutModalOpen(true)}
-              />
-            )}
-          </div>
+              {/* Domain 5: Governance Domain (SuperAdmin Governance & Settings) */}
+              {(activePage.startsWith('superadmin') || activePage === 'settings') && (
+                <GovernanceRouter
+                  activePage={activePage}
+                  setActivePage={(p) => setActivePage(p as ActiveHomePage)}
+                  lang={currentLang}
+                  userRole={userRole}
+                  userBadgeId={userBadgeId}
+                  currentTheme={currentTheme}
+                  onToggleLang={onToggleLang}
+                  onToggleTheme={onToggleTheme}
+                  onLogoutClick={() => setIsLogoutModalOpen(true)}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
 
           {/* Modern, elegant system footer */}
           {activePage !== 'scan' && (
@@ -3096,71 +3158,73 @@ const HomePageShell: React.FC<HomePageProps> = ({
         </main>
       </div>
 
-      {/* Universal Logout Confirmation Modal for All Users */}
-      {isLogoutModalOpen && (
-        <div
-          className="fixed inset-0 z-[99999] bg-slate-950/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 px-3 sm:px-4 overflow-y-auto animate-in fade-in duration-200"
-          onClick={() => setIsLogoutModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-md bg-surface-container-lowest border border-outline-variant rounded-xl shadow-2xl p-5 sm:p-6 space-y-4 animate-in zoom-in-95 duration-200 text-on-surface"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">logout</Icon>
-              <div>
-                <h3 className="text-base font-black text-on-surface tracking-tight">
-                  {isAmharic ? 'ከሲስተም መውጣት ማረጋገጫ' : 'Confirm System Logout'}
-                </h3>
-                <p className="text-xs text-outline mt-0.5">
-                  {isAmharic ? 'የስራ ክፍለ ጊዜዎን ማጠናቀቅ ይፈልጋሉ?' : 'Are you sure you want to end your active session?'}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-surface-container p-3.5 rounded-lg border border-outline-variant/60 text-xs space-y-1.5">
-              <div className="flex justify-between items-center text-on-surface font-bold">
-                <span className="text-outline">{isAmharic ? 'ተጠቃሚ መለያ:' : 'Logged User:'}</span>
-                <span className="font-mono bg-surface-container-high px-2 py-0.5 rounded text-[11px] font-extrabold text-[#1e293b] dark:text-yellow-400">
-                  {userBadgeId || 'System User'}
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-on-surface font-bold">
-                <span className="text-outline">{isAmharic ? 'የስራ ሚና:' : 'System Role:'}</span>
-                <span className=" text-[10px] tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 font-black">
-                  {userRole}
-                </span>
-              </div>
-              <p className="text-[11px] text-outline pt-1">
-                {isAmharic
-                  ? 'ከሲስተሙ ሲወጡ የአሁኑ የስራ ክፍለ ጊዜዎ ይዘጋል።'
-                  : 'You will be safely signed out from your active workspace session.'}
+      {/* Universal Logout Confirmation Modal for All Users (Adaptive mobile bottom sheet + centered desktop modal) */}
+      <BaseModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        className="max-w-md z-[99999]"
+      >
+        <div className="p-5 sm:p-6 space-y-4 text-on-surface">
+          <div className="flex items-center gap-2.5">
+            <Icon className="material-symbols-outlined text-[20px] text-slate-700 dark:text-slate-300 shrink-0">logout</Icon>
+            <div>
+              <h3 className="text-base font-black text-on-surface tracking-tight">
+                {isAmharic ? 'ከሲስተም መውጣት ማረጋገጫ' : 'Confirm System Logout'}
+              </h3>
+              <p className="text-xs text-outline mt-0.5">
+                {isAmharic ? 'የስራ ክፍለ ጊዜዎን ማጠናቀቅ ይፈልጋሉ?' : 'Are you sure you want to end your active session?'}
               </p>
             </div>
+          </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-2">
-              <button
-                type="button"
-                onClick={() => setIsLogoutModalOpen(false)}
-                className="px-4 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface transition-all cursor-pointer shadow-2xs active:scale-98"
-              >
-                {isAmharic ? 'ይቅር / ተመለስ' : 'Cancel'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogoutModalOpen(false);
-                  handleUserLogout();
-                }}
-                className="px-5 py-2.5 rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] text-xs font-black shadow-sm transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
-              >
-                <Icon className="material-symbols-outlined text-[16px] text-white">logout</Icon>
-                <span>{isAmharic ? 'አዎ፣ ውጣ' : 'Yes, Sign Out'}</span>
-              </button>
+          <div className="bg-surface-container p-3.5 rounded-lg border border-outline-variant/60 text-xs space-y-1.5">
+            <div className="flex justify-between items-center text-on-surface font-bold">
+              <span className="text-outline">{isAmharic ? 'ተጠቃሚ መለያ:' : 'Logged User:'}</span>
+              <span className="font-mono bg-surface-container-high px-2 py-0.5 rounded text-[11px] font-extrabold text-[#1e293b] dark:text-yellow-400">
+                {userBadgeId || 'System User'}
+              </span>
             </div>
+            <div className="flex justify-between items-center text-on-surface font-bold">
+              <span className="text-outline">{isAmharic ? 'የስራ ሚና:' : 'System Role:'}</span>
+              <span className="text-[10px] tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 font-black">
+                {userRole}
+              </span>
+            </div>
+            <p className="text-[11px] text-outline pt-1">
+              {isAmharic
+                ? 'ከሲስተሙ ሲወጡ የአሁኑ የስራ ክፍለ ጊዜዎ ይዘጋል።'
+                : 'You will be safely signed out from your active workspace session.'}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-end gap-2.5 pt-2">
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setIsLogoutModalOpen(false)}
+              className="px-4 min-h-[44px] sm:min-h-[38px] rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface transition-colors cursor-pointer shadow-2xs"
+            >
+              {isAmharic ? 'ይቅር / ተመለስ' : 'Cancel'}
+            </motion.button>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => {
+                setIsLogoutModalOpen(false);
+                handleUserLogout();
+              }}
+              className="px-5 min-h-[44px] sm:min-h-[38px] rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white border border-[#2A4E9B] text-xs font-black shadow-sm transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <Icon className="material-symbols-outlined text-[16px] text-white">logout</Icon>
+              <span>{isAmharic ? 'አዎ፣ ውጣ' : 'Yes, Sign Out'}</span>
+            </motion.button>
           </div>
         </div>
-      )}
+      </BaseModal>
 
       {/* Central Spinning Page Loader throughout the app */}
       {(actionLoadingState.isLoading || pageLoading) && (

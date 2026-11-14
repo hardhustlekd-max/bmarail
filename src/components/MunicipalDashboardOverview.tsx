@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  POPOVER_TRANSITION,
+  TACTILE_SPRING,
+  TAP_SCALE,
+  SUBTLE_TAP_SCALE,
+} from '../utils/motionPresets';
 import {
   Language,
   UserRole,
@@ -665,14 +671,17 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             </p>
           </div>
 
-          <button
+          <motion.button
             type="button"
+            data-motion-control="true"
+            whileTap={TAP_SCALE}
+            transition={TACTILE_SPRING}
             onClick={() => handleActionClick('quick_verify')}
-            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-primary hover:bg-primary-hover border-0 shadow-none hover:shadow-none touch-manipulation transition-colors font-black text-xs sm:text-sm text-white tracking-wider flex items-center justify-center gap-2.5 cursor-pointer"
+            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-primary hover:bg-primary-hover border-0 shadow-none hover:shadow-none touch-manipulation transition-colors font-black text-xs sm:text-sm text-on-primary tracking-wider flex items-center justify-center gap-2.5 cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[22px]">photo_camera</Icon>
             <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch QR Scanner'}</span>
-          </button>
+          </motion.button>
         </div>
       )}
             {/* ==================== UNIFIED OVERVIEW CONTAINER ==================== */}
@@ -753,35 +762,46 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       )}
 
       {/* Inline QR Scanner (In-Page instead of Modal) */}
-      {showLookupModal && (
-        <div className="p-4 sm:p-5 space-y-3 animate-in slide-in-from-top-4 duration-200">
-          <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
-            <div className="flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[16px] shrink-0">qr_code_scanner</Icon>
-              <h3 className="font-extrabold text-sm text-on-surface">
-                {isAmharic ? 'የቀጥታ QR እና ሰሌዳ መለያ ፍተሻ' : 'Live QR & License Plate Scanner'}
-              </h3>
+      <AnimatePresence>
+        {showLookupModal && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={POPOVER_TRANSITION}
+            className="p-4 sm:p-5 space-y-3"
+          >
+            <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
+              <div className="flex items-center gap-2">
+                <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[16px] shrink-0">qr_code_scanner</Icon>
+                <h3 className="font-extrabold text-sm text-on-surface">
+                  {isAmharic ? 'የቀጥታ QR እና ሰሌዳ መለያ ፍተሻ' : 'Live QR & License Plate Scanner'}
+                </h3>
+              </div>
+              <motion.button
+                type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
+                onClick={() => setShowLookupModal(false)}
+                className="min-h-[40px] text-secondary hover:text-on-surface px-2.5 py-1 rounded-lg hover:bg-surface-container text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer touch-manipulation"
+              >
+                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                <span>{isAmharic ? 'ዝጋ' : 'Close Scanner'}</span>
+              </motion.button>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowLookupModal(false)}
-              className="text-secondary hover:text-on-surface p-1 rounded-lg hover:bg-surface-container text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-              <span>{isAmharic ? 'ዝጋ' : 'Close Scanner'}</span>
-            </button>
-          </div>
-          <SharedScannerModal
-            isOpen={true}
-            onClose={() => setShowLookupModal(false)}
-            lang={lang}
-            registrations={registrations}
-            userBadgeId={userBadgeId || 'OFF-8842'}
-            onAddVerificationLog={onAddVerificationLog || (() => {})}
-            isPage={true}
-          />
-        </div>
-      )}
+            <SharedScannerModal
+              isOpen={true}
+              onClose={() => setShowLookupModal(false)}
+              lang={lang}
+              registrations={registrations}
+              userBadgeId={userBadgeId || 'OFF-8842'}
+              onAddVerificationLog={onAddVerificationLog || (() => {})}
+              isPage={true}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* FINANCIAL & REVENUE METRICS ACCORDING TO THE ETHIOPIAN CALENDAR (VISIBLE WHEN PAYMENT / REVENUE LEDGER / KPIS TASK IS VIEWABLE) */}
       {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
@@ -1041,11 +1061,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
             {currentRoleConfig.actions.map((act) => (
-              <button
+              <motion.button
                 key={act.key}
                 type="button"
+                data-motion-control="true"
+                whileTap={SUBTLE_TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => handleActionClick(act.key)}
-                className="group relative min-h-[46px] sm:min-h-[52px] px-3 py-2 sm:px-3.5 sm:py-2.5 bg-surface-container-low/70 hover:bg-surface-container active:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-all duration-150 cursor-pointer flex items-center justify-between gap-2.5 shadow-2xs hover:shadow-xs active:scale-[0.98] touch-manipulation select-none overflow-hidden"
+                className="group relative min-h-[50px] sm:min-h-[54px] px-3 py-2.5 sm:px-3.5 bg-surface-container-low/70 hover:bg-surface-container active:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-colors duration-150 cursor-pointer flex items-center justify-between gap-2.5 shadow-2xs hover:shadow-xs touch-manipulation select-none overflow-hidden"
               >
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${act.iconBg} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}>
@@ -1064,7 +1087,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
                   chevron_right
                 </Icon>
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>

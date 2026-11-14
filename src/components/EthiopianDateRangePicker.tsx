@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
+import { POPOVER_TRANSITION } from '../utils/motionPresets';
 import {
   ETHIOPIAN_MONTHS,
   ETHIOPIAN_WEEKDAYS,
@@ -104,8 +106,6 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
     };
   }, [isCustomOpen]);
 
-
-
   // Click outside listener to dismiss floating dropdown
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
@@ -162,7 +162,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
       if (left < 16) left = 16;
 
       let top = rect.bottom + 6;
-      const popoverHeight = 380;
+      const popoverHeight = 390;
       if (top + popoverHeight > viewportHeight - 16) {
         top = Math.max(16, rect.top - popoverHeight - 6);
       }
@@ -172,7 +172,7 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
         top: `${top}px`,
         left: `${left}px`,
         width: '315px',
-        maxWidth: 'calc(100vw - 32px)',
+        maxWidth: 'calc(100vw - 24px)',
         zIndex: 99999,
       });
     }
@@ -296,9 +296,9 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                   key={opt.key}
                   type="button"
                   onClick={() => handleSelectPreset(opt.key)}
-                  className={`px-2 py-1 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-bold rounded-md transition-all whitespace-nowrap cursor-pointer select-none ${
+                  className={`px-2.5 min-h-[38px] sm:min-h-[30px] text-[11px] sm:text-xs font-bold rounded-md transition-colors whitespace-nowrap cursor-pointer select-none ${
                     isActive
-                      ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold'
+                      ? 'bg-white dark:bg-primary text-primary dark:text-on-primary shadow-2xs font-extrabold'
                       : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                   }`}
                 >
@@ -315,192 +315,198 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
                   onPresetChange('custom');
                   setIsCustomOpen((prev) => !prev);
                 }}
-                className={`px-2 py-1 sm:px-2.5 sm:py-1 text-[11px] sm:text-xs font-bold rounded-md transition-all whitespace-nowrap cursor-pointer select-none flex items-center gap-1 ${
+                className={`px-2.5 min-h-[38px] sm:min-h-[30px] text-[11px] sm:text-xs font-bold rounded-md transition-colors whitespace-nowrap cursor-pointer select-none flex items-center gap-1 ${
                   preset === 'custom' || isCustomOpen
-                    ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-extrabold ring-1 ring-primary/30'
+                    ? 'bg-white dark:bg-primary text-primary dark:text-on-primary shadow-2xs font-extrabold ring-1 ring-primary/30'
                     : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
                 }`}
               >
                 <Icon className="material-symbols-outlined text-[14px]">date_range</Icon>
                 <span>{isAmharic ? 'ብጁ ቀን' : 'Custom'}</span>
-                <Icon className={`material-symbols-outlined text-[13px] transition-transform duration-200 ${isCustomOpen ? 'rotate-180' : ''}`}>
+                <Icon className={`material-symbols-outlined text-[13px] transition-transform duration-150 ${isCustomOpen ? 'rotate-180' : ''}`}>
                   expand_more
                 </Icon>
               </button>
 
               {/* COMPACT FLOATING ETHIOPIAN DATE PICKER DROPDOWN (DYNAMIC FIXED POSITIONING) */}
-              {isCustomOpen && (
-                <div
-                  style={dropdownStyle}
-                  className="p-2.5 sm:p-3 bg-white dark:bg-[#24303F] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xl ring-1 ring-black/10 animate-in fade-in zoom-in-95 duration-100"
-                >
-                  {/* From - To Compact Tab Switcher */}
-                  <div className="grid grid-cols-2 gap-1.5 p-0.5 bg-slate-100 dark:bg-[#1C2434] rounded-lg mb-2.5 border border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <button
-                      type="button"
-                      onClick={() => setActiveDateTab('from')}
-                      className={`flex flex-col items-start px-2 py-1 rounded-md transition-all text-left cursor-pointer ${
-                        activeDateTab === 'from'
-                          ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-bold'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
-                      <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'from' ? 'text-primary dark:text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
-                        {isAmharic ? 'የመነሻ ቀን (ከ)' : 'From Date'}
-                      </span>
-                      <span className="text-[11px] font-extrabold truncate max-w-full">
-                        {tempStart ? formatEthiopianDate(tempStart, lang) : (isAmharic ? 'ይምረጡ' : 'Select')}
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveDateTab('to')}
-                      className={`flex flex-col items-start px-2 py-1 rounded-md transition-all text-left cursor-pointer ${
-                        activeDateTab === 'to'
-                          ? 'bg-white dark:bg-primary text-primary dark:text-white shadow-2xs font-bold'
-                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
-                      <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'to' ? 'text-primary dark:text-blue-200' : 'text-slate-400 dark:text-slate-500'}`}>
-                        {isAmharic ? 'የማብቂያ ቀን (እስከ)' : 'To Date'}
-                      </span>
-                      <span className="text-[11px] font-extrabold truncate max-w-full">
-                        {tempEnd ? formatEthiopianDate(tempEnd, lang) : (isAmharic ? 'ይምረጡ' : 'Select')}
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* Calendar Navigation: Compact Month dropdown, Year dropdown, Prev/Next */}
-                  <div className="flex items-center justify-between gap-1 mb-2 pb-1.5 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-                    <button
-                      type="button"
-                      onClick={handlePrevMonth}
-                      className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
-                      title={isAmharic ? 'ያለፈው ወር' : 'Previous Month'}
-                    >
-                      <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
-                    </button>
-
-                    <div className="flex items-center gap-1.5">
-                      {/* Month Dropdown */}
-                      <select
-                        value={viewMonth}
-                        onChange={(e) => setViewMonth(Number(e.target.value))}
-                        className="text-[11px] font-black bg-slate-100 dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded px-1.5 py-0.5 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
+              <AnimatePresence>
+                {isCustomOpen && (
+                  <motion.div
+                    style={dropdownStyle}
+                    initial={{ opacity: 0, scale: 0.96, y: -4 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.97, y: -2 }}
+                    transition={POPOVER_TRANSITION}
+                    className="p-2.5 sm:p-3 bg-white dark:bg-[#24303F] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xl ring-1 ring-black/10 origin-top"
+                  >
+                    {/* From - To Compact Tab Switcher */}
+                    <div className="grid grid-cols-2 gap-1.5 p-0.5 bg-slate-100 dark:bg-[#1C2434] rounded-lg mb-2.5 border border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <button
+                        type="button"
+                        onClick={() => setActiveDateTab('from')}
+                        className={`flex flex-col items-start px-2.5 py-1.5 min-h-[42px] rounded-md transition-colors text-left cursor-pointer ${
+                          activeDateTab === 'from'
+                            ? 'bg-white dark:bg-primary text-primary dark:text-on-primary shadow-2xs font-bold'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        }`}
                       >
-                        {ETHIOPIAN_MONTHS.map((m) => (
-                          <option key={m.id} value={m.id}>
-                            {isAmharic ? m.am : m.en} ({m.id})
-                          </option>
-                        ))}
-                      </select>
+                        <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'from' ? 'text-primary dark:text-on-primary/80' : 'text-slate-400 dark:text-slate-500'}`}>
+                          {isAmharic ? 'የመነሻ ቀን (ከ)' : 'From Date'}
+                        </span>
+                        <span className="text-[11px] font-extrabold truncate max-w-full">
+                          {tempStart ? formatEthiopianDate(tempStart, lang) : (isAmharic ? 'ይምረጡ' : 'Select')}
+                        </span>
+                      </button>
 
-                      {/* Year Dropdown */}
-                      <select
-                        value={viewYear}
-                        onChange={(e) => setViewYear(Number(e.target.value))}
-                        className="text-[11px] font-black bg-slate-100 dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded px-1.5 py-0.5 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
+                      <button
+                        type="button"
+                        onClick={() => setActiveDateTab('to')}
+                        className={`flex flex-col items-start px-2.5 py-1.5 min-h-[42px] rounded-md transition-colors text-left cursor-pointer ${
+                          activeDateTab === 'to'
+                            ? 'bg-white dark:bg-primary text-primary dark:text-on-primary shadow-2xs font-bold'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                        }`}
                       >
-                        {yearOptions.map((y) => (
-                          <option key={y} value={y}>
-                            {y} {isAmharic ? 'ዓ.ም' : 'E.C.'}
-                          </option>
-                        ))}
-                      </select>
+                        <span className={`text-[9px] uppercase font-black tracking-wider ${activeDateTab === 'to' ? 'text-primary dark:text-on-primary/80' : 'text-slate-400 dark:text-slate-500'}`}>
+                          {isAmharic ? 'የማብቂያ ቀን (እስከ)' : 'To Date'}
+                        </span>
+                        <span className="text-[11px] font-extrabold truncate max-w-full">
+                          {tempEnd ? formatEthiopianDate(tempEnd, lang) : (isAmharic ? 'ይምረጡ' : 'Select')}
+                        </span>
+                      </button>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={handleNextMonth}
-                      className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
-                      title={isAmharic ? 'ቀጣይ ወር' : 'Next Month'}
-                    >
-                      <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
-                    </button>
-                  </div>
-
-                  {/* Weekday Headers */}
-                  <div className="grid grid-cols-7 gap-0.5 text-center mb-1">
-                    {ETHIOPIAN_WEEKDAYS.map((w) => (
-                      <span
-                        key={w.id}
-                        className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-tight"
-                        title={isAmharic ? w.am : w.en}
+                    {/* Calendar Navigation: Compact Month dropdown, Year dropdown, Prev/Next */}
+                    <div className="flex items-center justify-between gap-1 mb-2 pb-1.5 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <button
+                        type="button"
+                        onClick={handlePrevMonth}
+                        className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-700 dark:text-slate-200 transition-colors cursor-pointer shrink-0"
+                        title={isAmharic ? 'ያለፈው ወር' : 'Previous Month'}
                       >
-                        {isAmharic ? w.am.slice(0, 2) : w.en.slice(0, 2)}
-                      </span>
-                    ))}
-                  </div>
+                        <Icon className="material-symbols-outlined text-[18px]">chevron_left</Icon>
+                      </button>
 
-                  {/* Compact Days Grid (Perfect 7-column scaling for mobile) */}
-                  <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
-                    {Array.from({ length: monthDetails.startDayOfWeek }).map((_, i) => (
-                      <div key={`blank-${i}`} className="h-6.5 w-6.5 sm:h-7 sm:w-7" />
-                    ))}
-
-                    {Array.from({ length: monthDetails.daysInMonth }).map((_, i) => {
-                      const day = i + 1;
-                      const gDayStr = ethiopianToGregorian(viewYear, viewMonth, day).dateStr;
-
-                      const isStart = tempStart === gDayStr;
-                      const isEnd = tempEnd === gDayStr;
-                      const isInRange = tempStart && tempEnd && gDayStr > tempStart && gDayStr < tempEnd;
-                      const isToday = todayEth.year === viewYear && todayEth.month === viewMonth && todayEth.day === day;
-
-                      return (
-                        <button
-                          key={`day-${day}`}
-                          type="button"
-                          onClick={() => handleDayClick(day)}
-                          className={`h-6.5 w-6.5 sm:h-7 sm:w-7 text-[11px] font-bold rounded-md flex items-center justify-center transition-all cursor-pointer select-none relative ${
-                            isStart || isEnd
-                              ? 'bg-primary text-white font-black shadow-xs ring-2 ring-primary/30 scale-105 z-10'
-                              : isInRange
-                              ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-blue-200 rounded-none font-bold'
-                              : isToday
-                              ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 font-extrabold border border-primary/30'
-                              : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1C2434]'
-                          }`}
+                      <div className="flex items-center gap-1.5">
+                        {/* Month Dropdown */}
+                        <select
+                          value={viewMonth}
+                          onChange={(e) => setViewMonth(Number(e.target.value))}
+                          className="text-[11px] font-black bg-slate-100 dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded px-1.5 py-0.5 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
                         >
-                          {day}
-                        </button>
-                      );
-                    })}
-                  </div>
+                          {ETHIOPIAN_MONTHS.map((m) => (
+                            <option key={m.id} value={m.id}>
+                              {isAmharic ? m.am : m.en} ({m.id})
+                            </option>
+                          ))}
+                        </select>
 
-                  {/* Footer Action Controls */}
-                  <div className="mt-2.5 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTempStart('');
-                        setTempEnd('');
-                      }}
-                      className="text-[11px] font-bold text-slate-500 hover:text-rose-500 transition-colors cursor-pointer px-1"
-                    >
-                      {isAmharic ? 'አጽዳ' : 'Clear'}
-                    </button>
+                        {/* Year Dropdown */}
+                        <select
+                          value={viewYear}
+                          onChange={(e) => setViewYear(Number(e.target.value))}
+                          className="text-[11px] font-black bg-slate-100 dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded px-1.5 py-0.5 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
+                        >
+                          {yearOptions.map((y) => (
+                            <option key={y} value={y}>
+                              {y} {isAmharic ? 'ዓ.ም' : 'E.C.'}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <div className="flex items-center gap-1.5">
                       <button
                         type="button"
-                        onClick={() => setIsCustomOpen(false)}
-                        className="px-2 py-1 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1C2434] rounded transition-colors cursor-pointer"
+                        onClick={handleNextMonth}
+                        className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-700 dark:text-slate-200 transition-colors cursor-pointer shrink-0"
+                        title={isAmharic ? 'ቀጣይ ወር' : 'Next Month'}
                       >
-                        {isAmharic ? 'ዝጋ' : 'Close'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleApplyCustom}
-                        className="px-3 py-1 bg-primary hover:bg-primary-hover text-white text-[11px] font-black rounded shadow-xs transition-all cursor-pointer"
-                      >
-                        {isAmharic ? 'ተግብር' : 'Apply'}
+                        <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
                       </button>
                     </div>
-                  </div>
-                </div>
-              )}
+
+                    {/* Weekday Headers */}
+                    <div className="grid grid-cols-7 gap-0.5 text-center mb-1">
+                      {ETHIOPIAN_WEEKDAYS.map((w) => (
+                        <span
+                          key={w.id}
+                          className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-tight"
+                          title={isAmharic ? w.am : w.en}
+                        >
+                          {isAmharic ? w.am.slice(0, 2) : w.en.slice(0, 2)}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Compact Days Grid (Perfect 7-column scaling for mobile) */}
+                    <div className="grid grid-cols-7 gap-0.5 sm:gap-1 place-items-center">
+                      {Array.from({ length: monthDetails.startDayOfWeek }).map((_, i) => (
+                        <div key={`blank-${i}`} className="h-8 w-8 sm:h-7 sm:w-7" />
+                      ))}
+
+                      {Array.from({ length: monthDetails.daysInMonth }).map((_, i) => {
+                        const day = i + 1;
+                        const gDayStr = ethiopianToGregorian(viewYear, viewMonth, day).dateStr;
+
+                        const isStart = tempStart === gDayStr;
+                        const isEnd = tempEnd === gDayStr;
+                        const isInRange = tempStart && tempEnd && gDayStr > tempStart && gDayStr < tempEnd;
+                        const isToday = todayEth.year === viewYear && todayEth.month === viewMonth && todayEth.day === day;
+
+                        return (
+                          <button
+                            key={`day-${day}`}
+                            type="button"
+                            onClick={() => handleDayClick(day)}
+                            className={`h-8 w-8 sm:h-7 sm:w-7 text-[11px] font-bold rounded-md flex items-center justify-center transition-colors cursor-pointer select-none relative ${
+                              isStart || isEnd
+                                ? 'bg-primary text-on-primary font-black shadow-xs ring-2 ring-primary/30 z-10'
+                                : isInRange
+                                ? 'bg-primary/15 text-primary dark:bg-primary/25 dark:text-blue-200 rounded-none font-bold'
+                                : isToday
+                                ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 font-extrabold border border-primary/30'
+                                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1C2434]'
+                            }`}
+                          >
+                            {day}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Footer Action Controls */}
+                    <div className="mt-2.5 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTempStart('');
+                          setTempEnd('');
+                        }}
+                        className="text-[11px] font-bold text-slate-500 hover:text-rose-500 transition-colors cursor-pointer px-2 min-h-[36px] sm:min-h-[30px] rounded"
+                      >
+                        {isAmharic ? 'አጽዳ' : 'Clear'}
+                      </button>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setIsCustomOpen(false)}
+                          className="px-2.5 min-h-[36px] sm:min-h-[30px] text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1C2434] rounded-md transition-colors cursor-pointer"
+                        >
+                          {isAmharic ? 'ዝጋ' : 'Close'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleApplyCustom}
+                          className="px-3.5 min-h-[36px] sm:min-h-[30px] bg-primary hover:bg-primary-hover text-on-primary text-[11px] font-black rounded-md shadow-xs transition-colors cursor-pointer"
+                        >
+                          {isAmharic ? 'ተግብር' : 'Apply'}
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -517,10 +523,10 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
               <button
                 type="button"
                 onClick={() => handleSelectPreset('this_month')}
-                className="p-1 rounded-md text-slate-400 hover:text-primary dark:hover:text-primary hover:bg-slate-100 dark:hover:bg-[#1C2434] transition-colors cursor-pointer"
+                className="w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-[#1C2434] transition-colors cursor-pointer"
                 title={isAmharic ? 'ወደዚህ ወር መልስ' : 'Reset to this month'}
               >
-                <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
               </button>
             )}
           </div>

@@ -151,7 +151,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
   isAmharic = true,
 }) => {
   return (
-    <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-200">
+    <div className="space-y-4 sm:space-y-5 transition-opacity duration-200">
       {/* 1. Hero QR Scanner Center Placeholder (For Officer Role) */}
       {userRole === 'officer' && (
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6 sm:p-8 shadow-xs flex flex-col items-center justify-center space-y-4">

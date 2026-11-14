@@ -1,5 +1,13 @@
 import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
+import { BaseModal } from './ui/BaseModal';
+import {
+  TACTILE_SPRING,
+  TAP_SCALE,
+  POPOVER_TRANSITION,
+  BACKDROP_VARIANTS,
+} from '../utils/motionPresets';
 import { formatEthiopianDateTime } from '../utils/ethiopianCalendar';
 import {
   Language,
@@ -10,8 +18,7 @@ import {
 import { SmartImage } from './SmartImage';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { DataField } from './ui/StreamlinedUI';
-import { LoadingSpinner, TableSkeleton } from './ui/Skeleton';
-import { UnifiedWorkspaceCard, TabList, TabItem } from './ui/AssocDesignSystem';
+import { UnifiedWorkspaceCard, TabList } from './ui/AssocDesignSystem';
 
 interface UnregisteredReportsListProps {
   lang: Language;
@@ -185,14 +192,17 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             </div>
 
             {onNewReportClick && (
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={onNewReportClick}
-                className="hidden sm:flex px-3.5 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 items-center gap-1.5 shrink-0 cursor-pointer"
+                className="hidden sm:flex px-3.5 py-2 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 items-center gap-1.5 shrink-0 cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[16px]">add_alert</Icon>
                 <span>{isAmharic ? 'አዲስ ሪፖርት' : 'New Report'}</span>
-              </button>
+              </motion.button>
             )}
           </div>
         }
@@ -290,8 +300,15 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
             </div>
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
-            {isFilterDrawerOpen && (
-              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] animate-in fade-in slide-in-from-top-1 duration-150">
+            <AnimatePresence>
+              {isFilterDrawerOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={POPOVER_TRANSITION}
+                  className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C]"
+                >
                 <div className="flex flex-wrap items-center gap-2.5 text-xs">
                   {/* Sub-City Filter */}
                   <div className="flex items-center gap-1.5">
@@ -361,8 +378,9 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     </button>
                   )}
                 </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         }
       >
@@ -466,14 +484,17 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
                       {/* Action Button */}
                       <td className="py-3 px-3 text-right w-32 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <button
+                        <motion.button
                           type="button"
+                          data-motion-control="true"
+                          whileTap={TAP_SCALE}
+                          transition={TACTILE_SPRING}
                           onClick={() => setSelectedReport(rep)}
-                          className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary-hover text-white text-xs font-medium transition-all cursor-pointer shadow-xs inline-flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-sm bg-primary hover:bg-primary-hover text-on-primary text-xs font-medium transition-colors cursor-pointer shadow-xs inline-flex items-center gap-1"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ዝርዝር' : 'Details'}</span>
-                        </button>
+                        </motion.button>
                       </td>
                     </tr>
                   ))}
@@ -510,7 +531,8 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         <button
                           type="button"
                           onClick={() => toggleReportExpand(rep.id)}
-                          className="p-1 rounded-md text-secondary hover:text-on-surface cursor-pointer"
+                          aria-label={isExpanded ? (isAmharic ? 'ዝጋ' : 'Collapse') : (isAmharic ? 'ዘርጋ' : 'Expand')}
+                          className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md text-secondary hover:text-on-surface cursor-pointer touch-manipulation"
                         >
                           <Icon className="material-symbols-outlined text-[20px]">
                             {isExpanded ? 'expand_less' : 'expand_more'}
@@ -530,7 +552,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
 
                       {rep.notes && (
                         <div className="p-2.5 bg-surface-container-low rounded-lg">
-                          <span className="text-[10px] font-bold text-secondary  block mb-0.5">
+                          <span className="text-[10px] font-bold text-secondary block mb-0.5">
                             {isAmharic ? 'ማስታወሻ:' : 'Notes:'}
                           </span>
                           <p className="text-xs text-on-surface leading-relaxed">{rep.notes}</p>
@@ -538,14 +560,17 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                       )}
 
                       <div className="flex justify-end pt-1">
-                        <button
+                        <motion.button
                           type="button"
+                          data-motion-control="true"
+                          whileTap={TAP_SCALE}
+                          transition={TACTILE_SPRING}
                           onClick={() => setSelectedReport(rep)}
-                          className="w-full py-2 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                          className="w-full min-h-[44px] py-2 rounded-lg bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs touch-manipulation"
                         >
                           <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
                           <span>{isAmharic ? 'ሙሉ ዝርዝር ይመልከቱ' : 'View Full Details'}</span>
-                        </button>
+                        </motion.button>
                       </div>
                     </div>
                   </div>
@@ -582,13 +607,13 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   type="button"
                   disabled={activePage <= 1}
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
                   <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
                 </button>
 
-                <span className="px-3 py-1.5 bg-primary text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
+                <span className="px-3 py-1.5 bg-primary text-on-primary rounded-sm font-semibold font-mono text-xs shadow-xs tabular-nums">
                   {activePage} / {totalPages}
                 </span>
 
@@ -596,7 +621,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   type="button"
                   disabled={activePage >= totalPages}
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs touch-manipulation"
                 >
                   <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
                   <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
@@ -608,159 +633,186 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
       </div>
       </UnifiedWorkspaceCard>
 
-      {/* Detail Modal */}
-      {selectedReport && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-150">
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl max-w-2xl w-full p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      {/* Detail Modal (Adaptive Mobile Bottom Sheet & Desktop Modal) */}
+      <BaseModal
+        isOpen={!!selectedReport}
+        onClose={() => setSelectedReport(null)}
+        className="max-w-2xl"
+        mobileSheet={true}
+      >
+        {selectedReport && (
+          <div className="flex flex-col max-h-[85dvh] sm:max-h-[88vh]">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-outline-variant pb-3">
-              <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-amber-600 text-[24px]">report_problem</Icon>
-                <div>
-                  <h3 className="font-black text-sm text-on-surface  tracking-wider">
+            <div className="px-5 py-3.5 flex items-center justify-between border-b border-outline-variant shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <Icon className="material-symbols-outlined text-amber-600 text-[24px] shrink-0">report_problem</Icon>
+                <div className="min-w-0">
+                  <h3 className="font-black text-sm text-on-surface tracking-wider truncate">
                     {isAmharic ? 'የባልተመዘገበ ተሽከርካሪ ሪፖርት ዝርዝር' : 'Unregistered Vehicle Report Details'}
                   </h3>
                   <p className="text-[11px] text-secondary font-mono">{selectedReport.id}</p>
                 </div>
               </div>
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => setSelectedReport(null)}
-                className="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface cursor-pointer"
+                aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+                className="w-11 h-11 sm:w-9 sm:h-9 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface cursor-pointer shrink-0 touch-manipulation"
               >
                 <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-              </button>
+              </motion.button>
             </div>
 
-            {/* Modal Content Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</p>
-                <p className="font-mono font-black text-sm text-on-surface">{selectedReport.plateNumber || 'Unplated'}</p>
+            {/* Modal Scrollable Body */}
+            <div className="p-5 overflow-y-auto space-y-5 flex-1 min-h-0 pb-[max(1.25rem,env(safe-area-inset-bottom,20px))]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
+                  <p className="text-[10px] font-bold text-secondary">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</p>
+                  <p className="font-mono font-black text-sm text-on-surface">{selectedReport.plateNumber || 'Unplated'}</p>
+                </div>
+
+                <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
+                  <p className="text-[10px] font-bold text-secondary">{isAmharic ? 'የቻሲስ ቁጥር' : 'Chasis'}</p>
+                  <p className="font-mono font-black text-sm text-on-surface">{selectedReport.chassisNumber || (selectedReport.engineOrSerialNo && selectedReport.engineOrSerialNo !== 'N/A' ? selectedReport.engineOrSerialNo : '') || selectedReport.engineOrSerialNo || '—'}</p>
+                </div>
+
+                <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
+                  <p className="text-[10px] font-bold text-secondary">{isAmharic ? 'አሽከርካሪ / ስልክ' : 'Driver / Phone'}</p>
+                  <p className="font-bold text-on-surface">{selectedReport.driverName || '—'}</p>
+                  <p className="text-secondary">{selectedReport.driverPhone || '—'}</p>
+                </div>
+
+                <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
+                  <p className="text-[10px] font-bold text-secondary">{isAmharic ? 'ክፍለ ከተማ / ቦታ' : 'Sub-City & Location'}</p>
+                  <p className="font-bold text-on-surface">{selectedReport.subCity}</p>
+                  <p className="text-secondary">{selectedReport.locationName}</p>
+                </div>
               </div>
 
-              <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የቻሲስ ቁጥር' : 'Chasis'}</p>
-                <p className="font-mono font-black text-sm text-on-surface">{selectedReport.chassisNumber || (selectedReport.engineOrSerialNo && selectedReport.engineOrSerialNo !== 'N/A' ? selectedReport.engineOrSerialNo : '') || selectedReport.engineOrSerialNo || '—'}</p>
+              {/* Notes & Evidence Photo */}
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-secondary">{isAmharic ? 'የኦፊሰር ማብራሪያ' : 'Officer Field Notes'}</p>
+                <p className="p-3 rounded-lg bg-surface-container-low text-on-surface text-xs leading-relaxed font-medium border border-outline-variant/50">
+                  {selectedReport.notes}
+                </p>
               </div>
 
-              <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'አሽከርካሪ / ስልክ' : 'Driver / Phone'}</p>
-                <p className="font-bold text-on-surface">{selectedReport.driverName || '—'}</p>
-                <p className="text-secondary">{selectedReport.driverPhone || '—'}</p>
-              </div>
-
-              <div className="p-3.5 bg-surface-container-low/50 rounded-lg space-y-1 border border-outline-variant/60">
-                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'ክፍለ ከተማ / ቦታ' : 'Sub-City & Location'}</p>
-                <p className="font-bold text-on-surface">{selectedReport.subCity}</p>
-                <p className="text-secondary">{selectedReport.locationName}</p>
-              </div>
-            </div>
-
-            {/* Notes & Evidence Photo */}
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የኦፊሰር ማብራሪያ' : 'Officer Field Notes'}</p>
-              <p className="p-3 rounded-lg bg-surface-container-low text-on-surface text-xs leading-relaxed font-medium border border-outline-variant/50">
-                {selectedReport.notes}
-              </p>
-            </div>
-
-            {selectedReport.evidencePhoto && (
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-secondary ">{isAmharic ? 'የማስረጃ ፎቶ' : 'Evidence Photo'}</p>
-                <div
-                  onClick={() => setZoomedImage({ url: selectedReport.evidencePhoto!, title: selectedReport.id })}
-                  className="h-44 rounded-lg overflow-hidden border border-outline-variant bg-surface-container cursor-pointer group relative shadow-2xs"
-                >
-                  <img src={selectedReport.evidencePhoto} alt="Evidence" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                    <Icon className="material-symbols-outlined text-[24px]">zoom_in</Icon>
+              {selectedReport.evidencePhoto && (
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-secondary">{isAmharic ? 'የማስረጃ ፎቶ' : 'Evidence Photo'}</p>
+                  <div
+                    onClick={() => setZoomedImage({ url: selectedReport.evidencePhoto!, title: selectedReport.id })}
+                    className="h-44 rounded-lg overflow-hidden border border-outline-variant bg-surface-container cursor-pointer group relative shadow-2xs"
+                  >
+                    <img src={selectedReport.evidencePhoto} alt="Evidence" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <Icon className="material-symbols-outlined text-[24px]">zoom_in</Icon>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Status Update Actions */}
-            {onUpdateStatus && (
-              <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3 pt-3">
-                <p className="text-xs font-bold text-amber-900 dark:text-amber-300">
-                  {isAmharic ? 'የሪፖርቱን ሁኔታ ይለውጡ' : 'Update Incident Status'}
-                </p>
+              {/* Status Update Actions */}
+              {onUpdateStatus && (
+                <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 space-y-3 pt-3">
+                  <p className="text-xs font-bold text-amber-900 dark:text-amber-300">
+                    {isAmharic ? 'የሪፖርቱን ሁኔታ ይለውጡ' : 'Update Incident Status'}
+                  </p>
 
-                <input
-                  type="text"
-                  value={resolutionInput}
-                  onChange={(e) => setResolutionInput(e.target.value)}
-                  placeholder={
-                    isAmharic
-                      ? 'የማስተካከያ/የመፍትሔ ማስታወሻ ያስገቡ...'
-                      : 'Add resolution notes or permit registration reference...'
-                  }
-                  className="w-full px-3 py-2 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs outline-none"
-                />
+                  <input
+                    type="text"
+                    value={resolutionInput}
+                    onChange={(e) => setResolutionInput(e.target.value)}
+                    placeholder={
+                      isAmharic
+                        ? 'የማስተካከያ/የመፍትሔ ማስታወሻ ያስገቡ...'
+                        : 'Add resolution notes or permit registration reference...'
+                    }
+                    className="w-full px-3 py-2 rounded-lg border border-outline-variant bg-surface text-on-surface text-xs outline-none"
+                  />
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    disabled={isUpdating}
-                    onClick={() => handleStatusChange('under_investigation')}
-                    className="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold cursor-pointer transition-all disabled:opacity-50 shadow-2xs"
-                  >
-                    {isAmharic ? 'በምርመራ ላይ አድርግ' : 'Mark Under Investigation'}
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={isUpdating}
-                    onClick={() => handleStatusChange('resolved')}
-                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer transition-all disabled:opacity-50 shadow-2xs"
-                  >
-                    {isAmharic ? 'ተፈቷል በል' : 'Mark Resolved'}
-                  </button>
-
-                  {onOpenRegisterForm && (
-                    <button
+                  <div className="flex flex-wrap items-center gap-2">
+                    <motion.button
                       type="button"
-                      onClick={() => {
-                        setSelectedReport(null);
-                        onOpenRegisterForm(selectedReport);
-                      }}
-                      className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer transition-all flex items-center gap-1 shadow-2xs"
+                      data-motion-control="true"
+                      whileTap={isUpdating ? undefined : TAP_SCALE}
+                      transition={TACTILE_SPRING}
+                      disabled={isUpdating}
+                      onClick={() => handleStatusChange('under_investigation')}
+                      className="min-h-[44px] sm:min-h-[36px] px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold cursor-pointer transition-colors disabled:opacity-50 shadow-2xs touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[16px]">how_to_reg</Icon>
-                      <span>{isAmharic ? 'ወደ ምዝገባ ቀይር' : 'Convert to Registration'}</span>
-                    </button>
-                  )}
+                      {isAmharic ? 'በምርመራ ላይ አድርግ' : 'Mark Under Investigation'}
+                    </motion.button>
+
+                    <motion.button
+                      type="button"
+                      data-motion-control="true"
+                      whileTap={isUpdating ? undefined : TAP_SCALE}
+                      transition={TACTILE_SPRING}
+                      disabled={isUpdating}
+                      onClick={() => handleStatusChange('resolved')}
+                      className="min-h-[44px] sm:min-h-[36px] px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer transition-colors disabled:opacity-50 shadow-2xs touch-manipulation"
+                    >
+                      {isAmharic ? 'ተፈቷል በል' : 'Mark Resolved'}
+                    </motion.button>
+
+                    {onOpenRegisterForm && (
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={() => {
+                          setSelectedReport(null);
+                          onOpenRegisterForm(selectedReport);
+                        }}
+                        className="min-h-[44px] sm:min-h-[36px] px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer transition-colors flex items-center gap-1 shadow-2xs touch-manipulation"
+                      >
+                        <Icon className="material-symbols-outlined text-[16px]">how_to_reg</Icon>
+                        <span>{isAmharic ? 'ወደ ምዝገባ ቀይር' : 'Convert to Registration'}</span>
+                      </motion.button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </BaseModal>
 
       {/* Image Zoom Modal */}
-      {zoomedImage && (
-        <div
-          className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 animate-in fade-in duration-150 overflow-y-auto"
-          onClick={() => setZoomedImage(null)}
-        >
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
-            <ZoomableDocumentContainer
-              lang={lang}
-              title={zoomedImage.title}
-              onClose={() => setZoomedImage(null)}
-              requireClerkRequest={false}
-            >
-              <img
-                src={zoomedImage.url}
-                alt={zoomedImage.title}
-                className="max-w-full max-h-[80vh] object-contain rounded-lg"
-                referrerPolicy="no-referrer"
-              />
-            </ZoomableDocumentContainer>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {zoomedImage && (
+          <motion.div
+            variants={BACKDROP_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={POPOVER_TRANSITION}
+            className="fixed inset-0 z-[10000] bg-black/90 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
+            onClick={() => setZoomedImage(null)}
+          >
+            <div onClick={(e) => e.stopPropagation()} className="w-full max-w-4xl">
+              <ZoomableDocumentContainer
+                lang={lang}
+                title={zoomedImage.title}
+                onClose={() => setZoomedImage(null)}
+                requireClerkRequest={false}
+              >
+                <img
+                  src={zoomedImage.url}
+                  alt={zoomedImage.title}
+                  className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                  referrerPolicy="no-referrer"
+                />
+              </ZoomableDocumentContainer>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

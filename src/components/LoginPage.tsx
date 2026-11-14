@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
 import { Language, UserRole, APP_LOGO } from '../types';
 import { validateBadgeId } from '../utils/validation';
-import { SYSTEM_ROLE_CREDENTIALS, loginOnlineUser } from '../services/authService';
+import { loginOnlineUser } from '../services/authService';
 import { CentralPageSpinner } from './ui/CentralPageSpinner';
+import {
+  POPOVER_TRANSITION,
+  ROUTE_TRANSITION,
+  TACTILE_SPRING,
+  TAP_SCALE,
+} from '../utils/motionPresets';
 
 interface LoginPageProps {
   currentLang?: Language;
@@ -17,9 +24,6 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({
   currentLang = 'en',
-  currentTheme = 'light',
-  onToggleLang,
-  onToggleTheme,
   onLoginSuccess,
   sessionExpiredMessage,
   onClearSessionExpiredMessage,
@@ -92,8 +96,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       </header>
 
       {/* ================= MAIN LOGIN CONTAINER ================= */}
-      <main className="flex-1 flex flex-col justify-center items-center p-4 sm:p-6 pt-8 sm:pt-6 py-6 sm:py-10 mt-4 sm:mt-0 my-auto min-h-0 -translate-y-[5%] sm:-translate-y-[10%]">
-        <div className="w-full max-w-sm bg-surface-container-lowest border border-outline-variant rounded-xl shadow-md p-4 sm:p-6 space-y-4 relative">
+      <main className="flex-1 flex flex-col justify-center items-center p-4 sm:p-6 py-6 sm:py-10 my-auto min-h-0">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={ROUTE_TRANSITION}
+          className="w-full max-w-sm bg-surface-container-lowest border border-outline-variant rounded-xl shadow-md p-5 sm:p-6 space-y-4 relative -translate-y-[3%] sm:-translate-y-[6%]"
+        >
           
           {/* Header Inside Card */}
           <div className="text-center pb-0.5">
@@ -107,38 +116,55 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </p>
           </div>
 
-          {sessionExpiredMessage && (
-            <div className="p-3 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-start gap-2.5 animate-in fade-in shadow-2xs">
-              <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
-                info
-              </Icon>
-              <div className="flex-1 min-w-0">
-                <span className="block font-black text-xs text-slate-900 dark:text-slate-100">
-                  {lang === 'am' ? 'የስራ ክፍለ-ጊዜ ማብቂያ' : 'Session Expired for Security'}
-                </span>
-                <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-slate-600 dark:text-slate-400">
-                  {sessionExpiredMessage}
-                </span>
-              </div>
-              {onClearSessionExpiredMessage && (
-                <button
-                  type="button"
-                  onClick={onClearSessionExpiredMessage}
-                  className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 p-0.5 rounded cursor-pointer shrink-0"
-                  title={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-                </button>
-              )}
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {sessionExpiredMessage && (
+              <motion.div
+                key="session-expired"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={POPOVER_TRANSITION}
+                className="p-3 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-start gap-2.5 shadow-2xs"
+              >
+                <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
+                  info
+                </Icon>
+                <div className="flex-1 min-w-0">
+                  <span className="block font-black text-xs text-slate-900 dark:text-slate-100">
+                    {lang === 'am' ? 'የስራ ክፍለ-ጊዜ ማብቂያ' : 'Session Expired for Security'}
+                  </span>
+                  <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-slate-600 dark:text-slate-400">
+                    {sessionExpiredMessage}
+                  </span>
+                </div>
+                {onClearSessionExpiredMessage && (
+                  <button
+                    type="button"
+                    onClick={onClearSessionExpiredMessage}
+                    className="w-9 h-9 -mr-1.5 -mt-1.5 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer shrink-0 transition-colors"
+                    title={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
+                    aria-label={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                  </button>
+                )}
+              </motion.div>
+            )}
 
-          {authError && (
-            <div className="p-2.5 rounded-lg text-xs font-bold bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 flex items-center gap-2 animate-in fade-in shadow-2xs">
-              <Icon className="material-symbols-outlined text-[16px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
-              <span>{authError}</span>
-            </div>
-          )}
+            {authError && (
+              <motion.div
+                key="auth-error"
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={POPOVER_TRANSITION}
+                className="p-3 rounded-lg text-xs font-bold bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 flex items-center gap-2 shadow-2xs"
+              >
+                <Icon className="material-symbols-outlined text-[16px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
+                <span>{authError}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -157,9 +183,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   placeholder={lang === 'am' ? 'የመታወቂያ ቁጥር ያስገቡ' : 'Enter Badge ID'}
                   required
                   autoComplete="off"
-                  className={`w-full bg-surface-container-low border ${
+                  className={`w-full min-h-[44px] bg-surface-container-low border ${
                     badgeIdError ? 'border-error' : 'border-outline-variant'
-                  } rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-11`}
+                  } rounded-lg px-3.5 py-2.5 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-11`}
                 />
                 <div className="absolute right-3 inset-y-0 flex items-center justify-center text-on-surface-variant pointer-events-none">
                   <Icon className="material-symbols-outlined text-[18px] leading-none">person</Icon>
@@ -183,14 +209,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={lang === 'am' ? 'የይለፍ ቃል ያስገቡ' : 'Enter Password'}
                   required
-                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs sm:text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-11"
+                  className="w-full min-h-[44px] bg-surface-container-low border border-outline-variant rounded-lg px-3.5 py-2.5 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-12"
                 />
-                <div className="absolute right-2 inset-y-0 flex items-center">
+                <div className="absolute right-1 inset-y-0 flex items-center">
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? (lang === 'am' ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (lang === 'am' ? 'የይለፍ ቃል አሳይ' : 'Show password')}
-                    className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                    className="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                   >
                     <Icon className="material-symbols-outlined text-[18px]">
                       {showPassword ? 'visibility_off' : 'visibility'}
@@ -201,8 +227,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
 
             {/* Remember Me Checkbox */}
-            <div className="flex items-center justify-between text-xs pt-0.5">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-on-surface-variant font-medium">
+            <div className="flex items-center justify-between text-xs">
+              <label className="flex items-center gap-2.5 min-h-[40px] cursor-pointer select-none text-on-surface-variant font-medium">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -214,14 +240,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
 
             {/* Submit Button */}
-            <button
+            <motion.button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary-hover text-white py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none transition-colors duration-150 disabled:opacity-60 cursor-pointer mt-1 focus:ring-2 focus:ring-primary/40"
+              data-motion-control="true"
+              whileTap={!isLoading ? TAP_SCALE : undefined}
+              transition={TACTILE_SPRING}
+              className="w-full min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none transition-colors duration-150 disabled:opacity-60 cursor-pointer mt-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               <Icon className="material-symbols-outlined text-[18px] leading-none">login</Icon>
               <span>{lang === 'am' ? 'ይግቡ' : 'Sign in'}</span>
-            </button>
+            </motion.button>
           </form>
 
           {/* Card Footer */}
@@ -232,7 +261,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 : 'Bahirdar Motorist Association • 2026'}
             </p>
           </div>
-        </div>
+        </motion.div>
       </main>
 
       {/* Central Spinning Page Loader */}

@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { POPOVER_TRANSITION, TACTILE_SPRING, TAP_SCALE } from '../../utils/motionPresets';
 import { useRealtimeSyncStatus } from '../../services/realtimeSync';
 
 interface MultiDeviceSyncIndicatorProps {
@@ -135,10 +137,17 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
       </button>
 
       {/* Popover Details Modal */}
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-[#1C2434] border border-slate-200 dark:border-[#2E3A47] rounded-xl shadow-2xl p-3.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-slate-800 dark:text-[#DEE4EE]">
-          {/* Header */}
-          <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 dark:border-white/10">
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={POPOVER_TRANSITION}
+            className="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-[#1C2434] border border-slate-200 dark:border-[#2E3A47] rounded-xl shadow-2xl p-3.5 z-50 text-slate-800 dark:text-[#DEE4EE]"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 dark:border-white/10">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-primary text-[19px]">devices</span>
               <span className="font-bold text-xs text-slate-900 dark:text-white">
@@ -213,11 +222,14 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
             <span className="text-[10px] text-slate-400 dark:text-slate-500">
               TanStack Query + SSE
             </span>
-            <button
+            <motion.button
               type="button"
+              data-motion-control="true"
+              whileTap={!isRefreshing ? TAP_SCALE : undefined}
+              transition={TACTILE_SPRING}
               onClick={handleManualSync}
               disabled={isRefreshing}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-all cursor-pointer shadow-xs active:scale-95 disabled:opacity-60"
+              className="min-h-[40px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-semibold hover:bg-primary-hover transition-colors cursor-pointer shadow-xs disabled:opacity-60 touch-manipulation"
             >
               <span
                 className={`material-symbols-outlined text-[15px] ${
@@ -227,10 +239,11 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
                 refresh
               </span>
               <span>{isRefreshing ? (isAmharic ? 'በማመሳሰል ላይ...' : 'Syncing...') : (isAmharic ? 'አሁን አመሳስል' : 'Sync Now')}</span>
-            </button>
+            </motion.button>
           </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

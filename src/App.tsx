@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MotionConfig } from 'motion/react';
 import { ColdStartLoader } from './components/ColdStartLoader';
 import { LoginPage } from './components/LoginPage';
 import { HomePage } from './components/HomePage';
@@ -215,52 +216,54 @@ export default function App() {
   };
 
   return (
-    <div
-      id="app-root-container"
-      className={`h-screen h-[100dvh] max-h-[1440px] max-w-[2560px] w-full mx-auto my-auto overflow-hidden bg-surface text-on-surface flex flex-col ${
-        lang === 'am' ? 'system-lang-am lang-am font-ethiopic' : 'system-lang-en lang-en font-sans'
-      }`}
-      lang={lang}
-      data-system-lang={lang}
-    >
-      {!isBackendReady && <ColdStartLoader />}
-      {isLoggedIn ? (
-        <>
-          <HomePage
-            userBadgeId={userBadgeId}
-            userRole={userRole}
+    <MotionConfig reducedMotion="user">
+      <div
+        id="app-root-container"
+        className={`h-screen h-[100dvh] max-h-[1440px] max-w-[2560px] w-full mx-auto my-auto overflow-hidden bg-surface text-on-surface flex flex-col ${
+          lang === 'am' ? 'system-lang-am lang-am font-ethiopic' : 'system-lang-en lang-en font-sans'
+        }`}
+        lang={lang}
+        data-system-lang={lang}
+      >
+        {!isBackendReady && <ColdStartLoader />}
+        {isLoggedIn ? (
+          <>
+            <HomePage
+              userBadgeId={userBadgeId}
+              userRole={userRole}
+              currentLang={lang}
+              currentTheme={theme}
+              onToggleLang={toggleLanguage}
+              onToggleTheme={toggleTheme}
+              onLogout={() => handleLogout('manual')}
+              onSwitchRole={handleSwitchRole}
+            />
+            {/* 15-Minute Inactivity Auto-Logout Security Watcher & Warning Dialog */}
+            <AutoLogoutManager
+              isAmharic={lang === 'am'}
+              onAutoLogout={() => handleLogout('inactivity')}
+              onManualLogout={() => handleLogout('manual')}
+            />
+          </>
+        ) : (
+          <LoginPage
             currentLang={lang}
             currentTheme={theme}
             onToggleLang={toggleLanguage}
             onToggleTheme={toggleTheme}
-            onLogout={() => handleLogout('manual')}
-            onSwitchRole={handleSwitchRole}
+            onLoginSuccess={handleLoginSuccess}
+            sessionExpiredMessage={sessionExpiredMessage}
+            onClearSessionExpiredMessage={() => {
+              setSessionExpiredMessage(null);
+              saveStoredSessionExpiredReason(null);
+            }}
           />
-          {/* 15-Minute Inactivity Auto-Logout Security Watcher & Warning Dialog */}
-          <AutoLogoutManager
-            isAmharic={lang === 'am'}
-            onAutoLogout={() => handleLogout('inactivity')}
-            onManualLogout={() => handleLogout('manual')}
-          />
-        </>
-      ) : (
-        <LoginPage
-          currentLang={lang}
-          currentTheme={theme}
-          onToggleLang={toggleLanguage}
-          onToggleTheme={toggleTheme}
-          onLoginSuccess={handleLoginSuccess}
-          sessionExpiredMessage={sessionExpiredMessage}
-          onClearSessionExpiredMessage={() => {
-            setSessionExpiredMessage(null);
-            saveStoredSessionExpiredReason(null);
-          }}
-        />
-      )}
+        )}
 
-      {/* Global Crash Report & Runtime Error Popup Notification */}
-      <CrashNotificationModal currentLang={lang} />
-    </div>
+        {/* Global Crash Report & Runtime Error Popup Notification */}
+        <CrashNotificationModal currentLang={lang} />
+      </div>
+    </MotionConfig>
   );
 }
 

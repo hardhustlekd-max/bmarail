@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
+import { TACTILE_SPRING, TAP_SCALE, POPOVER_TRANSITION } from '../utils/motionPresets';
 import { Language, UserRole, APP_LOGO } from '../types';
 import { changeOnlineUserPassword, SYSTEM_ROLE_CREDENTIALS } from '../services/authService';
 import { updateSystemUserInDb, saveSettingsToDb, subscribeSettings } from '../services/dbService';
@@ -278,14 +280,17 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         {currentLang === 'am' ? 'አማርኛ' : 'English (US)'}
                       </span>
                     </div>
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={onToggleLang}
-                      className="px-3 py-1.5 rounded-md text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      className="min-h-[44px] sm:min-h-[34px] px-3 py-1.5 rounded-md text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">translate</Icon>
                       <span>{currentLang === 'am' ? 'Switch to English' : 'ወደ አማርኛ ቀይር'}</span>
-                    </button>
+                    </motion.button>
                   </div>
                 )}
 
@@ -300,16 +305,19 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         {currentTheme === 'dark' ? (isAmharic ? 'ጨለማ ሁነታ' : 'Dark Mode') : (isAmharic ? 'ብሩህ ሁነታ' : 'Light Mode')}
                       </span>
                     </div>
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={onToggleTheme}
-                      className="px-3 py-1.5 rounded-md text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                      className="min-h-[44px] sm:min-h-[34px] px-3 py-1.5 rounded-md text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">
                         {currentTheme === 'dark' ? 'light_mode' : 'dark_mode'}
                       </Icon>
                       <span>{currentTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                    </button>
+                    </motion.button>
                   </div>
                 )}
 
@@ -328,7 +336,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   <select
                     value={calendarSystem}
                     onChange={(e) => setCalendarSystem(e.target.value as any)}
-                    className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1 text-xs font-bold text-slate-900 dark:text-white cursor-pointer"
+                    className="min-h-[44px] sm:min-h-[34px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1 text-xs font-bold text-slate-900 dark:text-white cursor-pointer"
                   >
                     <option value="ethiopian">{isAmharic ? 'የኢትዮጵያ' : 'Ethiopian'}</option>
                     <option value="gregorian">{isAmharic ? 'ግሪጎሪያን' : 'Gregorian'}</option>
@@ -347,25 +355,35 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                   </div>
                   <button
                     type="button"
+                    role="switch"
+                    aria-checked={soundAlerts}
+                    data-motion-control="true"
                     onClick={() => setSoundAlerts(!soundAlerts)}
-                    className={`w-10 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                      soundAlerts ? 'bg-[#1e293b] dark:bg-slate-200' : 'bg-surface-container-high'
-                    }`}
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-end cursor-pointer touch-manipulation"
                   >
-                    <div
-                      className={`bg-white dark:bg-slate-900 w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                        soundAlerts ? 'translate-x-4' : 'translate-x-0'
+                    <span
+                      className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+                        soundAlerts ? 'bg-[#1e293b] dark:bg-slate-200' : 'bg-surface-container-high'
                       }`}
-                    ></div>
+                    >
+                      <motion.span
+                        animate={{ x: soundAlerts ? 20 : 0 }}
+                        transition={TACTILE_SPRING}
+                        className="bg-white dark:bg-slate-900 w-4 h-4 rounded-full shadow-md block"
+                      />
+                    </span>
                   </button>
                 </div>
 
                 <div className="pt-2">
-                  <button
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={isSavingPref ? undefined : TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={handleSavePreferences}
                     disabled={isSavingPref}
-                    className="w-full py-2 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all cursor-pointer shadow-2xs disabled:opacity-50 flex items-center justify-center gap-1.5"
+                    className="w-full min-h-[44px] py-2 bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-colors cursor-pointer shadow-2xs disabled:opacity-50 flex items-center justify-center gap-1.5 touch-manipulation"
                   >
                     {isSavingPref ? (
                       <>
@@ -375,12 +393,20 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     ) : (
                       <span>{isAmharic ? 'ምርጫዎችን አጽድቅ' : 'Save Preferences'}</span>
                     )}
-                  </button>
-                  {savedPreferenceMsg && (
-                    <p className="text-[11px] font-bold text-primary text-center mt-1.5 animate-in fade-in">
-                      {isAmharic ? 'ምርጫዎችዎ ተቀምጠዋል!' : 'Preferences saved!'}
-                    </p>
-                  )}
+                  </motion.button>
+                  <AnimatePresence>
+                    {savedPreferenceMsg && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        transition={POPOVER_TRANSITION}
+                        className="text-[11px] font-bold text-primary text-center mt-1.5"
+                      >
+                        {isAmharic ? 'ምርጫዎችዎ ተቀምጠዋል!' : 'Preferences saved!'}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>
@@ -409,20 +435,26 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
               </div>
 
               {/* Feedback Alert */}
-              {feedback && (
-                <div
-                  className={`p-3.5 rounded-lg text-xs font-bold border flex items-start gap-2.5 animate-in fade-in shadow-2xs ${
-                    feedback.type === 'success'
-                      ? 'bg-primary/10 border-primary/30 text-primary'
-                      : 'bg-rose-50 dark:bg-rose-950/80 border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-100'
-                  }`}
-                >
-                  <Icon className="material-symbols-outlined text-[20px] shrink-0">
-                    {feedback.type === 'success' ? 'check_circle' : 'error'}
-                  </Icon>
-                  <span className="pt-0.5">{feedback.message}</span>
-                </div>
-              )}
+              <AnimatePresence>
+                {feedback && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={POPOVER_TRANSITION}
+                    className={`p-3.5 rounded-lg text-xs font-bold border flex items-start gap-2.5 shadow-2xs ${
+                      feedback.type === 'success'
+                        ? 'bg-primary/10 border-primary/30 text-primary'
+                        : 'bg-rose-50 dark:bg-rose-950/80 border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-100'
+                    }`}
+                  >
+                    <Icon className="material-symbols-outlined text-[20px] shrink-0">
+                      {feedback.type === 'success' ? 'check_circle' : 'error'}
+                    </Icon>
+                    <span className="pt-0.5">{feedback.message}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Password Change Form */}
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
@@ -440,12 +472,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       placeholder={isAmharic ? 'የአሁኑን የይለፍ ቃል ያስገቡ' : 'Enter current password'}
                       className="w-full bg-surface-container border border-outline-variant rounded-lg px-3.5 py-2.5 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-[#1e293b] dark:focus:ring-yellow-400 transition-all pr-11 font-mono"
                     />
-                    <div className="absolute right-2 inset-y-0 flex items-center">
+                    <div className="absolute right-1 inset-y-0 flex items-center">
                       <button
                         type="button"
                         onClick={() => setShowCurrentPass(!showCurrentPass)}
                         aria-label={showCurrentPass ? (isAmharic ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (isAmharic ? 'የይለፍ ቃል አሳይ' : 'Show password')}
-                        className="w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                        className="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none touch-manipulation"
                       >
                         <Icon className="material-symbols-outlined text-[18px]">
                           {showCurrentPass ? 'visibility_off' : 'visibility'}
@@ -470,12 +502,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       required
                       minLength={6}
                     />
-                    <div className="absolute right-2 inset-y-0 flex items-center">
+                    <div className="absolute right-1 inset-y-0 flex items-center">
                       <button
                         type="button"
                         onClick={() => setShowNewPass(!showNewPass)}
                         aria-label={showNewPass ? (isAmharic ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (isAmharic ? 'የይለፍ ቃል አሳይ' : 'Show password')}
-                        className="w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                        className="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none touch-manipulation"
                       >
                         <Icon className="material-symbols-outlined text-[18px]">
                           {showNewPass ? 'visibility_off' : 'visibility'}
@@ -484,7 +516,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     </div>
                   </div>
 
-                  {/* Password Strength Indicator */}
+                  {/* Password Strength Indicator (GPU scaleX) */}
                   {newPassword && (
                     <div className="space-y-1 pt-1">
                       <div className="flex justify-between items-center text-[10px]">
@@ -492,10 +524,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         <span className={`font-black ${strength.textColor}`}>{strength.label}</span>
                       </div>
                       <div className="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${strength.color} transition-all duration-300`}
-                          style={{ width: `${strength.score}%` }}
-                        ></div>
+                        <motion.div
+                          className={`h-full w-full origin-left ${strength.color}`}
+                          initial={false}
+                          animate={{ scaleX: strength.score / 100 }}
+                          transition={POPOVER_TRANSITION}
+                        />
                       </div>
                     </div>
                   )}
@@ -516,12 +550,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                       required
                       minLength={6}
                     />
-                    <div className="absolute right-2 inset-y-0 flex items-center">
+                    <div className="absolute right-1 inset-y-0 flex items-center">
                       <button
                         type="button"
                         onClick={() => setShowConfirmPass(!showConfirmPass)}
                         aria-label={showConfirmPass ? (isAmharic ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (isAmharic ? 'የይለፍ ቃል አሳይ' : 'Show password')}
-                        className="w-8 h-8 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none"
+                        className="w-10 h-10 flex items-center justify-center text-secondary hover:text-on-surface transition-colors cursor-pointer rounded-full hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none touch-manipulation"
                       >
                         <Icon className="material-symbols-outlined text-[18px]">
                           {showConfirmPass ? 'visibility_off' : 'visibility'}
@@ -574,10 +608,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
                 {/* Submit Action Button */}
                 <div className="pt-2">
-                  <button
+                  <motion.button
                     type="submit"
+                    data-motion-control="true"
+                    whileTap={isLoading ? undefined : TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     disabled={isLoading}
-                    className="w-full bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer disabled:opacity-50"
+                    className="w-full min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs sm:text-sm py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer disabled:opacity-50 touch-manipulation"
                   >
                     {isLoading ? (
                       <Icon className="material-symbols-outlined text-[18px] animate-spin">sync</Icon>
@@ -589,14 +626,12 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                         ? (isAmharic ? 'በመቀየር ላይ...' : 'Updating...')
                         : (isAmharic ? 'የይለፍ ቃል ቀይር' : 'Update Password')}
                     </span>
-                  </button>
+                  </motion.button>
                 </div>
 
               </form>
 
             </div>
-
-
 
             {/* Auto-Logout Inactivity Policy Card */}
             <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs space-y-3">
@@ -623,31 +658,35 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
               {/* Quick actions for testing and manual extension */}
               <div className="pt-2 border-t border-outline-variant/60 flex flex-wrap items-center justify-end gap-2">
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => triggerInactivityPromptPreview()}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container border border-outline-variant transition-all cursor-pointer flex items-center gap-1.5"
+                  className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-bold text-on-surface hover:bg-surface-container border border-outline-variant transition-colors cursor-pointer flex items-center gap-1.5 touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px] text-primary">preview</Icon>
                   <span>{isAmharic ? 'ማስጠንቀቂያውን ሞክር (Preview Prompt)' : 'Preview Prompt'}</span>
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => extendSessionManually()}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e293b] hover:bg-[#112D6C] text-white shadow-2xs transition-all cursor-pointer flex items-center gap-1.5"
+                  className="min-h-[44px] sm:min-h-[36px] px-3 py-1.5 rounded-lg text-xs font-bold bg-[#1e293b] hover:bg-[#112D6C] text-white shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5 touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">lock_reset</Icon>
                   <span>{isAmharic ? 'ክፍለ ጊዜውን አራዝም (+15 ደቂቃ)' : 'Extend Session (+15 min)'}</span>
-                </button>
+                </motion.button>
               </div>
             </div>
 
-
-
             {/* Quick Logout Card (Using non-red theme) */}
             {onLogoutClick && (
-              <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs flex items-center justify-between">
+              <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xs flex items-center justify-between gap-3">
                 <div>
                   <span className="text-xs font-black text-on-surface block">
                     {isAmharic ? 'ከሲስተም መውጣት' : 'System Sign Out'}
@@ -656,14 +695,17 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
                     {isAmharic ? 'የአሁኑን ክፍለ ጊዜ ያጠናቅቁ' : 'End current working session'}
                   </span>
                 </div>
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={onLogoutClick}
-                  className="px-4 py-2 rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white text-xs font-black border border-[#2A4E9B] shadow-2xs transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
+                  className="min-h-[44px] sm:min-h-[38px] px-4 py-2 rounded-lg bg-[#132A5E] hover:bg-[#1A387C] text-white text-xs font-black border border-[#2A4E9B] shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px] text-white">logout</Icon>
                   <span>{isAmharic ? 'ውጣ' : 'Logout'}</span>
-                </button>
+                </motion.button>
               </div>
             )}
 

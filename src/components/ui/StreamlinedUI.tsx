@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './Icon';
+import { POPOVER_TRANSITION, TACTILE_SPRING, TAP_SCALE } from '../../utils/motionPresets';
 
 export const PageTitle = ({
   title,
@@ -46,10 +47,13 @@ export const SectionToggle = ({
   onClick: () => void;
   badgeText?: string;
 }) => (
-  <button
+  <motion.button
     type="button"
+    data-motion-control="true"
+    whileTap={{ scale: 0.99 }}
+    transition={TACTILE_SPRING}
     onClick={onClick}
-    className="w-full min-h-[48px] flex items-center justify-between py-2 px-1 cursor-pointer text-left group transition-colors rounded-lg hover:bg-surface-container/30"
+    className="w-full min-h-[44px] flex items-center justify-between py-2 px-1.5 cursor-pointer text-left group transition-colors rounded-lg hover:bg-surface-container/50"
   >
     <div className="flex items-center gap-2.5 min-w-0">
       <Icon name={icon} size={20} className="text-primary shrink-0" />
@@ -57,18 +61,19 @@ export const SectionToggle = ({
         <span>{title}</span>
       </h4>
       {badgeText && isOpen && (
-        <span className="text-xs font-bold text-primary px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 whitespace-nowrap">
+        <span className="text-xs font-bold text-primary px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20 whitespace-nowrap">
           {badgeText}
         </span>
       )}
     </div>
-    <div className="w-8 h-8 rounded-full flex items-center justify-center text-secondary group-hover:text-on-surface transition-colors">
-      <Icon
-        name={isOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
-        size={22}
-      />
-    </div>
-  </button>
+    <motion.div
+      animate={{ rotate: isOpen ? 180 : 0 }}
+      transition={POPOVER_TRANSITION}
+      className="w-9 h-9 rounded-lg flex items-center justify-center text-secondary group-hover:text-on-surface transition-colors shrink-0"
+    >
+      <Icon name="keyboard_arrow_down" size={22} />
+    </motion.div>
+  </motion.button>
 );
 
 export const SectionContent = ({
@@ -84,7 +89,7 @@ export const SectionContent = ({
         initial={{ height: 0, opacity: 0 }}
         animate={{ height: 'auto', opacity: 1 }}
         exit={{ height: 0, opacity: 0 }}
-        transition={{ duration: 0.18, ease: 'easeInOut' }}
+        transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
         className="overflow-hidden pt-2"
       >
         {children}
@@ -177,16 +182,19 @@ export const ActionTriggerPrimary = ({
   disabled?: boolean;
   id?: string;
 }) => (
-  <button
+  <motion.button
     id={id}
     type="button"
+    data-motion-control="true"
+    whileTap={disabled ? undefined : TAP_SCALE}
+    transition={TACTILE_SPRING}
     disabled={disabled}
     onClick={onClick}
-    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border-0 shadow-none transition-colors duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
-    <Icon name={icon} size={20} />
+    <Icon name={icon} size={19} />
     <span className="whitespace-nowrap">{label}</span>
-  </button>
+  </motion.button>
 );
 
 export const ActionTriggerSecondary = ({
@@ -204,16 +212,19 @@ export const ActionTriggerSecondary = ({
   disabled?: boolean;
   id?: string;
 }) => (
-  <button
+  <motion.button
     id={id}
     type="button"
+    data-motion-control="true"
+    whileTap={disabled ? undefined : TAP_SCALE}
+    transition={TACTILE_SPRING}
     disabled={disabled}
     onClick={onClick}
-    className={`min-h-[48px] px-5 py-3 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2.5 border border-outline-variant shadow-2xs hover:shadow-xs active:scale-98 transition-all duration-200 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-outline-variant transition-colors duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
-    <Icon name={icon} size={20} />
+    <Icon name={icon} size={19} />
     <span className="whitespace-nowrap">{label}</span>
-  </button>
+  </motion.button>
 );
 
 export const SelectField = ({
@@ -238,15 +249,12 @@ export const SelectField = ({
       disabled={disabled}
       onChange={onChange}
       style={{ WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none' }}
-      className="w-full min-h-[32px] sm:min-h-[34px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-md pl-2.5 pr-7 py-1 font-bold text-xs shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-primary/20 hover:shadow-xs transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+      className="w-full min-h-[44px] sm:min-h-[38px] bg-surface-container-lowest text-on-surface border border-outline-variant hover:border-outline rounded-lg pl-3 pr-8 py-1.5 font-semibold text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/25 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
     >
       {children}
     </select>
-    <div className="absolute right-1.5 inset-y-0 flex items-center justify-center pointer-events-none select-none text-secondary">
-      <Icon
-        name="keyboard_arrow_down"
-        size={16}
-      />
+    <div className="absolute right-2 inset-y-0 flex items-center justify-center pointer-events-none select-none text-secondary">
+      <Icon name="keyboard_arrow_down" size={18} />
     </div>
   </div>
 );
@@ -269,7 +277,7 @@ export const Badge = ({
     info: 'bg-blue-50 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 border-blue-300 dark:border-blue-700 font-bold',
   };
   return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs border leading-none shrink-0 whitespace-nowrap ${variantClasses[variant]} ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs border leading-none shrink-0 whitespace-nowrap ${variantClasses[variant]} ${className}`}>
       {label}
     </span>
   );

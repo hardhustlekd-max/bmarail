@@ -15,6 +15,14 @@ import { calculateOneMonthExpiration, calculateRegistrationPayment, calculateNMo
 import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, formatEthiopianDate } from '../utils/ethiopianCalendar';
 import { SectionCard, DataField } from './ui/StreamlinedUI';
 import { Icon } from './ui/Icon';
+import { motion, AnimatePresence } from 'motion/react';
+import { BaseModal } from './ui/BaseModal';
+import {
+  STEP_TRANSITION,
+  TACTILE_SPRING,
+  TAP_SCALE,
+  SUBTLE_TAP_SCALE,
+} from '../utils/motionPresets';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
 
 import {
@@ -1099,70 +1107,78 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
   return (
     <div className="space-y-2 sm:space-y-2.5">
       {/* OFFLINE / UNSUCCESSFUL ONLINE SAVE CONFIRMATION MODAL */}
-      {showOfflineConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
-          <div className="bg-surface border border-outline-variant rounded-lg max-w-md w-full p-5 space-y-4 shadow-xl">
-            <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
-              <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                <Icon className="material-symbols-outlined text-[24px]">cloud_off</Icon>
-              </div>
-              <div>
-                <h4 className="font-bold text-sm text-on-surface">
-                  {isAmharic ? 'የኦንላይን ዳታቤዝ ማስቀመጥ አልተሳካም' : 'Online Storage Unsuccessful'}
-                </h4>
-                <p className="hidden sm:block text-[11px] text-secondary">
-                  {isAmharic ? 'የመረብ ወይም የማስቀመጫ ችግር' : 'Network or cloud storage issue'}
-                </p>
-              </div>
+      <BaseModal
+        isOpen={showOfflineConfirmModal}
+        onClose={() => setShowOfflineConfirmModal(false)}
+        className="max-w-md"
+      >
+        <div className="p-4 sm:p-5 space-y-4">
+          <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
+            <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-[24px]">cloud_off</Icon>
             </div>
-
-            <div className="space-y-2 text-xs leading-relaxed text-secondary">
-              <p>
-                {isAmharic
-                  ? 'ተሽከርካሪውን በዳታቤዝ ላይ ማስቀመጥ አልተሳካም።'
-                  : 'Cloud save unsuccessful.'}
+            <div>
+              <h4 className="font-bold text-sm text-on-surface">
+                {isAmharic ? 'የኦንላይን ዳታቤዝ ማስቀመጥ አልተሳካም' : 'Online Storage Unsuccessful'}
+              </h4>
+              <p className="hidden sm:block text-[11px] text-secondary">
+                {isAmharic ? 'የመረብ ወይም የማስቀመጫ ችግር' : 'Network or cloud storage issue'}
               </p>
-              {offlineErrorMsg && (
-                <div className="p-2.5 rounded-lg bg-surface-container border border-outline-variant text-[11px] font-mono text-amber-800 dark:text-amber-300">
-                  {offlineErrorMsg}
-                </div>
-              )}
-              <p className="font-bold text-on-surface pt-1">
-                {isAmharic
-                  ? 'መረጃው በብራውዘር ሎካል ካሽ ውስጥ ይቀመጥ?'
-                  : 'Save locally in browser cache?'}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-outline-variant">
-              <button
-                type="button"
-                onClick={() => setShowOfflineConfirmModal(false)}
-                className="px-4 py-2 rounded-md text-xs font-bold text-secondary bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer"
-              >
-                {isAmharic ? 'ሰርዝ / ድጋሚ ሞክር' : 'Cancel / Retry'}
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmLocalSave}
-                disabled={isSubmitting}
-                className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer inline-flex items-center gap-1.5"
-              >
-                <Icon className="material-symbols-outlined text-[16px]">save</Icon>
-                <span>
-                  {isSubmitting
-                    ? isAmharic
-                      ? 'በማስቀመጥ ላይ...'
-                      : 'Storing...'
-                    : isAmharic
-                    ? 'በሎካል ሴቭ አድርግ'
-                    : 'Store Locally'}
-                </span>
-              </button>
             </div>
           </div>
+
+          <div className="space-y-2 text-xs leading-relaxed text-secondary">
+            <p>
+              {isAmharic
+                ? 'ተሽከርካሪውን በዳታቤዝ ላይ ማስቀመጥ አልተሳካም።'
+                : 'Cloud save unsuccessful.'}
+            </p>
+            {offlineErrorMsg && (
+              <div className="p-2.5 rounded-lg bg-surface-container border border-outline-variant text-[11px] font-mono text-amber-800 dark:text-amber-300">
+                {offlineErrorMsg}
+              </div>
+            )}
+            <p className="font-bold text-on-surface pt-1">
+              {isAmharic
+                ? 'መረጃው በብራውዘር ሎካል ካሽ ውስጥ ይቀመጥ?'
+                : 'Save locally in browser cache?'}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-outline-variant">
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={SUBTLE_TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setShowOfflineConfirmModal(false)}
+              className="min-h-[44px] px-4 py-2 rounded-lg text-xs font-bold text-secondary bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer touch-manipulation"
+            >
+              {isAmharic ? 'ሰርዝ / ድጋሚ ሞክር' : 'Cancel / Retry'}
+            </motion.button>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={handleConfirmLocalSave}
+              disabled={isSubmitting}
+              className="min-h-[44px] px-4 py-2 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer inline-flex items-center gap-1.5 touch-manipulation"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">save</Icon>
+              <span>
+                {isSubmitting
+                  ? isAmharic
+                    ? 'በማስቀመጥ ላይ...'
+                    : 'Storing...'
+                  : isAmharic
+                  ? 'በሎካል ሴቭ አድርግ'
+                  : 'Store Locally'}
+              </span>
+            </motion.button>
+          </div>
         </div>
-      )}
+      </BaseModal>
 
       {/* =========================================================================
           COMPACT STEPPER HEADER (DECREASED SIZE & MARGIN ON DESKTOP)
@@ -1171,12 +1187,13 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         <div className="w-full py-0.5 my-0 md:my-0.5">
           <div className="relative flex items-center justify-between max-w-md md:max-w-lg mx-auto px-3 sm:px-5">
             
-            {/* Horizontal Connecting Line running across the step circles */}
-            <div className="absolute left-6 right-6 sm:left-8 sm:right-8 top-3 -translate-y-1/2 h-[1.5px] bg-surface-container-high z-0">
-              {/* Active filled line portion */}
-              <div 
-                className="h-full bg-primary transition-all duration-300 ease-in-out"
-                style={{ width: `${((currentStep - 1) / (STEP_ITEMS.length - 1)) * 100}%` }}
+            {/* Horizontal Connecting Line running across the step circles (GPU scaleX) */}
+            <div className="absolute left-6 right-6 sm:left-8 sm:right-8 top-3 -translate-y-1/2 h-[1.5px] bg-surface-container-high z-0 overflow-hidden">
+              <motion.div 
+                className="h-full w-full bg-primary origin-left"
+                initial={false}
+                animate={{ scaleX: (currentStep - 1) / (STEP_ITEMS.length - 1) }}
+                transition={TACTILE_SPRING}
               />
             </div>
 
@@ -1198,7 +1215,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       isActive
                         ? 'bg-surface-container-lowest border border-primary ring-1 ring-primary/20 text-primary shadow-xs'
                         : isCompleted
-                        ? 'bg-primary border border-primary text-white shadow-2xs'
+                        ? 'bg-primary border border-primary text-on-primary shadow-2xs'
                         : 'bg-surface-container-lowest border border-outline-variant text-secondary group-hover:border-outline'
                     }`}
                   >
@@ -1314,23 +1331,29 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
               )}
 
               <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2 pt-1 sm:pt-0">
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={handleRegisterNew}
-                  className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white text-xs font-bold px-3.5 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150"
+                  className="w-full sm:w-auto min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold px-3.5 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 touch-manipulation"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
                   <span>{isAmharic ? 'አዲስ መዝግብ' : 'Register New'}</span>
-                </button>
+                </motion.button>
                 {onViewRegistered && (
-                  <button
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={SUBTLE_TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={onViewRegistered}
-                    className="w-full sm:w-auto bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-center gap-1 cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-800 transition-all"
+                    className="w-full sm:w-auto min-h-[44px] bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-center gap-1 cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors touch-manipulation"
                   >
                     <Icon className="material-symbols-outlined text-[16px]">table_view</Icon>
                     <span>{isAmharic ? 'የተመዘገበውን እይ' : 'View Registered'}</span>
-                  </button>
+                  </motion.button>
                 )}
               </div>
             </div>
@@ -1345,13 +1368,20 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
           </div>
         )}
 
-        {/* FORM CONTENT 4-STEP WIZARD - Hidden when registration completed until "Register New" is clicked */}
+        {/* FORM CONTENT 5-STEP WIZARD - Hidden when registration completed until "Register New" is clicked */}
         {!isSubmittedSuccessfully && (
           <form onSubmit={handleSubmitRegistration} className="space-y-5">
-              
+            <AnimatePresence mode="wait" initial={false}>
               {/* ================= STEP 1: VERIFY (OWNER DETAILS) ================= */}
               {currentStep === 1 && (
-                <div className="space-y-4 animate-fadeIn">
+                <motion.div
+                  key="reg-step-1"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={STEP_TRANSITION}
+                  className="space-y-4"
+                >
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
                       <span className="w-6 h-6 rounded-lg bg-[#1e293b] text-white flex items-center justify-center text-xs font-bold">1</span>
@@ -1559,27 +1589,37 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                   {/* Step 1 Action Button */}
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={handleGoToStep2}
-                      className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white font-bold min-h-[44px] py-2.5 px-6 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150"
+                      className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-6 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ሞተር' : 'Next: Motor Specifications'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
-                    </button>
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* ================= STEP 2: MOTOR / VEHICLE SPECIFICATIONS ================= */}
               {currentStep === 2 && (
-                <div className="space-y-4 animate-fadeIn">
+                <motion.div
+                  key="reg-step-2"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={STEP_TRANSITION}
+                  className="space-y-4"
+                >
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold">2</span>
+                      <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">2</span>
                       <span>{isAmharic ? '2. ሞተር' : 'Step 2: Motor Details'}</span>
                     </h4>
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">2 of 4</span>
+                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">2 of 5</span>
                   </div>
 
                   {/* Motor Vehicle Category Selection */}
@@ -1906,36 +1946,49 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                   {/* Step 2 Action Buttons */}
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={SUBTLE_TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(1)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ባለቤት' : 'Back: Owner'}</span>
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={handleGoToStep3}
-                      className="bg-primary hover:bg-primary-hover text-white font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150"
+                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ዶክመንት' : 'Next: Documents'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
-                    </button>
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* ================= STEP 3: DOCUMENTS & ATTACHMENTS ================= */}
               {currentStep === 3 && (
-                <div className="space-y-4 animate-fadeIn">
+                <motion.div
+                  key="reg-step-3"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={STEP_TRANSITION}
+                  className="space-y-4"
+                >
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold">3</span>
+                      <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">3</span>
                       <span>{isAmharic ? '3. ዶክመንት' : 'Step 3: Document Uploads'}</span>
                     </h4>
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">3 of 4</span>
+                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">3 of 5</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2012,33 +2065,46 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                   {/* Step 3 Action Buttons */}
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={SUBTLE_TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(2)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ሞተር' : 'Back: Motor'}</span>
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={handleGoToStep4}
-                      className="bg-primary hover:bg-primary-hover text-white font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150"
+                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ክፍያ' : 'Next: Payment Details'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
-                    </button>
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* ================= STEP 4: PAYMENT DETAILS ================= */}
               {currentStep === 4 && (
-                <div className="space-y-4 animate-fadeIn">
+                <motion.div
+                  key="reg-step-4"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={STEP_TRANSITION}
+                  className="space-y-4"
+                >
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold">4</span>
+                      <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">4</span>
                       <span>{isAmharic ? '4. የክፍያ መረጃ' : 'Step 4: Payment Details'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">4 of 5</span>
@@ -2236,7 +2302,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             <Icon className="material-symbols-outlined text-[15px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
                             <span>{chekiError}</span>
                           </div>
-                          <button type="button" onClick={() => setChekiError('')} className="text-rose-700 hover:text-rose-900 dark:text-rose-300 font-bold text-xs">✕</button>
+                          <button type="button" onClick={() => setChekiError('')} className="w-8 h-8 flex items-center justify-center rounded-md text-rose-700 hover:text-rose-900 hover:bg-rose-100 dark:text-rose-300 dark:hover:bg-rose-900/40 transition-colors cursor-pointer">
+                            <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                          </button>
                         </div>
                       )}
 
@@ -2334,33 +2402,46 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                   {/* Step 4 Action buttons */}
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={SUBTLE_TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(3)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ዶክመንት' : 'Back: Documents'}</span>
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={handleGoToStep5}
-                      className="bg-primary hover:bg-primary-hover text-white font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150"
+                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ አረጋግጥ' : 'Next: Review & Confirm'}</span>
                       <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
-                    </button>
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )}
 
               {/* ================= STEP 5: CONFIRM & SUBMIT ================= */}
               {currentStep === 5 && (
-                <div className="space-y-4 animate-fadeIn">
+                <motion.div
+                  key="reg-step-5"
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={STEP_TRANSITION}
+                  className="space-y-4"
+                >
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
                     <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                      <span className="w-6 h-6 rounded-lg bg-primary text-white flex items-center justify-center text-xs font-bold">5</span>
+                      <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">5</span>
                       <span>{isAmharic ? '5. አረጋግጥ' : 'Step 5: Review & Confirmation'}</span>
                     </h4>
                     <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">5 of 5</span>
@@ -2551,21 +2632,27 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                   {/* Step 5 Action buttons */}
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={SUBTLE_TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(4)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-[0.98] text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
                       <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ክፍያ' : 'Back: Payment'}</span>
-                    </button>
+                    </motion.button>
 
-                    <button
+                    <motion.button
                       type="submit"
+                      data-motion-control="true"
+                      whileTap={isDataConfirmed && !isSubmitting ? TAP_SCALE : undefined}
+                      transition={TACTILE_SPRING}
                       disabled={!isDataConfirmed || isSubmitting}
-                      className={`min-h-[44px] py-2.5 px-5 sm:px-7 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors duration-150 border-0 shadow-none hover:shadow-none ${
+                      className={`min-h-[44px] py-2.5 px-5 sm:px-7 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors duration-150 border-0 shadow-none hover:shadow-none touch-manipulation ${
                         isDataConfirmed && !isSubmitting
-                          ? 'bg-primary hover:bg-primary-hover text-white cursor-pointer'
+                          ? 'bg-primary hover:bg-primary-hover text-on-primary cursor-pointer'
                           : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
                       }`}
                     >
@@ -2577,11 +2664,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           ? (isAmharic ? 'በመመዝገብ ላይ...' : 'Submitting...')
                           : (isAmharic ? 'አረጋግጥ እና መዝግብ' : 'Confirm & Submit')}
                       </span>
-                    </button>
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )}
-            </form>
+            </AnimatePresence>
+          </form>
         )}
         </div>
       </div>

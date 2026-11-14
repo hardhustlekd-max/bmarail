@@ -1,6 +1,8 @@
 import { ExpandableMemberCard } from './ExpandableMemberCard';
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
+import { BaseModal } from './ui/BaseModal';
+import { TACTILE_SPRING, SHEET_SPRING, TAP_SCALE, POPOVER_TRANSITION, BACKDROP_VARIANTS, MODAL_CONTENT_VARIANTS } from '../utils/motionPresets';
 import { formatEthiopianDate, getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
 import { TableSkeleton } from './ui/Skeleton';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
@@ -860,10 +862,13 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 </div>
 
                 {/* Filter Drawer Toggle Button */}
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
-                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                  className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3 sm:px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                     isFilterDrawerOpen || hasActiveSecondaryFilters
                       ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
                       : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
@@ -875,12 +880,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   {hasActiveSecondaryFilters && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                   )}
-                </button>
+                </motion.button>
               </div>
 
               {/* Right Sub-Row (Mobile: Row 2 Scrollable; Desktop: Inline Right) */}
               <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0 shrink-0">
-                <div className="inline-flex items-center p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0">
+                <div className="inline-flex items-center p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] min-h-[44px] sm:min-h-0 sm:h-8 shrink-0">
                   {[
                     { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: tabScopedRegistrations.length },
                     { id: 'electric' as const, label: isAmharic ? 'ኤሌክትሪክ' : 'Electric', count: electricCount },
@@ -895,7 +900,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setRegVehicleTypeFilter(vType.id);
                           setRegPage(1);
                         }}
-                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                        className={`min-h-[38px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                           active
                             ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
                             : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
@@ -917,219 +922,259 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             </div>
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
-            {isFilterDrawerOpen && (
-              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="flex flex-wrap items-center gap-2.5 text-xs">
-                  {/* SubCity Filter */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
-                      {isAmharic ? 'ክ/ከተማ:' : 'Sub-City:'}
-                    </span>
-                    <select
-                      value={regSubCityFilter}
-                      onChange={(e) => {
-                        setRegSubCityFilter(e.target.value);
-                        setRegPage(1);
-                      }}
-                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
-                    >
-                      <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
-                      {BAHIR_DAR_SUBCITIES.map((sc) => (
-                        <option key={sc.en} value={sc.en}>
-                          {isAmharic ? sc.am : sc.en}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Sorting Dropdown & Direction */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
-                      {isAmharic ? 'ደርድር በ:' : 'Sort By:'}
-                    </span>
-                    <select
-                      value={sortField}
-                      onChange={(e) => handleToggleSort(e.target.value as any)}
-                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
-                    >
-                      <option value="date">{isAmharic ? 'ቀን' : 'Date'}</option>
-                      <option value="name">{isAmharic ? 'ስም' : 'Name'}</option>
-                      <option value="plate">{isAmharic ? 'ሰሌዳ' : 'Plate'}</option>
-                      <option value="category">{isAmharic ? 'ዓይነት' : 'Type'}</option>
-                      <option value="subCity">{isAmharic ? 'ክ/ከተማ' : 'Sub-City'}</option>
-                      <option value="brand">{isAmharic ? 'ብራንድ' : 'Brand'}</option>
-                    </select>
-
-                    <button
-                      type="button"
-                      onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                      className="h-8 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
-                      title={sortOrder === 'asc' ? (isAmharic ? 'ከትንሽ ወደ ትልቅ (ASC)' : 'Ascending') : (isAmharic ? 'ከትልቅ ወደ ትንሽ (DESC)' : 'Descending')}
-                    >
-                      <Icon className="material-symbols-outlined text-[15px]">
-                        {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
-                      </Icon>
-                      <span className="text-[11px] font-mono">{sortOrder.toUpperCase()}</span>
-                    </button>
-                  </div>
-
-                  {/* SuperAdmin Company Vehicle Filter */}
-                  {isSuperAdmin && (
+            <AnimatePresence>
+              {isFilterDrawerOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={POPOVER_TRANSITION}
+                  className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C]"
+                >
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                    {/* SubCity Filter */}
                     <div className="flex items-center gap-1.5">
                       <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
-                        {isAmharic ? 'አባልነት:' : 'Membership:'}
+                        {isAmharic ? 'ክ/ከተማ:' : 'Sub-City:'}
                       </span>
                       <select
-                        value={regCompanyVehicleFilter}
+                        value={regSubCityFilter}
                         onChange={(e) => {
-                          setRegCompanyVehicleFilter(e.target.value as any);
+                          setRegSubCityFilter(e.target.value);
                           setRegPage(1);
                         }}
-                        className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-bold focus:border-primary focus:outline-none cursor-pointer"
+                        className="min-h-[44px] sm:min-h-0 sm:h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
                       >
-                        <option value="all">{isAmharic ? 'ሁሉም አባላት' : 'All Members'}</option>
-                        <option value="standard">{isAmharic ? 'መደበኛ' : 'Standard'}</option>
-                        <option value="company">{isAmharic ? 'ማህበር' : 'Association'}</option>
+                        <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
+                        {BAHIR_DAR_SUBCITIES.map((sc) => (
+                          <option key={sc.en} value={sc.en}>
+                            {isAmharic ? sc.am : sc.en}
+                          </option>
+                        ))}
                       </select>
                     </div>
-                  )}
 
-                  {/* Clear Filters Button inside Drawer */}
-                  {(regSearchQuery || regSubCityFilter !== 'all' || regVehicleTypeFilter !== 'all' || regCompanyVehicleFilter !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRegSearchQuery('');
-                        setRegSubCityFilter('all');
-                        setRegVehicleTypeFilter('all');
-                        setRegCompanyVehicleFilter('all');
-                        setSortField('date');
-                        setSortOrder('desc');
-                        setRegPage(1);
-                      }}
-                      className="h-8 px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
-                    >
-                      <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
-                      <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
+                    {/* Sorting Dropdown & Direction */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                        {isAmharic ? 'ደርድር በ:' : 'Sort By:'}
+                      </span>
+                      <select
+                        value={sortField}
+                        onChange={(e) => handleToggleSort(e.target.value as any)}
+                        className="min-h-[44px] sm:min-h-0 sm:h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                      >
+                        <option value="date">{isAmharic ? 'ቀን' : 'Date'}</option>
+                        <option value="name">{isAmharic ? 'ስም' : 'Name'}</option>
+                        <option value="plate">{isAmharic ? 'ሰሌዳ' : 'Plate'}</option>
+                        <option value="category">{isAmharic ? 'ዓይነት' : 'Type'}</option>
+                        <option value="subCity">{isAmharic ? 'ክ/ከተማ' : 'Sub-City'}</option>
+                        <option value="brand">{isAmharic ? 'ብራንድ' : 'Brand'}</option>
+                      </select>
+
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+                        className="min-h-[44px] sm:min-h-0 sm:h-8 px-2.5 sm:px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                        title={sortOrder === 'asc' ? (isAmharic ? 'ከትንሽ ወደ ትልቅ (ASC)' : 'Ascending') : (isAmharic ? 'ከትልቅ ወደ ትንሽ (DESC)' : 'Descending')}
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">
+                          {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                        </Icon>
+                        <span className="text-[11px] font-mono">{sortOrder.toUpperCase()}</span>
+                      </motion.button>
+                    </div>
+
+                    {/* SuperAdmin Company Vehicle Filter */}
+                    {isSuperAdmin && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                          {isAmharic ? 'አባልነት:' : 'Membership:'}
+                        </span>
+                        <select
+                          value={regCompanyVehicleFilter}
+                          onChange={(e) => {
+                            setRegCompanyVehicleFilter(e.target.value as any);
+                            setRegPage(1);
+                          }}
+                          className="min-h-[44px] sm:min-h-0 sm:h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-bold focus:border-primary focus:outline-none cursor-pointer"
+                        >
+                          <option value="all">{isAmharic ? 'ሁሉም አባላት' : 'All Members'}</option>
+                          <option value="standard">{isAmharic ? 'መደበኛ' : 'Standard'}</option>
+                          <option value="company">{isAmharic ? 'ማህበር' : 'Association'}</option>
+                        </select>
+                      </div>
+                    )}
+
+                    {/* Clear Filters Button inside Drawer */}
+                    {(regSearchQuery || regSubCityFilter !== 'all' || regVehicleTypeFilter !== 'all' || regCompanyVehicleFilter !== 'all' || sortField !== 'date' || sortOrder !== 'desc') && (
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={() => {
+                          setRegSearchQuery('');
+                          setRegSubCityFilter('all');
+                          setRegVehicleTypeFilter('all');
+                          setRegCompanyVehicleFilter('all');
+                          setSortField('date');
+                          setSortOrder('desc');
+                          setRegPage(1);
+                        }}
+                        className="min-h-[44px] sm:min-h-0 sm:h-8 px-3 sm:px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                      >
+                        <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
+                        <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                      </motion.button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         }
 >
 
         {/* --- BULK ACTION BANNER (WHEN RECORDS SELECTED) --- */}
-        {selectedRegIds.size > 0 && (
-          <div className="m-2 p-2 sm:p-2.5 bg-gradient-to-r from-primary/12 via-primary/6 to-transparent dark:from-primary/25 dark:via-primary/12 border border-primary/30 rounded-md flex flex-wrap items-center justify-between gap-2 animate-fade-in shadow-xs">
-            {/* Left: Info & Selection count */}
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
-                <Icon className="material-symbols-outlined text-[18px]">checklist</Icon>
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-xs sm:text-sm text-[#1C2434] dark:text-white">
-                    {isAmharic
-                      ? `${selectedRegIds.size} አባላት ተመርጠዋል`
-                      : `${selectedRegIds.size} member(s) selected`}
-                  </span>
-                  {selectedRegIds.size < filteredRegistrations.length && (
-                    <button
-                      type="button"
-                      onClick={selectAllFiltered}
-                      className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
-                    >
+        <AnimatePresence>
+          {selectedRegIds.size > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={TACTILE_SPRING}
+              className="m-2 p-2.5 bg-gradient-to-r from-primary/12 via-primary/6 to-transparent dark:from-primary/25 dark:via-primary/12 border border-primary/30 rounded-md flex flex-wrap items-center justify-between gap-2 shadow-xs"
+            >
+              {/* Left: Info & Selection count */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-md bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-xs">
+                  <Icon className="material-symbols-outlined text-[18px]">checklist</Icon>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-extrabold text-xs sm:text-sm text-[#1C2434] dark:text-white">
                       {isAmharic
-                        ? `(ሁሉንም ${filteredRegistrations.length} አባላት ምረጥ)`
-                        : `(Select all ${filteredRegistrations.length})`}
-                    </button>
-                  )}
+                        ? `${selectedRegIds.size} አባላት ተመርጠዋል`
+                        : `${selectedRegIds.size} member(s) selected`}
+                    </span>
+                    {selectedRegIds.size < filteredRegistrations.length && (
+                      <button
+                        type="button"
+                        onClick={selectAllFiltered}
+                        className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
+                      >
+                        {isAmharic
+                          ? `(ሁሉንም ${filteredRegistrations.length} አባላት ምረጥ)`
+                          : `(Select all ${filteredRegistrations.length})`}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Right: Action Buttons */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Bulk Approve Action (if admin or superadmin) */}
-              {(userRole === 'admin' || isSuperAdmin) && (
-                <button
-                  type="button"
-                  onClick={() => setShowBulkApproveModal(true)}
-                  disabled={isSubmittingBulk}
-                  className="px-3 py-1.5 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                  title={isAmharic ? 'የተመረጡትን በጅምላ አጽድቅ' : 'Bulk Approve Selected'}
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
-                  <span>
-                    {isAmharic
-                      ? `በጅምላ አጽድቅ ${selectedPendingCount > 0 ? `(${selectedPendingCount})` : ''}`
-                      : `Bulk Approve ${selectedPendingCount > 0 ? `(${selectedPendingCount})` : ''}`}
-                  </span>
-                </button>
-              )}
-
-              {/* Print / Export Selected List */}
-              <button
-                type="button"
-                onClick={() => setShowBulkPrintRosterModal(true)}
-                className="px-3 py-1.5 rounded-md bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary text-[#1C2434] dark:text-white hover:text-primary font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
-                title={isAmharic ? 'የተመረጡትን ዝርዝር አትም' : 'Print Selected List'}
-              >
-                <Icon className="material-symbols-outlined text-[16px]">print</Icon>
-                <span>{isAmharic ? 'ዝርዝር አትም' : 'Print List'}</span>
-              </button>
-
-              {/* SuperAdmin Bulk Company Vehicle Toggle */}
-              {isSuperAdmin && (
-                <div className="flex items-center gap-1">
-                  <button
+              {/* Right: Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Bulk Approve Action (if admin or superadmin) */}
+                {(userRole === 'admin' || isSuperAdmin) && (
+                  <motion.button
                     type="button"
-                    onClick={() => executeBulkToggleHide(true)}
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
+                    onClick={() => setShowBulkApproveModal(true)}
                     disabled={isSubmittingBulk}
-                    className="px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer border border-slate-300 dark:border-slate-700"
-                    title={isAmharic ? 'እንደ የማህበር ተሽከርካሪ ምልክት አድርግ' : 'Mark as Association Motor'}
+                    className="min-h-[44px] sm:min-h-[34px] px-3 py-1.5 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    title={isAmharic ? 'የተመረጡትን በጅምላ አጽድቅ' : 'Bulk Approve Selected'}
                   >
-                    <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => executeBulkToggleHide(false)}
-                    disabled={isSubmittingBulk}
-                    className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer border border-slate-300 dark:border-slate-600"
-                    title={isAmharic ? 'እንደ መደበኛ ተሽከርካሪ መልስ' : 'Mark as Standard Vehicle'}
-                  >
-                    <span>{isAmharic ? 'መደበኛ' : 'Standard'}</span>
-                  </button>
-                </div>
-              )}
+                    <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                    <span>
+                      {isAmharic
+                        ? `በጅምላ አጽድቅ ${selectedPendingCount > 0 ? `(${selectedPendingCount})` : ''}`
+                        : `Bulk Approve ${selectedPendingCount > 0 ? `(${selectedPendingCount})` : ''}`}
+                    </span>
+                  </motion.button>
+                )}
 
-              {/* Bulk Delete (if allowed) */}
-              {(isTaskAllowed(userRole, 11) || isSuperAdmin) && (
-                <button
+                {/* Print / Export Selected List */}
+                <motion.button
                   type="button"
-                  onClick={() => setShowBulkDeleteModal(true)}
-                  disabled={isSubmittingBulk}
-                  className="px-3 py-1.5 rounded-md bg-[#FB5454]/10 hover:bg-[#FB5454]/20 border border-[#FB5454]/30 text-[#FB5454] font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                  title={isAmharic ? 'የተመረጡትን በጅምላ ሰርዝ' : 'Bulk Delete Selected'}
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
+                  onClick={() => setShowBulkPrintRosterModal(true)}
+                  className="min-h-[44px] sm:min-h-[34px] px-3 py-1.5 rounded-md bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary text-[#1C2434] dark:text-white hover:text-primary font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                  title={isAmharic ? 'የተመረጡትን ዝርዝር አትም' : 'Print Selected List'}
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
-                  <span>{isAmharic ? 'በጅምላ ሰርዝ' : 'Bulk Delete'}</span>
-                </button>
-              )}
+                  <Icon className="material-symbols-outlined text-[16px]">print</Icon>
+                  <span>{isAmharic ? 'ዝርዝር አትም' : 'Print List'}</span>
+                </motion.button>
 
-              {/* Clear selection button */}
-              <button
-                type="button"
-                onClick={clearSelection}
-                className="px-2.5 py-1.5 rounded-md text-xs font-semibold text-[#64748B] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer"
-              >
-                {isAmharic ? 'ሰርዝ (Deselect)' : 'Deselect'}
-              </button>
-            </div>
-          </div>
-        )}
+                {/* SuperAdmin Bulk Company Vehicle Toggle */}
+                {isSuperAdmin && (
+                  <div className="flex items-center gap-1">
+                    <motion.button
+                      type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
+                      onClick={() => executeBulkToggleHide(true)}
+                      disabled={isSubmittingBulk}
+                      className="min-h-[44px] sm:min-h-[34px] px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer border border-slate-300 dark:border-slate-700"
+                      title={isAmharic ? 'እንደ የማህበር ተሽከርካሪ ምልክት አድርግ' : 'Mark as Association Motor'}
+                    >
+                      <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
+                      onClick={() => executeBulkToggleHide(false)}
+                      disabled={isSubmittingBulk}
+                      className="min-h-[44px] sm:min-h-[34px] px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer border border-slate-300 dark:border-slate-600"
+                      title={isAmharic ? 'እንደ መደበኛ ተሽከርካሪ መልስ' : 'Mark as Standard Vehicle'}
+                    >
+                      <span>{isAmharic ? 'መደበኛ' : 'Standard'}</span>
+                    </motion.button>
+                  </div>
+                )}
+
+                {/* Bulk Delete (if allowed) */}
+                {(isTaskAllowed(userRole, 11) || isSuperAdmin) && (
+                  <motion.button
+                    type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
+                    onClick={() => setShowBulkDeleteModal(true)}
+                    disabled={isSubmittingBulk}
+                    className="min-h-[44px] sm:min-h-[34px] px-3 py-1.5 rounded-md bg-[#FB5454]/10 hover:bg-[#FB5454]/20 border border-[#FB5454]/30 text-[#FB5454] font-bold text-xs shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    title={isAmharic ? 'የተመረጡትን በጅምላ ሰርዝ' : 'Bulk Delete Selected'}
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
+                    <span>{isAmharic ? 'በጅምላ ሰርዝ' : 'Bulk Delete'}</span>
+                  </motion.button>
+                )}
+
+                {/* Clear selection button */}
+                <motion.button
+                  type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
+                  onClick={clearSelection}
+                  className="min-h-[44px] sm:min-h-[34px] px-2.5 py-1.5 rounded-md text-xs font-semibold text-[#64748B] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  {isAmharic ? 'ሰርዝ (Deselect)' : 'Deselect'}
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* --- VIEW 1: REGISTRATIONS TABLE (FILTERED BY STATUS) --- */}
         {(activeTableTab === 'approved' || activeTableTab === 'pending' || activeTableTab === 'expired') && (
@@ -1185,15 +1230,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
                             {isAmharic ? 'ምንም የሚመሳሰል ማህደር አልተገኘም' : 'No matching motorcycle records found.'}
                           </span>
-                          <button
+                          <motion.button
                             type="button"
+                            data-motion-control="true"
+                            whileTap={TAP_SCALE}
+                            transition={TACTILE_SPRING}
                             onClick={() => {
                               setActiveTableTab('approved');
                             }}
-                            className="px-3 py-1.5 bg-primary text-white font-medium text-xs rounded-sm shadow-xs hover:bg-opacity-90 cursor-pointer"
+                            className="min-h-[36px] px-3 py-1.5 bg-primary text-on-primary font-medium text-xs rounded-sm shadow-xs hover:bg-primary-hover cursor-pointer transition-colors"
                           >
                             {isAmharic ? 'የፀደቁትን አሳይ' : 'Show Approved Permits'}
-                          </button>
+                          </motion.button>
                         </div>
                       </td>
                     </tr>
@@ -1364,7 +1412,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <span>{isAmharic ? 'ሁሉንም አባላት ምረጥ (Select All)' : 'Select All Members'}</span>
                   </label>
                   {selectedRegIds.size > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white shadow-2xs">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-on-primary shadow-2xs">
                       {isAmharic ? `${selectedRegIds.size} ተመርጠዋል` : `${selectedRegIds.size} selected`}
                     </span>
                   )}
@@ -1515,93 +1563,131 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             {/* Right corner: TailAdmin pagination buttons */}
             <div className="flex items-center gap-1.5 shrink-0">
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 disabled={activeRegPage <= 1}
                 onClick={() => setRegPage(activeRegPage - 1)}
-                className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                className="min-h-[44px] sm:min-h-0 px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
               >
                 <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
                 <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
-              </button>
+              </motion.button>
 
-              <span className="px-3 py-1.5 bg-primary text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
+              <span className="px-3 py-1.5 bg-primary text-on-primary rounded-sm font-semibold font-mono text-xs shadow-xs">
                 {activeRegPage} / {totalRegPages}
               </span>
 
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 disabled={activeRegPage >= totalRegPages}
                 onClick={() => setRegPage(activeRegPage + 1)}
-                className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+                className="min-h-[44px] sm:min-h-0 px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
               >
                 <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
                 <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
-              </button>
+              </motion.button>
             </div>
           </div>
         )}
       </UnifiedWorkspaceCard>
 
       {/* QR Inspector Modal */}
-      {selectedRegForQR && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
-          <ZoomableDocumentContainer
-            lang={lang}
-            userRole={userRole}
-            title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
-            onClose={() => setSelectedRegForQR(null)}
-            hidePrint={true}
-            downloadFrontId="pvc-card-front"
-            downloadBackId="pvc-card-back"
+      <AnimatePresence>
+        {selectedRegForQR && (
+          <motion.div
+            variants={BACKDROP_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={POPOVER_TRANSITION}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
           >
-            <QRCodeCard registration={selectedRegForQR} lang={lang} />
-          </ZoomableDocumentContainer>
-        </div>
-      )}
+            <ZoomableDocumentContainer
+              lang={lang}
+              userRole={userRole}
+              title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
+              onClose={() => setSelectedRegForQR(null)}
+              hidePrint={true}
+              downloadFrontId="pvc-card-front"
+              downloadBackId="pvc-card-back"
+            >
+              <QRCodeCard registration={selectedRegForQR} lang={lang} />
+            </ZoomableDocumentContainer>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Full A4 Permit Paper Modal */}
-      {selectedRegForA4 && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
-          <ZoomableDocumentContainer
-            lang={lang}
-            userRole={userRole}
-            title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ ሰነድ (Permit)' : 'Official Movement Permit Document'}
-            onClose={() => setSelectedRegForA4(null)}
-            onPrint={() => triggerDocumentPrint('a4')}
+      <AnimatePresence>
+        {selectedRegForA4 && (
+          <motion.div
+            variants={BACKDROP_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={POPOVER_TRANSITION}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
           >
-            <A4PermitPaper
-              registration={selectedRegForA4}
+            <ZoomableDocumentContainer
               lang={lang}
+              userRole={userRole}
+              title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ ሰነድ (Permit)' : 'Official Movement Permit Document'}
               onClose={() => setSelectedRegForA4(null)}
-            />
-          </ZoomableDocumentContainer>
-        </div>
-      )}
+              onPrint={() => triggerDocumentPrint('a4')}
+            >
+              <A4PermitPaper
+                registration={selectedRegForA4}
+                lang={lang}
+                onClose={() => setSelectedRegForA4(null)}
+              />
+            </ZoomableDocumentContainer>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Vehicle QR Sticker Modal */}
-      {selectedRegForSticker && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto transition-all duration-200">
-          <ZoomableDocumentContainer
-            lang={lang}
-            userRole={userRole}
-            title={isAmharic ? 'የሞተር QR ተለጣፊ (Vehicle Sticker)' : 'Vehicle QR Sticker'}
-            onClose={() => setSelectedRegForSticker(null)}
-            onPrint={() => triggerDocumentPrint('sticker')}
+      <AnimatePresence>
+        {selectedRegForSticker && (
+          <motion.div
+            variants={BACKDROP_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={POPOVER_TRANSITION}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto"
           >
-            <VehicleQRSticker
-              registration={selectedRegForSticker}
+            <ZoomableDocumentContainer
               lang={lang}
+              userRole={userRole}
+              title={isAmharic ? 'የሞተር QR ተለጣፊ (Vehicle Sticker)' : 'Vehicle QR Sticker'}
               onClose={() => setSelectedRegForSticker(null)}
-            />
-          </ZoomableDocumentContainer>
-        </div>
-      )}
+              onPrint={() => triggerDocumentPrint('sticker')}
+            >
+              <VehicleQRSticker
+                registration={selectedRegForSticker}
+                lang={lang}
+                onClose={() => setSelectedRegForSticker(null)}
+              />
+            </ZoomableDocumentContainer>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Rejection Reason Prompt Modal */}
-      {rejectingId && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto transition-all duration-200">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 max-w-sm w-full space-y-4 shadow-xl">
+      <BaseModal
+        isOpen={!!rejectingId}
+        onClose={() => setRejectingId(null)}
+        mobileSheet={true}
+        className="max-w-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+      >
+        {rejectingId && (
+          <div className="p-5 sm:p-6 space-y-4">
             <h3 className="font-extrabold text-sm text-rose-600 dark:text-rose-400 flex items-center gap-2">
               <Icon className="material-symbols-outlined">cancel</Icon>
               <span>{isAmharic ? 'የማህደር መሰረዣ ምክንያት' : 'Provide Rejection Reason'}</span>
@@ -1615,85 +1701,117 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             />
 
             <div className="flex justify-end gap-2">
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => setRejectingId(null)}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs rounded-md font-bold cursor-pointer"
+                className="min-h-[44px] sm:min-h-[34px] px-3.5 sm:px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs rounded-md font-bold cursor-pointer"
               >
                 {isAmharic ? 'ተመለስ' : 'Cancel'}
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => handleConfirmReject(rejectingId)}
-                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs rounded-md font-extrabold cursor-pointer shadow-xs"
+                className="min-h-[44px] sm:min-h-[34px] px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs rounded-md font-extrabold cursor-pointer shadow-xs"
               >
                 {isAmharic ? 'ሰርዝ' : 'Confirm Rejection'}
-              </button>
+              </motion.button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </BaseModal>
 
-      {/* MEMBER FULL INFORMATION DRAWER (Slide-Over Panel - Refined for Desktop & Mobile) */}
-      {selectedRegForDetails && (
-        <div className="fixed inset-0 z-50 flex justify-end animate-in fade-in duration-200">
-          {/* Subtle semi-transparent backdrop */}
-          <div
-            onClick={() => setSelectedRegForDetails(null)}
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs transition-opacity cursor-pointer"
-          />
+      {/* MEMBER FULL INFORMATION DRAWER (Slide-Over Panel - Swipeable & Safe-Area Aware) */}
+      <AnimatePresence>
+        {selectedRegForDetails && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            {/* Subtle semi-transparent backdrop */}
+            <motion.div
+              variants={BACKDROP_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={POPOVER_TRANSITION}
+              onClick={() => setSelectedRegForDetails(null)}
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs cursor-pointer"
+            />
 
-          {/* Side-Sheet Drawer Content Container: 520px-580px on desktop, full width on mobile */}
-          <div className="relative w-full sm:w-[540px] md:w-[560px] lg:w-[580px] max-w-full sm:max-w-[580px] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-300">
-            {/* Drawer Header: Elevated with entity info, copy chip, status & close button */}
-            <div className="p-3 sm:p-4 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
-              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
-                  <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">assignment_ind</Icon>
-                </div>
-
-                <div className="space-y-0.5 min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <h3 className="text-xs sm:text-sm font-black tracking-wide truncate max-w-[180px] sm:max-w-[240px]">
-                      {selectedRegForDetails.fullName || (isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Details')}
-                    </h3>
-                    <span className="font-mono text-[10px] text-slate-400 font-bold bg-slate-800 px-1.5 py-0.2 rounded tabular-nums">
-                      #{selectedRegForDetails.id}
-                    </span>
+            {/* Side-Sheet Drawer Content Container: 520px-580px on desktop, full width on mobile */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={SHEET_SPRING}
+              drag="x"
+              dragConstraints={{ left: 0 }}
+              dragElastic={{ left: 0, right: 0.35 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > 90 || info.velocity.x > 450) {
+                  setSelectedRegForDetails(null);
+                }
+              }}
+              className="relative w-full sm:w-[540px] md:w-[560px] lg:w-[580px] max-w-full sm:max-w-[580px] bg-white dark:bg-[#1C2434] text-slate-800 dark:text-[#DEE4EE] border-l border-slate-200 dark:border-[#2E3A47] shadow-2xl z-50 flex flex-col h-full overflow-hidden"
+            >
+              {/* Drawer Header: Elevated with entity info, copy chip, status & close button */}
+              <div className="p-3 sm:p-4 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
+                    <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">assignment_ind</Icon>
                   </div>
-                  <p className="text-[10px] sm:text-xs text-slate-400 font-medium truncate flex items-center gap-1">
-                    <span>{selectedRegForDetails.subCity || '—'}</span>
-                    <span>•</span>
-                    <span>{selectedRegForDetails.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}</span>
-                  </p>
+
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <h3 className="text-xs sm:text-sm font-black tracking-wide truncate max-w-[180px] sm:max-w-[240px]">
+                        {selectedRegForDetails.fullName || (isAmharic ? 'የአባል ሙሉ መረጃ' : 'Member Details')}
+                      </h3>
+                      <span className="font-mono text-[10px] text-slate-400 font-bold bg-slate-800 px-1.5 py-0.2 rounded tabular-nums">
+                        #{selectedRegForDetails.id}
+                      </span>
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-slate-400 font-medium truncate flex items-center gap-1">
+                      <span>{selectedRegForDetails.subCity || '—'}</span>
+                      <span>•</span>
+                      <span>{selectedRegForDetails.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                  {selectedRegForDetails.plateNumber && (
+                    <motion.button
+                      type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
+                      onClick={() => handleCopyField(selectedRegForDetails.plateNumber, 'Plate')}
+                      className="min-h-[36px] px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-xs text-slate-100 flex items-center gap-1 transition-colors cursor-pointer tabular-nums"
+                      title={isAmharic ? 'የሰሌዳ ቁጥር ቅዳ' : 'Copy Plate Number'}
+                    >
+                      <span>{selectedRegForDetails.plateNumber}</span>
+                      <Icon className="material-symbols-outlined text-[13px] text-slate-400">
+                        {drawerCopiedField === 'Plate' ? 'check' : 'content_copy'}
+                      </Icon>
+                    </motion.button>
+                  )}
+
+                  <motion.button
+                    type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
+                    onClick={() => setSelectedRegForDetails(null)}
+                    className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-sm font-bold shrink-0"
+                    title={isAmharic ? 'ዝጋ' : 'Close Drawer'}
+                  >
+                    <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                  </motion.button>
                 </div>
               </div>
-
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                {selectedRegForDetails.plateNumber && (
-                  <button
-                    type="button"
-                    onClick={() => handleCopyField(selectedRegForDetails.plateNumber, 'Plate')}
-                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 font-mono font-bold text-xs text-slate-100 flex items-center gap-1 transition-colors cursor-pointer tabular-nums"
-                    title={isAmharic ? 'የሰሌዳ ቁጥር ቅዳ' : 'Copy Plate Number'}
-                  >
-                    <span>{selectedRegForDetails.plateNumber}</span>
-                    <Icon className="material-symbols-outlined text-[13px] text-slate-400">
-                      {drawerCopiedField === 'Plate' ? 'check' : 'content_copy'}
-                    </Icon>
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedRegForDetails(null)}
-                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer text-sm font-bold shrink-0"
-                  title={isAmharic ? 'ዝጋ' : 'Close Drawer'}
-                >
-                  <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-                </button>
-              </div>
-            </div>
 
             {/* Segmented Control Tabs (Info, Payments, Documents) */}
             {(() => {
@@ -1756,10 +1874,17 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             {/* Drawer Body: Fit to Screen Height as much as possible */}
             <div className="p-3 sm:p-4 space-y-3.5 overflow-y-auto flex-1 text-xs">
-
-            {/* TAB 1: OWNER & VEHICLE INFO */}
-            {drawerActiveTab === 'info' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <AnimatePresence mode="wait">
+                {/* TAB 1: OWNER & VEHICLE INFO */}
+                {drawerActiveTab === 'info' && (
+                  <motion.div
+                    key="tables-drawer-info"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={POPOVER_TRANSITION}
+                    className="space-y-3"
+                  >
                 {/* Rejection notice if rejected */}
                 {selectedRegForDetails.status === 'rejected' && selectedRegForDetails.rejectionReason && (
                   <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded-lg text-xs text-rose-900 dark:text-rose-200 space-y-1">
@@ -2007,12 +2132,19 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* TAB 2: PAYMENT STATUS & LEDGER */}
             {drawerActiveTab === 'payments' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <motion.div
+                key="tables-drawer-payments"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={POPOVER_TRANSITION}
+                className="space-y-3"
+              >
                 {(() => {
                   const matchedReceipts = getReceiptsForRegistration(selectedRegForDetails, paymentReceipts);
                   const latestRc = getLatestReceiptForRegistration(selectedRegForDetails, paymentReceipts);
@@ -2260,12 +2392,19 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     </div>
                   );
                 })()}
-              </div>
+              </motion.div>
             )}
 
             {/* TAB 3: UPLOADED DOCUMENTS (Fits in Screen Height without Scrolling) */}
             {drawerActiveTab === 'documents' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <motion.div
+                key="tables-drawer-documents"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={POPOVER_TRANSITION}
+                className="space-y-3"
+              >
                 <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5">
                   <h4 className="font-bold text-[11px] text-[#1C2434] dark:text-white flex items-center gap-1.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-1.5">
                     <Icon className="material-symbols-outlined text-[15px] text-primary">photo_library</Icon>
@@ -2355,30 +2494,37 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     );
                   })()}
                 </div>
-              </div>
+              </motion.div>
             )}
+              </AnimatePresence>
 
             </div>
 
             {/* STICKY ACTION FOOTER (Pinned at base of drawer across all tabs) */}
-            <div className="sticky bottom-0 z-20 shrink-0 bg-slate-50/95 dark:bg-[#1A2232]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#2E3A47] p-3 sm:p-3.5 space-y-2">
+            <div className="sticky bottom-0 z-20 shrink-0 bg-slate-50/95 dark:bg-[#1A2232]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#2E3A47] p-3 sm:p-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom,12px))] space-y-2">
               {/* Approval Row if Pending */}
               {(userRole === 'admin' || isSuperAdmin) && (selectedRegForDetails.status === 'pending_approval' || (selectedRegForDetails.status as string) === 'pending') && (
                 <div className="grid grid-cols-2 gap-2">
-                  <button
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={() => onApproveRegistration(selectedRegForDetails.id)}
-                    className="py-2 px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98] cursor-pointer transition-all"
+                    className="min-h-[44px] sm:min-h-[36px] py-2 px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition-colors"
                   >
                     <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
                     onClick={() => setRejectingId(selectedRegForDetails.id)}
-                    className="py-2 px-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center shadow-xs active:scale-[0.98] cursor-pointer hover:bg-rose-100 transition-all"
+                    className="min-h-[44px] sm:min-h-[36px] py-2 px-3 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-700 text-rose-700 dark:text-rose-300 font-bold text-xs inline-flex items-center justify-center shadow-xs cursor-pointer hover:bg-rose-100 transition-colors"
                   >
                     <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
-                  </button>
+                  </motion.button>
                 </div>
               )}
 
@@ -2386,97 +2532,121 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               <div className="flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap">
                 <div className="flex items-center gap-1.5 flex-wrap flex-1">
                   {canEditRegistration && (
-                    <button
+                    <motion.button
                       id="details-modal-edit-reg-btn"
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => {
                         const reg = selectedRegForDetails;
                         setSelectedRegForDetails(null);
                         setEditingRegistration(reg);
                       }}
-                      className="py-1.5 sm:py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer border border-slate-300 dark:border-slate-700 shadow-2xs transition-colors shrink-0"
+                      className="min-h-[44px] sm:min-h-[36px] py-1.5 sm:py-2 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer border border-slate-300 dark:border-slate-700 shadow-2xs transition-colors shrink-0"
                       title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
                     >
                       <span>{isAmharic ? 'አሻሽል' : 'Edit'}</span>
-                    </button>
+                    </motion.button>
                   )}
 
                   {(userRole === 'admin' || isSuperAdmin) && (
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => {
                         const reg = selectedRegForDetails;
                         setSelectedRegForDetails(null);
                         setSelectedRegForQR(reg);
                       }}
-                      className="py-1.5 sm:py-2 px-3 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer border border-slate-900 dark:border-slate-200 shadow-xs transition-colors shrink-0"
+                      className="min-h-[44px] sm:min-h-[36px] py-1.5 sm:py-2 px-3 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-slate-200 dark:text-slate-900 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer border border-slate-900 dark:border-slate-200 shadow-xs transition-colors shrink-0"
                       title={isAmharic ? 'የመታወቂያ ካርድ አትም' : 'Print ID Card'}
                     >
                       <span>{isAmharic ? 'መታወቂያ' : 'ID Card'}</span>
-                    </button>
+                    </motion.button>
                   )}
 
                   {(selectedRegForDetails.status === 'approved' || selectedRegForDetails.status === 'printed' || selectedRegForDetails.status === 'ordered_print') && (
                     <>
-                      <button
+                      <motion.button
                         type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
                         onClick={() => {
                           const reg = selectedRegForDetails;
                           setSelectedRegForDetails(null);
                           setSelectedRegForA4(reg);
                         }}
-                        className="py-1.5 sm:py-2 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer transition-colors shadow-2xs shrink-0"
+                        className="min-h-[44px] sm:min-h-[36px] py-1.5 sm:py-2 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer transition-colors shadow-2xs shrink-0"
                         title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ አትም' : 'Print Permit'}
                       >
                         <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
-                      </button>
+                      </motion.button>
 
-                      <button
+                      <motion.button
                         type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
                         onClick={() => {
                           const reg = selectedRegForDetails;
                           setSelectedRegForDetails(null);
                           setSelectedRegForSticker(reg);
                         }}
-                        className="py-1.5 sm:py-2 px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer shadow-2xs transition-colors shrink-0"
+                        className="min-h-[44px] sm:min-h-[36px] py-1.5 sm:py-2 px-3 border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-[#1C2434] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 font-bold rounded-lg text-xs inline-flex items-center justify-center cursor-pointer shadow-2xs transition-colors shrink-0"
                         title={isAmharic ? 'ተለጣፊ QR ኮድ አትም' : 'Print Sticker'}
                       >
                         <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
-                      </button>
+                      </motion.button>
                     </>
                   )}
 
                   {(userRole as string) !== 'officer' && isTaskAllowed(userRole, 1) && (
-                    <button
+                    <motion.button
                       type="button"
+                      data-motion-control="true"
+                      whileTap={TAP_SCALE}
+                      transition={TACTILE_SPRING}
                       onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
-                      className="py-1.5 sm:py-2 px-2.5 sm:px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
+                      className="min-h-[44px] sm:min-h-[36px] py-1.5 sm:py-2 px-2.5 sm:px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs inline-flex items-center gap-1 cursor-pointer shadow-xs transition-colors shrink-0"
                       title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
                     >
                       <Icon className="material-symbols-outlined text-[15px]">add_card</Icon>
                       <span>{isAmharic ? '+ ደረሰኝ' : '+ Receipt'}</span>
-                    </button>
+                    </motion.button>
                   )}
                 </div>
 
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   onClick={() => setSelectedRegForDetails(null)}
-                  className="py-1.5 sm:py-2 px-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0 ml-auto"
+                  className="min-h-[44px] sm:min-h-[36px] py-1.5 sm:py-2 px-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-xs inline-flex items-center gap-1 transition-colors cursor-pointer shrink-0 ml-auto"
                 >
                   <Icon className="material-symbols-outlined text-[15px]">close</Icon>
                   <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
-                </button>
+                </motion.button>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      )}
+        )}
+      </AnimatePresence>
 
       {/* RENEWAL MONTHLY PAYMENT RECEIPT MODAL */}
-      {renewalModalReg && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl">
+      <BaseModal
+        isOpen={!!renewalModalReg}
+        onClose={() => { if (!isSubmittingRenewal) setRenewalModalReg(null); }}
+        mobileSheet={true}
+        className="max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+      >
+        {renewalModalReg && (
+          <div className="p-4 sm:p-6 space-y-4 overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
                 <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">add_card</Icon>
@@ -2489,13 +2659,17 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   </p>
                 </div>
               </div>
-              <button
+              <motion.button
                 type="button"
+                data-motion-control="true"
+                whileTap={TAP_SCALE}
+                transition={TACTILE_SPRING}
                 onClick={() => setRenewalModalReg(null)}
-                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                aria-label={isAmharic ? 'ዝጋ' : 'Close'}
               >
                 <Icon className="material-symbols-outlined text-[20px]">close</Icon>
-              </button>
+              </motion.button>
             </div>
 
             {renewalError && (
@@ -2535,7 +2709,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     placeholder="e.g. CBE-8492041"
                     value={renewalReceiptNumber}
                     onChange={(e) => setRenewalReceiptNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono"
+                    className="w-full min-h-[44px] sm:min-h-0 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono"
                   />
                 </div>
 
@@ -2548,7 +2722,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     placeholder="500"
                     value={renewalAmount}
                     onChange={(e) => setRenewalAmount(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold"
+                    className="w-full min-h-[44px] sm:min-h-0 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold"
                   />
                 </div>
               </div>
@@ -2597,23 +2771,29 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   placeholder={isAmharic ? 'አማራጭ ማስታወሻ...' : 'Optional notes...'}
                   value={renewalNotes}
                   onChange={(e) => setRenewalNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                  className="w-full min-h-[44px] sm:min-h-0 px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                 />
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
-                <button
+                <motion.button
                   type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   disabled={isSubmittingRenewal}
                   onClick={() => setRenewalModalReg(null)}
-                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs rounded-md font-bold cursor-pointer"
+                  className="min-h-[44px] sm:min-h-[36px] px-3.5 sm:px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs rounded-md font-bold cursor-pointer"
                 >
                   {isAmharic ? 'ተመለስ' : 'Cancel'}
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="submit"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
                   disabled={isSubmittingRenewal}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs rounded-lg font-bold cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5"
+                  className="min-h-[44px] sm:min-h-[36px] px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs rounded-lg font-bold cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5"
                 >
                   {isSubmittingRenewal ? (
                     <>
@@ -2626,12 +2806,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <span>{isAmharic ? 'መዝግብ' : 'Save Receipt'}</span>
                     </>
                   )}
-                </button>
+                </motion.button>
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
+      </BaseModal>
 
       {/* CAROUSEL DOCUMENT ZOOM VIEWER */}
       {carouselModal && (
@@ -2658,280 +2838,314 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       />
 
       {/* --- BULK APPROVE CONFIRMATION MODAL --- */}
-      {showBulkApproveModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
-            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
-              <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">check_circle</Icon>
-                <div>
-                  <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
-                    {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}
-                  </h4>
-                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                    {isAmharic
-                      ? `ለተመረጡት ${selectedRegIds.size} አባላት ማፅደቅ እርግጠኛ ነዎት?`
-                      : `Are you sure you want to approve ${selectedRegIds.size} selected member(s)?`}
-                  </p>
-                </div>
+      <BaseModal
+        isOpen={showBulkApproveModal}
+        onClose={() => { if (!isSubmittingBulk) setShowBulkApproveModal(false); }}
+        mobileSheet={true}
+        className="max-w-lg bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] md:rounded-md shadow-xl"
+      >
+        <div className="p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+            <div className="flex items-center gap-2.5">
+              <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">check_circle</Icon>
+              <div>
+                <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
+                  {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}
+                </h4>
+                <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                  {isAmharic
+                    ? `ለተመረጡት ${selectedRegIds.size} አባላት ማፅደቅ እርግጠኛ ነዎት?`
+                    : `Are you sure you want to approve ${selectedRegIds.size} selected member(s)?`}
+                </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowBulkApproveModal(false)}
-                className="text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-              </button>
             </div>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setShowBulkApproveModal(false)}
+              className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-md text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+              aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+            >
+              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+            </motion.button>
+          </div>
 
-            {/* Selected preview list */}
-            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#F7F9FC] dark:bg-[#24303F] rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs divide-y divide-slate-200 dark:divide-slate-700">
-              {selectedRegsList.map((reg, idx) => (
-                <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
-                  <div className="min-w-0 pr-2">
-                    <span className="font-semibold text-[#1C2434] dark:text-white truncate block">
-                      {idx + 1}. {getDisplayName(reg)}
-                    </span>
-                    <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                      {getDisplayPhone(reg)} • {reg.subCity || '—'}
-                    </span>
-                  </div>
-                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-white shrink-0">
-                    {reg.plateNumber || getChassisDisplay(reg) || reg.id}
+          {/* Selected preview list */}
+          <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#F7F9FC] dark:bg-[#24303F] rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs divide-y divide-slate-200 dark:divide-slate-700">
+            {selectedRegsList.map((reg, idx) => (
+              <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
+                <div className="min-w-0 pr-2">
+                  <span className="font-semibold text-[#1C2434] dark:text-white truncate block">
+                    {idx + 1}. {getDisplayName(reg)}
+                  </span>
+                  <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                    {getDisplayPhone(reg)} • {reg.subCity || '—'}
                   </span>
                 </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowBulkApproveModal(false)}
-                disabled={isSubmittingBulk}
-                className="px-3.5 py-1.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] cursor-pointer"
-              >
-                {isAmharic ? 'ተመለስ' : 'Cancel'}
-              </button>
-              <button
-                type="button"
-                onClick={executeBulkApprove}
-                disabled={isSubmittingBulk}
-                className="px-4 py-1.5 rounded-md bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                {isSubmittingBulk ? (
-                  <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
-                ) : (
-                  <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
-                )}
-                <span>
-                  {isAmharic
-                    ? `አጽድቅ (${selectedRegIds.size})`
-                    : `Confirm Approve (${selectedRegIds.size})`}
+                <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-white shrink-0">
+                  {reg.plateNumber || getChassisDisplay(reg) || reg.id}
                 </span>
-              </button>
-            </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setShowBulkApproveModal(false)}
+              disabled={isSubmittingBulk}
+              className="min-h-[44px] sm:min-h-[34px] px-3.5 py-1.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] cursor-pointer"
+            >
+              {isAmharic ? 'ተመለስ' : 'Cancel'}
+            </motion.button>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={executeBulkApprove}
+              disabled={isSubmittingBulk}
+              className="min-h-[44px] sm:min-h-[34px] px-4 py-1.5 rounded-md bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {isSubmittingBulk ? (
+                <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+              ) : (
+                <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+              )}
+              <span>
+                {isAmharic
+                  ? `አጽድቅ (${selectedRegIds.size})`
+                  : `Confirm Approve (${selectedRegIds.size})`}
+              </span>
+            </motion.button>
           </div>
         </div>
-      )}
+      </BaseModal>
 
       {/* --- BULK DELETE CONFIRMATION MODAL --- */}
-      {showBulkDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
-            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
-              <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">warning</Icon>
-                <div>
-                  <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
-                    {isAmharic ? 'የጅምላ መሰረዝ ማረጋገጫ' : 'Confirm Bulk Deletion'}
-                  </h4>
-                  <p className="text-[11px] text-[#FB5454] font-medium">
-                    {isAmharic
-                      ? `ማስጠንቀቂያ! የተመረጡትን ${selectedRegIds.size} አባላት በቋሚነት ለመሰረዝ እርግጠኛ ነዎት?`
-                      : `Warning! Are you sure you want to permanently delete ${selectedRegIds.size} selected member(s)?`}
-                  </p>
-                </div>
+      <BaseModal
+        isOpen={showBulkDeleteModal}
+        onClose={() => { if (!isSubmittingBulk) setShowBulkDeleteModal(false); }}
+        mobileSheet={true}
+        className="max-w-lg bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 md:rounded-md shadow-xl"
+      >
+        <div className="p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
+            <div className="flex items-center gap-2.5">
+              <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">warning</Icon>
+              <div>
+                <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
+                  {isAmharic ? 'የጅምላ መሰረዝ ማረጋገጫ' : 'Confirm Bulk Deletion'}
+                </h4>
+                <p className="text-[11px] text-[#FB5454] font-medium">
+                  {isAmharic
+                    ? `ማስጠንቀቂያ! የተመረጡትን ${selectedRegIds.size} አባላት በቋሚነት ለመሰረዝ እርግጠኛ ነዎት?`
+                    : `Warning! Are you sure you want to permanently delete ${selectedRegIds.size} selected member(s)?`}
+                </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowBulkDeleteModal(false)}
-                className="text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-              </button>
             </div>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setShowBulkDeleteModal(false)}
+              className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-md text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+              aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+            >
+              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+            </motion.button>
+          </div>
 
-            <p className="text-xs text-[#64748B] dark:text-[#8A99AD] leading-relaxed">
-              {isAmharic
-                ? 'የተመረጡትን መዝገቦች በዘላቂነት ይሰርዛል።'
-                : 'This action permanently deletes all selected registrations.'}
-            </p>
+          <p className="text-xs text-[#64748B] dark:text-[#8A99AD] leading-relaxed">
+            {isAmharic
+              ? 'የተመረጡትን መዝገቦች በዘላቂነት ይሰርዛል።'
+              : 'This action permanently deletes all selected registrations.'}
+          </p>
 
-            {/* Selected preview list */}
-            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#FB5454]/5 rounded-md border border-[#FB5454]/20 text-xs divide-y divide-slate-200 dark:divide-slate-700">
-              {selectedRegsList.map((reg, idx) => (
-                <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
-                  <div className="min-w-0 pr-2">
-                    <span className="font-semibold text-[#1C2434] dark:text-white truncate block">
-                      {idx + 1}. {getDisplayName(reg)}
-                    </span>
-                    <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                      {getDisplayPhone(reg)} • {reg.subCity || '—'}
-                    </span>
-                  </div>
-                  <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 text-[#FB5454] shrink-0">
-                    {reg.plateNumber || getChassisDisplay(reg) || reg.id}
+          {/* Selected preview list */}
+          <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#FB5454]/5 rounded-md border border-[#FB5454]/20 text-xs divide-y divide-slate-200 dark:divide-slate-700">
+            {selectedRegsList.map((reg, idx) => (
+              <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
+                <div className="min-w-0 pr-2">
+                  <span className="font-semibold text-[#1C2434] dark:text-white truncate block">
+                    {idx + 1}. {getDisplayName(reg)}
+                  </span>
+                  <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                    {getDisplayPhone(reg)} • {reg.subCity || '—'}
                   </span>
                 </div>
-              ))}
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowBulkDeleteModal(false)}
-                disabled={isSubmittingBulk}
-                className="px-3.5 py-1.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] cursor-pointer"
-              >
-                {isAmharic ? 'ተመለስ' : 'Cancel'}
-              </button>
-              <button
-                type="button"
-                onClick={executeBulkDelete}
-                disabled={isSubmittingBulk}
-                className="px-4 py-1.5 rounded-md bg-[#FB5454] hover:bg-[#D34040] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                {isSubmittingBulk ? (
-                  <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
-                ) : (
-                  <Icon className="material-symbols-outlined text-[16px]">delete_forever</Icon>
-                )}
-                <span>
-                  {isAmharic
-                    ? `በቋሚነት ሰርዝ (${selectedRegIds.size})`
-                    : `Delete Permanently (${selectedRegIds.size})`}
+                <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-sm bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 text-[#FB5454] shrink-0">
+                  {reg.plateNumber || getChassisDisplay(reg) || reg.id}
                 </span>
-              </button>
-            </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2">
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setShowBulkDeleteModal(false)}
+              disabled={isSubmittingBulk}
+              className="min-h-[44px] sm:min-h-[34px] px-3.5 py-1.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] hover:bg-[#F7F9FC] dark:hover:bg-[#2E3A47] cursor-pointer"
+            >
+              {isAmharic ? 'ተመለስ' : 'Cancel'}
+            </motion.button>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={executeBulkDelete}
+              disabled={isSubmittingBulk}
+              className="min-h-[44px] sm:min-h-[34px] px-4 py-1.5 rounded-md bg-[#FB5454] hover:bg-[#D34040] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              {isSubmittingBulk ? (
+                <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+              ) : (
+                <Icon className="material-symbols-outlined text-[16px]">delete_forever</Icon>
+              )}
+              <span>
+                {isAmharic
+                  ? `በቋሚነት ሰርዝ (${selectedRegIds.size})`
+                  : `Delete Permanently (${selectedRegIds.size})`}
+              </span>
+            </motion.button>
           </div>
         </div>
-      )}
+      </BaseModal>
 
       {/* --- BULK PRINT ROSTER MODAL --- */}
-      {showBulkPrintRosterModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-6 overflow-y-auto">
-          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl animate-fade-in">
-            {/* Modal Header */}
-            <div className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between bg-[#F7F9FC] dark:bg-[#24303F]">
-              <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">print</Icon>
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white">
-                    {isAmharic ? 'የተመረጡ አባላት ዝርዝር ማህደር' : 'Selected Members Roster'}
-                  </h3>
-                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
-                    {isAmharic ? `ጠቅላላ የተመረጡ: ${selectedRegsList.length} አባላት` : `Total Selected: ${selectedRegsList.length} member(s)`}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    window.print();
-                  }}
-                  className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white font-bold text-xs rounded-md transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">print</Icon>
-                  <span>{isAmharic ? 'ወዲያውኑ አትም' : 'Print Now'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowBulkPrintRosterModal(false)}
-                  className="p-1.5 rounded-md hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-                >
-                  <Icon className="material-symbols-outlined text-[20px]">close</Icon>
-                </button>
-              </div>
+      <BaseModal
+        isOpen={showBulkPrintRosterModal}
+        onClose={() => setShowBulkPrintRosterModal(false)}
+        mobileSheet={true}
+        className="max-w-4xl bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] md:rounded-md shadow-2xl"
+      >
+        {/* Modal Header */}
+        <div className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between bg-[#F7F9FC] dark:bg-[#24303F] shrink-0">
+          <div className="flex items-center gap-2.5">
+            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">print</Icon>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white">
+                {isAmharic ? 'የተመረጡ አባላት ዝርዝር ማህደር' : 'Selected Members Roster'}
+              </h3>
+              <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD]">
+                {isAmharic ? `ጠቅላላ የተመረጡ: ${selectedRegsList.length} አባላት` : `Total Selected: ${selectedRegsList.length} member(s)`}
+              </p>
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => {
+                window.print();
+              }}
+              className="min-h-[44px] sm:min-h-[34px] px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs rounded-md transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+            >
+              <Icon className="material-symbols-outlined text-[16px]">print</Icon>
+              <span>{isAmharic ? 'ወዲያውኑ አትም' : 'Print Now'}</span>
+            </motion.button>
+            <motion.button
+              type="button"
+              data-motion-control="true"
+              whileTap={TAP_SCALE}
+              transition={TACTILE_SPRING}
+              onClick={() => setShowBulkPrintRosterModal(false)}
+              className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-md hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+              aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+            >
+              <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+            </motion.button>
+          </div>
+        </div>
 
-            {/* Printable Document Body */}
-            <div className="p-6 overflow-y-auto flex-1 bg-white text-[#1C2434]">
-              {/* Official Document Header */}
-              <div className="text-center pb-4 border-b-2 border-slate-900 space-y-1">
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
-                </div>
-                <h2 className="font-black text-base sm:text-lg tracking-wide text-slate-900">
-                  {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahir Dar Motorist Association'}
-                </h2>
-                <h3 className="font-extrabold text-xs sm:text-sm tracking-wide text-slate-800">
-                  {isAmharic ? 'የሞተርሳይክል ምዝገባ እና ፈቃድ ሰርተፍኬት' : 'Motorcycle Registration & License Certificate'}
-                </h3>
-                <div className="flex items-center justify-between text-[11px] text-slate-600 font-mono pt-2 border-t border-slate-300 mt-2">
-                  <span>{isAmharic ? 'ቀን:' : 'Date:'} {formatEthiopianDate(new Date().toISOString().split('T')[0], isAmharic ? 'am' : 'en')}</span>
-                  <span>{isAmharic ? 'ጠቅላላ የተመረጡ አባላት:' : 'Total Members:'} <strong>{selectedRegsList.length}</strong></span>
-                  <span>{isAmharic ? 'የተዘጋጀው በ:' : 'Generated By:'} {userRole.toUpperCase()} ({userBadgeId || 'ADMIN'})</span>
-                </div>
-              </div>
+        {/* Printable Document Body */}
+        <div className="p-6 overflow-y-auto flex-1 bg-white text-[#1C2434]">
+          {/* Official Document Header */}
+          <div className="text-center pb-4 border-b-2 border-slate-900 space-y-1">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
+            </div>
+            <h2 className="font-black text-base sm:text-lg tracking-wide text-slate-900">
+              {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahir Dar Motorist Association'}
+            </h2>
+            <h3 className="font-extrabold text-xs sm:text-sm tracking-wide text-slate-800">
+              {isAmharic ? 'የሞተርሳይክል ምዝገባ እና ፈቃድ ሰርተፍኬት' : 'Motorcycle Registration & License Certificate'}
+            </h3>
+            <div className="flex items-center justify-between text-[11px] text-slate-600 font-mono pt-2 border-t border-slate-300 mt-2">
+              <span>{isAmharic ? 'ቀን:' : 'Date:'} {formatEthiopianDate(new Date().toISOString().split('T')[0], isAmharic ? 'am' : 'en')}</span>
+              <span>{isAmharic ? 'ጠቅላላ የተመረጡ አባላት:' : 'Total Members:'} <strong>{selectedRegsList.length}</strong></span>
+              <span>{isAmharic ? 'የተዘጋጀው በ:' : 'Generated By:'} {userRole.toUpperCase()} ({userBadgeId || 'ADMIN'})</span>
+            </div>
+          </div>
 
-              {/* Table */}
-              <div className="mt-4 overflow-x-auto">
-                <table className="w-full text-left border-collapse text-xs border border-slate-400">
-                  <thead>
-                    <tr className="bg-slate-100 text-slate-900 border-b border-slate-400 font-bold text-[11px]">
-                      <th className="p-2 border-r border-slate-300 text-center w-10">#</th>
-                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
-                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</th>
-                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
-                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis No'}</th>
-                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'አይነት' : 'Category'}</th>
-                      <th className="p-2 border-r border-slate-300">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
-                      <th className="p-2 border-r border-slate-300 text-center">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                      <th className="p-2 text-center">{isAmharic ? 'የምዝገባ ቀን' : 'Reg Date'}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-300">
-                    {selectedRegsList.map((reg, idx) => (
-                      <tr key={reg.id} className="hover:bg-slate-50">
-                        <td className="p-2 border-r border-slate-300 text-center font-mono">{idx + 1}</td>
-                        <td className="p-2 border-r border-slate-300 font-bold">{getDisplayName(reg)}</td>
-                        <td className="p-2 border-r border-slate-300 font-mono">{getDisplayPhone(reg)}</td>
-                        <td className="p-2 border-r border-slate-300 font-mono font-bold">{reg.plateNumber || '—'}</td>
-                        <td className="p-2 border-r border-slate-300 font-mono text-[10px]">{getChassisDisplay(reg)}</td>
-                        <td className="p-2 border-r border-slate-300">
-                          {reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
-                        </td>
-                        <td className="p-2 border-r border-slate-300">{reg.subCity || '—'}</td>
-                        <td className="p-2 border-r border-slate-300 text-center">
-                          {reg.status === 'approved' || reg.status === 'printed' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'የሚጠበቅ' : 'Pending')}
-                        </td>
-                        <td className="p-2 text-center font-mono text-[10px]">
-                          {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          {/* Table */}
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs border border-slate-400">
+              <thead>
+                <tr className="bg-slate-100 text-slate-900 border-b border-slate-400 font-bold text-[11px]">
+                  <th className="p-2 border-r border-slate-300 text-center w-10">#</th>
+                  <th className="p-2 border-r border-slate-300">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                  <th className="p-2 border-r border-slate-300">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</th>
+                  <th className="p-2 border-r border-slate-300">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate No'}</th>
+                  <th className="p-2 border-r border-slate-300">{isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis No'}</th>
+                  <th className="p-2 border-r border-slate-300">{isAmharic ? 'አይነት' : 'Category'}</th>
+                  <th className="p-2 border-r border-slate-300">{isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}</th>
+                  <th className="p-2 border-r border-slate-300 text-center">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                  <th className="p-2 text-center">{isAmharic ? 'የምዝገባ ቀን' : 'Reg Date'}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-300">
+                {selectedRegsList.map((reg, idx) => (
+                  <tr key={reg.id} className="hover:bg-slate-50">
+                    <td className="p-2 border-r border-slate-300 text-center font-mono">{idx + 1}</td>
+                    <td className="p-2 border-r border-slate-300 font-bold">{getDisplayName(reg)}</td>
+                    <td className="p-2 border-r border-slate-300 font-mono">{getDisplayPhone(reg)}</td>
+                    <td className="p-2 border-r border-slate-300 font-mono font-bold">{reg.plateNumber || '—'}</td>
+                    <td className="p-2 border-r border-slate-300 font-mono text-[10px]">{getChassisDisplay(reg)}</td>
+                    <td className="p-2 border-r border-slate-300">
+                      {reg.vehicleCategory === 'electric' ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric') : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
+                    </td>
+                    <td className="p-2 border-r border-slate-300">{reg.subCity || '—'}</td>
+                    <td className="p-2 border-r border-slate-300 text-center">
+                      {reg.status === 'approved' || reg.status === 'printed' ? (isAmharic ? 'የፀደቀ' : 'Approved') : (isAmharic ? 'የሚጠበቅ' : 'Pending')}
+                    </td>
+                    <td className="p-2 text-center font-mono text-[10px]">
+                      {reg.registrationDate ? formatEthiopianDate(reg.registrationDate, isAmharic ? 'am' : 'en') : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-              {/* Signatures Footer */}
-              <div className="mt-8 pt-6 border-t border-slate-300 grid grid-cols-2 gap-8 text-xs text-slate-700">
-                <div>
-                  <p className="font-bold">{isAmharic ? 'ያዘጋጀው ባለሙያ ፊርማ:' : 'Prepared By Signature:'}</p>
-                  <div className="mt-6 border-b border-slate-400 w-48"></div>
-                  <p className="text-[10px] text-slate-500 mt-1">{isAmharic ? 'ስም እና ማህተም' : 'Name & Stamp'}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold">{isAmharic ? 'ያረጋገጠው ኃላፊ ፊርማ:' : 'Approved By Head Signature:'}</p>
-                  <div className="mt-6 border-b border-slate-400 w-48 ml-auto"></div>
-                  <p className="text-[10px] text-slate-500 mt-1">{isAmharic ? 'ስም እና የቢሮ ማህተም' : 'Name & Official Stamp'}</p>
-                </div>
-              </div>
+          {/* Signatures Footer */}
+          <div className="mt-8 pt-6 border-t border-slate-300 grid grid-cols-2 gap-8 text-xs text-slate-700">
+            <div>
+              <p className="font-bold">{isAmharic ? 'ያዘጋጀው ባለሙያ ፊርማ:' : 'Prepared By Signature:'}</p>
+              <div className="mt-6 border-b border-slate-400 w-48"></div>
+              <p className="text-[10px] text-slate-500 mt-1">{isAmharic ? 'ስም እና ማህተም' : 'Name & Stamp'}</p>
+            </div>
+            <div className="text-right">
+              <p className="font-bold">{isAmharic ? 'ያረጋገጠው ኃላፊ ፊርማ:' : 'Approved By Head Signature:'}</p>
+              <div className="mt-6 border-b border-slate-400 w-48 ml-auto"></div>
+              <p className="text-[10px] text-slate-500 mt-1">{isAmharic ? 'ስም እና የቢሮ ማህተም' : 'Name & Official Stamp'}</p>
             </div>
           </div>
         </div>
-      )}
+      </BaseModal>
     </div>
   );
 };

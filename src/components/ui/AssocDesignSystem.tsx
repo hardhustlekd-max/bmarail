@@ -1,6 +1,18 @@
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useState, useEffect, useId } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './Icon';
 import { ETHIOPIAN_MONTHS } from '../../utils/ethiopianCalendar';
+import {
+  BACKDROP_VARIANTS,
+  BOTTOM_SHEET_VARIANTS,
+  MODAL_CONTENT_VARIANTS,
+  POPOVER_TRANSITION,
+  SHEET_SPRING,
+  SUBTLE_TAP_SCALE,
+  TAB_INDICATOR_SPRING,
+  TACTILE_SPRING,
+  TAP_SCALE,
+} from '../../utils/motionPresets';
 
 // ============================================================================
 // 1. ATOMS (Design Primitives, Controls, Badges, Dots)
@@ -18,8 +30,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 /**
  * Atomic Button Primitives adhering to the Association Design System:
  * - 8px border-radius
- * - 2x horizontal vs vertical padding
- * - Accessible focus rings & hover states
+ * - High-contrast paired tokens for light and dark themes
+ * - Crisp tactile spring feedback
  */
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
@@ -33,27 +45,32 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-xs rounded-md min-h-[36px]',
+    sm: 'px-3.5 py-2 text-xs rounded-md min-h-[40px] sm:min-h-[36px]',
     md: 'px-5 py-2.5 text-sm rounded-lg min-h-[44px]',
     lg: 'px-6 py-3 text-base rounded-lg min-h-[48px]',
   };
 
   const variantStyles = {
     primary:
-      'bg-primary hover:bg-primary-hover text-white font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-primary/40 transition-colors',
+      'bg-primary hover:bg-primary-hover text-on-primary font-bold border-0 shadow-none hover:shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors',
     secondary:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus:ring-2 focus:ring-slate-400/30 transition-colors',
+      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus-visible:ring-2 focus-visible:ring-slate-400/30 transition-colors',
     danger:
-      'bg-rose-600 hover:bg-rose-700 text-white font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-rose-500/40 transition-colors',
+      'bg-rose-600 hover:bg-rose-700 text-white font-bold border-0 shadow-none hover:shadow-none focus-visible:ring-2 focus-visible:ring-rose-500/40 transition-colors',
     ghost:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus:ring-2 focus:ring-slate-300 transition-colors',
+      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus-visible:ring-2 focus-visible:ring-slate-300 transition-colors',
   };
 
+  const isDisabled = Boolean(disabled || isLoading);
+
   return (
-    <button
-      disabled={disabled || isLoading}
-      className={`inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-150 select-none outline-none disabled:opacity-50 disabled:cursor-not-allowed ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
-      {...props}
+    <motion.button
+      data-motion-control="true"
+      whileTap={isDisabled ? undefined : TAP_SCALE}
+      transition={TACTILE_SPRING}
+      disabled={isDisabled}
+      className={`inline-flex items-center justify-center gap-2 cursor-pointer transition-colors duration-150 select-none outline-none disabled:opacity-50 disabled:cursor-not-allowed ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
+      {...(props as any)}
     >
       {isLoading ? (
         <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
@@ -64,7 +81,7 @@ export const Button: React.FC<ButtonProps> = ({
       {!isLoading && icon && iconPosition === 'right' && (
         <Icon name={icon} size={18} className="shrink-0" />
       )}
-    </button>
+    </motion.button>
   );
 };
 
@@ -220,7 +237,7 @@ export const FormInput: React.FC<FormInputProps> = ({
     <input
       id={id}
       required={required}
-      className={`w-full px-3 sm:px-3.5 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none transition-colors ${
+      className={`w-full min-h-[44px] sm:min-h-[40px] px-3 sm:px-3.5 py-2 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none transition-colors ${
         error
           ? 'border-rose-500 focus:border-rose-600 focus:ring-1 focus:ring-rose-500'
           : 'border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary'
@@ -260,13 +277,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full pl-9 sm:pl-10 pr-8 sm:pr-9 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-slate-400 transition-colors"
+      className="w-full min-h-[44px] sm:min-h-[40px] pl-10 pr-10 py-2 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-slate-400 transition-colors"
     />
     {value && (
       <button
         type="button"
         onClick={() => onChange('')}
-        className="absolute right-3 p-0.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+        className="absolute right-1.5 w-9 h-9 rounded-md flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
         aria-label="Clear search"
       >
         <Icon name="close" size={16} />
@@ -307,7 +324,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       <select
         id={id}
         required={required}
-        className={`w-full pl-2.5 sm:pl-3.5 pr-8 sm:pr-9 py-1.5 sm:py-2.5 text-xs sm:text-sm appearance-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none cursor-pointer transition-colors ${
+        className={`w-full min-h-[44px] sm:min-h-[40px] pl-3 sm:pl-3.5 pr-9 py-2 text-sm appearance-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none cursor-pointer transition-colors ${
           error
             ? 'border-rose-500 focus:border-rose-600'
             : 'border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary'
@@ -474,9 +491,11 @@ export const TabList = <T extends string>({
   variant = 'underline',
   className = '',
 }: TabListProps<T>) => {
+  const groupId = useId();
+
   if (variant === 'flush') {
     return (
-      <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-2.5 overflow-x-auto scrollbar-none ${className}`}>
+      <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-2 overflow-x-auto scrollbar-none ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -484,16 +503,16 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`group flex items-center gap-2 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+              className={`relative group flex items-center gap-2 min-h-[44px] sm:min-h-[40px] py-2 px-3.5 text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                 isActive
-                  ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-slate-900 dark:text-white bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
+                  ? 'top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-slate-900 dark:text-white bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
                   : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
               }`}
             >
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
-                  className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                  className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold transition-colors ${
                     isActive
                       ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
                       : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
@@ -501,6 +520,13 @@ export const TabList = <T extends string>({
                 >
                   {tab.count}
                 </span>
+              )}
+              {isActive && (
+                <motion.span
+                  layoutId={`tab-flush-${groupId}`}
+                  transition={TAB_INDICATOR_SPRING}
+                  className="absolute inset-x-0 top-0 h-[2px] bg-primary rounded-t-md"
+                />
               )}
             </button>
           );
@@ -511,7 +537,7 @@ export const TabList = <T extends string>({
 
   if (variant === 'pill') {
     return (
-      <div className={`inline-flex items-center gap-1 p-1 bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 rounded-lg ${className}`}>
+      <div className={`inline-flex items-center gap-1 p-1 bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 rounded-lg overflow-x-auto scrollbar-none max-w-full ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -519,16 +545,23 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900 ${
+              className={`relative px-3.5 py-2 min-h-[40px] sm:min-h-[34px] rounded-md text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                 isActive
-                  ? 'bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-transparent'
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <span>{tab.label}</span>
+              {isActive && (
+                <motion.span
+                  layoutId={`tab-pill-${groupId}`}
+                  transition={TAB_INDICATOR_SPRING}
+                  className="absolute inset-0 bg-white dark:bg-[#1E293B] rounded-md shadow-2xs border border-slate-200/90 dark:border-slate-700"
+                />
+              )}
+              <span className="relative z-10">{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                  className={`relative z-10 text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold ${
                     isActive
                       ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
                       : 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400'
@@ -545,7 +578,7 @@ export const TabList = <T extends string>({
   }
 
   return (
-    <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-none pt-2.5 px-3 sm:px-5 ${className}`}>
+    <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-none pt-2 px-3 sm:px-5 ${className}`}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -553,16 +586,16 @@ export const TabList = <T extends string>({
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`group flex items-center gap-1.5 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-900 ${
+            className={`relative group flex items-center gap-1.5 min-h-[44px] sm:min-h-[40px] py-2 px-3.5 text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
               isActive
-                ? 'relative top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-t-md font-bold'
+                ? 'top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-t-md font-bold'
                 : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
             }`}
           >
             <span>{tab.label}</span>
             {typeof tab.count === 'number' && (
               <span
-                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold transition-colors ${
                   isActive
                     ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
@@ -570,6 +603,13 @@ export const TabList = <T extends string>({
               >
                 {tab.count}
               </span>
+            )}
+            {isActive && (
+              <motion.span
+                layoutId={`tab-underline-${groupId}`}
+                transition={TAB_INDICATOR_SPRING}
+                className="absolute inset-x-0 top-0 h-[2px] bg-primary rounded-t-md"
+              />
             )}
           </button>
         );
@@ -682,7 +722,10 @@ export const MetricStatCard: React.FC<MetricStatCardProps> = ({
   const resolvedDotColor = statusDotColor || (statusVariant ? dotColorMap[statusVariant] : undefined);
 
   return (
-    <div
+    <motion.div
+      data-motion-control={onClick ? 'true' : undefined}
+      whileTap={onClick ? SUBTLE_TAP_SCALE : undefined}
+      transition={TACTILE_SPRING}
       onClick={onClick}
       className={`p-3 sm:p-3.5 rounded-lg transition-colors duration-150 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
         unboxed
@@ -721,14 +764,17 @@ export const MetricStatCard: React.FC<MetricStatCardProps> = ({
         )}
         {typeof progress === 'number' && (
           <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1.5">
-            <div
-              className="bg-primary h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: Math.min(100, Math.max(0, progress)) / 100 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              style={{ transformOrigin: 'left center' }}
+              className="bg-primary h-full w-full rounded-full"
             />
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -1051,7 +1097,12 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                     className="p-3 sm:p-4 max-w-full min-w-0 overflow-hidden box-border bg-white dark:bg-slate-900"
                     style={{ maxWidth: '100%', minWidth: 0 }}
                   >
-                    <div className="w-full max-w-full min-w-0 overflow-hidden space-y-3.5">
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={POPOVER_TRANSITION}
+                      className="w-full max-w-full min-w-0 overflow-hidden space-y-3.5"
+                    >
                       {/* Redesigned Month List as Desktop-Style Gridboxes with Full Month Name */}
                       <div className="grid grid-cols-3 min-[440px]:grid-cols-4 min-[620px]:grid-cols-5 gap-1.5 sm:gap-2 w-full max-w-full min-w-0">
                         {columns.map((col) => {
@@ -1112,23 +1163,26 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                             <div className="grid grid-cols-2 gap-2 w-full max-w-full min-w-0">
                               {renderActions && renderActions(row, true)}
                               {onRowClick && (
-                                <button
+                                <motion.button
                                   type="button"
+                                  data-motion-control="true"
+                                  whileTap={TAP_SCALE}
+                                  transition={TACTILE_SPRING}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     onRowClick(row);
                                   }}
-                                  className="w-full min-h-[38px] px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover active:scale-95 text-white shadow-2xs transition-all cursor-pointer"
+                                  className="w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover text-on-primary shadow-2xs transition-colors cursor-pointer"
                                 >
                                   <Icon name="badge" size={16} />
                                   <span className="truncate">{isAmharic ? 'ሙሉ መረጃ' : 'Full Profile'}</span>
-                                </button>
+                                </motion.button>
                               )}
                             </div>
                           </div>
                         </div>
                       )}
-                    </div>
+                    </motion.div>
                   </td>
                 </tr>
               )}
@@ -1290,6 +1344,18 @@ export const ModalFormDialog: React.FC<ModalFormDialogProps> = ({
   secondaryActionLabel = 'Dismiss',
   isSubmitting = false,
 }) => {
+  const [isMobile, setIsMobile] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -1300,53 +1366,91 @@ export const ModalFormDialog: React.FC<ModalFormDialogProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-      className="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity overflow-y-auto"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 w-full max-w-lg shadow-xl flex flex-col gap-5 text-slate-800 dark:text-slate-100 transition-all"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h3 id="modal-title" className="text-lg font-bold text-slate-900 dark:text-slate-100">
-              {title}
-            </h3>
-            {description && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{description}</p>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            aria-label="Close modal"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          variants={BACKDROP_VARIANTS}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          transition={POPOVER_TRANSITION}
+          className={`fixed inset-0 z-50 flex bg-slate-950/65 backdrop-blur-xs ${
+            isMobile
+              ? 'items-end justify-center p-0'
+              : 'items-start justify-center pt-10 md:pt-14 pb-8 p-4 overflow-y-auto'
+          }`}
+          onClick={onClose}
+        >
+          <motion.div
+            variants={isMobile ? BOTTOM_SHEET_VARIANTS : MODAL_CONTENT_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={SHEET_SPRING}
+            drag={isMobile ? 'y' : false}
+            dragConstraints={isMobile ? { top: 0 } : undefined}
+            dragElastic={isMobile ? { top: 0, bottom: 0.4 } : undefined}
+            onDragEnd={
+              isMobile
+                ? (_, info) => {
+                    if (info.offset.y > 90 || info.velocity.y > 450) {
+                      onClose();
+                    }
+                  }
+                : undefined
+            }
+            className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full shadow-2xl flex flex-col gap-5 text-slate-800 dark:text-slate-100 ${
+              isMobile
+                ? 'rounded-t-2xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom,20px))] max-h-[90dvh] overflow-y-auto'
+                : 'rounded-xl p-6 max-w-lg'
+            }`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <Icon name="close" size={20} />
-          </button>
-        </div>
+            {isMobile && (
+              <div className="w-full flex justify-center -mt-2 mb-1 touch-none cursor-grab active:cursor-grabbing" aria-hidden="true">
+                <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
+              </div>
+            )}
 
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-4">{children}</div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 id="modal-title" className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                  {title}
+                </h3>
+                {description && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{description}</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-10 h-10 -mr-1 -mt-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer"
+                aria-label="Close modal"
+              >
+                <Icon name="close" size={20} />
+              </button>
+            </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <ButtonSecondary type="button" onClick={onClose} disabled={isSubmitting}>
-              {secondaryActionLabel}
-            </ButtonSecondary>
-            <ButtonPrimary type="submit" isLoading={isSubmitting}>
-              {primaryActionLabel}
-            </ButtonPrimary>
-          </div>
-        </form>
-      </div>
-    </div>
+            <form onSubmit={onSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4">{children}</div>
+
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <ButtonSecondary type="button" onClick={onClose} disabled={isSubmitting}>
+                  {secondaryActionLabel}
+                </ButtonSecondary>
+                <ButtonPrimary type="submit" isLoading={isSubmitting}>
+                  {primaryActionLabel}
+                </ButtonPrimary>
+              </div>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
