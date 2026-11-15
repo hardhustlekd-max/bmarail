@@ -126,14 +126,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 transition={POPOVER_TRANSITION}
                 className="p-3 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-start gap-2.5 shadow-2xs"
               >
-                <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
+                <Icon className="material-symbols-outlined text-icon-md text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
                   info
                 </Icon>
                 <div className="flex-1 min-w-0">
                   <span className="block font-black text-xs text-slate-900 dark:text-slate-100">
                     {lang === 'am' ? 'የስራ ክፍለ-ጊዜ ማብቂያ' : 'Session Expired for Security'}
                   </span>
-                  <span className="text-[11px] font-medium leading-relaxed block mt-0.5 text-slate-600 dark:text-slate-400">
+                  <span className="text-11 font-medium leading-relaxed block mt-0.5 text-slate-600 dark:text-slate-400">
                     {sessionExpiredMessage}
                   </span>
                 </div>
@@ -145,7 +145,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     title={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
                     aria-label={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
                   >
-                    <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                    <Icon className="material-symbols-outlined text-icon-sm">close</Icon>
                   </button>
                 )}
               </motion.div>
@@ -160,7 +160,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 transition={POPOVER_TRANSITION}
                 className="p-3 rounded-lg text-xs font-bold bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 flex items-center gap-2 shadow-2xs"
               >
-                <Icon className="material-symbols-outlined text-[16px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
                 <span>{authError}</span>
               </motion.div>
             )}
@@ -183,16 +183,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   placeholder={lang === 'am' ? 'የመታወቂያ ቁጥር ያስገቡ' : 'Enter Badge ID'}
                   required
                   autoComplete="off"
-                  className={`w-full min-h-[44px] bg-surface-container-low border ${
+                  className={`w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-surface-container-low border ${
                     badgeIdError ? 'border-error' : 'border-outline-variant'
                   } rounded-lg px-3.5 py-2.5 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-11`}
                 />
                 <div className="absolute right-3 inset-y-0 flex items-center justify-center text-on-surface-variant pointer-events-none">
-                  <Icon className="material-symbols-outlined text-[18px] leading-none">person</Icon>
+                  <Icon className="material-symbols-outlined text-icon-md leading-none">person</Icon>
                 </div>
               </div>
               {badgeIdError && (
-                <p className="text-[11px] font-medium text-error mt-1">{badgeIdError}</p>
+                <p className="text-11 font-medium text-error mt-1">{badgeIdError}</p>
               )}
             </div>
 
@@ -209,7 +209,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={lang === 'am' ? 'የይለፍ ቃል ያስገቡ' : 'Enter Password'}
                   required
-                  className="w-full min-h-[44px] bg-surface-container-low border border-outline-variant rounded-lg px-3.5 py-2.5 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-12"
+                  className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-surface-container-low border border-outline-variant rounded-lg px-3.5 py-2.5 text-sm font-medium text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono pr-12"
                 />
                 <div className="absolute right-1 inset-y-0 flex items-center">
                   <button
@@ -218,7 +218,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                     aria-label={showPassword ? (lang === 'am' ? 'የይለፍ ቃል ደብቅ' : 'Hide password') : (lang === 'am' ? 'የይለፍ ቃል አሳይ' : 'Show password')}
                     className="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                   >
-                    <Icon className="material-symbols-outlined text-[18px]">
+                    <Icon className="material-symbols-outlined text-icon-md">
                       {showPassword ? 'visibility_off' : 'visibility'}
                     </Icon>
                   </button>
@@ -228,7 +228,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
             {/* Remember Me Checkbox */}
             <div className="flex items-center justify-between text-xs">
-              <label className="flex items-center gap-2.5 min-h-[40px] cursor-pointer select-none text-on-surface-variant font-medium">
+              <label className="flex items-center gap-2.5 min-h-[var(--ui-control-h-md)] cursor-pointer select-none text-on-surface-variant font-medium">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -246,16 +246,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               data-motion-control="true"
               whileTap={!isLoading ? TAP_SCALE : undefined}
               transition={TACTILE_SPRING}
-              className="w-full min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none transition-colors duration-150 disabled:opacity-60 cursor-pointer mt-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-primary hover:bg-primary-hover text-on-primary py-2.5 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none transition-colors duration-150 disabled:opacity-60 cursor-pointer mt-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              <Icon className="material-symbols-outlined text-[18px] leading-none">login</Icon>
+              <Icon className="material-symbols-outlined text-icon-md leading-none">login</Icon>
               <span>{lang === 'am' ? 'ይግቡ' : 'Sign in'}</span>
             </motion.button>
           </form>
 
           {/* Card Footer */}
           <div className="text-center pt-2 border-t border-outline-variant">
-            <p className="text-[11px] text-outline font-medium">
+            <p className="text-11 text-outline font-medium">
               {lang === 'am'
                 ? 'ባህር ዳር ሞተረኞች ማህበር • 2026'
                 : 'Bahirdar Motorist Association • 2026'}

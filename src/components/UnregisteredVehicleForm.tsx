@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
-import { TACTILE_SPRING, TAP_SCALE, POPOVER_TRANSITION } from '../utils/motionPresets';
 import { Language, UserRole, UnregisteredVehicleReport, BAHIR_DAR_SUBCITIES } from '../types';
 import { compressImageToBlob } from '../utils/imageCompressor';
 import { uploadDocumentPhoto } from '../services/storageService';
@@ -108,20 +106,12 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
   return (
     <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
       {/* Success Notification Banner */}
-      <AnimatePresence>
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={POPOVER_TRANSITION}
-            className="p-4 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-100 rounded-xl text-xs font-bold flex items-center gap-3 shadow-2xs"
-          >
-            <Icon className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[22px]">check_circle</Icon>
-            <span>{successMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {successMessage && (
+        <div className="p-4 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-100 rounded-xl text-xs font-bold flex items-center gap-3 animate-in fade-in duration-200 shadow-2xs">
+          <Icon className="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[22px]">check_circle</Icon>
+          <span>{successMessage}</span>
+        </div>
+      )}
 
       {/* SINGLE UNIFIED CONTAINER (MATCHING TABLES PAGE PATTERN) */}
       <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
@@ -235,10 +225,9 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
                 <button
                   type="button"
                   onClick={() => setEvidencePhoto('')}
-                  aria-label={isAmharic ? 'ፎቶ አስወግድ' : 'Remove photo'}
-                  className="absolute top-1 right-1 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center shadow-md cursor-pointer touch-manipulation"
+                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs shadow-md cursor-pointer"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                  ✕
                 </button>
               </div>
             ) : (
@@ -258,7 +247,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               />
               <label
                 htmlFor={isPhotoUploading ? undefined : 'unreg-photo-upload'}
-                className={`inline-flex items-center justify-center min-h-[44px] sm:min-h-[38px] gap-2 px-4 py-2 rounded-lg text-white text-xs font-bold transition-colors shadow-xs touch-manipulation ${
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-bold transition-all shadow-xs ${
                   isPhotoUploading ? 'bg-slate-400 cursor-wait' : 'bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 cursor-pointer'
                 }`}
               >
@@ -315,25 +304,19 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         {/* Submit Actions */}
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-outline-variant">
           {onCancel && (
-            <motion.button
+            <button
               type="button"
-              data-motion-control="true"
-              whileTap={TAP_SCALE}
-              transition={TACTILE_SPRING}
               onClick={onCancel}
-              className="min-h-[44px] px-5 py-2.5 rounded-lg border border-outline-variant hover:bg-surface-container text-xs font-bold transition-colors cursor-pointer touch-manipulation"
+              className="px-5 py-2.5 rounded-lg border border-outline-variant hover:bg-surface-container text-xs font-bold transition-all cursor-pointer"
             >
               {isAmharic ? 'ሰርዝ' : 'Cancel'}
-            </motion.button>
+            </button>
           )}
 
-          <motion.button
+          <button
             type="submit"
-            data-motion-control="true"
-            whileTap={isSubmitting ? undefined : TAP_SCALE}
-            transition={TACTILE_SPRING}
             disabled={isSubmitting}
-            className="min-h-[44px] px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold tracking-wider border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:opacity-50 touch-manipulation"
+            className="px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-bold tracking-wider border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
@@ -346,7 +329,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
                 <span>{isAmharic ? 'ሪፖርቱን መዝግብ' : 'Submit Unregistered Report'}</span>
               </>
             )}
-          </motion.button>
+          </button>
         </div>
       </form>
       </div>

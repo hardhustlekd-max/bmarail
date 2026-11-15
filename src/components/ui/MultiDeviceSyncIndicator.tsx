@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { POPOVER_TRANSITION, TACTILE_SPRING, TAP_SCALE } from '../../utils/motionPresets';
 import { useRealtimeSyncStatus } from '../../services/realtimeSync';
+import { Icon } from './Icon';
 
 interface MultiDeviceSyncIndicatorProps {
   isAmharic?: boolean;
@@ -96,7 +97,7 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-[11px] font-semibold border transition-all cursor-pointer select-none active:scale-95 shadow-2xs ${cfg.bg}`}
+        className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-11 font-semibold border transition-all cursor-pointer select-none active:scale-95 shadow-2xs ${cfg.bg}`}
         title={
           isAmharic
             ? `ባለብዙ-መሳሪያ ማመሳሰል፡ ${cfg.label} (${activeDevices} መሳሪያዎች)`
@@ -116,24 +117,24 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
 
         {/* Status text */}
         {!compact ? (
-          <span className="truncate max-w-[130px] sm:max-w-none">
+          <span className="truncate max-w-[calc(130px*var(--ui-scale))] sm:max-w-none">
             {cfg.label}
             {isConnected && activeDevices > 1 && (
-              <span className="ml-1 opacity-80 text-[10px]">
+              <span className="ml-1 opacity-80 text-2xs">
                 ({activeDevices} {isAmharic ? 'መሳ.' : 'dev'})
               </span>
             )}
           </span>
         ) : (
-          <span className="text-[10px] font-bold">
+          <span className="text-2xs font-bold">
             {activeDevices > 1 ? `${activeDevices}D` : 'SSE'}
           </span>
         )}
 
         {/* Small chevron */}
-        <span className="material-symbols-outlined text-[13px] opacity-70">
+        <Icon className="material-symbols-outlined text-13 opacity-70">
           {isOpen ? 'expand_less' : 'expand_more'}
-        </span>
+        </Icon>
       </button>
 
       {/* Popover Details Modal */}
@@ -149,13 +150,13 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
             {/* Header */}
             <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 dark:border-white/10">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary text-[19px]">devices</span>
+              <Icon className="material-symbols-outlined text-primary text-icon-lg">devices</Icon>
               <span className="font-bold text-xs text-slate-900 dark:text-white">
                 {isAmharic ? 'ባለብዙ-መሳሪያ የቀጥታ ማመሳሰል' : 'Multi-Device Live Sync'}
               </span>
             </div>
             <span
-              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cfg.bg}`}
+              className={`text-2xs font-bold px-2 py-0.5 rounded-full border ${cfg.bg}`}
             >
               {cfg.label}
             </span>
@@ -165,8 +166,8 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
           <div className="space-y-2 text-xs">
             {/* Active Devices */}
             <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-              <span className="text-slate-500 dark:text-slate-400 text-[11px] flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[15px] text-slate-400">group_work</span>
+              <span className="text-slate-500 dark:text-slate-400 text-11 flex items-center gap-1.5">
+                <Icon className="material-symbols-outlined text-icon-sm text-slate-400">group_work</Icon>
                 {isAmharic ? 'የተገናኙ መሳሪያዎች' : 'Connected Devices'}
               </span>
               <span className="font-bold text-slate-800 dark:text-slate-100 font-mono">
@@ -176,8 +177,8 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
 
             {/* Latency & Protocol */}
             <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-              <span className="text-slate-500 dark:text-slate-400 text-[11px] flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[15px] text-slate-400">speed</span>
+              <span className="text-slate-500 dark:text-slate-400 text-11 flex items-center gap-1.5">
+                <Icon className="material-symbols-outlined text-icon-sm text-slate-400">speed</Icon>
                 {isAmharic ? 'የግንኙነት ፍጥነት' : 'Stream Latency'}
               </span>
               <span className="font-medium text-slate-700 dark:text-slate-200 font-mono">
@@ -187,8 +188,8 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
 
             {/* Last Synced */}
             <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-              <span className="text-slate-500 dark:text-slate-400 text-[11px] flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[15px] text-slate-400">update</span>
+              <span className="text-slate-500 dark:text-slate-400 text-11 flex items-center gap-1.5">
+                <Icon className="material-symbols-outlined text-icon-sm text-slate-400">update</Icon>
                 {isAmharic ? 'የመጨረሻ ማመሳሰል' : 'Last Synced'}
               </span>
               <span className="font-medium text-slate-700 dark:text-slate-200">
@@ -197,7 +198,7 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
             </div>
 
             {/* Current Device ID */}
-            <div className="py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 text-[10.5px]">
+            <div className="py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 text-11">
               <span className="text-slate-500 dark:text-slate-400 block mb-0.5">
                 {isAmharic ? 'የዚህ መሳሪያ መለያ (Device ID)' : 'Current Device ID'}
               </span>
@@ -207,8 +208,8 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
             </div>
 
             {/* Serverless Free-Tier Eco Saver Notice */}
-            <div className="py-1 px-2 rounded-lg bg-teal-50 dark:bg-teal-950/30 border border-teal-200/60 dark:border-teal-800/40 text-[10px] text-teal-800 dark:text-teal-200 flex items-start gap-1.5">
-              <span className="material-symbols-outlined text-[13px] text-teal-600 shrink-0 mt-0.5">eco</span>
+            <div className="py-1 px-2 rounded-lg bg-teal-50 dark:bg-teal-950/30 border border-teal-200/60 dark:border-teal-800/40 text-2xs text-teal-800 dark:text-teal-200 flex items-start gap-1.5">
+              <Icon className="material-symbols-outlined text-icon-xs text-teal-600 shrink-0 mt-0.5">eco</Icon>
               <span>
                 {isAmharic
                   ? 'የሰርቨር ወጪ ቆጣቢ ሞድ፡ ታቡ ሲዘጋ ወይም ስራ ሲፈታ ሰርቨሩ እንዳይቃጠል ግንኙነቱ በራስ-ሰር ይተኛል። መስተጋብር ሲኖር ወዲያውኑ ይነሳል።'
@@ -219,7 +220,7 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
 
           {/* Quick Action: Force Refresh / Manual Sync */}
           <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-white/10 flex items-center justify-between gap-2">
-            <span className="text-[10px] text-slate-400 dark:text-slate-500">
+            <span className="text-2xs text-slate-400 dark:text-slate-500">
               TanStack Query + SSE
             </span>
             <motion.button
@@ -229,15 +230,15 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
               transition={TACTILE_SPRING}
               onClick={handleManualSync}
               disabled={isRefreshing}
-              className="min-h-[40px] flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-semibold hover:bg-primary-hover transition-colors cursor-pointer shadow-xs disabled:opacity-60 touch-manipulation"
+              className="min-h-[var(--ui-control-h-md)] flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-semibold hover:bg-primary-hover transition-colors cursor-pointer shadow-xs disabled:opacity-60 touch-manipulation"
             >
-              <span
-                className={`material-symbols-outlined text-[15px] ${
+              <Icon
+                className={`material-symbols-outlined text-icon-sm ${
                   isRefreshing ? 'animate-spin' : ''
                 }`}
               >
                 refresh
-              </span>
+              </Icon>
               <span>{isRefreshing ? (isAmharic ? 'በማመሳሰል ላይ...' : 'Syncing...') : (isAmharic ? 'አሁን አመሳስል' : 'Sync Now')}</span>
             </motion.button>
           </div>

@@ -151,7 +151,7 @@ export const SmartImage: React.FC<SmartImageProps> = ({
         <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 mb-1">
           <Icon name={fallbackIcon} size={18} />
         </div>
-        <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 max-w-[90%] truncate">
+        <span className="text-2xs font-semibold text-slate-600 dark:text-slate-300 max-w-[90%] truncate">
           {alt}
         </span>
         {src && (
@@ -159,7 +159,7 @@ export const SmartImage: React.FC<SmartImageProps> = ({
             type="button"
             onClick={handleManualRetry}
             title="እንደገና ሞክር / Retry loading image"
-            className="mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-slate-700 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-1 cursor-pointer"
+            className="mt-1 px-1.5 py-0.5 rounded text-3xs font-bold bg-blue-50 text-slate-700 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 border border-blue-200 dark:border-blue-800 transition-colors flex items-center gap-1 cursor-pointer"
           >
             <Icon name="refresh" size={10} />
             <span>እንደገና ሞክር</span>

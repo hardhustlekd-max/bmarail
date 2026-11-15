@@ -55,7 +55,7 @@ export const FormsPage: React.FC<FormsPageProps> = ({
     <div className="space-y-2 md:space-y-2.5">
       {isDenied ? (
         <div className="p-3.5 sm:p-4 bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800/60 rounded-lg text-rose-800 dark:text-rose-200 text-xs font-medium flex items-center gap-2.5">
-          <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0">gpp_maybe</Icon>
+          <Icon className="material-symbols-outlined text-icon-md text-rose-600 dark:text-rose-400 shrink-0">gpp_maybe</Icon>
           <span>
             {isAmharic
               ? 'አዲስ ምዝገባ በሚናዎ ፈቃድ ተገድቧል።'
@@ -64,7 +64,7 @@ export const FormsPage: React.FC<FormsPageProps> = ({
         </div>
       ) : isReadOnly ? (
         <div className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 text-xs font-medium flex items-center gap-2.5">
-          <Icon className="material-symbols-outlined text-[18px] text-slate-500 dark:text-slate-400 shrink-0">warning</Icon>
+          <Icon className="material-symbols-outlined text-icon-md text-slate-500 dark:text-slate-400 shrink-0">warning</Icon>
           <span>
             {isAmharic
               ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ ምዝገባ ተገድቧል።'

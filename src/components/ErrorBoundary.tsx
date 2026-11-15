@@ -70,7 +70,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
           <div className="w-full max-w-xl bg-slate-900 border border-rose-600/60 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-500 shrink-0">
-                <Icon className="material-symbols-outlined text-[36px]">error</Icon>
+                <Icon className="material-symbols-outlined text-[length:calc(36px*var(--ui-scale))]">error</Icon>
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-black text-white">
@@ -85,7 +85,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
             </div>
 
             <div className="bg-slate-950 border border-rose-900/50 rounded-xl p-4 text-xs font-mono text-rose-300 break-words max-h-40 overflow-y-auto">
-              <div className="text-[10px] text-slate-500 mb-1">
+              <div className="text-2xs text-slate-500 mb-1">
                 {this.state.report?.id || 'CRASH_CAPTURED'}
               </div>
               {this.state.error?.message || 'Unknown render exception'}
@@ -95,31 +95,31 @@ export class ErrorBoundary extends React.Component<Props, State> {
               <button
                 type="button"
                 onClick={this.handleReload}
-                className="flex-1 min-h-[46px] px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm bg-rose-600 hover:bg-rose-700 active:scale-95 text-white flex items-center justify-center gap-2 transition-all cursor-pointer touch-manipulation"
+                className="flex-1 min-h-[44px] sm:min-h-[var(--ui-control-h-lg)] px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm bg-rose-600 hover:bg-rose-700 active:scale-95 text-white flex items-center justify-center gap-2 transition-all cursor-pointer touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[20px]">refresh</Icon>
+                <Icon className="material-symbols-outlined text-icon-lg">refresh</Icon>
                 <span>{isAmharic ? 'ገጹን ድጋሚ ጫን (Reload)' : 'Reload Application'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={this.handleReset}
-                className="min-h-[46px] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition-all cursor-pointer touch-manipulation"
+                className="min-h-[44px] sm:min-h-[var(--ui-control-h-lg)] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition-all cursor-pointer touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[20px]">restart_alt</Icon>
+                <Icon className="material-symbols-outlined text-icon-lg">restart_alt</Icon>
                 <span>{isAmharic ? 'ድጋሚ ሞክር' : 'Try Recovering'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={this.handleCopy}
-                className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border transition-all cursor-pointer touch-manipulation ${
+                className={`w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border transition-all cursor-pointer touch-manipulation ${
                   this.state.copied
                     ? 'bg-emerald-600 border-emerald-600 text-white'
                     : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 active:scale-95'
                 }`}
               >
-                <Icon className="material-symbols-outlined text-[18px]">
+                <Icon className="material-symbols-outlined text-icon-md">
                   {this.state.copied ? 'check_circle' : 'content_copy'}
                 </Icon>
                 <span>

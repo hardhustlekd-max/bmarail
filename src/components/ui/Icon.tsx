@@ -41,15 +41,20 @@ export const Icon: React.FC<IconProps> = ({
 
   const pathData = getMaterialIconPath(resolvedName || '');
 
+  const isNumericSize = typeof size === 'number';
   const calculatedSize = size
-    ? (typeof size === 'number' ? `${size}px` : size)
+    ? (isNumericSize ? `calc(${size}px * var(--ui-scale, 1))` : size)
     : undefined;
 
   const finalWidth = width || calculatedSize;
   const finalHeight = height || calculatedSize;
 
+  const svgAttrWidth = width || (isNumericSize ? '1em' : calculatedSize) || '1em';
+  const svgAttrHeight = height || (isNumericSize ? '1em' : calculatedSize) || '1em';
+
+  const resolvedFontSize = finalHeight || calculatedSize;
   const combinedStyle: React.CSSProperties = {
-    fontSize: finalHeight || calculatedSize || 'inherit',
+    ...(resolvedFontSize ? { fontSize: resolvedFontSize } : {}),
     ...(finalWidth ? { width: finalWidth } : {}),
     ...(finalHeight ? { height: finalHeight } : {}),
     ...style,
@@ -60,8 +65,8 @@ export const Icon: React.FC<IconProps> = ({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      height={finalHeight || '1em'}
-      width={finalWidth || '1em'}
+      height={svgAttrHeight}
+      width={svgAttrWidth}
       viewBox="0 -960 960 960"
       fill="currentColor"
       className={`material-symbols-outlined inline-block shrink-0 align-middle ${className}`}

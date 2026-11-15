@@ -1,4 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Icon } from './Icon';
+
+export interface SpinnerIconProps {
+  size?: number;
+  className?: string;
+  trackClassName?: string;
+}
+
+/**
+ * Material `progress_activity` spinner icon with a viewBox-matched concentric track ring.
+ * Both the track circle (r=370, strokeWidth=60) and `progress_activity` share viewBox `0 -960 960 960`.
+ */
+export const SpinnerIcon: React.FC<SpinnerIconProps> = ({
+  size = 34,
+  className = 'text-primary',
+  trackClassName = 'text-primary/15 dark:text-primary/20',
+}) => {
+  const scaledSize = `calc(${size}px * var(--ui-scale, 1))`;
+
+  return (
+    <span
+      className="relative inline-flex items-center justify-center shrink-0"
+      style={{ width: scaledSize, height: scaledSize }}
+      aria-hidden="true"
+    >
+      <svg
+        width="100%"
+        height="100%"
+        viewBox="0 -960 960 960"
+        fill="none"
+        className={`absolute inset-0 pointer-events-none ${trackClassName}`}
+        aria-hidden="true"
+      >
+        <circle
+          cx="480"
+          cy="-480"
+          r="370"
+          stroke="currentColor"
+          strokeWidth="60"
+        />
+      </svg>
+      <Icon
+        name="progress_activity"
+        size={size}
+        className={`animate-spinner-spin ${className}`}
+      />
+    </span>
+  );
+};
 
 export interface CentralPageSpinnerProps {
   label?: string;
@@ -6,57 +55,79 @@ export interface CentralPageSpinnerProps {
   isOverlay?: boolean;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
+  /** Delay in ms before displaying overlay spinner so fast operations do not flash */
+  delayMs?: number;
 }
 
 export const CentralPageSpinner: React.FC<CentralPageSpinnerProps> = ({
+  label,
+  subtitle,
   isOverlay = true,
   className = '',
   size = 'md',
+  delayMs = isOverlay ? 400 : 0,
 }) => {
+  const [visible, setVisible] = useState<boolean>(delayMs <= 0);
+
+  useEffect(() => {
+    if (delayMs <= 0) {
+      setVisible(true);
+      return;
+    }
+    if (visible) return;
+    const timer = window.setTimeout(() => {
+      setVisible(true);
+    }, delayMs);
+    return () => window.clearTimeout(timer);
+  }, [delayMs, visible]);
+
+  if (!visible) {
+    return null;
+  }
+
   const sizeMap = {
     sm: {
       container: 'w-8 h-8',
-      arrow: 'w-4 h-4',
+      iconSize: 24,
     },
     md: {
-      container: 'w-11 h-11 sm:w-12 sm:h-12',
-      arrow: 'w-5.5 h-5.5 sm:w-6 sm:h-6',
+      container: 'w-11 h-11',
+      iconSize: 34,
     },
     lg: {
-      container: 'w-14 h-14 sm:w-16 sm:h-16',
-      arrow: 'w-7 h-7 sm:w-8 sm:h-8',
+      container: 'w-14 h-14',
+      iconSize: 44,
     },
   };
 
   const currentSize = sizeMap[size] || sizeMap.md;
+
+  const badge = (
+    <div
+      className={`${currentSize.container} rounded-full bg-surface-container border border-outline-variant shadow-sm flex items-center justify-center shrink-0 animate-spinner-badge`}
+    >
+      <SpinnerIcon size={currentSize.iconSize} />
+    </div>
+  );
 
   const content = (
     <div
       role="status"
       aria-live="polite"
       aria-busy="true"
-      className="flex items-center justify-center select-none pointer-events-auto"
+      className="flex flex-col items-center justify-center gap-2.5 select-none pointer-events-auto"
     >
-      {/* Circular background with circular spinning arrow — decreased size, NO label, NO drop shadow, NO blur */}
-      <div
-        className={`${currentSize.container} rounded-full bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-center shrink-0`}
-      >
-        <svg
-          className={`${currentSize.arrow} text-primary animate-spin`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-          <polyline points="8 8 3 8 3 3" />
-          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-          <polyline points="16 16 21 16 21 21" />
-        </svg>
-      </div>
+      {badge}
+      {label ? (
+        <div className="flex flex-col items-center text-center gap-0.5">
+          <span className="text-xs font-semibold text-on-surface">{label}</span>
+          {subtitle && (
+            <span className="text-[11px] text-on-surface-variant">{subtitle}</span>
+          )}
+        </div>
+      ) : (
+        <span className="sr-only">Loading</span>
+      )}
     </div>
   );
 
@@ -70,13 +141,9 @@ export const CentralPageSpinner: React.FC<CentralPageSpinnerProps> = ({
 
   return (
     <div
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-      className={`fixed inset-0 z-[999] flex items-center justify-center bg-black/20 dark:bg-black/40 transition-opacity duration-150 ${className}`}
+      className={`fixed inset-0 z-[999] flex items-center justify-center bg-slate-900/20 dark:bg-black/50 backdrop-blur-[1.5px] animate-spinner-backdrop ${className}`}
     >
       {content}
     </div>
   );
 };
-

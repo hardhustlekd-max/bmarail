@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { motion } from 'motion/react';
 import { Icon } from './ui/Icon';
 import { Language } from '../types';
 import { resolveDisplayImageUrl } from '../utils/imageUrlResolver';
 import { imageLogger } from '../utils/imageLogger';
-import { TACTILE_SPRING, TAP_SCALE } from '../utils/motionPresets';
 
 export interface DocumentViewerItem {
   url: string;
@@ -378,11 +376,8 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
   }
 
   const modalContent = (
-    <motion.div
+    <div
       id="fullscreen-photo-zoom-viewer"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.16 }}
       className="fixed inset-0 z-[999999] w-screen h-[100dvh] max-w-none max-h-none bg-black/95 backdrop-blur-2xl flex flex-col select-none overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -465,35 +460,29 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
           </button>
 
           {/* Mobile Quick Rotate Button */}
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={TAP_SCALE}
-            transition={TACTILE_SPRING}
             onClick={handleRotate}
             title={isAmharic ? 'አሽከርክር (90°)' : 'Rotate (90°)'}
             aria-label="Rotate Document"
-            className="sm:hidden w-10 h-10 min-w-[40px] min-h-[40px] rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/10 shrink-0 touch-manipulation"
+            className="sm:hidden w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:scale-95 text-white flex items-center justify-center transition-all cursor-pointer border border-white/10 shrink-0"
           >
-            <Icon className="material-symbols-outlined text-[18px]">rotate_right</Icon>
-          </motion.button>
+            <Icon className="material-symbols-outlined text-[17px]">rotate_right</Icon>
+          </button>
 
           {/* Prominent High-Visibility Close Button (Optimized for both mobile and desktop) */}
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={TAP_SCALE}
-            transition={TACTILE_SPRING}
             onClick={onClose}
             title={isAmharic ? 'ዝጋ (Esc)' : 'Close Viewer (Esc)'}
             aria-label="Close Document Viewer"
-            className="min-h-[40px] h-10 sm:h-9 px-3 sm:px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-lg hover:shadow-red-600/30 border border-white/20 shrink-0 touch-manipulation"
+            className="h-8 sm:h-9 px-2 sm:px-4 rounded-lg bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1 transition-all cursor-pointer shadow-lg hover:shadow-red-600/30 border border-white/20 shrink-0"
           >
             <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">close</Icon>
             <span className="font-bold tracking-wide hidden xs:inline sm:inline">
               {isAmharic ? 'ዝጋ' : 'Close'}
             </span>
-          </motion.button>
+          </button>
         </div>
       </header>
 
@@ -513,8 +502,10 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
         >
           {/* Loading Spinner */}
           {!imageLoaded && !hasError && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-3 z-10 pointer-events-none">
-              <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/80 gap-3 z-10 pointer-events-none">
+              <div className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+                <Icon className="material-symbols-outlined text-[28px] text-white animate-spin">progress_activity</Icon>
+              </div>
               <span className="text-xs font-semibold tracking-wide">
                 {isAmharic ? 'ሰነዱ እየተጫነ ነው...' : 'Loading Document...'}
               </span>
@@ -618,102 +609,84 @@ export const FullscreenDocumentCarouselModal: React.FC<FullscreenDocumentCarouse
       </div>
 
       {/* FLOATING ENLARGED ZOOM PILL WITH UNMERGED PREV AND NEXT FLANKING BUTTONS */}
-      <div className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom,20px))] sm:bottom-7 left-1/2 -translate-x-1/2 z-40 pointer-events-auto flex items-center gap-2.5 sm:gap-3.5 transition-all select-none">
+      <div className="fixed bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-40 pointer-events-auto flex items-center gap-2.5 sm:gap-3.5 transition-all select-none">
         {/* Standalone Previous Button (Left of Zoom Pill) */}
         {validItems.length > 1 && (
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={{ scale: 0.9 }}
-            transition={TACTILE_SPRING}
             onClick={handlePrev}
             title={isAmharic ? 'ቀዳሚ ሰነድ (←)' : 'Previous Document (←)'}
             aria-label="Previous Document"
-            className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 transition-colors cursor-pointer hover:border-primary/60 shrink-0 touch-manipulation"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60 shrink-0"
           >
             <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">chevron_left</Icon>
-          </motion.button>
+          </button>
         )}
 
         {/* Enlarged Zoom Pill Container */}
         <div className="h-11 sm:h-12 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-full px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 shadow-2xl shrink-0">
           {/* Zoom Out */}
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={{ scale: 0.88 }}
-            transition={TACTILE_SPRING}
             onClick={handleZoomOut}
             title={isAmharic ? 'አሳንስ (-)' : 'Zoom Out'}
             aria-label="Zoom Out"
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer touch-manipulation"
+            className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">zoom_out</Icon>
-          </motion.button>
+          </button>
 
           {/* Zoom Scale & Reset */}
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={TAP_SCALE}
-            transition={TACTILE_SPRING}
             onClick={resetTransform}
             title={isAmharic ? 'ወደ ነባሪ መጠን መልስ' : 'Reset Scale'}
             aria-label="Reset Scale"
-            className="px-2.5 sm:px-3 h-8 rounded-full bg-white/15 text-white text-[12px] sm:text-[13px] font-mono font-bold flex items-center gap-1 hover:bg-white/25 cursor-pointer touch-manipulation"
+            className="px-2.5 sm:px-3 h-7.5 sm:h-8.5 rounded-full bg-white/15 text-white text-[12px] sm:text-[13px] font-mono font-bold flex items-center gap-1 hover:bg-white/25 active:scale-95 cursor-pointer"
           >
             <span>{Math.round(scale * 100)}%</span>
             {scale !== 1 && <Icon className="material-symbols-outlined text-[13px] sm:text-[14px]">restart_alt</Icon>}
-          </motion.button>
+          </button>
 
           {/* Zoom In */}
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={{ scale: 0.88 }}
-            transition={TACTILE_SPRING}
             onClick={handleZoomIn}
             title={isAmharic ? 'አጉላ (+)' : 'Zoom In'}
             aria-label="Zoom In"
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer touch-manipulation"
+            className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">zoom_in</Icon>
-          </motion.button>
+          </button>
 
           <div className="w-px h-5 sm:h-6 bg-white/20 mx-1" />
 
           {/* Rotate */}
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={{ scale: 0.88 }}
-            transition={TACTILE_SPRING}
             onClick={handleRotate}
             title={isAmharic ? 'አሽከርክር (90°)' : 'Rotate (90°)'}
             aria-label="Rotate Document"
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer touch-manipulation"
+            className="w-9 h-9 sm:w-9.5 sm:h-9.5 rounded-full flex items-center justify-center text-white hover:bg-white/20 active:scale-90 transition-transform cursor-pointer"
           >
             <Icon className="material-symbols-outlined text-[20px] sm:text-[22px]">rotate_right</Icon>
-          </motion.button>
+          </button>
         </div>
 
         {/* Standalone Next Button (Right of Zoom Pill) */}
         {validItems.length > 1 && (
-          <motion.button
+          <button
             type="button"
-            data-motion-control="true"
-            whileTap={{ scale: 0.9 }}
-            transition={TACTILE_SPRING}
             onClick={handleNext}
             title={isAmharic ? 'ቀጣይ ሰነድ (→)' : 'Next Document (→)'}
             aria-label="Next Document"
-            className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 transition-colors cursor-pointer hover:border-primary/60 shrink-0 touch-manipulation"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl text-white flex items-center justify-center hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all cursor-pointer hover:border-primary/60 shrink-0"
           >
             <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">chevron_right</Icon>
-          </motion.button>
+          </button>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 
   if (typeof document === 'undefined') {

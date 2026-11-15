@@ -9,7 +9,10 @@ export const KEYS = {
   LAST_ACK_RESET_EPOCH: 'bd_motor_last_ack_reset_epoch',
   LAST_ACTIVITY: 'bd_motor_last_activity',
   SESSION_EXPIRED_REASON: 'bd_motor_session_expired_reason',
+  UI_SCALE: 'bd_motor_ui_scale',
 };
+
+export type UiScaleMode = 'auto' | 'compact' | 'standard' | 'large';
 
 /**
  * Media and document photo field identifiers.
@@ -217,4 +220,23 @@ export function saveStoredSessionExpiredReason(reason: string | null): void {
     removeStoredItem(KEYS.SESSION_EXPIRED_REASON);
   }
 }
+
+export function getStoredUiScale(): UiScaleMode {
+  const val = getStoredItem<string>(KEYS.UI_SCALE, 'auto');
+  if (val === 'compact' || val === 'standard' || val === 'large' || val === 'auto') {
+    return val;
+  }
+  return 'auto';
+}
+
+export function applyUiScaleMode(mode: UiScaleMode): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.setAttribute('data-ui-scale', mode);
+}
+
+export function saveUiScale(mode: UiScaleMode): void {
+  setStoredItem(KEYS.UI_SCALE, mode);
+  applyUiScaleMode(mode);
+}
+
 

@@ -42,8 +42,8 @@ const DataField: React.FC<{
   className?: string;
 }> = ({ label, value, isMono = false, isPrimary = false, className = "" }) => {
   return (
-    <div className={`p-2.5 rounded-md bg-surface-container border border-outline-variant/30 flex flex-col justify-center min-h-[54px] shadow-2xs ${className}`}>
-      <span className="text-[10px]  tracking-wider text-secondary font-bold block mb-0.5">
+    <div className={`p-2.5 rounded-md bg-surface-container border border-outline-variant/30 flex flex-col justify-center min-h-[calc(54px*var(--ui-scale))] shadow-2xs ${className}`}>
+      <span className="text-2xs  tracking-wider text-secondary font-bold block mb-0.5">
         {label}
       </span>
       <div className={`text-xs font-black truncate text-on-surface leading-tight ${isMono ? 'font-mono' : ''} ${isPrimary ? 'text-primary' : ''}`}>
@@ -929,7 +929,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                 {/* Top Active Scanning Status Badge */}
                 {isProcessingScan && !uploadedImageSrc && !croppedQrSrc && (
                   <div className="absolute top-16 z-30 flex items-center gap-2 bg-primary/90 px-4 py-1.5 rounded-full text-on-primary font-extrabold text-xs sm:text-sm shadow-xl border border-primary/40 backdrop-blur-md">
-                    <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
+                    <Icon className="material-symbols-outlined text-icon-md animate-spin">progress_activity</Icon>
                     <span>
                       {isAmharic ? 'QR ኮድ በመተንተን እና በመቃኘት ላይ...' : 'Capturing & Processing QR Code...'}
                     </span>
@@ -951,7 +951,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         >
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                              <Icon className="material-symbols-outlined text-[18px] text-primary">search</Icon>
+                              <Icon className="material-symbols-outlined text-icon-md text-primary">search</Icon>
                               <span>{isAmharic ? 'በሰሌዳ ቁጥር ወይም በስም ፈልግ' : 'Search by Plate No or Owner Name'}</span>
                             </span>
                             <button
@@ -960,7 +960,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                               className="text-slate-400 hover:text-white w-9 h-9 flex items-center justify-center rounded-lg transition-colors cursor-pointer touch-manipulation"
                               aria-label={isAmharic ? 'ዝጋ' : 'Close'}
                             >
-                              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                              <Icon className="material-symbols-outlined text-icon-md">close</Icon>
                             </button>
                           </div>
                           <form
@@ -972,14 +972,14 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                           >
                             <div className="relative flex-1">
                               <div className="absolute inset-y-0 left-3 flex items-center justify-center pointer-events-none text-slate-400">
-                                <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+                                <Icon className="material-symbols-outlined text-icon-md">search</Icon>
                               </div>
                               <input
                                 type="text"
                                 value={searchPlate}
                                 onChange={(e) => setSearchPlate(e.target.value)}
                                 placeholder={isAmharic ? 'የሰሌዳ ቁጥር ወይም ስም ያስገቡ...' : 'Enter Plate No or Name...'}
-                                className="w-full min-h-[44px] bg-slate-800 border border-slate-700 rounded-md pl-10 pr-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary shadow-xs"
+                                className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-slate-800 border border-slate-700 rounded-md pl-10 pr-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary shadow-xs"
                                 autoFocus
                               />
                             </div>
@@ -988,9 +988,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                               data-motion-control="true"
                               whileTap={TAP_SCALE}
                               transition={TACTILE_SPRING}
-                              className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs sm:text-sm px-3.5 py-2 rounded-md transition-colors cursor-pointer flex items-center gap-1 shrink-0 shadow-xs touch-manipulation"
+                              className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs sm:text-sm px-3.5 py-2 rounded-md transition-colors cursor-pointer flex items-center gap-1 shrink-0 shadow-xs touch-manipulation"
                             >
-                              <Icon className="material-symbols-outlined text-[18px]">search</Icon>
+                              <Icon className="material-symbols-outlined text-icon-md">search</Icon>
                               <span>{isAmharic ? 'ፈልግ' : 'Search'}</span>
                             </motion.button>
                           </form>
@@ -1003,7 +1003,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   <div className="flex-grow min-h-0 flex flex-col items-center justify-center my-auto pointer-events-none py-1 z-20">
                     <div
                       ref={viewfinderReticleRef}
-                      className="relative w-44 h-44 xs:w-52 xs:h-52 sm:w-64 sm:h-64 max-w-[60vw] max-h-[32vh] sm:max-h-[38vh] border border-white/25 rounded-xl shrink-0"
+                      className="relative w-56 h-56 xs:w-64 xs:h-64 sm:w-80 sm:h-80 max-w-[75vw] max-h-[42vh] sm:max-h-[48vh] border border-white/30 rounded-none shrink-0"
                       style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
                     >
                       {/* Inside scanner box: Extracted QR Code picked from fullscreen image */}
@@ -1033,7 +1033,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                             <img
                               src={croppedQrSrc}
                               alt="Extracted QR Code"
-                              className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                              className="max-w-full max-h-full object-contain rounded-none shadow-sm"
                             />
                             {/* Verification Success Animation Overlay inside reticle */}
                             <AnimatePresence>
@@ -1043,7 +1043,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                   animate={{ opacity: 1 }}
                                   exit={{ opacity: 0 }}
                                   transition={{ duration: 0.16 }}
-                                  className="absolute inset-0 bg-emerald-500/25 backdrop-blur-[2px] rounded-xl flex items-center justify-center z-30"
+                                  className="absolute inset-0 bg-emerald-500/25 backdrop-blur-[2px] rounded-none flex items-center justify-center z-30"
                                 >
                                   <motion.div
                                     initial={{ scale: 0.5, opacity: 0 }}
@@ -1051,7 +1051,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                     transition={TACTILE_SPRING}
                                     className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg"
                                   >
-                                    <Icon className="material-symbols-outlined text-[32px] text-white">check</Icon>
+                                    <Icon className="material-symbols-outlined text-icon-3xl text-white">check</Icon>
                                   </motion.div>
                                 </motion.div>
                               )}
@@ -1060,20 +1060,20 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         </div>
                       )}
 
-                      {/* 4 Corner Brackets - Keep existing blue color */}
-                      <div className="absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-tl-sm z-20" />
-                      <div className="absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-tr-sm z-20" />
-                      <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-bl-sm z-20" />
-                      <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.6)] rounded-br-sm z-20" />
+                      {/* 4 Corner Anchors - Crisp White with Rounded Corners */}
+                      <div className="absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-tl-md z-20" />
+                      <div className="absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-tr-md z-20" />
+                      <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-bl-md z-20" />
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-br-md z-20" />
 
-                      {/* Scanning Line: Compositor-only transform sweep (0% layout thrash) */}
+                      {/* Scanning Line: White sweep with optimized gradient transparency */}
                       {scannedVerificationState === 'idle' && (
                         <motion.div
                           className="absolute inset-x-2 top-[8%] bottom-[8%] pointer-events-none z-20"
                           animate={{ y: ['0%', '96%', '0%'] }}
                           transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }}
                         >
-                          <div className="w-full h-[2.5px] bg-[#3b82f6] shadow-[0_0_16px_#3b82f6] rounded-full" />
+                          <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-white/85 to-transparent shadow-[0_0_12px_rgba(255,255,255,0.5)] rounded-full" />
                         </motion.div>
                       )}
                     </div>
@@ -1110,7 +1110,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer border border-white/15"
                         title={isAmharic ? 'ተመለስ' : 'Back'}
                       >
-                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">arrow_back</Icon>
+                        <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl">arrow_back</Icon>
                       </motion.button>
 
                       {/* 2. Search Button */}
@@ -1127,7 +1127,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         }`}
                         title={isAmharic ? 'ፈልግ' : 'Search'}
                       >
-                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">search</Icon>
+                        <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl">search</Icon>
                       </motion.button>
 
                       {/* 3. Photo Gallery Upload */}
@@ -1145,7 +1145,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ምስል ስካን' : 'Select Photo'}
                       >
-                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">image</Icon>
+                        <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl">image</Icon>
                       </motion.button>
 
                       {/* 4. Flashlight / Torch Toggle */}
@@ -1162,7 +1162,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         }`}
                         title={isAmharic ? 'ፍላሽ' : 'Flashlight'}
                       >
-                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">
+                        <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl">
                           {isTorchOn ? 'flashlight_on' : 'flashlight_off'}
                         </Icon>
                       </motion.button>
@@ -1177,7 +1177,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ካሜራ ቀይር' : 'Switch Camera'}
                       >
-                        <Icon className="material-symbols-outlined text-[22px] sm:text-[24px]">cameraswitch</Icon>
+                        <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl">cameraswitch</Icon>
                       </motion.button>
                     </div>
                   </div>
@@ -1195,7 +1195,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       className="absolute inset-0 bg-slate-950/95 flex flex-col items-center justify-center p-6 text-center z-40 space-y-4 pointer-events-auto"
                     >
                       <div className="w-16 h-16 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shadow-lg">
-                        <Icon className="material-symbols-outlined text-[36px]">videocam_off</Icon>
+                        <Icon className="material-symbols-outlined text-[length:calc(36px*var(--ui-scale))]">videocam_off</Icon>
                       </div>
                       <div className="space-y-1 max-w-sm">
                         <h4 className="text-white font-black text-sm">
@@ -1210,9 +1210,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                           whileTap={TAP_SCALE}
                           transition={TACTILE_SPRING}
                           onClick={handleStartCameraScan}
-                          className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary px-4 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-md flex items-center gap-1.5 touch-manipulation"
+                          className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-primary hover:bg-primary-hover text-on-primary px-4 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-md flex items-center gap-1.5 touch-manipulation"
                         >
-                          <Icon className="material-symbols-outlined text-[16px]">refresh</Icon>
+                          <Icon className="material-symbols-outlined text-icon-sm">refresh</Icon>
                           <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry Camera'}</span>
                         </motion.button>
                         <motion.button
@@ -1226,9 +1226,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                               fileInputRef.current.click();
                             }
                           }}
-                          className="min-h-[44px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border border-slate-700 flex items-center gap-1.5 touch-manipulation"
+                          className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border border-slate-700 flex items-center gap-1.5 touch-manipulation"
                         >
-                          <Icon className="material-symbols-outlined text-[16px]">image</Icon>
+                          <Icon className="material-symbols-outlined text-icon-sm">image</Icon>
                           <span>{isAmharic ? 'ምስል ስካን' : 'Select Photo'}</span>
                         </motion.button>
                         <motion.button
@@ -1237,9 +1237,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                           whileTap={SUBTLE_TAP_SCALE}
                           transition={TACTILE_SPRING}
                           onClick={() => setShowTopMenu(true)}
-                          className="min-h-[44px] bg-slate-800 hover:bg-slate-700 text-amber-400 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border border-slate-700 flex items-center gap-1.5 touch-manipulation"
+                          className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-slate-800 hover:bg-slate-700 text-amber-400 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border border-slate-700 flex items-center gap-1.5 touch-manipulation"
                         >
-                          <Icon className="material-symbols-outlined text-[16px]">search</Icon>
+                          <Icon className="material-symbols-outlined text-icon-sm">search</Icon>
                           <span>{isAmharic ? 'በሰሌዳ ፈልግ' : 'Search by Plate'}</span>
                         </motion.button>
                       </div>
@@ -1250,7 +1250,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             ) : (
               <div className="space-y-2 p-3 w-full max-w-md mx-auto flex flex-col items-center justify-center">
                 <div className="w-12 h-12 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary">
-                  <Icon className="material-symbols-outlined text-[28px] animate-pulse">
+                  <Icon className="material-symbols-outlined text-[length:calc(28px*var(--ui-scale))] animate-pulse">
                     qr_code_scanner
                   </Icon>
                 </div>
@@ -1264,9 +1264,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     whileTap={TAP_SCALE}
                     transition={TACTILE_SPRING}
                     onClick={handleStartCameraScan}
-                    className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
+                    className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-primary hover:bg-primary-hover text-on-primary px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
                   >
-                    <Icon className="material-symbols-outlined text-[18px]">photo_camera</Icon>
+                    <Icon className="material-symbols-outlined text-icon-md">photo_camera</Icon>
                     <span>{isAmharic ? 'ካሜራ' : 'Camera'}</span>
                   </motion.button>
                   <motion.button
@@ -1280,9 +1280,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         fileInputRef.current.click();
                       }
                     }}
-                    className="min-h-[44px] bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 border border-slate-700 touch-manipulation"
+                    className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 border border-slate-700 touch-manipulation"
                   >
-                    <Icon className="material-symbols-outlined text-[18px]">image</Icon>
+                    <Icon className="material-symbols-outlined text-icon-md">image</Icon>
                     <span>{isAmharic ? 'ምስል ስካን' : 'Image Scan'}</span>
                   </motion.button>
                 </div>
@@ -1301,7 +1301,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           <div className="flex items-center justify-between gap-2 w-full">
             <div className="flex-1 flex items-center justify-between bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 text-red-950 dark:text-red-300 rounded-md px-3.5 py-1.5 shadow-2xs">
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[24px] select-none text-red-600 dark:text-red-400">
+                <Icon className="material-symbols-outlined text-icon-2xl select-none text-red-600 dark:text-red-400">
                   cancel
                 </Icon>
                 <span className="font-black text-sm sm:text-base">
@@ -1316,14 +1316,14 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
           <div className="space-y-2 flex flex-col items-center justify-center py-4">
             <div className="w-12 h-12 rounded-full bg-error-container/30 border border-error/30 flex items-center justify-center text-error mb-1">
-              <Icon className="material-symbols-outlined text-[28px]">
+              <Icon className="material-symbols-outlined text-[length:calc(28px*var(--ui-scale))]">
                 error_outline
               </Icon>
             </div>
             <h4 className="text-xs sm:text-sm font-bold text-on-surface">
               {isAmharic ? 'መረጃው አልተገኘም' : 'Record Not Found'}
             </h4>
-            <p className="text-[11px] text-secondary text-center max-w-sm">
+            <p className="text-11 text-secondary text-center max-w-sm">
               {isAmharic 
                 ? 'የቃኙት QR ኮድ ወይም ያስገቡት መረጃ አልተገኘም። እባክዎ በድጋሚ ይሞክሩ።' 
                 : 'Scanned record not found in system registry.'}
@@ -1334,9 +1334,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                whileTap={TAP_SCALE}
                transition={TACTILE_SPRING}
                onClick={handleRescan}
-               className="min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary px-5 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-xs touch-manipulation"
+               className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-primary hover:bg-primary-hover text-on-primary px-5 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-xs touch-manipulation"
              >
-               <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
+               <Icon className="material-symbols-outlined text-icon-sm">qr_code_scanner</Icon>
                <span>{isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}</span>
              </motion.button>
           </div>
@@ -1384,12 +1384,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white touch-manipulation transition-colors cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
                     title={isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}
                   >
-                    <Icon className="material-symbols-outlined text-[22px] sm:text-[24px] font-bold">chevron_left</Icon>
+                    <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl font-bold">chevron_left</Icon>
                   </motion.button>
 
                   {/* Center Verification Status Pill matching the uploaded screenshot */}
                   <div className="flex items-center gap-1.5 min-w-0 flex-1 justify-center">
-                    <Icon className="material-symbols-outlined text-[20px] sm:text-[26px] text-white shrink-0">
+                    <Icon className="material-symbols-outlined text-icon-lg sm:text-[length:calc(26px*var(--ui-scale))] text-white shrink-0">
                       {isApproved ? 'check_circle' : isPending ? 'warning' : 'cancel'}
                     </Icon>
                     <span className="font-black text-xs sm:text-base md:text-lg tracking-tight text-white truncate text-center">
@@ -1417,7 +1417,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     }`}
                     title={isAmharic ? 'ማስታወሻ ጨምር' : 'Add Inspection Note'}
                   >
-                    <Icon className="material-symbols-outlined text-[20px] sm:text-[22px] font-bold">
+                    <Icon className="material-symbols-outlined text-icon-lg sm:text-icon-xl font-bold">
                       {showNotesSection ? 'edit_note' : 'note_add'}
                     </Icon>
                   </motion.button>
@@ -1430,13 +1430,13 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {isPending && (
                     <div className="bg-amber-100/90 dark:bg-amber-950/90 border border-amber-500 dark:border-amber-600 p-2 rounded-md text-xs flex items-start gap-2 shadow-xs">
                       <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 font-black">
-                        <Icon className="material-symbols-outlined text-[20px]">warning</Icon>
+                        <Icon className="material-symbols-outlined text-icon-lg">warning</Icon>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-black text-amber-950 dark:text-amber-100 text-xs">
                           {isAmharic ? 'ማረጋገጫ በመጠባበቅ ላይ ያለ' : 'PENDING APPROVAL'}
                         </p>
-                        <p className="mt-0.5 text-[10px] text-amber-900 dark:text-amber-200 font-extrabold leading-tight">
+                        <p className="mt-0.5 text-2xs text-amber-900 dark:text-amber-200 font-extrabold leading-tight">
                           {isAmharic
                             ? 'ይህ ተሽከርካሪ በአስተዳዳሪ ገና አልጸደቀም።'
                             : 'This vehicle record is pending admin approval.'}
@@ -1449,18 +1449,18 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   {scannedRegResult.hideFromOtherUsers && (
                     <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-2 sm:p-2.5 rounded-md text-xs flex items-start gap-2 shadow-xs">
                       <div className="w-7 h-7 rounded-lg bg-slate-900 dark:bg-slate-700 text-white flex items-center justify-center shrink-0 font-black">
-                        <Icon className="material-symbols-outlined text-[19px]">business</Icon>
+                        <Icon className="material-symbols-outlined text-icon-md">business</Icon>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <p className="font-black text-slate-900 dark:text-white text-xs">
                             {isAmharic ? 'የማህበር ተሽከርካሪ' : 'ASSOCIATION MOTOR'}
                           </p>
-                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
+                          <span className="text-3xs font-bold px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
                             {isAmharic ? 'በፍተሻ ውጤት ብቻ የሚታይ' : 'Scanner Verified Result'}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-[10.5px] text-slate-600 dark:text-slate-400 font-medium leading-tight">
+                        <p className="mt-0.5 text-2xs text-slate-600 dark:text-slate-400 font-medium leading-tight">
                           {isAmharic
                             ? 'ይህ ተሽከርካሪ የማህበር መዝገብ በመሆኑ በሰንጠረዥና በሜትሪክስ የተደበቀ ሲሆን፣ በፍተሻ ውጤት ላይ ብቻ የሚታይ ነው።'
                             : 'This motor is registered as an Association vehicle (hidden from general lists & metrics, verified on scanner result).'}
@@ -1501,7 +1501,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                           </div>
                         )}
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                          <Icon className="material-symbols-outlined text-[24px] font-black">zoom_in</Icon>
+                          <Icon className="material-symbols-outlined text-icon-2xl font-black">zoom_in</Icon>
                         </div>
                       </div>
 
@@ -1509,7 +1509,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <div className="flex-1 min-w-0 space-y-1.5 text-xs">
                         {/* Owner Full Name */}
                         <div>
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
                             {isAmharic ? 'የባለቤት መረጃ' : 'Owner Info'}
                           </span>
                           <h3 className={`text-sm sm:text-base font-black ${activeTheme.headingText} leading-tight mt-0.5 truncate`}>
@@ -1519,7 +1519,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                         {/* ID Number */}
                         <div>
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
                             {isAmharic ? 'መለያ ቁጥር' : 'ID Number'}
                           </span>
                           <span className={`text-xs font-black font-mono ${activeTheme.headingText} block mt-0.5`}>
@@ -1529,7 +1529,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                         {/* Plate Number */}
                         <div>
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
                             {isAmharic ? 'ሰሌዳ ቁጥር' : 'Plate Number'}
                           </span>
                           <span className={`text-xs font-black font-mono ${activeTheme.plateBadge} block mt-0.5 px-2 py-0.5 rounded-md inline-block`}>
@@ -1539,7 +1539,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                         {/* Authorized Motor */}
                         <div>
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
                             {isAmharic ? 'የተፈቀደለት ሞተር' : 'Authorized Motor'}
                           </span>
                           <span className={`text-xs font-black ${activeTheme.headingText} block mt-0.5 truncate`}>
@@ -1555,7 +1555,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       ========================================================= */}
                   <div className={`${activeTheme.specCardBg || activeTheme.cardBg} border rounded-md p-2 sm:p-2.5 shadow-xs space-y-2`}>
                     <h3 className={`text-xs sm:text-sm font-black ${activeTheme.headingText} flex items-center gap-1.5`}>
-                      <Icon className={`material-symbols-outlined ${activeTheme.sectionIconColor} text-[18px]`}>two_wheeler</Icon>
+                      <Icon className={`material-symbols-outlined ${activeTheme.sectionIconColor} text-icon-md`}>two_wheeler</Icon>
                       <span>{isAmharic ? 'ተጨማሪ የተሽከርካሪ ዝርዝሮች' : 'Additional Vehicle Details'}</span>
                     </h3>
 
@@ -1564,10 +1564,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 1, Col 1: Motor Brand */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">two_wheeler</Icon>
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">two_wheeler</Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'የሞተር ምርት' : 'Motor Brand'}
                           </span>
                           <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
@@ -1579,10 +1579,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 1, Col 2: Model */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">calendar_today</Icon>
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">calendar_today</Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'ሞዴል' : 'Model'}
                           </span>
                           <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
@@ -1594,10 +1594,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 2, Col 1: Registration Date */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">date_range</Icon>
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">date_range</Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'የተመዘገበበት ቀን' : 'Reg. Date'}
                           </span>
                           <span className={`text-xs font-black font-mono ${activeTheme.headingText} block truncate`}>
@@ -1609,12 +1609,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 2, Col 2: Permit Status */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">
                             {isApproved ? 'check_circle' : isExpired || isPending ? 'warning' : 'cancel'}
                           </Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}
                           </span>
                           <span className={`text-xs font-black block truncate ${
@@ -1638,10 +1638,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 3, Col 1: Sub-City */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">location_city</Icon>
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">location_city</Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}
                           </span>
                           <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
@@ -1653,10 +1653,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 3, Col 2: Phone Number */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">call</Icon>
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">call</Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}
                           </span>
                           <span className={`text-xs font-black font-mono ${activeTheme.headingText} block truncate`}>
@@ -1668,10 +1668,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 4, Col 1: Blood Group */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">bloodtype</Icon>
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">bloodtype</Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'የደም ዓይነት' : 'Blood Group'}
                           </span>
                           <span className="text-xs font-black text-red-700 dark:text-red-400 block truncate">
@@ -1683,12 +1683,12 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       {/* Pair 4, Col 2: Vehicle Category / Fuel */}
                       <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
                         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">
+                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">
                             {scannedRegResult.vehicleCategory === 'electric' ? 'electric_moped' : 'local_gas_station'}
                           </Icon>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                             {isAmharic ? 'የሞተር ምድብ' : 'Vehicle Type'}
                           </span>
                           <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
@@ -1732,10 +1732,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                               title={dlPhoto ? (isAmharic ? 'መንጃ ፍቃድ ለማየት ይጫኑ' : 'Click to view driving license') : undefined}
                             >
                               <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                                <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">card_membership</Icon>
+                                <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">card_membership</Icon>
                               </div>
                               <div className="min-w-0 flex-1">
-                                <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                                <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                                   {isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
                                 </span>
                                 <span className={`text-xs font-black block truncate flex items-center gap-1 ${
@@ -1744,7 +1744,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                   {dlPhoto ? (
                                     <>
                                       <span>{isAmharic ? 'የተያያዘ (ይመልከቱ)' : 'Attached (View)'}</span>
-                                      <Icon className="material-symbols-outlined text-[13px]">visibility</Icon>
+                                      <Icon className="material-symbols-outlined text-13">visibility</Icon>
                                     </>
                                   ) : (
                                     isAmharic ? 'ያልተያያዘ' : 'Not Attached'
@@ -1771,10 +1771,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                               title={ppPhoto ? (isAmharic ? 'የፖሊስ ፈቃድ ለማየት ይጫኑ' : 'Click to view police permit') : undefined}
                             >
                               <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                                <Icon className="material-symbols-outlined text-[15px] sm:text-[16px]">local_police</Icon>
+                                <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">local_police</Icon>
                               </div>
                               <div className="min-w-0 flex-1">
-                                <span className={`text-[10px] ${activeTheme.labelText} font-extrabold block truncate`}>
+                                <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
                                   {isAmharic ? 'የፖሊስ ፈቃድ' : 'Police Permit'}
                                 </span>
                                 <span className={`text-xs font-black block truncate flex items-center gap-1 ${
@@ -1783,7 +1783,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                   {ppPhoto ? (
                                     <>
                                       <span>{isAmharic ? 'የተሰጠ (ይመልከቱ)' : 'Valid (View)'}</span>
-                                      <Icon className="material-symbols-outlined text-[13px]">visibility</Icon>
+                                      <Icon className="material-symbols-outlined text-13">visibility</Icon>
                                     </>
                                   ) : (
                                     isAmharic ? 'ያልተያያዘ' : 'Not Attached'
@@ -1798,7 +1798,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   </div>
 
                   {/* Municipal Copyright Footer matching Attachment Screenshots */}
-                  <div className="pt-3 pb-1 text-center text-[10px] sm:text-[11px] font-medium opacity-80">
+                  <div className="pt-3 pb-1 text-center text-2xs sm:text-11 font-medium opacity-80">
                     <p className={activeTheme.footerText}>
                       {isAmharic
                         ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።'
@@ -1814,9 +1814,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       whileTap={TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={handleRescan}
-                      className="flex-1 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer border border-outline-variant/60 shadow-xs touch-manipulation"
+                      className="flex-1 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-black min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer border border-outline-variant/60 shadow-xs touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[20px]">qr_code_scanner</Icon>
+                      <Icon className="material-symbols-outlined text-icon-lg">qr_code_scanner</Icon>
                       <span>{isAmharic ? 'ሌላ QR ኮድ ቃኝ' : 'Scan Next QR'}</span>
                     </motion.button>
 
@@ -1826,9 +1826,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       whileTap={SUBTLE_TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={() => setShowNotesSection(!showNotesSection)}
-                      className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-black min-h-[48px] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs touch-manipulation"
+                      className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-black min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
+                      <Icon className="material-symbols-outlined text-icon-lg">edit_note</Icon>
                       <span>{isAmharic ? 'ማስታወሻ ጨምር' : 'Add Notes'}</span>
                     </motion.button>
                   </div>
@@ -1849,15 +1849,15 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         <div className="p-3.5 sm:p-4 pb-[max(0.875rem,env(safe-area-inset-bottom,12px))] space-y-2.5">
                           <div className="flex items-center justify-between">
                             <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
-                              <Icon className="material-symbols-outlined text-[18px] text-primary">edit_note</Icon>
+                              <Icon className="material-symbols-outlined text-icon-md text-primary">edit_note</Icon>
                               <span>{isAmharic ? 'የተቆጣጣሪ ማስታወሻ' : 'Inspection Notes'}</span>
                             </label>
                             <button
                               type="button"
                               onClick={() => setShowNotesSection(false)}
-                              className="min-h-[40px] text-secondary hover:text-on-surface px-2.5 py-1 rounded-lg hover:bg-surface-container text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
+                              className="min-h-[var(--ui-control-h-md)] text-secondary hover:text-on-surface px-2.5 py-1 rounded-lg hover:bg-surface-container text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
                             >
-                              <Icon className="material-symbols-outlined text-[18px]">keyboard_arrow_down</Icon>
+                              <Icon className="material-symbols-outlined text-icon-md">keyboard_arrow_down</Icon>
                               <span>{isAmharic ? 'ደብቅ' : 'Hide'}</span>
                             </button>
                           </div>
@@ -1889,9 +1889,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                 onClose();
                                 handleRescan();
                               }}
-                              className="w-full sm:w-auto min-h-[44px] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-md transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
+                              className="w-full sm:w-auto min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-md transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
                             >
-                              <Icon className="material-symbols-outlined text-[18px] shrink-0">check_circle</Icon>
+                              <Icon className="material-symbols-outlined text-icon-md shrink-0">check_circle</Icon>
                               <span>{isAmharic ? 'መዝግብ' : 'Record'}</span>
                             </motion.button>
                           </div>

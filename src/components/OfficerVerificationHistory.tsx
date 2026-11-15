@@ -16,6 +16,7 @@ import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { SharedScannerModal } from './SharedScannerModal';
 import { SmartImage } from './SmartImage';
 import { SelectField } from './ui/StreamlinedUI';
+import { WorkspaceSideDrawer, WorkspaceDrawerSection } from './ui/AssocDesignSystem';
 
 interface OfficerVerificationHistoryProps {
   lang: Language;
@@ -347,14 +348,14 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
       case 'verified':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[14px] text-emerald-700 dark:text-emerald-300 shrink-0">verified</Icon>
+            <Icon className="material-symbols-outlined text-icon-xs text-emerald-700 dark:text-emerald-300 shrink-0">verified</Icon>
             <span>{isAmharic ? 'የተረጋገጠ' : 'Verified'}</span>
           </span>
         );
       case 'warning':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[14px] text-amber-700 dark:text-amber-400 shrink-0">priority_high</Icon>
+            <Icon className="material-symbols-outlined text-icon-xs text-amber-700 dark:text-amber-400 shrink-0">priority_high</Icon>
             <span>{isAmharic ? 'ማስጠንቀቂያ' : 'Warning'}</span>
           </span>
         );
@@ -362,7 +363,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-700 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[14px] text-rose-700 dark:text-rose-300 shrink-0">cancel</Icon>
+            <Icon className="material-symbols-outlined text-icon-xs text-rose-700 dark:text-rose-300 shrink-0">cancel</Icon>
             <span>{isAmharic ? 'የተከለከለ' : 'Flagged'}</span>
           </span>
         );
@@ -375,21 +376,21 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
       case 'approved':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-600 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">check_circle</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">check_circle</Icon>
             <span>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-600 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">print</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">print</Icon>
             <span>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">local_printshop</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">local_printshop</Icon>
             <span>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
         );
@@ -397,14 +398,14 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
       case 'expired':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-600 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">cancel</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">cancel</Icon>
             <span>{status === 'expired' ? (isAmharic ? 'ያልተከፈለበት' : 'Over due') : (isAmharic ? 'ውድቅ' : 'Rejected')}</span>
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-2xs whitespace-nowrap">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">schedule</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">schedule</Icon>
             <span>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
         );
@@ -419,13 +420,13 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-5 w-full max-w-full min-w-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">analytics</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg">analytics</Icon>
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
                 <span>{isAmharic ? 'የትራፊክ ፍተሻና የመስክ ቁጥጥር ሪፖርት' : 'Traffic Enforcement Inspection Report'}</span>
               </h2>
-              <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
+              <p className="text-11 text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
                 {isAmharic ? 'የመንገድ ላይ የፍተሻ ታሪክ እና የኦፊሰሮች ማረጋገጫ መዝገብ' : 'Roadside checkpoint inspection history & officer log'}
               </p>
             </div>
@@ -439,9 +440,9 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={() => setShowInlineScanner(true)}
-                className="inline-flex items-center justify-center min-h-[44px] sm:min-h-[34px] gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold transition-colors shadow-2xs cursor-pointer touch-manipulation"
+                className="inline-flex items-center justify-center min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold transition-colors shadow-2xs cursor-pointer touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[16px]">qr_code_scanner</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm">qr_code_scanner</Icon>
                 <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch Scanner'}</span>
               </motion.button>
             )}
@@ -460,7 +461,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
             >
               <div className="flex justify-between items-center pb-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                 <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-primary text-[20px]">qr_code_scanner</Icon>
+                  <Icon className="material-symbols-outlined text-primary text-icon-lg">qr_code_scanner</Icon>
                   <h3 className="font-bold text-sm text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የቀጥታ ማረጋገጫ ፍተሻ ካሜራ' : 'Live Checkpoint Verification Scanner'}
                   </h3>
@@ -468,9 +469,9 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                 <button
                   type="button"
                   onClick={() => setShowInlineScanner(false)}
-                  className="min-h-[44px] sm:min-h-[34px] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#24303F] text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer touch-manipulation"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-[#24303F] text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                  <Icon className="material-symbols-outlined text-icon-md">close</Icon>
                   <span>{isAmharic ? 'ዝጋ' : 'Close'}</span>
                 </button>
               </div>
@@ -495,7 +496,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
             <div className="flex items-center gap-2 flex-1 min-w-0">
               <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
                 <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-                  <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">search</Icon>
                 </div>
                 <input
                   type="text"
@@ -516,7 +517,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                     }}
                     className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
                   >
-                    <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                    <Icon className="material-symbols-outlined text-icon-sm">close</Icon>
                   </button>
                 )}
               </div>
@@ -532,7 +533,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                 }`}
                 title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
               >
-                <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm">tune</Icon>
                 <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
                 {hasActiveSecondaryFilters && (
                   <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
@@ -558,7 +559,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         setStatusFilter(tab.id);
                         setCurrentPage(1);
                       }}
-                      className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
+                      className={`h-7 px-2 sm:px-2.5 rounded text-11 font-bold transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none ${
                         isActive
                           ? 'bg-white dark:bg-primary text-primary dark:text-on-primary shadow-2xs font-extrabold'
                           : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
@@ -566,7 +567,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                     >
                       <span>{tab.label}</span>
                       <span
-                        className={`text-[10px] px-1 rounded-full font-mono font-bold tabular-nums ${
+                        className={`text-2xs px-1 rounded-full font-mono font-bold tabular-nums ${
                           isActive
                             ? 'bg-primary/10 text-primary dark:bg-black/15 dark:text-on-primary'
                             : 'bg-slate-200 dark:bg-slate-700 text-[#64748B] dark:text-[#8A99AD]'
@@ -589,12 +590,12 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
                 transition={POPOVER_TRANSITION}
-                className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C]"
+                className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47]"
               >
               <div className="flex flex-wrap items-center gap-2.5 text-xs">
                 {/* Category Dropdown */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                  <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider">
                     {isAmharic ? 'የሞተር ዓይነት:' : 'Category:'}
                   </span>
                   <select
@@ -603,7 +604,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                       setCategoryFilter(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="h-7 px-2 rounded border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white text-xs font-medium focus:border-primary outline-none cursor-pointer"
+                    className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary outline-none cursor-pointer"
                   >
                     <option value="all">{isAmharic ? 'ሁሉም አይነቶች' : 'All Vehicle Types'}</option>
                     <option value="electric">{isAmharic ? 'ኤሌክትሪክ (EV)' : 'Electric (EV)'}</option>
@@ -613,13 +614,13 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
 
                 {/* Sort Field */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                  <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider">
                     {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
                   </span>
                   <select
                     value={sortField}
                     onChange={(e) => setSortField(e.target.value as any)}
-                    className="h-7 px-2 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-xs text-[#1C2434] dark:text-white focus:outline-none focus:border-primary font-medium"
+                    className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
                   >
                     <option value="date">{isAmharic ? 'በፍተሻ ቀን' : 'Scan Date'}</option>
                     <option value="plate">{isAmharic ? 'በሰሌዳ ቁጥር' : 'Plate No'}</option>
@@ -629,10 +630,10 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   <button
                     type="button"
                     onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                    className="h-7 w-7 flex items-center justify-center bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                    className="h-8 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
                     title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
                   >
-                    <Icon className="material-symbols-outlined text-[15px]">
+                    <Icon className="material-symbols-outlined text-15">
                       {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
                     </Icon>
                   </button>
@@ -652,7 +653,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                     }}
                     className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
                   >
-                    <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                    <Icon className="material-symbols-outlined text-icon-xs">restart_alt</Icon>
                     <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
                   </button>
                 )}
@@ -665,7 +666,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         {/* TABLE CONTENT / EMPTY STATE */}
         {filteredLogs.length === 0 ? (
           <div className="p-10 text-center space-y-2.5">
-            <Icon className="material-symbols-outlined text-[#64748B] dark:text-[#8A99AD] text-[44px]">manage_search</Icon>
+            <Icon className="material-symbols-outlined text-[#64748B] dark:text-[#8A99AD] text-[length:calc(44px*var(--ui-scale))]">manage_search</Icon>
             <p className="font-bold text-sm text-[#1C2434] dark:text-white">
               {isAmharic ? 'ምንም የፍተሻ ታሪክ መዝገብ አልተገኘም' : 'No verification history records found.'}
             </p>
@@ -759,7 +760,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-semibold transition-all shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-white bg-white dark:bg-[#1C2434] hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] cursor-pointer active:scale-95"
                             title={isAmharic ? 'ሙሉ መረጃ እይ' : 'View Details'}
                           >
-                            <Icon className="material-symbols-outlined text-[15px] text-primary">visibility</Icon>
+                            <Icon className="material-symbols-outlined text-15 text-primary">visibility</Icon>
                             <span>{isAmharic ? 'ዝርዝር' : 'Details'}</span>
                           </button>
                         </td>
@@ -797,7 +798,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                             ? 'bg-amber-600'
                             : 'bg-red-600'
                         }`}>
-                          <Icon className="material-symbols-outlined text-[18px]">
+                          <Icon className="material-symbols-outlined text-icon-md">
                             {log.verificationStatus === 'verified'
                               ? 'verified'
                               : log.verificationStatus === 'warning'
@@ -812,14 +813,14 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                             <span className="font-mono font-extrabold text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 shrink-0">
                               {log.plateNumber || '—'}
                             </span>
-                            <span className="font-bold text-xs text-[#1C2434] dark:text-white truncate max-w-[130px]">
+                            <span className="font-bold text-xs text-[#1C2434] dark:text-white truncate max-w-[calc(130px*var(--ui-scale))]">
                               {log.fullName || '—'}
                             </span>
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD]">
+                            <span className="text-2xs text-[#64748B] dark:text-[#8A99AD]">
                               ({log.vehicleCategory === 'electric' ? 'EV' : 'Gas'})
                             </span>
                           </div>
-                          <div className="text-[10px] text-[#64748B] dark:text-[#8A99AD] flex items-center gap-1.5">
+                          <div className="text-2xs text-[#64748B] dark:text-[#8A99AD] flex items-center gap-1.5">
                             <span>{log.scannedAt ? formatEthiopianDateTime(log.scannedAt, isAmharic ? 'am' : 'en') : '—'}</span>
                             <span>•</span>
                             <span className="truncate">{log.locationName || 'Checkpoint'}</span>
@@ -833,7 +834,7 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         aria-label={isExpanded ? (isAmharic ? 'ዝጋ' : 'Collapse') : (isAmharic ? 'ዘርጋ' : 'Expand')}
                         className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0 touch-manipulation"
                       >
-                        <Icon className="material-symbols-outlined text-[18px]">
+                        <Icon className="material-symbols-outlined text-icon-md">
                           {isExpanded ? 'expand_less' : 'expand_more'}
                         </Icon>
                       </button>
@@ -851,19 +852,19 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                         >
                           <div className="grid grid-cols-2 gap-2 bg-[#F7F9FC] dark:bg-[#1C2434] p-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47]">
                             <div>
-                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</span>
+                              <span className="text-2xs text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'ስልክ ቁጥር' : 'Phone'}</span>
                               <span className="font-mono text-xs text-[#1C2434] dark:text-white font-bold">{log.phone || '—'}</span>
                             </div>
                             <div>
-                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የተቆጣጣሪው ባጅ' : 'Officer Badge'}</span>
+                              <span className="text-2xs text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የተቆጣጣሪው ባጅ' : 'Officer Badge'}</span>
                               <span className="font-mono text-xs text-[#1C2434] dark:text-white font-bold">{log.officerBadgeId || userBadgeId || 'OFF-8842'}</span>
                             </div>
                             <div className="col-span-2">
-                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የፍተሻ ማስታወሻ' : 'Officer Notes'}</span>
+                              <span className="text-2xs text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የፍተሻ ማስታወሻ' : 'Officer Notes'}</span>
                               <span className="text-xs text-slate-800 dark:text-slate-200 italic">{log.officerNotes || (isAmharic ? 'ምንም ተጨማሪ ማስታወሻ አልተያያዘም' : 'No officer notes recorded.')}</span>
                             </div>
                             <div className="flex items-center gap-1.5 pt-1">
-                              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold">{isAmharic ? 'የፍተሻ ውጤት:' : 'Result:'}</span>
+                              <span className="text-2xs text-[#64748B] dark:text-[#8A99AD] font-semibold">{isAmharic ? 'የፍተሻ ውጤት:' : 'Result:'}</span>
                               {renderVerificationBadge(log.verificationStatus)}
                             </div>
 
@@ -879,9 +880,9 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                                 e.stopPropagation();
                                 setSelectedLogForDetails(log);
                               }}
-                              className="w-full min-h-[44px] py-2 bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer touch-manipulation"
+                              className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2 bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer touch-manipulation"
                             >
-                              <Icon className="material-symbols-outlined text-[16px]">visibility</Icon>
+                              <Icon className="material-symbols-outlined text-icon-sm">visibility</Icon>
                               <span>{isAmharic ? 'ሙሉ የተፈተሸ ተሽከርካሪ መረጃ እይ' : 'View Scanned Vehicle'}</span>
                             </motion.button>
                           </div>
@@ -921,9 +922,9 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   type="button"
                   disabled={activePageNum <= 1}
                   onClick={() => handlePageChange(activePageNum - 1)}
-                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-xs)] px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">chevron_left</Icon>
                   <span>{isAmharic ? 'ቀዳሚ' : 'Prev'}</span>
                 </button>
 
@@ -935,10 +936,10 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
                   type="button"
                   disabled={activePageNum >= totalPages}
                   onClick={() => handlePageChange(activePageNum + 1)}
-                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-xs)] px-3 py-1.5 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] disabled:opacity-40 disabled:cursor-not-allowed font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
                 >
                   <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
-                  <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">chevron_right</Icon>
                 </button>
               </div>
             </div>
@@ -946,173 +947,110 @@ export const OfficerVerificationHistory: React.FC<OfficerVerificationHistoryProp
         )}
       </div>
 
-      {/* MODAL 1: DETAILED SCANNED VEHICLE INSPECTION (SWIPE-TO-DISMISS DRAWER) */}
-      <AnimatePresence>
+      {/* MODAL 1: DETAILED SCANNED VEHICLE INSPECTION (WORKSPACE SIDE DRAWER) */}
+      <WorkspaceSideDrawer
+        isOpen={!!(selectedLogForDetails && selectedRegForCard)}
+        onClose={() => setSelectedLogForDetails(null)}
+        icon="analytics"
+        closeLabel={isAmharic ? 'ዝጋ' : 'Close Details'}
+        title={selectedLogForDetails?.fullName || '—'}
+      >
         {selectedLogForDetails && selectedRegForCard && (
-          <div className="fixed inset-0 z-50 flex justify-end">
-            {/* Backdrop */}
-            <motion.div
-              variants={BACKDROP_VARIANTS}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={POPOVER_TRANSITION}
-              onClick={() => setSelectedLogForDetails(null)}
-              className="fixed inset-0 bg-slate-950/40 dark:bg-black/60 backdrop-blur-xs"
-            />
-
-            {/* Side-Sheet Drawer Content (swipe right to dismiss on touch devices) */}
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={SHEET_SPRING}
-              drag="x"
-              dragConstraints={{ left: 0 }}
-              dragElastic={{ left: 0, right: 0.35 }}
-              onDragEnd={(_, info) => {
-                if (info.offset.x > 100 || info.velocity.x > 450) {
-                  setSelectedLogForDetails(null);
-                }
-              }}
-              className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-300 dark:border-slate-800 shadow-2xl z-10 flex flex-col h-full overflow-hidden"
+          <div className="space-y-4">
+            {/* Officer Audit Badge */}
+            <WorkspaceDrawerSection
+              title={isAmharic ? 'የፍተሻ ጣቢያ እና ማረጋገጫ' : 'Station & Audit Status'}
+              icon="location_on"
             >
-              {/* Drawer Header */}
-              <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between shrink-0">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0 text-primary">
-                    <Icon name="analytics" size={24} />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="space-y-0.5">
+                    <p className="font-extrabold text-[#1C2434] dark:text-white flex items-center gap-1.5">
+                      <Icon className="material-symbols-outlined text-icon-sm text-primary">location_on</Icon>
+                      <span>{selectedLogForDetails.locationName || 'Checkpoint Station'}</span>
+                    </p>
+                    <p className="text-[#64748B] dark:text-[#8A99AD] text-11">
+                      {isAmharic ? 'የተፈተሸበት ቀን፡' : 'Scanned At:'} <span className="font-mono font-bold">{formatEthiopianDateTime(selectedLogForDetails.scannedAt, isAmharic ? 'am' : 'en')}</span>
+                    </p>
                   </div>
-                  <div className="space-y-0.5 min-w-0">
-                    <h3 className="text-sm sm:text-base font-black tracking-wide truncate flex items-center gap-2">
-                      <span>{isAmharic ? 'የተፈተሸ ተሽከርካሪ ማረጋገጫ ዝርዝር' : 'Scanned Inspection Audit'}</span>
-                    </h3>
-                    <p className="text-xs text-slate-300 font-medium truncate">
+                  <div>
+                    {renderVerificationBadge(selectedLogForDetails.verificationStatus)}
+                  </div>
+                </div>
+
+                {/* Driver Portrait Photo & ID Banner */}
+                <div className="pt-2.5 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex items-center gap-3.5">
+                  <div
+                    onClick={() => {
+                      const imgUrl = selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto;
+                      if (imgUrl) {
+                        setZoomedImage({
+                          url: imgUrl,
+                          title: `${selectedLogForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Driver Portrait'}`
+                        });
+                      }
+                    }}
+                    className="relative w-16 h-20 rounded-md overflow-hidden border border-primary/40 shadow-xs shrink-0 bg-slate-200 dark:bg-slate-700 cursor-pointer group hover:opacity-90 transition-all"
+                    title={isAmharic ? 'ለማጉላት ይጫኑ' : 'Click to Zoom Photo'}
+                  >
+                    <SmartImage
+                      src={selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto}
+                      alt={selectedLogForDetails.fullName}
+                      fallbackIcon="person"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <Icon className="material-symbols-outlined text-icon-md">zoom_in</Icon>
+                    </div>
+                  </div>
+                  <div className="space-y-1 text-xs min-w-0">
+                    <span className="inline-flex items-center gap-1 text-2xs font-bold text-primary bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-md">
+                      <Icon className="material-symbols-outlined text-icon-xs">badge</Icon>
+                      <span>{isAmharic ? 'የባለቤት መታወቂያ ፎቶ' : 'Driver / Owner ID Portrait'}</span>
+                    </span>
+                    <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white leading-tight truncate">
                       {selectedLogForDetails.fullName}
+                    </h4>
+                    <p className="text-11 text-[#64748B] dark:text-[#8A99AD] font-medium">
+                      {isAmharic ? 'ሰሌዳ:' : 'Plate:'} <span className="font-mono font-bold text-primary">{selectedLogForDetails.plateNumber}</span> • {selectedLogForDetails.phone}
+                    </p>
+                    <p className="text-2xs text-[#64748B] dark:text-[#8A99AD] font-medium">
+                      {isAmharic ? 'የተቆጣጣሪው ባጅ:' : 'Inspector Officer:'} <span className="font-mono font-bold">{selectedLogForDetails.officerBadgeId || userBadgeId || 'OFF-8842'}</span>
                     </p>
                   </div>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  {selectedLogForDetails.plateNumber && (
-                    <span className="hidden sm:inline-block px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono font-bold text-xs text-slate-100">
-                      {selectedLogForDetails.plateNumber}
-                    </span>
-                  )}
-                  <motion.button
-                    type="button"
-                    data-motion-control="true"
-                    whileTap={TAP_SCALE}
-                    transition={TACTILE_SPRING}
-                    onClick={() => setSelectedLogForDetails(null)}
-                    aria-label={isAmharic ? 'ዝጋ' : 'Close'}
-                    className="w-11 h-11 sm:w-9 sm:h-9 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 touch-manipulation"
-                  >
-                    <Icon className="material-symbols-outlined text-[18px]">close</Icon>
-                  </motion.button>
-                </div>
               </div>
+            </WorkspaceDrawerSection>
 
-              {/* Drawer Body: Scrollable */}
-              <div className="p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 text-xs pb-[max(1rem,env(safe-area-inset-bottom,16px))]">
-                {/* Officer Audit Badge */}
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="space-y-0.5">
-                      <p className="font-extrabold text-[#1C2434] dark:text-white flex items-center gap-1.5">
-                        <Icon className="material-symbols-outlined text-[16px] text-primary">location_on</Icon>
-                        <span>{selectedLogForDetails.locationName || 'Checkpoint Station'}</span>
-                      </p>
-                      <p className="text-[#64748B] dark:text-[#8A99AD] text-[11px]">
-                        {isAmharic ? 'የተፈተሸበት ቀን፡' : 'Scanned At:'} <span className="font-mono font-bold">{formatEthiopianDateTime(selectedLogForDetails.scannedAt, isAmharic ? 'am' : 'en')}</span>
-                      </p>
-                    </div>
-                    <div>
-                      {renderVerificationBadge(selectedLogForDetails.verificationStatus)}
-                    </div>
-                  </div>
-
-                  {/* Driver Portrait Photo & ID Banner */}
-                  <div className="pt-2.5 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3.5">
-                    <div
-                      onClick={() => {
-                        const imgUrl = selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto;
-                        if (imgUrl) {
-                          setZoomedImage({
-                            url: imgUrl,
-                            title: `${selectedLogForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Driver Portrait'}`
-                          });
-                        }
-                      }}
-                      className="relative w-16 h-20 rounded-md overflow-hidden border border-primary/40 shadow-xs shrink-0 bg-slate-200 dark:bg-slate-700 cursor-pointer group hover:opacity-90 transition-all"
-                      title={isAmharic ? 'ለማጉላት ይጫኑ' : 'Click to Zoom Photo'}
-                    >
-                      <SmartImage
-                        src={selectedLogForDetails.userPortraitPhoto || selectedLogForDetails.nationalIdPhoto}
-                        alt={selectedLogForDetails.fullName}
-                        fallbackIcon="person"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                        <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
-                      </div>
-                    </div>
-                    <div className="space-y-1 text-xs min-w-0">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-md">
-                        <Icon className="material-symbols-outlined text-[14px]">badge</Icon>
-                        <span>{isAmharic ? 'የባለቤት መታወቂያ ፎቶ' : 'Driver / Owner ID Portrait'}</span>
-                      </span>
-                      <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white leading-tight truncate">
-                        {selectedLogForDetails.fullName}
-                      </h4>
-                      <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium">
-                        {isAmharic ? 'ሰሌዳ:' : 'Plate:'} <span className="font-mono font-bold text-primary">{selectedLogForDetails.plateNumber}</span> • {selectedLogForDetails.phone}
-                      </p>
-                      <p className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-medium">
-                        {isAmharic ? 'የተቆጣጣሪው ባጅ:' : 'Inspector Officer:'} <span className="font-mono font-bold">{selectedLogForDetails.officerBadgeId || userBadgeId || 'OFF-8842'}</span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Digital Permit QR Badge Preview */}
-                <div className="w-full">
-                  <ZoomableDocumentContainer
-                    lang={lang}
-                    userRole={userRole}
-                    title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
-                    onClose={() => setSelectedLogForDetails(null)}
-                  >
-                    <QRCodeCard registration={selectedRegForCard} lang={lang} />
-                  </ZoomableDocumentContainer>
-                </div>
-
-                {/* Officer Notes */}
-                {selectedLogForDetails.officerNotes && (
-                  <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-xs space-y-1 border border-slate-200 dark:border-slate-700">
-                    <p className="font-bold text-[#1C2434] dark:text-white">{isAmharic ? 'የተቆጣጣሪው ማረጋገጫ ማስታወሻ:' : 'Officer Field Verification Notes:'}</p>
-                    <p className="text-[#64748B] dark:text-[#8A99AD] italic">"{selectedLogForDetails.officerNotes}"</p>
-                  </div>
-                )}
-
-                {/* Drawer Footer Close Action */}
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-                  <motion.button
-                    type="button"
-                    data-motion-control="true"
-                    whileTap={TAP_SCALE}
-                    transition={TACTILE_SPRING}
-                    onClick={() => setSelectedLogForDetails(null)}
-                    className="w-full min-h-[44px] bg-primary text-on-primary font-bold py-2.5 rounded-lg text-xs cursor-pointer hover:bg-primary-hover transition-colors shadow-xs touch-manipulation"
-                  >
-                    {isAmharic ? 'ዝጋ' : 'Close Details'}
-                  </motion.button>
-                </div>
+            {/* Digital Permit QR Badge Preview */}
+            <WorkspaceDrawerSection
+              title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
+              icon="qr_code_2"
+            >
+              <div className="w-full">
+                <ZoomableDocumentContainer
+                  lang={lang}
+                  userRole={userRole}
+                  title={isAmharic ? 'የባለቤትነት QR መታወቂያ' : 'Official Digital Permit & QR Badge'}
+                  onClose={() => setSelectedLogForDetails(null)}
+                >
+                  <QRCodeCard registration={selectedRegForCard} lang={lang} />
+                </ZoomableDocumentContainer>
               </div>
-            </motion.div>
+            </WorkspaceDrawerSection>
+
+            {/* Officer Notes */}
+            {selectedLogForDetails.officerNotes && (
+              <WorkspaceDrawerSection
+                title={isAmharic ? 'የተቆጣጣሪው ማረጋገጫ ማስታወሻ' : 'Officer Field Verification Notes'}
+                icon="note"
+              >
+                <p className="text-[#64748B] dark:text-[#8A99AD] italic text-xs">"{selectedLogForDetails.officerNotes}"</p>
+              </WorkspaceDrawerSection>
+            )}
           </div>
         )}
-      </AnimatePresence>
+      </WorkspaceSideDrawer>
 
       {/* LIGHTBOX MODAL FOR EXPANDED DOCUMENT INSPECTION */}
       <AnimatePresence>

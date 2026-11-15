@@ -166,19 +166,19 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setIsOpen((prev) => !prev)}
-        className={`flex items-center justify-between gap-2 px-3 min-h-[44px] sm:min-h-[38px] bg-white dark:bg-[#1C2434] border rounded-lg text-xs font-bold transition-colors shadow-2xs cursor-pointer ${
+        className={`flex items-center justify-between gap-2 px-3 min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] bg-white dark:bg-[#1C2434] border rounded-lg text-xs font-bold transition-colors shadow-2xs cursor-pointer ${
           isOpen
             ? 'border-primary ring-2 ring-primary/20 text-primary'
             : 'border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-white hover:border-primary/50'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span className="flex items-center gap-1.5 truncate">
-          <Icon className="material-symbols-outlined text-[15px] text-primary shrink-0">
+          <Icon className="material-symbols-outlined text-15 text-primary shrink-0">
             calendar_month
           </Icon>
           <span className="truncate">{formattedDisplay}</span>
         </span>
-        <Icon className={`material-symbols-outlined text-[15px] text-slate-400 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}>
+        <Icon className={`material-symbols-outlined text-15 text-slate-400 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}>
           expand_more
         </Icon>
       </button>
@@ -202,7 +202,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
                 className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-600 dark:text-slate-300 transition-colors cursor-pointer shrink-0"
                 title={isAmharic ? 'ያለፈው ወር' : 'Previous Month'}
               >
-                <Icon className="material-symbols-outlined text-[18px]">chevron_left</Icon>
+                <Icon className="material-symbols-outlined text-icon-md">chevron_left</Icon>
               </button>
 
               <div className="flex items-center gap-1.5 min-w-0">
@@ -239,7 +239,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
                 className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-600 dark:text-slate-300 transition-colors cursor-pointer shrink-0"
                 title={isAmharic ? 'ቀጣይ ወር' : 'Next Month'}
               >
-                <Icon className="material-symbols-outlined text-[18px]">chevron_right</Icon>
+                <Icon className="material-symbols-outlined text-icon-md">chevron_right</Icon>
               </button>
             </div>
 
@@ -248,7 +248,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
               {ETHIOPIAN_WEEKDAYS.map((w) => (
                 <span
                   key={w.id}
-                  className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-tight"
+                  className="text-2xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-tight"
                   title={isAmharic ? w.am : w.en}
                 >
                   {isAmharic ? w.am.slice(0, 2) : w.en.slice(0, 2)}
@@ -301,20 +301,20 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
             </div>
 
             {/* Quick Footer Action: Jump to Today */}
-            <div className="mt-2.5 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between text-[11px]">
+            <div className="mt-2.5 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between text-11">
               <button
                 type="button"
                 onClick={handleSelectToday}
-                className="text-primary hover:underline flex items-center gap-1 min-h-[36px] px-2 rounded-md hover:bg-primary/5 cursor-pointer font-bold"
+                className="text-primary hover:underline flex items-center gap-1 min-h-[var(--ui-control-h-sm)] px-2 rounded-md hover:bg-primary/5 cursor-pointer font-bold"
               >
-                <Icon className="material-symbols-outlined text-[14px]">today</Icon>
+                <Icon className="material-symbols-outlined text-icon-xs">today</Icon>
                 <span>{isAmharic ? 'ዛሬ (E.C.)' : 'Today (E.C.)'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-bold cursor-pointer min-h-[36px] px-2.5 rounded-md hover:bg-slate-100 dark:hover:bg-[#1C2434]"
+                className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-bold cursor-pointer min-h-[var(--ui-control-h-sm)] px-2.5 rounded-md hover:bg-slate-100 dark:hover:bg-[#1C2434]"
               >
                 {isAmharic ? 'ዝጋ' : 'Close'}
               </button>

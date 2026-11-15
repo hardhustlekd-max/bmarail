@@ -661,9 +661,9 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             whileTap={TAP_SCALE}
             transition={TACTILE_SPRING}
             onClick={() => setShowNewRoleModal(true)}
-            className="min-h-[44px] sm:min-h-[36px] px-3.5 py-2 sm:py-1.5 bg-[#0f172a] dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer border border-transparent dark:border-slate-700 touch-manipulation"
+            className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-3.5 py-2 sm:py-1.5 bg-[#0f172a] dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer border border-transparent dark:border-slate-700 touch-manipulation"
           >
-            <Icon className="material-symbols-outlined text-[16px]">add</Icon>
+            <Icon className="material-symbols-outlined text-icon-sm">add</Icon>
             <span>{isAmharic ? 'አዲስ ሚና' : 'Add Role'}</span>
           </motion.button>
         </div>
@@ -680,7 +680,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 whileTap={SUBTLE_TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={() => setSelectedRoleId(r.id)}
-                className={`min-h-[54px] p-3 rounded-xl border text-left transition-colors cursor-pointer relative flex flex-col justify-between gap-2 touch-manipulation ${
+                className={`min-h-[calc(54px*var(--ui-scale))] p-3 rounded-xl border text-left transition-colors cursor-pointer relative flex flex-col justify-between gap-2 touch-manipulation ${
                   isSelected
                     ? 'bg-surface-container-lowest border-[#0f172a] dark:border-blue-400 ring-2 ring-[#0f172a]/20 dark:ring-blue-400/20 shadow-xs'
                     : 'bg-surface border-outline-variant/60 hover:border-slate-400 hover:bg-surface-container-lowest'
@@ -688,7 +688,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${r.avatarBg}`} />
-                  <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                  <span className={`text-2xs font-extrabold px-2 py-0.5 rounded-full ${
                     isSelected ? 'bg-[#0f172a] dark:bg-primary text-white dark:text-on-primary' : 'bg-surface-container text-secondary'
                   }`}>
                     {r.userCountText}
@@ -699,7 +699,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                   <div className="text-xs font-black text-on-surface line-clamp-1">
                     {r.titleAm}
                   </div>
-                  <div className="text-[10px] font-medium text-secondary line-clamp-1">
+                  <div className="text-2xs font-medium text-secondary line-clamp-1">
                     {r.titleEn}
                   </div>
                 </div>
@@ -714,9 +714,9 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
         {/* Header & Role Bar */}
         <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#1C2434]">
           <div className="flex items-center gap-3">
-            <Icon className="material-symbols-outlined text-[22px] text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
+            <Icon className="material-symbols-outlined text-icon-xl text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
             <div>
-              <span className="text-[11px] font-bold text-secondary block">
+              <span className="text-11 font-bold text-secondary block">
                 {isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance'}
               </span>
               <span className="text-sm font-black text-on-surface">
@@ -767,7 +767,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               {/* Module Header Bar */}
               <div className="p-3.5 px-4 border-b border-outline-variant/40 bg-surface-container/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">{moduleObj.icon}</Icon>
+                  <Icon className="material-symbols-outlined text-icon-xl text-primary shrink-0">{moduleObj.icon}</Icon>
                   <div className="min-w-0">
                     <h3 className="text-xs font-black text-on-surface  tracking-wider">
                       {isAmharic ? moduleObj.titleAm : moduleObj.titleEn}
@@ -780,7 +780,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                   <button
                     type="button"
                     onClick={() => handleSetModuleMasterPermission(moduleObj, 'allow')}
-                    className={`px-2.5 py-1 rounded text-[11px] font-black transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 rounded text-11 font-black transition-all cursor-pointer ${
                       masterState === 'allow'
                         ? 'bg-emerald-600 text-white'
                         : 'text-slate-600 dark:text-slate-300 hover:bg-surface-container-high'
@@ -792,7 +792,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                   <button
                     type="button"
                     onClick={() => handleSetModuleMasterPermission(moduleObj, 'view_only')}
-                    className={`px-2.5 py-1 rounded text-[11px] font-black transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 rounded text-11 font-black transition-all cursor-pointer ${
                       masterState === 'view_only'
                         ? 'bg-slate-700 text-white'
                         : 'text-slate-600 dark:text-slate-300 hover:bg-surface-container-high'
@@ -804,7 +804,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                   <button
                     type="button"
                     onClick={() => handleSetModuleMasterPermission(moduleObj, 'deny')}
-                    className={`px-2.5 py-1 rounded text-[11px] font-black transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 rounded text-11 font-black transition-all cursor-pointer ${
                       masterState === 'deny'
                         ? 'bg-rose-500 text-white'
                         : 'text-slate-600 dark:text-slate-300 hover:bg-surface-container-high'
@@ -836,7 +836,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                         <button
                           type="button"
                           onClick={() => handleSetPermission(task.id, 'allow')}
-                          className={`py-1 px-2.5 rounded text-[10px] font-black  transition-all cursor-pointer ${
+                          className={`py-1 px-2.5 rounded text-2xs font-black  transition-all cursor-pointer ${
                             taskState === 'allow'
                               ? 'bg-emerald-600 text-white'
                               : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
@@ -848,7 +848,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                         <button
                           type="button"
                           onClick={() => handleSetPermission(task.id, 'view_only')}
-                          className={`py-1 px-2.5 rounded text-[10px] font-black  transition-all cursor-pointer ${
+                          className={`py-1 px-2.5 rounded text-2xs font-black  transition-all cursor-pointer ${
                             taskState === 'view_only'
                               ? 'bg-slate-700 text-white'
                               : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
@@ -860,7 +860,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                         <button
                           type="button"
                           onClick={() => handleSetPermission(task.id, 'deny')}
-                          className={`py-1 px-2.5 rounded text-[10px] font-black  transition-all cursor-pointer ${
+                          className={`py-1 px-2.5 rounded text-2xs font-black  transition-all cursor-pointer ${
                             taskState === 'deny'
                               ? 'bg-rose-500 text-white'
                               : 'text-slate-600 dark:text-slate-400 hover:text-on-surface'
@@ -886,7 +886,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             whileTap={SUBTLE_TAP_SCALE}
             transition={TACTILE_SPRING}
             onClick={handleResetPermissions}
-            className="min-h-[44px] sm:min-h-[38px] px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-lg transition-colors cursor-pointer touch-manipulation"
+            className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-black text-xs rounded-lg transition-colors cursor-pointer touch-manipulation"
           >
             {isAmharic ? 'ዳግም አስጀምር' : 'Reset Defaults'}
           </motion.button>
@@ -897,9 +897,9 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             whileTap={TAP_SCALE}
             transition={TACTILE_SPRING}
             onClick={handleSavePermissions}
-            className="min-h-[44px] sm:min-h-[38px] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary font-black text-xs rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs touch-manipulation"
+            className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary font-black text-xs rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs touch-manipulation"
           >
-            <Icon className="material-symbols-outlined text-[16px]">save</Icon>
+            <Icon className="material-symbols-outlined text-icon-sm">save</Icon>
             <span>{isAmharic ? 'ፈቃዶች አስቀምጥ' : 'Save Permissions'}</span>
           </motion.button>
         </div>
@@ -922,7 +922,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               className="w-10 h-10 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer touch-manipulation"
               aria-label={isAmharic ? 'ዝጋ' : 'Close'}
             >
-              <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg">close</Icon>
             </button>
           </div>
 
@@ -937,7 +937,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 value={newRoleTitleAm}
                 onChange={(e) => setNewRoleTitleAm(e.target.value)}
                 placeholder="ምሳሌ፡ የክፍያ ተቆጣጣሪ"
-                className="w-full min-h-[44px] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-primary"
+                className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-primary"
               />
             </div>
 
@@ -950,7 +950,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 value={newRoleTitleEn}
                 onChange={(e) => setNewRoleTitleEn(e.target.value)}
                 placeholder="e.g. Revenue Inspector"
-                className="w-full min-h-[44px] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-primary"
+                className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold focus:outline-hidden focus:border-primary"
               />
             </div>
 
@@ -961,7 +961,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
               <select
                 value={newRoleTemplate}
                 onChange={(e) => setNewRoleTemplate(e.target.value)}
-                className="w-full min-h-[44px] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold cursor-pointer focus:outline-hidden focus:border-primary"
+                className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs font-extrabold cursor-pointer focus:outline-hidden focus:border-primary"
               >
                 {roles
                   .filter((r) => r.roleKey !== 'superadmin' && r.id !== 'role-superadmin')
@@ -980,7 +980,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 whileTap={SUBTLE_TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={() => setShowNewRoleModal(false)}
-                className="min-h-[44px] px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-extrabold text-xs rounded-md cursor-pointer touch-manipulation"
+                className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-extrabold text-xs rounded-md cursor-pointer touch-manipulation"
               >
                 {isAmharic ? 'ሰርዝ' : 'Cancel'}
               </motion.button>
@@ -989,7 +989,7 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 data-motion-control="true"
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
-                className="min-h-[44px] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary font-black text-xs rounded-md shadow-xs cursor-pointer touch-manipulation"
+                className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-5 py-2 bg-primary hover:bg-primary-hover text-on-primary font-black text-xs rounded-md shadow-xs cursor-pointer touch-manipulation"
               >
                 {isAmharic ? 'ሚናውን ፍጠር' : 'Create Role'}
               </motion.button>

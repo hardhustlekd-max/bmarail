@@ -1,5 +1,7 @@
 import React from 'react';
-export { CentralPageSpinner, type CentralPageSpinnerProps } from './CentralPageSpinner';
+import { Icon } from './Icon';
+import { CentralPageSpinner } from './CentralPageSpinner';
+export { CentralPageSpinner };
 
 interface SkeletonProps {
   className?: string;
@@ -20,39 +22,30 @@ export const LoadingSpinner: React.FC<{ label?: string; size?: 'sm' | 'md' | 'lg
   size = 'md',
   className = '',
 }) => {
-  const sizeMap = {
-    sm: { container: 'w-8 h-8', arrow: 'w-4 h-4' },
-    md: { container: 'w-11 h-11 sm:w-12 sm:h-12', arrow: 'w-5.5 h-5.5 sm:w-6 sm:h-6' },
-    lg: { container: 'w-14 h-14', arrow: 'w-7 h-7' },
+  const iconSizes = {
+    sm: 20,
+    md: 28,
+    lg: 36,
   };
 
-  const currentSize = sizeMap[size] || sizeMap.md;
-
   return (
-    <div className={`flex flex-col items-center justify-center gap-2 p-2 ${className}`}>
-      <div
-        className={`${currentSize.container} rounded-full bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-center shrink-0`}
-      >
-        <svg
-          className={`${currentSize.arrow} text-primary animate-spin`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-          <polyline points="8 8 3 8 3 3" />
-          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-          <polyline points="16 16 21 16 21 21" />
-        </svg>
-      </div>
-      {label && (
-        <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      className={`flex flex-col items-center justify-center gap-2 p-2 ${className}`}
+    >
+      <Icon
+        name="progress_activity"
+        size={iconSizes[size] || iconSizes.md}
+        className="animate-spin text-primary"
+      />
+      {label ? (
+        <span className="text-xs font-semibold text-on-surface-variant">
           {label}
         </span>
+      ) : (
+        <span className="sr-only">Loading</span>
       )}
     </div>
   );
@@ -151,7 +144,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
   isAmharic = true,
 }) => {
   return (
-    <div className="space-y-4 sm:space-y-5 transition-opacity duration-200">
+    <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-200">
       {/* 1. Hero QR Scanner Center Placeholder (For Officer Role) */}
       {userRole === 'officer' && (
         <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6 sm:p-8 shadow-xs flex flex-col items-center justify-center space-y-4">

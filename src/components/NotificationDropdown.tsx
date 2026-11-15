@@ -80,12 +80,12 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       {/* Header Bar */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
-          <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">notifications_active</Icon>
+          <Icon className="material-symbols-outlined text-icon-md text-slate-700 dark:text-slate-300 shrink-0">notifications_active</Icon>
           <div className="min-w-0">
             <h3 className="font-extrabold text-xs sm:text-sm tracking-tight break-words text-[#1C2434] dark:text-white">
               {isAmharic ? 'የስርዓት ማሳወቂያዎች' : 'System Notifications'}
             </h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold break-words">
+            <p className="text-11 text-slate-500 dark:text-slate-400 font-semibold break-words">
               {unreadCount > 0
                 ? isAmharic
                   ? `${unreadCount} ያልተነበቡ ማሳወቂያዎች`
@@ -107,7 +107,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             className="w-10 h-10 sm:w-8 sm:h-8 rounded-lg text-slate-400 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E3A47] transition-colors flex items-center justify-center cursor-pointer"
             aria-label="Close"
           >
-            <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+            <Icon className="material-symbols-outlined text-icon-md">close</Icon>
           </button>
         </div>
       </div>
@@ -126,14 +126,14 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             e.stopPropagation();
             setFilter('all');
           }}
-          className={`px-3 min-h-[40px] sm:min-h-[32px] rounded-md font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          className={`px-3 min-h-[var(--ui-control-h-md)] sm:min-h-[var(--ui-control-h-xs)] rounded-md font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             filter === 'all'
               ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700/90'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#2E3A47] border border-transparent'
           }`}
         >
           <span>{isAmharic ? 'ሁሉም' : 'All'}</span>
-          <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold ${filter === 'all' ? 'bg-white dark:bg-[#1C2434] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60' : 'bg-slate-100 dark:bg-[#2E3A47] text-slate-600 dark:text-slate-300'}`}>
+          <span className={`px-1.5 py-0.5 rounded-md text-2xs font-mono font-bold ${filter === 'all' ? 'bg-white dark:bg-[#1C2434] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60' : 'bg-slate-100 dark:bg-[#2E3A47] text-slate-600 dark:text-slate-300'}`}>
             {notifications.length}
           </span>
         </motion.button>
@@ -147,7 +147,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             e.stopPropagation();
             setFilter('unread');
           }}
-          className={`px-3 min-h-[40px] sm:min-h-[32px] rounded-md font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          className={`px-3 min-h-[var(--ui-control-h-md)] sm:min-h-[var(--ui-control-h-xs)] rounded-md font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             filter === 'unread'
               ? 'bg-slate-100 dark:bg-[#24303F] text-slate-900 dark:text-white shadow-2xs border border-slate-200/90 dark:border-slate-700/90'
               : 'text-slate-600 dark:text-slate-300 hover:text-[#1C2434] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-[#2E3A47] border border-transparent'
@@ -155,7 +155,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         >
           <span>{isAmharic ? 'ያልተነበቡ' : 'Unread'}</span>
           {unreadCount > 0 && (
-            <span className="bg-rose-500 text-white px-1.5 py-0.5 rounded-md text-[10px] font-black leading-none">
+            <span className="bg-rose-500 text-white px-1.5 py-0.5 rounded-md text-2xs font-black leading-none">
               {unreadCount}
             </span>
           )}
@@ -163,11 +163,11 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       </div>
 
       {/* Notification List Body */}
-      <div className="overflow-y-auto max-h-[60dvh] sm:max-h-[440px] divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]/60 bg-white dark:bg-[#1C2434]">
+      <div className="overflow-y-auto max-h-[60dvh] sm:max-h-[calc(440px*var(--ui-scale))] divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]/60 bg-white dark:bg-[#1C2434]">
         {filteredNotifications.length === 0 ? (
           <div className="py-10 px-4 text-center space-y-2 bg-white dark:bg-[#1C2434]">
             <div className="w-12 h-12 mx-auto rounded-full bg-slate-50 dark:bg-[#24303F] flex items-center justify-center text-slate-400 dark:text-slate-500">
-              <Icon className="material-symbols-outlined text-[24px]">notifications_off</Icon>
+              <Icon className="material-symbols-outlined text-icon-2xl">notifications_off</Icon>
             </div>
             <p className="text-xs font-extrabold text-[#1C2434] dark:text-white">
               {filter === 'unread'
@@ -178,7 +178,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                 ? 'ምንም ማሳወቂያ የለም'
                 : 'No notifications available'}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto break-words text-wrap">
+            <p className="text-11 text-slate-500 dark:text-slate-400 max-w-xs mx-auto break-words text-wrap">
               {isAmharic
                 ? 'አዳዲስ ማሳወቂያዎች እዚህ ይታያሉ።'
                 : 'New alerts and reports will appear here.'}
@@ -204,17 +204,17 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                   <div
                     className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 shadow-2xs ${item.iconBg}`}
                   >
-                    <Icon className="material-symbols-outlined text-[20px]">{item.icon}</Icon>
+                    <Icon className="material-symbols-outlined text-icon-lg">{item.icon}</Icon>
                   </div>
 
                   {/* Content Block */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-1.5 flex-wrap">
-                      <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-black tracking-wider ${item.badgeBg} ${item.badgeText}`}>
+                      <span className={`px-1.5 py-0.5 rounded-sm text-3xs font-black tracking-wider ${item.badgeBg} ${item.badgeText}`}>
                         {item.badgeLabel}
                       </span>
                       {item.time && (
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono shrink-0">
+                        <span className="text-2xs text-slate-400 dark:text-slate-500 font-mono shrink-0">
                           {item.time}
                         </span>
                       )}
@@ -224,7 +224,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       {item.title}
                     </h4>
 
-                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed break-words text-wrap">
+                    <p className="text-11 text-slate-600 dark:text-slate-300 leading-relaxed break-words text-wrap">
                       {item.description}
                     </p>
 
@@ -234,14 +234,14 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                         <button
                           type="button"
                           onClick={(e) => toggleGroupExpand(e, item.id)}
-                          className="inline-flex items-center gap-1 min-h-[36px] py-1 px-1.5 -ml-1.5 rounded-md text-[11px] font-extrabold text-primary hover:bg-primary/5 hover:underline cursor-pointer"
+                          className="inline-flex items-center gap-1 min-h-[var(--ui-control-h-sm)] py-1 px-1.5 -ml-1.5 rounded-md text-11 font-extrabold text-primary hover:bg-primary/5 hover:underline cursor-pointer"
                         >
                           <span>
                             {isExpanded
                               ? (isAmharic ? 'ዝርዝሮችን ደብቅ' : 'Hide items')
                               : (isAmharic ? `${item.subItems!.length} ዝርዝር ማመልከቻዎችን አሳይ` : `Show ${item.subItems!.length} sub-items`)}
                           </span>
-                          <Icon className={`material-symbols-outlined text-[15px] transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`}>
+                          <Icon className={`material-symbols-outlined text-15 transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`}>
                             expand_more
                           </Icon>
                         </button>
@@ -265,7 +265,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                       transition={POPOVER_TRANSITION}
                       className="pl-11 pr-3.5 pb-2.5 pt-1.5 space-y-1.5 border-t border-[#E2E8F0] dark:border-[#2E3A47]/60 bg-slate-50/70 dark:bg-[#1A2232]/70"
                     >
-                      <div className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 tracking-wider mb-1">
+                      <div className="text-2xs font-extrabold text-slate-400 dark:text-slate-500 tracking-wider mb-1">
                         {isAmharic ? 'የተካተቱ ማመልከቻዎችና ሪፖርቶች:' : 'Nested Submissions & Items:'}
                       </div>
                       {item.subItems!.map((sub) => (
@@ -293,16 +293,16 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
                           <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1 flex-wrap">
-                              <span className="text-[11px] font-extrabold text-[#1C2434] dark:text-white break-words text-wrap">
+                              <span className="text-11 font-extrabold text-[#1C2434] dark:text-white break-words text-wrap">
                                 {sub.title}
                               </span>
                               {sub.time && (
-                                <span className="text-[9px] text-slate-400 font-mono shrink-0">
+                                <span className="text-3xs text-slate-400 font-mono shrink-0">
                                   {sub.time}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-normal break-words text-wrap">
+                            <p className="text-2xs text-slate-500 dark:text-slate-400 leading-normal break-words text-wrap">
                               {sub.description}
                             </p>
                           </div>
@@ -323,13 +323,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           <button
             type="button"
             onClick={onClearAll}
-            className="text-[11px] font-bold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1 px-2.5 min-h-[38px] sm:min-h-[32px] rounded-md hover:bg-rose-500/10"
+            className="text-11 font-bold text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1 px-2.5 min-h-[var(--ui-control-h-sm)] sm:min-h-[var(--ui-control-h-xs)] rounded-md hover:bg-rose-500/10"
           >
-            <Icon className="material-symbols-outlined text-[15px]">delete_sweep</Icon>
+            <Icon className="material-symbols-outlined text-15">delete_sweep</Icon>
             <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Clear all'}</span>
           </button>
 
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
+          <span className="text-2xs text-slate-400 dark:text-slate-500 font-semibold">
             {isAmharic ? 'ባህር ዳር ሞተረኞች ማህበር' : 'Bahirdar Motorist Association'}
           </span>
         </div>

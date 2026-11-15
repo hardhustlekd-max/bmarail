@@ -1115,13 +1115,13 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         <div className="p-4 sm:p-5 space-y-4">
           <div className="flex items-center gap-3 border-b border-outline-variant pb-3">
             <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[24px]">cloud_off</Icon>
+              <Icon className="material-symbols-outlined text-icon-2xl">cloud_off</Icon>
             </div>
             <div>
               <h4 className="font-bold text-sm text-on-surface">
                 {isAmharic ? 'የኦንላይን ዳታቤዝ ማስቀመጥ አልተሳካም' : 'Online Storage Unsuccessful'}
               </h4>
-              <p className="hidden sm:block text-[11px] text-secondary">
+              <p className="hidden sm:block text-11 text-secondary">
                 {isAmharic ? 'የመረብ ወይም የማስቀመጫ ችግር' : 'Network or cloud storage issue'}
               </p>
             </div>
@@ -1134,7 +1134,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 : 'Cloud save unsuccessful.'}
             </p>
             {offlineErrorMsg && (
-              <div className="p-2.5 rounded-lg bg-surface-container border border-outline-variant text-[11px] font-mono text-amber-800 dark:text-amber-300">
+              <div className="p-2.5 rounded-lg bg-surface-container border border-outline-variant text-11 font-mono text-amber-800 dark:text-amber-300">
                 {offlineErrorMsg}
               </div>
             )}
@@ -1152,7 +1152,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
               whileTap={SUBTLE_TAP_SCALE}
               transition={TACTILE_SPRING}
               onClick={() => setShowOfflineConfirmModal(false)}
-              className="min-h-[44px] px-4 py-2 rounded-lg text-xs font-bold text-secondary bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer touch-manipulation"
+              className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2 rounded-lg text-xs font-bold text-secondary bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer touch-manipulation"
             >
               {isAmharic ? 'ሰርዝ / ድጋሚ ሞክር' : 'Cancel / Retry'}
             </motion.button>
@@ -1163,9 +1163,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
               transition={TACTILE_SPRING}
               onClick={handleConfirmLocalSave}
               disabled={isSubmitting}
-              className="min-h-[44px] px-4 py-2 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer inline-flex items-center gap-1.5 touch-manipulation"
+              className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2 rounded-lg text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer inline-flex items-center gap-1.5 touch-manipulation"
             >
-              <Icon className="material-symbols-outlined text-[16px]">save</Icon>
+              <Icon className="material-symbols-outlined text-icon-sm">save</Icon>
               <span>
                 {isSubmitting
                   ? isAmharic
@@ -1206,12 +1206,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 <div
                   key={item.id}
                   onClick={() => handleStepClick(item.id)}
-                  className="flex flex-col items-center justify-center relative z-10 cursor-pointer group select-none px-1 py-1 min-h-[48px] min-w-[48px] touch-manipulation active:scale-95"
+                  className="flex flex-col items-center justify-center relative z-10 cursor-pointer group select-none px-1 py-1 min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] min-w-[44px] sm:min-w-[calc(48px*var(--ui-scale))] touch-manipulation active:scale-95"
                   title={`${item.label} - ${item.subLabel}`}
                 >
                   {/* Step Circle */}
                   <div
-                    className={`w-7 h-7 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center text-[11px] sm:text-[10px] font-black transition-all duration-150 ${
+                    className={`w-7 h-7 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center text-11 sm:text-2xs font-black transition-all duration-150 ${
                       isActive
                         ? 'bg-surface-container-lowest border border-primary ring-1 ring-primary/20 text-primary shadow-xs'
                         : isCompleted
@@ -1220,7 +1220,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     }`}
                   >
                     {isCompleted ? (
-                      <Icon className="material-symbols-outlined text-[14px] font-black">check</Icon>
+                      <Icon className="material-symbols-outlined text-icon-xs font-black">check</Icon>
                     ) : (
                       <span>{item.id}</span>
                     )}
@@ -1229,7 +1229,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                   {/* Step Label Underneath */}
                   <div className="mt-0.5 text-center flex flex-col items-center">
                     <span
-                      className={`text-[9.5px] sm:text-[10px] tracking-tight transition-colors whitespace-nowrap ${
+                      className={`text-3xs sm:text-2xs tracking-tight transition-colors whitespace-nowrap ${
                         isActive
                           ? 'font-black text-on-surface'
                           : isCompleted
@@ -1253,12 +1253,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         {/* CONTAINER SECTION HEADER (MATCHING RECORDS PAGE STYLE) */}
         <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800">
           <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">how_to_reg</Icon>
+            <Icon className="material-symbols-outlined text-icon-xl text-primary shrink-0">how_to_reg</Icon>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
                 {isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+              <p className="hidden sm:block text-11 font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
                 {isAmharic
                   ? 'የባለቤት እና የተሽከርካሪ መረጃ መመዝገቢያ ባለ 5-ደረጃ ቅጽ'
                   : '5-step owner & vehicle intake registration form'}
@@ -1273,7 +1273,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 onClick={onViewRegistered}
                 className="hidden sm:flex px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
               >
-                <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm">table_chart</Icon>
                 <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
               </button>
             )}
@@ -1288,7 +1288,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
-                  <Icon className="material-symbols-outlined text-[24px]">check_circle</Icon>
+                  <Icon className="material-symbols-outlined text-icon-2xl">check_circle</Icon>
                 </div>
                 <div>
                   <h4 className="font-extrabold text-sm sm:text-base text-emerald-950 dark:text-emerald-100">
@@ -1307,7 +1307,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                 className="text-emerald-700 hover:text-emerald-900 dark:text-emerald-300 p-1 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/40 cursor-pointer"
                 title={isAmharic ? 'ዝጋ' : 'Dismiss'}
               >
-                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                <Icon className="material-symbols-outlined text-icon-md">close</Icon>
               </button>
             </div>
 
@@ -1315,17 +1315,17 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
               <span className="font-mono font-black bg-white dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-700 text-slate-900 dark:text-slate-100">
                 {lastSubmittedReg.plateNumber}
               </span>
-              <span className="bg-emerald-100 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200 px-2.5 py-1 rounded-lg text-[11px] font-bold">
+              <span className="bg-emerald-100 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200 px-2.5 py-1 rounded-lg text-11 font-bold">
                 {lastSubmittedReg.vehicleCategory === 'electric' ? ' Electric (EV)' : ' Gasoline'}
               </span>
               {isStoredLocally ? (
-                <span className="bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1">
-                  <Icon className="material-symbols-outlined text-[14px]">cloud_off</Icon>
+                <span className="bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 px-2.5 py-1 rounded-lg text-11 font-bold flex items-center gap-1">
+                  <Icon className="material-symbols-outlined text-icon-xs">cloud_off</Icon>
                   <span>{isAmharic ? 'በሎካል ካሽ ተቀምጧል' : 'Local Cache'}</span>
                 </span>
               ) : (
-                <span className="bg-emerald-200 dark:bg-emerald-800/90 text-emerald-950 dark:text-emerald-100 px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1">
-                  <Icon className="material-symbols-outlined text-[14px]">cloud_done</Icon>
+                <span className="bg-emerald-200 dark:bg-emerald-800/90 text-emerald-950 dark:text-emerald-100 px-2.5 py-1 rounded-lg text-11 font-bold flex items-center gap-1">
+                  <Icon className="material-symbols-outlined text-icon-xs">cloud_done</Icon>
                   <span>{isAmharic ? 'በፋየርቤዝ ተቀምጧል' : 'Cloud Saved'}</span>
                 </span>
               )}
@@ -1337,9 +1337,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={handleRegisterNew}
-                  className="w-full sm:w-auto min-h-[44px] bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold px-3.5 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 touch-manipulation"
+                  className="w-full sm:w-auto min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold px-3.5 py-2 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">add_circle</Icon>
                   <span>{isAmharic ? 'አዲስ መዝግብ' : 'Register New'}</span>
                 </motion.button>
                 {onViewRegistered && (
@@ -1349,9 +1349,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     whileTap={SUBTLE_TAP_SCALE}
                     transition={TACTILE_SPRING}
                     onClick={onViewRegistered}
-                    className="w-full sm:w-auto min-h-[44px] bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-center gap-1 cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors touch-manipulation"
+                    className="w-full sm:w-auto min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200 text-xs font-bold px-3 py-1.5 rounded-md flex items-center justify-center gap-1 cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors touch-manipulation"
                   >
-                    <Icon className="material-symbols-outlined text-[16px]">table_view</Icon>
+                    <Icon className="material-symbols-outlined text-icon-sm">table_view</Icon>
                     <span>{isAmharic ? 'የተመዘገበውን እይ' : 'View Registered'}</span>
                   </motion.button>
                 )}
@@ -1363,7 +1363,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         {/* Validation Warning Banner */}
         {validationError && (
           <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 px-4 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-2xs animate-fadeIn">
-            <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-[20px]">warning</Icon>
+            <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-icon-lg">warning</Icon>
             <span>{validationError}</span>
           </div>
         )}
@@ -1387,14 +1387,14 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <span className="w-6 h-6 rounded-lg bg-[#1e293b] text-white flex items-center justify-center text-xs font-bold">1</span>
                       <span>{isAmharic ? '1. ባለቤት' : 'Step 1: Owner Information'}</span>
                     </h4>
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">1 of 4</span>
+                    <span className="text-11 font-bold text-slate-400 dark:text-slate-500">1 of 4</span>
                   </div>
 
                   {/* 3 Name Fields in Row with text on top - side by side on mobile & desktop */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5">
                     {/* First Name / የመጀመሪያ ስም */}
                     <div>
-                      <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
+                      <label className="block text-11 sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
                         {isAmharic ? 'የመጀመሪያ ስም' : 'First Name'} <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -1411,8 +1411,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         }`}
                       />
                       {firstNameError && (
-                        <p className="text-[10px] text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
-                          <Icon className="material-symbols-outlined text-[14px] shrink-0 mt-0.5">error</Icon>
+                        <p className="text-2xs text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
+                          <Icon className="material-symbols-outlined text-icon-xs shrink-0 mt-0.5">error</Icon>
                           <span className="break-words leading-tight">{firstNameError}</span>
                         </p>
                       )}
@@ -1420,7 +1420,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                     {/* Father's Name / የአባት ስም */}
                     <div>
-                      <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
+                      <label className="block text-11 sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
                         {isAmharic ? 'የአባት ስም' : "Father's Name"} <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -1437,8 +1437,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         }`}
                       />
                       {fatherNameError && (
-                        <p className="text-[10px] text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
-                          <Icon className="material-symbols-outlined text-[14px] shrink-0 mt-0.5">error</Icon>
+                        <p className="text-2xs text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
+                          <Icon className="material-symbols-outlined text-icon-xs shrink-0 mt-0.5">error</Icon>
                           <span className="break-words leading-tight">{fatherNameError}</span>
                         </p>
                       )}
@@ -1446,7 +1446,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                     {/* Grandfather's Name / የአያት ስም */}
                     <div>
-                      <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
+                      <label className="block text-11 sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
                         {isAmharic ? 'የአያት ስም' : "Grandfather's Name"} <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -1463,8 +1463,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         }`}
                       />
                       {grandFatherNameError && (
-                        <p className="text-[10px] text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
-                          <Icon className="material-symbols-outlined text-[14px] shrink-0 mt-0.5">error</Icon>
+                        <p className="text-2xs text-red-600 dark:text-red-400 font-bold mt-1 flex items-start gap-1 leading-tight break-words">
+                          <Icon className="material-symbols-outlined text-icon-xs shrink-0 mt-0.5">error</Icon>
                           <span className="break-words leading-tight">{grandFatherNameError}</span>
                         </p>
                       )}
@@ -1500,8 +1500,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         />
                       </div>
                       {phoneError && (
-                        <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                        <p className="text-2xs text-red-600 font-bold mt-1 flex items-center gap-1">
+                          <Icon className="material-symbols-outlined text-icon-xs">error</Icon>
                           <span>{phoneError}</span>
                         </p>
                       )}
@@ -1568,17 +1568,17 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       />
                       <label htmlFor="save-as-hidden-step1" className="cursor-pointer select-none space-y-0.5 min-w-0">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">
+                          <Icon className="material-symbols-outlined text-icon-sm text-slate-700 dark:text-slate-300 shrink-0">
                             visibility_off
                           </Icon>
                           <span className="text-xs font-black text-slate-900 dark:text-slate-100">
                             {isAmharic ? 'የማህበር ተሽከርካሪ (Association Motor)' : 'Save as Association Motor'}
                           </span>
-                          <span className="text-[10px] font-bold tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded">
+                          <span className="text-2xs font-bold tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded">
                             {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                        <p className="text-11 text-slate-600 dark:text-slate-400 leading-relaxed">
                           {isAmharic
                             ? 'ይህ አማራጭ ሲበራ ማመልከቻው እንደ የማህበር ተሽከርካሪ ይመዝገባል፤ በሰንጠረዦችና በሜትሪክስ ተደብቆ በፍተሻ ውጤት (ስካነር) ላይ ብቻ ይታያል።'
                             : 'When enabled, this application will be saved as an Association Motor (hidden from lists & metrics for other users, visible only for scanner results).'}
@@ -1595,10 +1595,10 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={handleGoToStep2}
-                      className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-6 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
+                      className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2.5 px-6 rounded-lg text-xs sm:text-sm flex items-center justify-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ሞተር' : 'Next: Motor Specifications'}</span>
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_forward</Icon>
                     </motion.button>
                   </div>
                 </motion.div>
@@ -1619,7 +1619,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">2</span>
                       <span>{isAmharic ? '2. ሞተር' : 'Step 2: Motor Details'}</span>
                     </h4>
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">2 of 5</span>
+                    <span className="text-11 font-bold text-slate-400 dark:text-slate-500">2 of 5</span>
                   </div>
 
                   {/* Motor Vehicle Category Selection */}
@@ -1697,8 +1697,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         )}
                       </div>
                       {motorBrandError && (
-                        <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                        <p className="text-2xs text-red-600 font-bold mt-1 flex items-center gap-1">
+                          <Icon className="material-symbols-outlined text-icon-xs">error</Icon>
                           <span>{motorBrandError}</span>
                         </p>
                       )}
@@ -1752,8 +1752,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         })()}
                       </div>
                       {motorModelError && (
-                        <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                        <p className="text-2xs text-red-600 font-bold mt-1 flex items-center gap-1">
+                          <Icon className="material-symbols-outlined text-icon-xs">error</Icon>
                           <span>{motorModelError}</span>
                         </p>
                       )}
@@ -1797,7 +1797,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           }`}
                         >
                           <div className="flex items-center gap-1.5 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-950/50 border-r border-emerald-200 dark:border-emerald-800/60 select-none shrink-0 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
-                            <Icon className="material-symbols-outlined text-[18px] text-emerald-600 dark:text-emerald-400">
+                            <Icon className="material-symbols-outlined text-icon-md text-emerald-600 dark:text-emerald-400">
                               eco
                             </Icon>
                             <input
@@ -1828,7 +1828,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         </div>
 
                         {/* Combined Preview Badge */}
-                        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                        <div className="mt-2 flex items-center justify-between text-11 text-slate-500 dark:text-slate-400">
                           <span>
                             {isAmharic ? 'የሰሌዳ ማጠቃለያ፡' : 'Combined Plate:'}{' '}
                             <strong className="font-mono text-emerald-700 dark:text-emerald-400 font-bold">
@@ -1838,8 +1838,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         </div>
 
                         {plateNumberError && (
-                          <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                            <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                          <p className="text-2xs text-red-600 font-bold mt-1 flex items-center gap-1">
+                            <Icon className="material-symbols-outlined text-icon-xs">error</Icon>
                             <span>{plateNumberError}</span>
                           </p>
                         )}
@@ -1849,7 +1849,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5">
                           {/* 1st Field: ክልል (Region) */}
                           <div>
-                            <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
+                            <label className="block text-11 sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
                               {isAmharic ? 'ክልል' : 'Region'} <span className="text-red-500">*</span>
                             </label>
                             <div className="relative flex items-center">
@@ -1876,7 +1876,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                           {/* 2nd Field: ኮድ (Code - Motorcycle Categories in Ethiopia) */}
                           <div>
-                            <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
+                            <label className="block text-11 sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
                               {isAmharic ? 'ኮድ' : 'Code'} <span className="text-red-500">*</span>
                             </label>
                             <div className="relative flex items-center">
@@ -1903,7 +1903,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                           {/* 3rd Field: ቁጥር (Serial Number Digits) */}
                           <div>
-                            <label className="block text-[11px] sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
+                            <label className="block text-11 sm:text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 leading-tight">
                               {isAmharic ? 'ቁጥር' : 'Number'} <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -1925,7 +1925,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         </div>
 
                         {/* Combined Preview Badge */}
-                        <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                        <div className="mt-2 flex items-center justify-between text-11 text-slate-500 dark:text-slate-400">
                           <span>
                             {isAmharic ? 'የሰሌዳ ማጠቃለያ፡' : 'Combined Plate:'}{' '}
                             <strong className="font-mono text-slate-900 dark:text-slate-100">
@@ -1935,8 +1935,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         </div>
 
                         {plateNumberError && (
-                          <p className="text-[10px] text-red-600 font-bold mt-1 flex items-center gap-1">
-                            <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                          <p className="text-2xs text-red-600 font-bold mt-1 flex items-center gap-1">
+                            <Icon className="material-symbols-outlined text-icon-xs">error</Icon>
                             <span>{plateNumberError}</span>
                           </p>
                         )}
@@ -1952,9 +1952,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={SUBTLE_TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(1)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[44px] sm:min-h-[var(--ui-control-h-lg)] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ባለቤት' : 'Back: Owner'}</span>
                     </motion.button>
 
@@ -1964,10 +1964,10 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={handleGoToStep3}
-                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
+                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ዶክመንት' : 'Next: Documents'}</span>
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_forward</Icon>
                     </motion.button>
                   </div>
                 </motion.div>
@@ -1988,7 +1988,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">3</span>
                       <span>{isAmharic ? '3. ዶክመንት' : 'Step 3: Document Uploads'}</span>
                     </h4>
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">3 of 5</span>
+                    <span className="text-11 font-bold text-slate-400 dark:text-slate-500">3 of 5</span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -2071,9 +2071,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={SUBTLE_TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(2)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[44px] sm:min-h-[var(--ui-control-h-lg)] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ሞተር' : 'Back: Motor'}</span>
                     </motion.button>
 
@@ -2083,10 +2083,10 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={handleGoToStep4}
-                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
+                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ ክፍያ' : 'Next: Payment Details'}</span>
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_forward</Icon>
                     </motion.button>
                   </div>
                 </motion.div>
@@ -2107,17 +2107,17 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">4</span>
                       <span>{isAmharic ? '4. የክፍያ መረጃ' : 'Step 4: Payment Details'}</span>
                     </h4>
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">4 of 5</span>
+                    <span className="text-11 font-bold text-slate-400 dark:text-slate-500">4 of 5</span>
                   </div>
 
                   {/* PRO-RATED REGISTRATION & ADVANCE MONTHS CALCULATION BOX */}
                   <div className="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800/80 rounded-xl p-3.5 space-y-3 shadow-2xs">
                     <div className="flex items-center justify-between border-b border-emerald-200 dark:border-emerald-800/60 pb-2">
                       <span className="text-xs font-black text-emerald-950 dark:text-emerald-200 flex items-center gap-1.5">
-                        <Icon className="material-symbols-outlined text-[18px] text-emerald-700 dark:text-emerald-400">payments</Icon>
+                        <Icon className="material-symbols-outlined text-icon-md text-emerald-700 dark:text-emerald-400">payments</Icon>
                         <span>{isAmharic ? 'የምዝገባ ክፍያ እና የቅድመ ክፍያ ስሌት' : 'Registration Pro-Rata & Advance Fee Calculation'}</span>
                       </span>
-                      <span className="text-[10px] font-bold bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded">
+                      <span className="text-2xs font-bold bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded">
                         500 ETB / {isAmharic ? 'ወር' : 'month'}
                       </span>
                     </div>
@@ -2125,7 +2125,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {/* Registration Payment Date */}
                       <div className="space-y-1">
-                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                        <label className="block text-11 font-bold text-slate-700 dark:text-slate-300">
                           {isAmharic ? 'የተመዘገበበት ቀን (ኢትዮጵያ)' : 'Registration Date (Eth Calendar)'}
                         </label>
                         <EthiopianDatePickerPopover
@@ -2138,7 +2138,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                       {/* Advance Months Selection Dropdown */}
                       <div className="space-y-1">
-                        <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                        <label className="block text-11 font-bold text-slate-700 dark:text-slate-300">
                           {isAmharic ? 'የቅድመ ክፍያ ወራት (ለቀጣይ ወራት)' : 'Advance Months Payment'}
                         </label>
                         <select
@@ -2157,15 +2157,15 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                     </div>
 
                     {/* Pro-Rata Fee Itemized Summary Box */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] pt-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-11 pt-1">
                       <div className="bg-white/80 dark:bg-slate-900/80 p-2 rounded-lg border border-emerald-500/20">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-bold">
+                        <span className="text-2xs text-slate-500 dark:text-slate-400 block font-bold">
                           {isAmharic ? 'የምዝገባ ወር ክፍያ' : 'Current Month Fee'}
                         </span>
                         <span className="font-mono font-black text-emerald-800 dark:text-emerald-300 text-xs">
                           {livePaymentCalc.proRatedFee} ETB
                         </span>
-                        <span className="text-[9px] text-slate-500 block truncate">
+                        <span className="text-3xs text-slate-500 block truncate">
                           {livePaymentCalc.isFullMonth
                             ? (isAmharic ? 'ሙሉ ወር (ቀን 1)' : 'Full Month (Day 1)')
                             : `${livePaymentCalc.remainingDays}/${livePaymentCalc.daysInMonth} ${isAmharic ? 'ቀናት ቀርተዋል' : 'days left'}`}
@@ -2173,19 +2173,19 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       </div>
 
                       <div className="bg-white/80 dark:bg-slate-900/80 p-2 rounded-lg border border-emerald-500/20">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-bold">
+                        <span className="text-2xs text-slate-500 dark:text-slate-400 block font-bold">
                           {isAmharic ? 'የቅድመ ክፍያ' : 'Advance Fee'}
                         </span>
                         <span className="font-mono font-black text-emerald-800 dark:text-emerald-300 text-xs">
                           {livePaymentCalc.advanceFee} ETB
                         </span>
-                        <span className="text-[9px] text-slate-500 block truncate">
+                        <span className="text-3xs text-slate-500 block truncate">
                           {livePaymentCalc.advanceMonths} {isAmharic ? 'ወራት' : 'advance months'}
                         </span>
                       </div>
 
                       <div className="bg-emerald-600 text-white p-2 rounded-lg font-bold shadow-2xs">
-                        <span className="text-[10px] opacity-90 block font-bold">
+                        <span className="text-2xs opacity-90 block font-bold">
                           {isAmharic ? 'ጠቅላላ የሚከፈል' : 'Total Amount'}
                         </span>
                         <span className="font-mono font-black text-sm block">
@@ -2194,7 +2194,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       </div>
 
                       <div className="bg-white/80 dark:bg-slate-900/80 p-2 rounded-lg border border-emerald-500/20">
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-bold">
+                        <span className="text-2xs text-slate-500 dark:text-slate-400 block font-bold">
                           {isAmharic ? 'ክፍያው የሚያበቃበት' : 'Coverage Expiration'}
                         </span>
                         <span className="font-mono font-black text-emerald-700 dark:text-emerald-400 text-xs block truncate">
@@ -2212,14 +2212,14 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           <span>{isAmharic ? 'የደረሰኝ / ባንክ ማጣቀሻ ቁጥር' : 'Receipt / Bank Ref Number'}</span>
                           <span className="text-red-500">*</span>
                           {isReceiptVerified && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black  bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                              <Icon className="material-symbols-outlined text-[14px]">verified</Icon>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-black  bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                              <Icon className="material-symbols-outlined text-icon-xs">verified</Icon>
                               <span>{isAmharic ? 'በባንክ የተረጋገጠ' : 'Bank Verified'}</span>
                             </span>
                           )}
                         </label>
-                        <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
-                          <Icon className="material-symbols-outlined text-[14px]">verified_user</Icon>
+                        <span className="text-2xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
+                          <Icon className="material-symbols-outlined text-icon-xs">verified_user</Icon>
                           <span>Cheki API</span>
                         </span>
                       </div>
@@ -2248,7 +2248,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             id="multistep-receipt-number"
                           />
                           <span className="absolute inset-y-0 right-3 flex items-center text-slate-400 pointer-events-none">
-                            <Icon className="material-symbols-outlined text-[18px]">receipt_long</Icon>
+                            <Icon className="material-symbols-outlined text-icon-md">receipt_long</Icon>
                           </span>
                         </div>
 
@@ -2256,7 +2256,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           <select
                             value={chekiBank}
                             onChange={(e) => setChekiBank(e.target.value)}
-                            className="px-2 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-bold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600 max-w-[125px]"
+                            className="px-2 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-bold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-600 max-w-[calc(125px*var(--ui-scale))]"
                             title="Bank"
                           >
                             <option value="">{isAmharic ? 'ራስ-ሰር ፈልግ' : 'Auto Bank'}</option>
@@ -2276,12 +2276,12 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           >
                             {chekiLoading ? (
                               <>
-                                <Icon className="material-symbols-outlined text-[15px] animate-spin">progress_activity</Icon>
+                                <Icon className="material-symbols-outlined text-15 animate-spin">progress_activity</Icon>
                                 <span>{isAmharic ? 'በማጣራት...' : 'Checking...'}</span>
                               </>
                             ) : (
                               <>
-                                <Icon className="material-symbols-outlined text-[15px]">verified</Icon>
+                                <Icon className="material-symbols-outlined text-15">verified</Icon>
                                 <span>{isAmharic ? 'አረጋግጥ' : 'Verify'}</span>
                               </>
                             )}
@@ -2290,20 +2290,20 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       </div>
 
                       {receiptNumberError && (
-                        <p className="text-[11px] text-red-500 font-medium flex items-center gap-1 mt-1">
-                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                        <p className="text-11 text-red-500 font-medium flex items-center gap-1 mt-1">
+                          <Icon className="material-symbols-outlined text-icon-xs">error</Icon>
                           <span>{receiptNumberError}</span>
                         </p>
                       )}
 
                       {chekiError && (
-                        <div className="p-2 bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 rounded-md text-[11px] font-bold flex items-center justify-between gap-2 shadow-2xs">
+                        <div className="p-2 bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 rounded-md text-11 font-bold flex items-center justify-between gap-2 shadow-2xs">
                           <div className="flex items-center gap-1.5">
-                            <Icon className="material-symbols-outlined text-[15px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
+                            <Icon className="material-symbols-outlined text-15 text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
                             <span>{chekiError}</span>
                           </div>
                           <button type="button" onClick={() => setChekiError('')} className="w-8 h-8 flex items-center justify-center rounded-md text-rose-700 hover:text-rose-900 hover:bg-rose-100 dark:text-rose-300 dark:hover:bg-rose-900/40 transition-colors cursor-pointer">
-                            <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                            <Icon className="material-symbols-outlined text-icon-sm">close</Icon>
                           </button>
                         </div>
                       )}
@@ -2314,9 +2314,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             ? 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-100'
                             : 'bg-amber-50 dark:bg-amber-950/80 border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-100'
                         }`}>
-                          <div className="flex items-center justify-between font-black  text-[11px]">
+                          <div className="flex items-center justify-between font-black  text-11">
                             <div className="flex items-center gap-1.5">
-                              <Icon className="material-symbols-outlined text-[16px] text-emerald-600 dark:text-emerald-400">
+                              <Icon className="material-symbols-outlined text-icon-sm text-emerald-600 dark:text-emerald-400">
                                 {chekiResult.verified ? 'check_circle' : 'warning'}
                               </Icon>
                               <span>
@@ -2325,24 +2325,24 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                                   : (isAmharic ? 'ደረሰኙ በባንኩ አልተገኘም' : 'Receipt Not Found on Bank System')}
                               </span>
                             </div>
-                            <span className="text-[10px] font-mono opacity-80">{chekiResult.bank || chekiBank || 'Bank'}</span>
+                            <span className="text-2xs font-mono opacity-80">{chekiResult.bank || chekiBank || 'Bank'}</span>
                           </div>
 
                           {chekiResult.verified && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-[11px]">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-11">
                               <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20">
-                                <span className="text-[9px] text-slate-500 block  font-bold">{isAmharic ? 'መጠን' : 'Amount'}</span>
+                                <span className="text-3xs text-slate-500 block  font-bold">{isAmharic ? 'መጠን' : 'Amount'}</span>
                                 <span className="font-bold text-emerald-700 dark:text-emerald-300 font-mono">
                                   {chekiResult.amount ? `${chekiResult.amount}` : `${paymentAmount} ETB`}
                                 </span>
                               </div>
                               <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20">
-                                <span className="text-[9px] text-slate-500 block  font-bold">{isAmharic ? 'ባንክ' : 'Bank'}</span>
+                                <span className="text-3xs text-slate-500 block  font-bold">{isAmharic ? 'ባንክ' : 'Bank'}</span>
                                 <span className="font-bold truncate block">{chekiResult.bank || 'CBE / Telebirr'}</span>
                               </div>
                               <div className="bg-white/70 dark:bg-slate-900/70 p-1.5 rounded border border-emerald-500/20 col-span-2 sm:col-span-1">
-                                <span className="text-[9px] text-slate-500 block  font-bold">{isAmharic ? 'ቀን' : 'Date'}</span>
-                                <span className="font-mono text-[10px] truncate block">{chekiResult.date || chekiResult.transactionDate || 'Confirmed'}</span>
+                                <span className="text-3xs text-slate-500 block  font-bold">{isAmharic ? 'ቀን' : 'Date'}</span>
+                                <span className="font-mono text-2xs truncate block">{chekiResult.date || chekiResult.transactionDate || 'Confirmed'}</span>
                               </div>
                             </div>
                           )}
@@ -2376,8 +2376,8 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         </span>
                       </div>
                       {paymentAmountError && (
-                        <p className="text-[11px] text-red-500 font-medium flex items-center gap-1 mt-1">
-                          <Icon className="material-symbols-outlined text-[14px]">error</Icon>
+                        <p className="text-11 text-red-500 font-medium flex items-center gap-1 mt-1">
+                          <Icon className="material-symbols-outlined text-icon-xs">error</Icon>
                           <span>{paymentAmountError}</span>
                         </p>
                       )}
@@ -2408,9 +2408,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={SUBTLE_TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(3)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[44px] sm:min-h-[var(--ui-control-h-lg)] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ዶክመንት' : 'Back: Documents'}</span>
                     </motion.button>
 
@@ -2420,10 +2420,10 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={handleGoToStep5}
-                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
+                      className="bg-primary hover:bg-primary-hover text-on-primary font-bold min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2.5 px-5 sm:px-6 rounded-lg text-xs sm:text-sm flex items-center gap-2 border-0 shadow-none hover:shadow-none cursor-pointer transition-colors duration-150 touch-manipulation"
                     >
                       <span>{isAmharic ? 'ቀጣይ፡ አረጋግጥ' : 'Next: Review & Confirm'}</span>
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_forward</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_forward</Icon>
                     </motion.button>
                   </div>
                 </motion.div>
@@ -2444,7 +2444,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       <span className="w-6 h-6 rounded-lg bg-primary text-on-primary flex items-center justify-center text-xs font-bold">5</span>
                       <span>{isAmharic ? '5. አረጋግጥ' : 'Step 5: Review & Confirmation'}</span>
                     </h4>
-                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500">5 of 5</span>
+                    <span className="text-11 font-bold text-slate-400 dark:text-slate-500">5 of 5</span>
                   </div>
 
                   {/* Summary Review Card */}
@@ -2457,7 +2457,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         <button
                           type="button"
                           onClick={() => setCurrentStep(1)}
-                          className="text-slate-700 dark:text-blue-400 hover:underline text-[11px] font-bold"
+                          className="text-slate-700 dark:text-blue-400 hover:underline text-11 font-bold"
                         >
                           {isAmharic ? 'ባለቤት አርትዕ' : 'Edit Owner'}
                         </button>
@@ -2465,7 +2465,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         <button
                           type="button"
                           onClick={() => setCurrentStep(2)}
-                          className="text-slate-700 dark:text-blue-400 hover:underline text-[11px] font-bold"
+                          className="text-slate-700 dark:text-blue-400 hover:underline text-11 font-bold"
                         >
                           {isAmharic ? 'ሞተር አርትዕ' : 'Edit Motor'}
                         </button>
@@ -2473,7 +2473,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         <button
                           type="button"
                           onClick={() => setCurrentStep(3)}
-                          className="text-slate-700 dark:text-blue-400 hover:underline text-[11px] font-bold"
+                          className="text-slate-700 dark:text-blue-400 hover:underline text-11 font-bold"
                         >
                           {isAmharic ? 'ዶክመንት አርትዕ' : 'Edit Documents'}
                         </button>
@@ -2481,7 +2481,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         <button
                           type="button"
                           onClick={() => setCurrentStep(4)}
-                          className="text-slate-700 dark:text-blue-400 hover:underline text-[11px] font-bold"
+                          className="text-slate-700 dark:text-blue-400 hover:underline text-11 font-bold"
                         >
                           {isAmharic ? 'ክፍያ አርትዕ' : 'Edit Payment'}
                         </button>
@@ -2509,15 +2509,15 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
 
                     {/* Uploaded Documents Thumbnails */}
                     <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-                      <span className="text-slate-500 dark:text-slate-400 text-[11px] block mb-2 font-bold">
+                      <span className="text-slate-500 dark:text-slate-400 text-11 block mb-2 font-bold">
                         {isAmharic ? 'የተያያዙ ሰነዶች:' : 'Attached Documents:'}
                       </span>
-                      <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 text-[11px]">
+                      <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 text-11">
                         <div className="bg-slate-50 dark:bg-slate-800 p-2 rounded-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
                           {userPortraitPhoto ? (
                             <SmartImage src={userPortraitPhoto} alt="Portrait" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="person" />
                           ) : (
-                            <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">person</Icon>
+                            <Icon className="material-symbols-outlined text-slate-400 text-icon-lg shrink-0">person</Icon>
                           )}
                           <span className="font-bold text-slate-700 dark:text-slate-300 leading-tight break-words">{isAmharic ? 'ጉርድ ፎቶ' : 'Passport Photo'}</span>
                         </div>
@@ -2526,7 +2526,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           {nationalIdPhoto ? (
                             <SmartImage src={nationalIdPhoto} alt="ID Front" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="badge" />
                           ) : (
-                            <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">badge</Icon>
+                            <Icon className="material-symbols-outlined text-slate-400 text-icon-lg shrink-0">badge</Icon>
                           )}
                           <span className="font-bold text-slate-700 dark:text-slate-300 leading-tight break-words">{isAmharic ? 'መታወቂያ (ፊት)' : 'ID Front'}</span>
                         </div>
@@ -2535,7 +2535,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           {nationalIdBackPhoto ? (
                             <SmartImage src={nationalIdBackPhoto} alt="ID Back" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="badge" />
                           ) : (
-                            <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">badge</Icon>
+                            <Icon className="material-symbols-outlined text-slate-400 text-icon-lg shrink-0">badge</Icon>
                           )}
                           <span className="font-bold text-slate-700 dark:text-slate-300 leading-tight break-words">{isAmharic ? 'መታወቂያ (ጀርባ)' : 'ID Back'}</span>
                         </div>
@@ -2544,7 +2544,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           {drivingLicensePhoto ? (
                             <SmartImage src={drivingLicensePhoto} alt="License" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="card_membership" />
                           ) : (
-                            <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">card_membership</Icon>
+                            <Icon className="material-symbols-outlined text-slate-400 text-icon-lg shrink-0">card_membership</Icon>
                           )}
                           <span className="font-bold text-slate-700 dark:text-slate-300 leading-tight break-words">{isAmharic ? 'መንጃ ፈቃድ' : 'License'}</span>
                         </div>
@@ -2553,7 +2553,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           {drivingPermitPhoto ? (
                             <SmartImage src={drivingPermitPhoto} alt="Police Permit" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="menu_book" />
                           ) : (
-                            <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">menu_book</Icon>
+                            <Icon className="material-symbols-outlined text-slate-400 text-icon-lg shrink-0">menu_book</Icon>
                           )}
                           <span className="font-bold text-slate-700 dark:text-blue-400 leading-tight break-words">{isAmharic ? 'የፖሊስ ፈቃድ' : 'Permit'}</span>
                         </div>
@@ -2562,7 +2562,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                           {receiptScreenshot ? (
                             <SmartImage src={receiptScreenshot} alt="Receipt" className="w-8 h-8 rounded-lg object-cover shrink-0" fallbackIcon="receipt_long" />
                           ) : (
-                            <Icon className="material-symbols-outlined text-slate-400 text-[20px] shrink-0">receipt_long</Icon>
+                            <Icon className="material-symbols-outlined text-slate-400 text-icon-lg shrink-0">receipt_long</Icon>
                           )}
                           <span className="font-bold text-emerald-600 dark:text-emerald-400 leading-tight break-words">{isAmharic ? 'ደረሰኝ' : 'Receipt'}</span>
                         </div>
@@ -2583,17 +2583,17 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                         />
                         <div className="space-y-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-1.5">
-                            <Icon className="material-symbols-outlined text-[17px] text-slate-700 dark:text-slate-300 shrink-0">
+                            <Icon className="material-symbols-outlined text-icon-sm text-slate-700 dark:text-slate-300 shrink-0">
                               business
                             </Icon>
                             <span className="text-xs font-black text-slate-900 dark:text-slate-100">
                               {isAmharic ? 'እንደ የማህበር ተሽከርካሪ አስቀምጥ' : 'Save as Association Motor'}
                             </span>
-                            <span className="text-[10px] font-bold tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded">
+                            <span className="text-2xs font-bold tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-1.5 py-0.5 rounded">
                               {isAmharic ? 'ሱፐር አድሚን ብቻ' : 'Super Admin Only'}
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+                          <p className="text-11 text-slate-600 dark:text-slate-400 leading-relaxed">
                             {isAmharic
                               ? 'ይህ ሲመረጥ እንደ የማህበር ተሽከርካሪ ይመዝገባል (በሰንጠረዥና ሜትሪክስ ተደብቆ በፍተሻ ውጤት ላይ ብቻ ይታያል)።'
                               : 'Saves this registration as an Association Motor (hidden from lists & metrics, visible for scanner result).'}
@@ -2621,7 +2621,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                             ? 'የመረጃ እና የሰነድ ትክክለኛነት ማረጋገጫ *'
                             : 'Data Correctness & Legal Validity Agreement *'}
                         </span>
-                        <p className="text-[11px] text-amber-900 dark:text-amber-300 leading-relaxed">
+                        <p className="text-11 text-amber-900 dark:text-amber-300 leading-relaxed">
                           {isAmharic
                             ? 'ያስገባሁት መረጃ እና ያያያዝኳቸው ሰነዶች ትክክለኛና ህጋዊ መሆናቸውን አረጋግጣለሁ።'
                             : 'I confirm all entered information and attached documents are accurate and legally valid.'}
@@ -2638,9 +2638,9 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={SUBTLE_TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={() => setCurrentStep(4)}
-                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[46px] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
+                      className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-black min-h-[44px] sm:min-h-[var(--ui-control-h-lg)] py-3 px-4 sm:px-5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer touch-manipulation"
                     >
-                      <Icon className="material-symbols-outlined text-[18px]">arrow_back</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">arrow_back</Icon>
                       <span>{isAmharic ? 'ተመለስ፡ ክፍያ' : 'Back: Payment'}</span>
                     </motion.button>
 
@@ -2650,13 +2650,13 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
                       whileTap={isDataConfirmed && !isSubmitting ? TAP_SCALE : undefined}
                       transition={TACTILE_SPRING}
                       disabled={!isDataConfirmed || isSubmitting}
-                      className={`min-h-[44px] py-2.5 px-5 sm:px-7 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors duration-150 border-0 shadow-none hover:shadow-none touch-manipulation ${
+                      className={`min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2.5 px-5 sm:px-7 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors duration-150 border-0 shadow-none hover:shadow-none touch-manipulation ${
                         isDataConfirmed && !isSubmitting
                           ? 'bg-primary hover:bg-primary-hover text-on-primary cursor-pointer'
                           : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed'
                       }`}
                     >
-                      <Icon className="material-symbols-outlined text-[20px]">
+                      <Icon className="material-symbols-outlined text-icon-lg">
                         {isSubmitting ? 'hourglass_top' : 'check_circle'}
                       </Icon>
                       <span>

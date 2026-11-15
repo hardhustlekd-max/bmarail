@@ -352,7 +352,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
         className="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 max-w-md w-full mx-auto text-center space-y-4 shadow-2xl"
       >
         <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center justify-center mx-auto shadow-xs">
-          <Icon className="material-symbols-outlined text-[32px]">lock_person</Icon>
+          <Icon className="material-symbols-outlined text-icon-3xl">lock_person</Icon>
         </div>
         <div>
           <h4 className="font-extrabold text-base text-on-surface">
@@ -365,8 +365,8 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
           </p>
         </div>
 
-        <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md p-3 text-[11px] text-slate-700 dark:text-slate-300 font-medium flex items-center gap-2 text-left">
-          <Icon className="material-symbols-outlined text-slate-500 text-[18px] shrink-0">info</Icon>
+        <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md p-3 text-11 text-slate-700 dark:text-slate-300 font-medium flex items-center gap-2 text-left">
+          <Icon className="material-symbols-outlined text-slate-500 text-icon-md shrink-0">info</Icon>
           <span>
             {isAmharic
               ? 'የዕይታ እንቅስቃሴዎ በደህንነት ኦዲት ይመዘገባል።'
@@ -382,7 +382,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               whileTap={SUBTLE_TAP_SCALE}
               transition={TACTILE_SPRING}
               onClick={onClose}
-              className="min-h-[44px] px-4 py-2 bg-surface-container border border-outline-variant rounded-md text-xs font-bold text-secondary hover:text-on-surface transition-colors cursor-pointer touch-manipulation"
+              className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2 bg-surface-container border border-outline-variant rounded-md text-xs font-bold text-secondary hover:text-on-surface transition-colors cursor-pointer touch-manipulation"
             >
               {isAmharic ? 'ሰርዝ' : 'Cancel'}
             </motion.button>
@@ -393,9 +393,9 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             whileTap={TAP_SCALE}
             transition={TACTILE_SPRING}
             onClick={() => setClerkAccessGranted(true)}
-            className="min-h-[44px] px-5 py-2.5 bg-primary text-on-primary rounded-md text-xs font-extrabold flex items-center gap-2 shadow-md hover:bg-primary-hover transition-colors cursor-pointer touch-manipulation"
+            className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-5 py-2.5 bg-primary text-on-primary rounded-md text-xs font-extrabold flex items-center gap-2 shadow-md hover:bg-primary-hover transition-colors cursor-pointer touch-manipulation"
           >
-            <Icon className="material-symbols-outlined text-[18px]">visibility</Icon>
+            <Icon className="material-symbols-outlined text-icon-md">visibility</Icon>
             <span>{isAmharic ? 'የመመልከት ጥያቄ አቅርብና ተመልከት' : 'Request & View Document'}</span>
           </motion.button>
         </div>
@@ -410,9 +410,9 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
       <div className="no-print bg-black/95 border-b border-white/10 px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2 shadow-xl text-xs shrink-0 h-14 z-30">
         {!hideHeader ? (
           <div className="flex items-center gap-2 font-bold text-white">
-            <Icon className="material-symbols-outlined text-primary text-[22px]">preview</Icon>
-            <span className="truncate max-w-[220px] sm:max-w-md text-sm">{title || (isAmharic ? 'የሰነድ ማጉያ' : 'Interactive Preview')}</span>
-            <span className="hidden md:inline-block text-[10px] text-slate-300 font-mono bg-white/10 border border-white/15 px-2 py-0.5 rounded">
+            <Icon className="material-symbols-outlined text-primary text-icon-xl">preview</Icon>
+            <span className="truncate max-w-[calc(220px*var(--ui-scale))] sm:max-w-md text-sm">{title || (isAmharic ? 'የሰነድ ማጉያ' : 'Interactive Preview')}</span>
+            <span className="hidden md:inline-block text-2xs text-slate-300 font-mono bg-white/10 border border-white/15 px-2 py-0.5 rounded">
               {isAmharic ? 'በጣት ቀርበህ አጉላ' : 'Pinch or controls to zoom'}
             </span>
           </div>
@@ -429,11 +429,11 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 disabled:opacity-30 transition-all cursor-pointer"
             title="Zoom Out (Min 5%)"
           >
-            <Icon className="material-symbols-outlined text-[18px]">zoom_out</Icon>
+            <Icon className="material-symbols-outlined text-icon-md">zoom_out</Icon>
           </button>
 
           {/* Scale Indicator (Shows percentage down to 5%) */}
-          <span className="font-mono text-xs font-bold text-amber-300 min-w-[48px] text-center bg-white/10 border border-white/20 px-1.5 py-1 rounded-lg">
+          <span className="font-mono text-xs font-bold text-amber-300 min-w-[calc(48px*var(--ui-scale))] text-center bg-white/10 border border-white/20 px-1.5 py-1 rounded-lg">
             {Math.round(scale * 100)}%
           </span>
 
@@ -445,7 +445,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 disabled:opacity-30 transition-all cursor-pointer"
             title="Zoom In (Max 400%)"
           >
-            <Icon className="material-symbols-outlined text-[18px]">zoom_in</Icon>
+            <Icon className="material-symbols-outlined text-icon-md">zoom_in</Icon>
           </button>
 
           {/* Reset Zoom */}
@@ -477,10 +477,10 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
                   triggerDocumentPrint('a4');
                 }
               }}
-              className="h-10 min-w-[40px] px-3 flex items-center justify-center bg-primary hover:bg-primary-hover text-on-primary rounded-lg font-bold transition-colors cursor-pointer shadow-xs ml-0.5 touch-manipulation"
+              className="h-10 min-w-[calc(40px*var(--ui-scale))] px-3 flex items-center justify-center bg-primary hover:bg-primary-hover text-on-primary rounded-lg font-bold transition-colors cursor-pointer shadow-xs ml-0.5 touch-manipulation"
               title={isAmharic ? 'አትም' : 'Print Document'}
             >
-              <Icon className="material-symbols-outlined text-[18px]">print</Icon>
+              <Icon className="material-symbols-outlined text-icon-md">print</Icon>
             </button>
           )}
 
@@ -492,7 +492,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
               title={isAmharic ? 'የፊት ገጽ አውርድ' : 'Download Front'}
             >
-              <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
+              <Icon className={`material-symbols-outlined text-icon-md ${isDownloading ? 'animate-spin' : ''}`}>
                 {isDownloading ? 'progress_activity' : 'download'}
               </Icon>
               <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የፊት' : 'Front'}</span>
@@ -506,7 +506,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
               title={isAmharic ? 'የኋላ ገጽ አውርድ' : 'Download Back'}
             >
-              <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
+              <Icon className={`material-symbols-outlined text-icon-md ${isDownloading ? 'animate-spin' : ''}`}>
                 {isDownloading ? 'progress_activity' : 'download'}
               </Icon>
               <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የኋላ' : 'Back'}</span>
@@ -530,7 +530,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               className="h-9 px-3 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold transition-all cursor-pointer ml-1 disabled:opacity-50 shadow-xs"
               title={isAmharic ? 'ሰነዱን አውርድ (Download)' : 'Download Document'}
             >
-              <Icon className={`material-symbols-outlined text-[18px] ${isDownloading ? 'animate-spin' : ''}`}>
+              <Icon className={`material-symbols-outlined text-icon-md ${isDownloading ? 'animate-spin' : ''}`}>
                 {isDownloading ? 'progress_activity' : 'download'}
               </Icon>
               <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'አውርድ' : 'Download'}</span>
@@ -544,7 +544,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               className="h-9 px-3 flex items-center justify-center bg-rose-600/80 hover:bg-rose-600 text-white border border-rose-500 rounded-lg transition-colors cursor-pointer ml-2 shadow-md"
               title="Close"
             >
-              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+              <Icon className="material-symbols-outlined text-icon-md">close</Icon>
             </button>
           )}
         </div>

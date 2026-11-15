@@ -19,6 +19,8 @@ import {
   clearStoredLastActivity,
   getStoredSessionExpiredReason,
   saveStoredSessionExpiredReason,
+  getStoredUiScale,
+  applyUiScaleMode,
 } from './utils/storage';
 import {
   ensureOnlineAuth,
@@ -76,6 +78,10 @@ export default function App() {
     }
     saveTheme(theme);
   }, [theme]);
+
+  useEffect(() => {
+    applyUiScaleMode(getStoredUiScale());
+  }, []);
 
   // Dynamically configure system language on the document root and body
   useEffect(() => {

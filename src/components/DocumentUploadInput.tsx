@@ -168,32 +168,32 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
     <div className="space-y-1.5" id={`doc-upload-field-${id}`}>
       {/* Header with Title and Dynamic Badge */}
       <div className="flex items-center justify-between">
-        <label className={`block text-[11px] font-bold ${hasError && !hasPhoto ? 'text-red-600 dark:text-red-400' : 'text-on-surface'}`}>
+        <label className={`block text-11 font-bold ${hasError && !hasPhoto ? 'text-red-600 dark:text-red-400' : 'text-on-surface'}`}>
           {label}
         </label>
         
         {isBusy ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#1e293b] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
-            <Icon className="material-symbols-outlined text-[13px] animate-spin">progress_activity</Icon>
+          <span className="inline-flex items-center gap-1 text-2xs font-bold text-[#1e293b] dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
+            <Icon className="material-symbols-outlined text-13 animate-spin">progress_activity</Icon>
             <span>{status === 'compressing' ? (isAmharic ? 'እየተዘጋጀ...' : 'Optimizing...') : `${uploadProgress}%`}</span>
           </span>
         ) : status === 'completed' && hasPhoto ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
-            <Icon className="material-symbols-outlined text-[13px]">check_circle</Icon>
+          <span className="inline-flex items-center gap-1 text-2xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+            <Icon className="material-symbols-outlined text-13">check_circle</Icon>
             <span>{isAmharic ? 'ተጭኗል' : 'Uploaded'}</span>
           </span>
         ) : status === 'error' ? (
           <button
             type="button"
             onClick={handleRetry}
-            className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800 hover:bg-amber-100 cursor-pointer"
+            className="inline-flex items-center gap-1 text-2xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800 hover:bg-amber-100 cursor-pointer"
           >
-            <Icon className="material-symbols-outlined text-[13px]">refresh</Icon>
+            <Icon className="material-symbols-outlined text-13">refresh</Icon>
             <span>{isAmharic ? 'እንደገና ይሞክሩ' : 'Retry'}</span>
           </button>
         ) : hasError ? (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800">
-            <Icon className="material-symbols-outlined text-[13px]">error</Icon>
+          <span className="inline-flex items-center gap-1 text-2xs font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-md border border-red-200 dark:border-red-800">
+            <Icon className="material-symbols-outlined text-13">error</Icon>
             <span>{isAmharic ? 'ያስፈልጋል' : 'Required'}</span>
           </span>
         ) : null}
@@ -215,7 +215,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative border border-dashed rounded-lg p-3.5 sm:p-3 text-center transition-all cursor-pointer min-h-[120px] flex flex-col items-center justify-center space-y-1.5 group touch-manipulation active:scale-[0.98] ${
+          className={`relative border border-dashed rounded-lg p-3.5 sm:p-3 text-center transition-all cursor-pointer min-h-[calc(120px*var(--ui-scale))] flex flex-col items-center justify-center space-y-1.5 group touch-manipulation active:scale-[0.98] ${
             hasError
               ? 'border-red-500 bg-red-50/70 dark:bg-red-950/30 ring-2 ring-red-500/30'
               : isDraggingOver
@@ -225,8 +225,8 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
         >
           {isBusy ? (
             <div className="flex flex-col items-center justify-center space-y-2 py-2">
-              <Icon className="material-symbols-outlined animate-spin text-primary text-[24px]">progress_activity</Icon>
-              <span className="text-[11px] font-bold text-on-surface">
+              <Icon className="material-symbols-outlined animate-spin text-primary text-icon-2xl">progress_activity</Icon>
+              <span className="text-11 font-bold text-on-surface">
                 {status === 'compressing'
                   ? isAmharic ? 'ምስሉ እየተስተካከለ ነው...' : 'Compressing image...'
                   : isAmharic ? `እየተጫነ ነው (${uploadProgress}%)...` : `Uploading (${uploadProgress}%)...`}
@@ -246,7 +246,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                   ? 'bg-red-500/10 text-red-600 dark:text-red-400'
                   : 'bg-[#1e293b]/10 dark:bg-slate-700/60 text-[#1e293b] dark:text-slate-200'
               }`}>
-                <Icon className="material-symbols-outlined text-[22px]">
+                <Icon className="material-symbols-outlined text-icon-xl">
                   {hasError ? 'warning' : 'add_a_photo'}
                 </Icon>
               </div>
@@ -255,7 +255,7 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                   ? isAmharic ? 'እባክዎ ሰነዱን ይጫኑ' : 'Please upload document'
                   : isAmharic ? 'ፎቶ/ምስል ይጫኑ' : 'Upload Photo'}
               </p>
-              <p className={`text-[10px] ${hasError ? 'text-red-500 font-semibold' : 'text-secondary'}`}>
+              <p className={`text-2xs ${hasError ? 'text-red-500 font-semibold' : 'text-secondary'}`}>
                 {isAmharic ? 'ካሜራ ወይም ፋይል ይምረጡ' : 'Camera or device file'}
               </p>
             </>
@@ -276,8 +276,8 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
             {/* In-Flight Overlay with progress indicator */}
             {isBusy && (
               <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-xs flex flex-col items-center justify-center p-2 text-white space-y-1 z-10">
-                <Icon className="material-symbols-outlined animate-spin text-white text-[20px]">progress_activity</Icon>
-                <span className="text-[10px] font-bold">
+                <Icon className="material-symbols-outlined animate-spin text-white text-icon-lg">progress_activity</Icon>
+                <span className="text-2xs font-bold">
                   {status === 'compressing'
                     ? isAmharic ? 'እየተስተካከለ ነው...' : 'Optimizing...'
                     : `${uploadProgress}%`}
@@ -303,10 +303,10 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                     e.stopPropagation();
                     setShowZoom(true);
                   }}
-                  className="min-h-[36px] bg-primary hover:bg-primary-hover text-on-primary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
+                  className="min-h-[var(--ui-control-h-sm)] bg-primary hover:bg-primary-hover text-on-primary px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
                   title={isAmharic ? 'አጉላ' : 'Zoom Image'}
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">zoom_in</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">zoom_in</Icon>
                   <span>{isAmharic ? 'አጉላ' : 'Zoom'}</span>
                 </motion.button>
                 <motion.button
@@ -315,9 +315,9 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                   whileTap={SUBTLE_TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={triggerSelect}
-                  className="min-h-[36px] bg-white/90 hover:bg-white text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
+                  className="min-h-[var(--ui-control-h-sm)] bg-white/90 hover:bg-white text-slate-900 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">edit</Icon>
                   <span>{isAmharic ? 'ቀይር' : 'Change'}</span>
                 </motion.button>
                 <motion.button
@@ -326,9 +326,9 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={handleClear}
-                  className="min-h-[36px] bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
+                  className="min-h-[var(--ui-control-h-sm)] bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm cursor-pointer touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">delete</Icon>
                   <span>{isAmharic ? 'ሰርዝ' : 'Remove'}</span>
                 </motion.button>
               </div>
@@ -336,8 +336,8 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
           </div>
 
           {/* Touch-Friendly Footer Bar on Mobile */}
-          <div className="px-2.5 py-2 bg-surface-container/70 border-t border-outline-variant flex items-center justify-between gap-1 text-[11px]">
-            <span className="text-secondary font-medium truncate max-w-[110px] sm:max-w-[140px]">{label}</span>
+          <div className="px-2.5 py-2 bg-surface-container/70 border-t border-outline-variant flex items-center justify-between gap-1 text-11">
+            <span className="text-secondary font-medium truncate max-w-[calc(110px*var(--ui-scale))] sm:max-w-[calc(140px*var(--ui-scale))]">{label}</span>
             <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <motion.button
                 type="button"
@@ -345,9 +345,9 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={() => setShowZoom(true)}
-                className="text-primary font-bold px-2.5 py-1.5 rounded-md hover:bg-primary/10 transition-colors cursor-pointer flex items-center gap-1 min-h-[44px] sm:min-h-[36px] touch-manipulation"
+                className="text-primary font-bold px-2.5 py-1.5 rounded-md hover:bg-primary/10 transition-colors cursor-pointer flex items-center gap-1 min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[15px]">zoom_in</Icon>
+                <Icon className="material-symbols-outlined text-15">zoom_in</Icon>
                 <span>{isAmharic ? 'አጉላ' : 'Zoom'}</span>
               </motion.button>
               <motion.button
@@ -356,9 +356,9 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={triggerSelect}
-                className="text-[#1e293b] dark:text-blue-400 font-bold px-2.5 py-1.5 rounded-md hover:bg-[#1e293b]/10 dark:hover:bg-blue-400/10 transition-colors cursor-pointer flex items-center gap-1 min-h-[44px] sm:min-h-[36px] touch-manipulation"
+                className="text-[#1e293b] dark:text-blue-400 font-bold px-2.5 py-1.5 rounded-md hover:bg-[#1e293b]/10 dark:hover:bg-blue-400/10 transition-colors cursor-pointer flex items-center gap-1 min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[15px]">photo_camera</Icon>
+                <Icon className="material-symbols-outlined text-15">photo_camera</Icon>
                 <span>{isAmharic ? 'ቀይር' : 'Change'}</span>
               </motion.button>
               <motion.button
@@ -367,10 +367,10 @@ export const DocumentUploadInput: React.FC<DocumentUploadInputProps> = ({
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={handleClear}
-                className="text-rose-600 dark:text-rose-400 font-bold px-2 py-1.5 rounded-md hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] touch-manipulation"
+                className="text-rose-600 dark:text-rose-400 font-bold px-2 py-1.5 rounded-md hover:bg-rose-500/10 transition-colors cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] sm:min-w-[calc(36px*var(--ui-scale))] sm:min-h-[var(--ui-control-h-sm)] touch-manipulation"
                 title={isAmharic ? 'ሰርዝ' : 'Remove'}
               >
-                <Icon className="material-symbols-outlined text-[16px]">delete</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm">delete</Icon>
               </motion.button>
             </div>
           </div>

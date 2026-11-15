@@ -1,18 +1,80 @@
-import React, { ReactNode, useState, useEffect, useId } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './Icon';
 import { ETHIOPIAN_MONTHS } from '../../utils/ethiopianCalendar';
-import {
-  BACKDROP_VARIANTS,
-  BOTTOM_SHEET_VARIANTS,
-  MODAL_CONTENT_VARIANTS,
-  POPOVER_TRANSITION,
-  SHEET_SPRING,
-  SUBTLE_TAP_SCALE,
-  TAB_INDICATOR_SPRING,
-  TACTILE_SPRING,
-  TAP_SCALE,
-} from '../../utils/motionPresets';
+import { BACKDROP_VARIANTS, POPOVER_TRANSITION, SHEET_SPRING } from '../../utils/motionPresets';
+
+// ============================================================================
+// 0. CANONICAL DESIGN TOKENS (Synchronized with src/index.css)
+// ============================================================================
+
+export const DESIGN_TOKENS = {
+  brand: {
+    name: 'Bahirdar Motorist Association',
+    nameAm: 'ባህር ዳር ሞተረኞች ማህበር',
+    primaryLight: '#0F172A',
+    primaryLightHover: '#1E293B',
+    onPrimaryLight: '#FFFFFF',
+    primaryDark: '#F8FAFC',
+    primaryDarkHover: '#FFFFFF',
+    onPrimaryDark: '#0F172A',
+    chromeSidebar: '#0F172A',
+    chromeTopbarMobile: '#1E293B',
+    chromeActiveGold: '#EAB308',
+  },
+  surfaces: {
+    light: {
+      canvas: '#F1F5F9',
+      card: '#FFFFFF',
+      subtle: '#F7F9FC',
+      elevated: '#F8FAFC',
+      hover: '#E2E8F0',
+      border: '#E2E8F0',
+      textPrimary: '#1C2434',
+      textSecondary: '#475569',
+      textMuted: '#64748B',
+    },
+    dark: {
+      canvas: '#1A222C',
+      card: '#1C2434',
+      subtle: '#24303F',
+      elevated: '#24303F',
+      hover: '#333A48',
+      border: '#2E3A47',
+      textPrimary: '#DEE4EE',
+      textSecondary: '#CBD5E1',
+      textMuted: '#8A99AD',
+    },
+  },
+  semantic: {
+    success: '#10B981',
+    warning: '#F59E0B',
+    danger: '#EF4444',
+    dangerCoral: '#FB5454',
+    info: '#475569',
+  },
+  typography: {
+    ethiopicFont: 'Abyssinica SIL',
+    latinFont: 'Inter',
+    monoFont: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    baseSizePx: 16,
+  },
+  radii: {
+    control: 'rounded-lg',
+    compact: 'rounded-md',
+    badge: 'rounded-md',
+    workspace: 'rounded-lg',
+    card: 'rounded-xl',
+    modal: 'rounded-xl',
+    statusDot: 'rounded-full',
+  },
+  elevation: {
+    kpi: 'shadow-none',
+    card: 'shadow-xs',
+    popover: 'shadow-2xl',
+    modal: 'shadow-2xl',
+  },
+} as const;
 
 // ============================================================================
 // 1. ATOMS (Design Primitives, Controls, Badges, Dots)
@@ -29,9 +91,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 /**
  * Atomic Button Primitives adhering to the Association Design System:
- * - 8px border-radius
- * - High-contrast paired tokens for light and dark themes
- * - Crisp tactile spring feedback
+ * - 8px border-radius (rounded-lg), flat borderless primary, hairline secondary
+ * - High-contrast Executive Slate primary (#0F172A light / #F8FAFC dark)
+ * - Accessible focus rings & instant tactile press feedback
  */
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
@@ -45,32 +107,27 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const sizeStyles = {
-    sm: 'px-3.5 py-2 text-xs rounded-md min-h-[40px] sm:min-h-[36px]',
+    sm: 'px-3 py-1.5 text-xs rounded-md min-h-[36px]',
     md: 'px-5 py-2.5 text-sm rounded-lg min-h-[44px]',
     lg: 'px-6 py-3 text-base rounded-lg min-h-[48px]',
   };
 
   const variantStyles = {
     primary:
-      'bg-primary hover:bg-primary-hover text-on-primary font-bold border-0 shadow-none hover:shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors',
+      'bg-primary hover:bg-primary-hover text-on-primary font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-primary/40 transition-colors',
     secondary:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold focus-visible:ring-2 focus-visible:ring-slate-400/30 transition-colors',
+      'bg-transparent hover:bg-slate-100 dark:hover:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] font-semibold focus:ring-2 focus:ring-slate-400/30 transition-colors',
     danger:
-      'bg-rose-600 hover:bg-rose-700 text-white font-bold border-0 shadow-none hover:shadow-none focus-visible:ring-2 focus-visible:ring-rose-500/40 transition-colors',
+      'bg-rose-600 hover:bg-rose-700 text-white font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-rose-500/40 transition-colors',
     ghost:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium focus-visible:ring-2 focus-visible:ring-slate-300 transition-colors',
+      'bg-transparent hover:bg-slate-100 dark:hover:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] font-medium focus:ring-2 focus:ring-slate-300 transition-colors',
   };
 
-  const isDisabled = Boolean(disabled || isLoading);
-
   return (
-    <motion.button
-      data-motion-control="true"
-      whileTap={isDisabled ? undefined : TAP_SCALE}
-      transition={TACTILE_SPRING}
-      disabled={isDisabled}
-      className={`inline-flex items-center justify-center gap-2 cursor-pointer transition-colors duration-150 select-none outline-none disabled:opacity-50 disabled:cursor-not-allowed ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
-      {...(props as any)}
+    <button
+      disabled={disabled || isLoading}
+      className={`inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-150 select-none outline-none disabled:opacity-50 disabled:cursor-not-allowed ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
+      {...props}
     >
       {isLoading ? (
         <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
@@ -81,7 +138,7 @@ export const Button: React.FC<ButtonProps> = ({
       {!isLoading && icon && iconPosition === 'right' && (
         <Icon name={icon} size={18} className="shrink-0" />
       )}
-    </motion.button>
+    </button>
   );
 };
 
@@ -229,7 +286,7 @@ export const FormInput: React.FC<FormInputProps> = ({
 }) => (
   <div className="flex flex-col gap-1.5 w-full">
     {label && (
-      <label htmlFor={id} className="text-sm font-medium text-slate-700 dark:text-slate-300">
+      <label htmlFor={id} className="text-xs sm:text-sm font-bold text-[#1C2434] dark:text-[#DEE4EE]">
         {label}
         {required && <span className="text-rose-500 ml-1 font-bold">*</span>}
       </label>
@@ -237,17 +294,17 @@ export const FormInput: React.FC<FormInputProps> = ({
     <input
       id={id}
       required={required}
-      className={`w-full min-h-[44px] sm:min-h-[40px] px-3 sm:px-3.5 py-2 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none transition-colors ${
+      className={`w-full px-3 sm:px-3.5 py-1.5 sm:py-2.5 text-xs sm:text-sm bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white border rounded-lg outline-none transition-colors placeholder:text-[#64748B] dark:placeholder:text-[#8A99AD] ${
         error
           ? 'border-rose-500 focus:border-rose-600 focus:ring-1 focus:ring-rose-500'
-          : 'border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary'
+          : 'border-[#E2E8F0] dark:border-[#2E3A47] focus:border-primary focus:ring-1 focus:ring-primary/30'
       } ${className}`}
       {...props}
     />
     {error ? (
       <p className="text-xs text-rose-500 font-medium">{error}</p>
     ) : helperText ? (
-      <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
+      <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">{helperText}</p>
     ) : null}
   </div>
 );
@@ -268,7 +325,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   id = 'assoc-search-input',
 }) => (
   <div className={`relative flex-1 flex items-center ${className}`}>
-    <div className="absolute left-3.5 flex items-center pointer-events-none text-slate-400">
+    <div className="absolute left-3.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
       <Icon name="search" size={18} />
     </div>
     <input
@@ -277,13 +334,13 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full min-h-[44px] sm:min-h-[40px] pl-10 pr-10 py-2 text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary placeholder-slate-400 transition-colors"
+      className="w-full pl-9 sm:pl-10 pr-8 sm:pr-9 py-1.5 sm:py-2 text-xs sm:text-sm bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 placeholder:text-[#64748B] dark:placeholder:text-[#8A99AD] transition-colors"
     />
     {value && (
       <button
         type="button"
         onClick={() => onChange('')}
-        className="absolute right-1.5 w-9 h-9 rounded-md flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+        className="absolute right-3 p-0.5 text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white cursor-pointer"
         aria-label="Clear search"
       >
         <Icon name="close" size={16} />
@@ -315,7 +372,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
 }) => (
   <div className="flex flex-col gap-1.5 w-full">
     {label && (
-      <label htmlFor={id} className="text-sm font-medium text-slate-700 dark:text-slate-300">
+      <label htmlFor={id} className="text-xs sm:text-sm font-bold text-[#1C2434] dark:text-[#DEE4EE]">
         {label}
         {required && <span className="text-rose-500 ml-1 font-bold">*</span>}
       </label>
@@ -324,10 +381,10 @@ export const SelectField: React.FC<SelectFieldProps> = ({
       <select
         id={id}
         required={required}
-        className={`w-full min-h-[44px] sm:min-h-[40px] pl-3 sm:pl-3.5 pr-9 py-2 text-sm appearance-none bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 border rounded-lg outline-none cursor-pointer transition-colors ${
+        className={`w-full pl-2.5 sm:pl-3.5 pr-8 sm:pr-9 py-1.5 sm:py-2.5 text-xs sm:text-sm appearance-none bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white border rounded-lg outline-none cursor-pointer transition-colors ${
           error
             ? 'border-rose-500 focus:border-rose-600'
-            : 'border-slate-300 dark:border-slate-700 focus:border-primary focus:ring-1 focus:ring-primary'
+            : 'border-[#E2E8F0] dark:border-[#2E3A47] focus:border-primary focus:ring-1 focus:ring-primary/30'
         } ${className}`}
         {...props}
       >
@@ -339,14 +396,14 @@ export const SelectField: React.FC<SelectFieldProps> = ({
             ))
           : children}
       </select>
-      <div className="absolute right-2.5 sm:right-3 pointer-events-none text-slate-400">
+      <div className="absolute right-2.5 sm:right-3 pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
         <Icon name="keyboard_arrow_down" size={18} />
       </div>
     </div>
     {error ? (
       <p className="text-xs text-rose-500 font-medium">{error}</p>
     ) : helperText ? (
-      <p className="text-xs text-slate-500 dark:text-slate-400">{helperText}</p>
+      <p className="text-xs text-[#64748B] dark:text-[#8A99AD]">{helperText}</p>
     ) : null}
   </div>
 );
@@ -473,7 +530,7 @@ export interface TabItem<T extends string = string> {
   id: T;
   label: string;
   icon?: string;
-  count?: number;
+  count?: number | string;
 }
 
 export interface TabListProps<T extends string = string> {
@@ -491,11 +548,9 @@ export const TabList = <T extends string>({
   variant = 'underline',
   className = '',
 }: TabListProps<T>) => {
-  const groupId = useId();
-
   if (variant === 'flush') {
     return (
-      <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-2 overflow-x-auto scrollbar-none ${className}`}>
+      <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-2.5 overflow-x-auto scrollbar-none ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -503,16 +558,16 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`relative group flex items-center gap-2 min-h-[44px] sm:min-h-[40px] py-2 px-3.5 text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              className={`group flex items-center gap-2 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                 isActive
-                  ? 'top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-slate-900 dark:text-white bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
+                  ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-slate-900 dark:text-white bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
                   : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
               }`}
             >
               <span>{tab.label}</span>
-              {typeof tab.count === 'number' && (
+              {tab.count !== undefined && tab.count !== '' && (
                 <span
-                  className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold transition-colors ${
+                  className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
                     isActive
                       ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
                       : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
@@ -520,13 +575,6 @@ export const TabList = <T extends string>({
                 >
                   {tab.count}
                 </span>
-              )}
-              {isActive && (
-                <motion.span
-                  layoutId={`tab-flush-${groupId}`}
-                  transition={TAB_INDICATOR_SPRING}
-                  className="absolute inset-x-0 top-0 h-[2px] bg-primary rounded-t-md"
-                />
               )}
             </button>
           );
@@ -537,7 +585,7 @@ export const TabList = <T extends string>({
 
   if (variant === 'pill') {
     return (
-      <div className={`inline-flex items-center gap-1 p-1 bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 rounded-lg overflow-x-auto scrollbar-none max-w-full ${className}`}>
+      <div className={`inline-flex items-center gap-1 p-1 bg-[#F1F5F9] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -545,26 +593,19 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`relative px-3.5 py-2 min-h-[40px] sm:min-h-[34px] rounded-md text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              className={`px-3 py-1.5 rounded-sm text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                 isActive
-                  ? 'text-slate-900 dark:text-white'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
+                  : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
               }`}
             >
-              {isActive && (
-                <motion.span
-                  layoutId={`tab-pill-${groupId}`}
-                  transition={TAB_INDICATOR_SPRING}
-                  className="absolute inset-0 bg-white dark:bg-[#1E293B] rounded-md shadow-2xs border border-slate-200/90 dark:border-slate-700"
-                />
-              )}
-              <span className="relative z-10">{tab.label}</span>
-              {typeof tab.count === 'number' && (
+              <span>{tab.label}</span>
+              {tab.count !== undefined && tab.count !== '' && (
                 <span
-                  className={`relative z-10 text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold ${
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
                     isActive
-                      ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
-                      : 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400'
+                      ? 'bg-[#F1F5F9] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
+                      : 'bg-[#E2E8F0]/70 dark:bg-[#1C2434]/60 text-[#64748B] dark:text-[#8A99AD]'
                   }`}
                 >
                   {tab.count}
@@ -578,7 +619,7 @@ export const TabList = <T extends string>({
   }
 
   return (
-    <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-slate-200 dark:border-slate-800 overflow-x-auto scrollbar-none pt-2 px-3 sm:px-5 ${className}`}>
+    <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] overflow-x-auto scrollbar-none pt-2.5 px-3 sm:px-5 ${className}`}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -586,30 +627,23 @@ export const TabList = <T extends string>({
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`relative group flex items-center gap-1.5 min-h-[44px] sm:min-h-[40px] py-2 px-3.5 text-xs sm:text-sm transition-colors cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+            className={`group flex items-center gap-1.5 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
               isActive
-                ? 'top-[1px] z-10 border-t border-l border-r border-slate-200 dark:border-slate-800 border-b-0 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-t-md font-bold'
-                : 'border border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium'
+                ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-t-md font-bold'
+                : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
             }`}
           >
             <span>{tab.label}</span>
-            {typeof tab.count === 'number' && (
+            {tab.count !== undefined && tab.count !== '' && (
               <span
-                className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold transition-colors ${
+                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
                   isActive
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                    ? 'bg-[#F1F5F9] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
+                    : 'bg-[#E2E8F0]/70 dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD]'
                 }`}
               >
                 {tab.count}
               </span>
-            )}
-            {isActive && (
-              <motion.span
-                layoutId={`tab-underline-${groupId}`}
-                transition={TAB_INDICATOR_SPRING}
-                className="absolute inset-x-0 top-0 h-[2px] bg-primary rounded-t-md"
-              />
             )}
           </button>
         );
@@ -642,7 +676,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   onClick,
 }) => {
   const valueColors = {
-    default: 'text-slate-900 dark:text-slate-100',
+    default: 'text-[#1C2434] dark:text-white',
     success: 'text-emerald-600 dark:text-emerald-400',
     danger: 'text-rose-600 dark:text-rose-400',
     warning: 'text-amber-600 dark:text-amber-400',
@@ -652,19 +686,19 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-slate-50/60 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 rounded-lg p-3.5 sm:p-5 transition-colors ${
-        onClick ? 'cursor-pointer hover:bg-slate-100/70 dark:hover:bg-slate-800/60' : ''
+      className={`shadow-kpi bg-[#F7F9FC] dark:bg-[#1C2434]/60 border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg p-3.5 sm:p-5 transition-colors ${
+        onClick ? 'cursor-pointer hover:bg-[#F1F5F9] dark:hover:bg-[#24303F]' : ''
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-1.5">
-        <p className="text-[11px] sm:text-[13px] text-slate-500 dark:text-slate-400 font-bold truncate">{label}</p>
-        {icon && <Icon name={icon} size={18} className="text-slate-400 shrink-0" />}
+        <p className="text-[11px] sm:text-[13px] text-[#64748B] dark:text-[#8A99AD] font-bold truncate">{label}</p>
+        {icon && <Icon name={icon} size={18} className="text-[#64748B] dark:text-[#8A99AD] shrink-0" />}
       </div>
-      <h3 className={`text-base sm:text-2xl font-black tracking-tight mt-1 sm:mt-1.5 ${valueColors[colorVariant]}`}>
+      <h3 className={`text-base sm:text-2xl font-black tracking-tight mt-1 sm:mt-1.5 font-mono tabular-nums ${valueColors[colorVariant]}`}>
         {value}
       </h3>
       {subtext && (
-        <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5 sm:mt-1 truncate">{subtext}</p>
+        <p className="text-[10px] sm:text-xs text-[#64748B] dark:text-[#8A99AD] font-medium mt-0.5 sm:mt-1 truncate">{subtext}</p>
       )}
     </div>
   );
@@ -722,59 +756,53 @@ export const MetricStatCard: React.FC<MetricStatCardProps> = ({
   const resolvedDotColor = statusDotColor || (statusVariant ? dotColorMap[statusVariant] : undefined);
 
   return (
-    <motion.div
-      data-motion-control={onClick ? 'true' : undefined}
-      whileTap={onClick ? SUBTLE_TAP_SCALE : undefined}
-      transition={TACTILE_SPRING}
+    <div
       onClick={onClick}
-      className={`p-3 sm:p-3.5 rounded-lg transition-colors duration-150 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
+      className={`shadow-kpi p-3 sm:p-3.5 rounded-lg transition-colors duration-150 min-w-0 overflow-hidden select-none flex flex-col justify-between ${
         unboxed
-          ? 'bg-slate-50/70 dark:bg-slate-900/40 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800/60'
+          ? 'bg-[#F7F9FC] dark:bg-[#24303F]/50 hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47]'
           : isActive
-          ? 'bg-slate-50/90 dark:bg-slate-900/60 border border-slate-400 dark:border-slate-600'
-          : 'bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-50/80 dark:hover:bg-slate-800/40'
+          ? 'bg-[#F1F5F9] dark:bg-[#24303F] border border-[#64748B] dark:border-[#8A99AD]'
+          : 'bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/70'
       } ${
         onClick ? 'cursor-pointer group' : ''
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-1 mb-1">
-        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate block">
+        <span className="text-[11px] font-semibold text-[#64748B] dark:text-[#8A99AD] truncate block">
           {label}
         </span>
         {resolvedDotColor && (
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${resolvedDotColor}`} />
         )}
         {icon && !resolvedDotColor && (
-          <Icon name={icon} size={15} className="text-slate-400 dark:text-slate-500 shrink-0" />
+          <Icon name={icon} size={15} className="text-[#64748B] dark:text-[#8A99AD] shrink-0" />
         )}
       </div>
       <div>
-        <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight leading-tight flex items-baseline font-mono">
+        <p className="text-lg sm:text-xl font-black text-[#1C2434] dark:text-white tracking-tight leading-tight flex items-baseline font-mono tabular-nums">
           {value}
           {unit && (
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 ml-1">
+            <span className="text-[11px] font-semibold text-[#64748B] dark:text-[#8A99AD] ml-1">
               {unit}
             </span>
           )}
         </p>
         {subtext && (
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 truncate font-medium">
+          <p className="text-[10px] text-[#64748B] dark:text-[#8A99AD] mt-0.5 truncate font-medium">
             {subtext}
           </p>
         )}
         {typeof progress === 'number' && (
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1.5">
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: Math.min(100, Math.max(0, progress)) / 100 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              style={{ transformOrigin: 'left center' }}
-              className="bg-primary h-full w-full rounded-full"
+          <div className="w-full bg-[#E2E8F0] dark:bg-[#2E3A47] h-1.5 rounded-full overflow-hidden mt-1.5">
+            <div
+              className="bg-primary h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             />
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -805,12 +833,12 @@ export const TableContainer: React.FC<{
   className?: string;
 }> = ({ title, action, filterBar, children, className = '' }) => (
   <div
-    className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs flex flex-col gap-4 ${className}`}
+    className={`bg-white dark:bg-[#1C2434] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] p-5 shadow-xs flex flex-col gap-4 ${className}`}
   >
     {(title || action) && (
       <div className="flex items-center justify-between gap-4">
         {title && (
-          <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+          <h2 className="text-base font-semibold text-[#1C2434] dark:text-white">{title}</h2>
         )}
         {action && <div className="shrink-0">{action}</div>}
       </div>
@@ -845,16 +873,111 @@ export const UnifiedWorkspaceCard: React.FC<UnifiedWorkspaceCardProps> = ({
   className = '',
 }) => (
   <div
-    className={`rounded-lg border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden w-full max-w-full min-w-0 ${className}`}
+    className={`rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden w-full max-w-full min-w-0 ${className}`}
   >
-    {header && <div className="w-full border-b border-slate-100 dark:border-slate-800/60">{header}</div>}
-    {tabs && <div className="w-full relative z-10 bg-slate-50/70 dark:bg-[#1E293B]/70">{tabs}</div>}
+    {header && <div className="w-full border-b border-[#E2E8F0]/80 dark:border-[#2E3A47]">{header}</div>}
+    {tabs && <div className="w-full relative z-10 bg-[#F8FAFC] dark:bg-[#1E293B]/70">{tabs}</div>}
     {toolbar && <div className="w-full">{toolbar}</div>}
-    {legend && <div className="w-full border-t border-slate-100 dark:border-slate-800/60">{legend}</div>}
+    {legend && <div className="w-full border-t border-[#E2E8F0]/80 dark:border-[#2E3A47]">{legend}</div>}
     <div className="w-full min-w-0 overflow-x-hidden md:overflow-x-auto">{children}</div>
-    {footer && <div className="w-full border-t border-slate-100 dark:border-slate-800/60">{footer}</div>}
+    {footer && <div className="w-full border-t border-[#E2E8F0] dark:border-[#2E3A47]">{footer}</div>}
   </div>
 );
+
+export interface PaginationFooterProps {
+  page: number;
+  totalPages: number;
+  pageSize: number;
+  totalItems: number;
+  onPageChange: (nextPage: number) => void;
+  onPageSizeChange?: (nextSize: number) => void;
+  pageSizeOptions?: number[];
+  isAmharic?: boolean;
+  isBusy?: boolean;
+  itemLabel?: { am: string; en: string };
+  className?: string;
+}
+
+export const PaginationFooter: React.FC<PaginationFooterProps> = ({
+  page,
+  totalPages,
+  pageSize,
+  totalItems,
+  onPageChange,
+  onPageSizeChange,
+  pageSizeOptions = [5, 10, 20, 50],
+  isAmharic = true,
+  isBusy = false,
+  itemLabel = { am: 'መዝገቦች', en: 'entries' },
+  className = '',
+}) => {
+  const safeTotalPages = Math.max(1, totalPages);
+  const activePage = Math.min(Math.max(1, page), safeTotalPages);
+  const startIdx = (activePage - 1) * pageSize;
+  const endIdx = Math.min(startIdx + pageSize, totalItems);
+
+  return (
+    <div
+      className={`bg-white dark:bg-[#1C2434] px-3.5 sm:px-5 py-2.5 flex flex-row items-center justify-between gap-3 text-xs text-[#64748B] dark:text-[#8A99AD] border-t border-[#E2E8F0] dark:border-[#2E3A47] shrink-0 sticky bottom-0 z-10 shadow-2xs ${className}`}
+    >
+      <div className="flex items-center gap-2 shrink-0">
+        {onPageSizeChange && (
+          <>
+            <span className="font-medium text-[#1C2434] dark:text-white">
+              {isAmharic ? 'በአንድ ገጽ:' : 'Rows per page:'}
+            </span>
+            <select
+              value={String(pageSize)}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              className="py-1 px-2 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs focus:border-primary focus:outline-none cursor-pointer"
+            >
+              {pageSizeOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </>
+        )}
+        <span className="hidden sm:inline font-medium text-[#64748B] dark:text-[#8A99AD]">
+          {totalItems === 0
+            ? isAmharic
+              ? `0 ${itemLabel.am}`
+              : `0 ${itemLabel.en}`
+            : isAmharic
+            ? `${startIdx + 1}-${endIdx} ከ ${totalItems} ${itemLabel.am}`
+            : `Showing ${startIdx + 1}–${endIdx} of ${totalItems} ${itemLabel.en}`}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-1.5 shrink-0">
+        <button
+          type="button"
+          disabled={activePage <= 1 || isBusy}
+          onClick={() => onPageChange(Math.max(1, activePage - 1))}
+          className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+        >
+          <Icon name="chevron_left" size={16} />
+          <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
+        </button>
+
+        <span className="px-3 py-1.5 bg-primary text-on-primary rounded-sm font-semibold font-mono text-xs shadow-xs tabular-nums">
+          {activePage} / {safeTotalPages}
+        </span>
+
+        <button
+          type="button"
+          disabled={activePage >= safeTotalPages || isBusy}
+          onClick={() => onPageChange(Math.min(safeTotalPages, activePage + 1))}
+          className="px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs"
+        >
+          <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
+          <Icon name="chevron_right" size={16} />
+        </button>
+      </div>
+    </div>
+  );
+};
 
 // ============================================================================
 // 4. ORGANISMS (Matrix Ledger, Responsive Master-Detail Table, Detail Pane, Modal)
@@ -1097,12 +1220,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                     className="p-3 sm:p-4 max-w-full min-w-0 overflow-hidden box-border bg-white dark:bg-slate-900"
                     style={{ maxWidth: '100%', minWidth: 0 }}
                   >
-                    <motion.div
-                      initial={{ opacity: 0, y: -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={POPOVER_TRANSITION}
-                      className="w-full max-w-full min-w-0 overflow-hidden space-y-3.5"
-                    >
+                    <div className="w-full max-w-full min-w-0 overflow-hidden space-y-3.5">
                       {/* Redesigned Month List as Desktop-Style Gridboxes with Full Month Name */}
                       <div className="grid grid-cols-3 min-[440px]:grid-cols-4 min-[620px]:grid-cols-5 gap-1.5 sm:gap-2 w-full max-w-full min-w-0">
                         {columns.map((col) => {
@@ -1163,26 +1281,23 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                             <div className="grid grid-cols-2 gap-2 w-full max-w-full min-w-0">
                               {renderActions && renderActions(row, true)}
                               {onRowClick && (
-                                <motion.button
+                                <button
                                   type="button"
-                                  data-motion-control="true"
-                                  whileTap={TAP_SCALE}
-                                  transition={TACTILE_SPRING}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     onRowClick(row);
                                   }}
-                                  className="w-full min-h-[44px] px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover text-on-primary shadow-2xs transition-colors cursor-pointer"
+                                  className="w-full min-h-[38px] px-3 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-primary hover:bg-primary-hover active:scale-95 text-on-primary shadow-2xs transition-all cursor-pointer"
                                 >
                                   <Icon name="badge" size={16} />
                                   <span className="truncate">{isAmharic ? 'ሙሉ መረጃ' : 'Full Profile'}</span>
-                                </motion.button>
+                                </button>
                               )}
                             </div>
                           </div>
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -1193,13 +1308,13 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
           <tr>
             <td
               colSpan={desktopCols}
-              className="hidden md:table-cell py-8 text-center text-sm text-slate-400 dark:text-slate-500"
+              className="hidden md:table-cell py-8 text-center text-sm text-[#64748B] dark:text-[#8A99AD]"
             >
               {emptyMessage}
             </td>
             <td
               colSpan={mobileCols}
-              className="md:hidden py-8 text-center text-sm text-slate-400 dark:text-slate-500"
+              className="md:hidden py-8 text-center text-sm text-[#64748B] dark:text-[#8A99AD]"
             >
               {emptyMessage}
             </td>
@@ -1230,15 +1345,15 @@ export const HistoryItem: React.FC<{ item: HistoryItemData }> = ({ item }) => {
     ? 'text-rose-600 dark:text-rose-400'
     : isPending
     ? 'text-amber-600 dark:text-amber-400'
-    : 'text-slate-600 dark:text-slate-300';
+    : 'text-[#64748B] dark:text-[#8A99AD]';
 
   return (
-    <li className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-800 text-sm">
+    <li className="flex items-center justify-between p-3 bg-[#F7F9FC] dark:bg-[#24303F] rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] text-sm">
       <div className="min-w-0">
-        <strong className="block font-semibold text-slate-900 dark:text-slate-100 truncate">
+        <strong className="block font-semibold text-[#1C2434] dark:text-white truncate font-mono tabular-nums">
           {item.amount}
         </strong>
-        <small className="text-xs text-slate-500 dark:text-slate-400">
+        <small className="text-xs text-[#64748B] dark:text-[#8A99AD]">
           Period: {item.date} {item.reference && `• Ref: ${item.reference}`}
         </small>
       </div>
@@ -1269,25 +1384,25 @@ export const FocusDetailPane: React.FC<DetailPaneProps> = ({
   className = '',
 }) => (
   <div
-    className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-xs flex flex-col gap-4 ${className}`}
+    className={`bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl p-5 shadow-xs flex flex-col gap-4 ${className}`}
   >
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
+          <h3 className="text-base font-bold text-[#1C2434] dark:text-white truncate">
             {title}
           </h3>
           {badge && <StatusBadge label={badge.label} variant={badge.variant} />}
         </div>
         {subtitle && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 break-all">{subtitle}</p>
+          <p className="text-xs text-[#64748B] dark:text-[#8A99AD] mt-0.5 break-all">{subtitle}</p>
         )}
       </div>
       {onClose && (
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
+          className="text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white p-1 cursor-pointer"
         >
           <Icon name="close" size={18} />
         </button>
@@ -1296,10 +1411,10 @@ export const FocusDetailPane: React.FC<DetailPaneProps> = ({
 
     {actions && <div className="flex items-center gap-2 pt-1">{actions}</div>}
 
-    <hr className="border-t border-slate-200 dark:border-slate-800" />
+    <hr className="border-t border-[#E2E8F0] dark:border-[#2E3A47]" />
 
     <div>
-      <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400  tracking-wider mb-2.5">
+      <h4 className="text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] tracking-wider mb-2.5">
         {historyTitle}
       </h4>
       <ul className="flex flex-col gap-2">
@@ -1307,7 +1422,7 @@ export const FocusDetailPane: React.FC<DetailPaneProps> = ({
           <HistoryItem key={pay.id} item={pay} />
         ))}
         {history.length === 0 && (
-          <li className="text-xs text-slate-400 dark:text-slate-500 italic py-2">
+          <li className="text-xs text-[#64748B] dark:text-[#8A99AD] italic py-2">
             No transactions logged.
           </li>
         )}
@@ -1318,8 +1433,7 @@ export const FocusDetailPane: React.FC<DetailPaneProps> = ({
 
 /**
  * Modal Form Dialog Component:
- * Replaces hardcoded backdrop and non-accessible prototype modal with
- * accessible keyboard dismiss (Escape), backdrop click, and clean button action footer.
+ * Accessible keyboard dismiss (Escape), backdrop click, and clean action footer.
  */
 export interface ModalFormDialogProps {
   isOpen: boolean;
@@ -1344,18 +1458,6 @@ export const ModalFormDialog: React.FC<ModalFormDialogProps> = ({
   secondaryActionLabel = 'Dismiss',
   isSubmitting = false,
 }) => {
-  const [isMobile, setIsMobile] = useState<boolean>(() =>
-    typeof window !== 'undefined' ? window.innerWidth < 768 : false
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -1366,91 +1468,53 @@ export const ModalFormDialog: React.FC<ModalFormDialogProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-          variants={BACKDROP_VARIANTS}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          transition={POPOVER_TRANSITION}
-          className={`fixed inset-0 z-50 flex bg-slate-950/65 backdrop-blur-xs ${
-            isMobile
-              ? 'items-end justify-center p-0'
-              : 'items-start justify-center pt-10 md:pt-14 pb-8 p-4 overflow-y-auto'
-          }`}
-          onClick={onClose}
-        >
-          <motion.div
-            variants={isMobile ? BOTTOM_SHEET_VARIANTS : MODAL_CONTENT_VARIANTS}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            transition={SHEET_SPRING}
-            drag={isMobile ? 'y' : false}
-            dragConstraints={isMobile ? { top: 0 } : undefined}
-            dragElastic={isMobile ? { top: 0, bottom: 0.4 } : undefined}
-            onDragEnd={
-              isMobile
-                ? (_, info) => {
-                    if (info.offset.y > 90 || info.velocity.y > 450) {
-                      onClose();
-                    }
-                  }
-                : undefined
-            }
-            className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 w-full shadow-2xl flex flex-col gap-5 text-slate-800 dark:text-slate-100 ${
-              isMobile
-                ? 'rounded-t-2xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom,20px))] max-h-[90dvh] overflow-y-auto'
-                : 'rounded-xl p-6 max-w-lg'
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {isMobile && (
-              <div className="w-full flex justify-center -mt-2 mb-1 touch-none cursor-grab active:cursor-grabbing" aria-hidden="true">
-                <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-700" />
-              </div>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 bg-slate-950/65 backdrop-blur-xs animate-modal-backdrop overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl p-6 w-full max-w-lg shadow-2xl flex flex-col gap-5 text-[#1C2434] dark:text-[#DEE4EE] animate-modal-content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 id="modal-title" className="text-lg font-bold text-[#1C2434] dark:text-white">
+              {title}
+            </h3>
+            {description && (
+              <p className="text-xs text-[#64748B] dark:text-[#8A99AD] mt-1">{description}</p>
             )}
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 rounded-md text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24303F] transition-colors cursor-pointer"
+            aria-label="Close modal"
+          >
+            <Icon name="close" size={20} />
+          </button>
+        </div>
 
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 id="modal-title" className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                  {title}
-                </h3>
-                {description && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{description}</p>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="w-10 h-10 -mr-1 -mt-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer"
-                aria-label="Close modal"
-              >
-                <Icon name="close" size={20} />
-              </button>
-            </div>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">{children}</div>
 
-            <form onSubmit={onSubmit} className="flex flex-col gap-4">
-              <div className="flex flex-col gap-4">{children}</div>
-
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <ButtonSecondary type="button" onClick={onClose} disabled={isSubmitting}>
-                  {secondaryActionLabel}
-                </ButtonSecondary>
-                <ButtonPrimary type="submit" isLoading={isSubmitting}>
-                  {primaryActionLabel}
-                </ButtonPrimary>
-              </div>
-            </form>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+            <ButtonSecondary type="button" onClick={onClose} disabled={isSubmitting}>
+              {secondaryActionLabel}
+            </ButtonSecondary>
+            <ButtonPrimary type="submit" isLoading={isSubmitting}>
+              {primaryActionLabel}
+            </ButtonPrimary>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
@@ -1511,23 +1575,23 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
   return (
     <table className={`w-full border-collapse text-left ${className}`}>
       <thead>
-        <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-          {columns.map((col, idx) => (
+        <tr className="border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]">
+          {columns.map((col) => (
             <th
               key={col.key}
-              className={`py-3 px-4 text-xs font-semibold text-slate-500 dark:text-slate-400 ${
+              className={`py-3 px-4 text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] ${
                 col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
               } ${col.hideOnMobile ? 'hidden md:table-cell' : ''}`}
             >
               {col.header}
             </th>
           ))}
-          <th className="py-3 px-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 md:hidden w-8">
+          <th className="py-3 px-3 text-right text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] md:hidden w-8">
             <span className="sr-only">Toggle</span>
           </th>
         </tr>
       </thead>
-      <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+      <tbody className="divide-y divide-[#E2E8F0]/70 dark:divide-[#2E3A47]">
         {data.map((item) => {
           const isSelected = selectedId === item.id;
           const isExpanded = expandedMobileRowIds.has(item.id);
@@ -1538,14 +1602,14 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
                 onClick={() => handleRowClick(item)}
                 className={`cursor-pointer transition-colors duration-150 select-none ${
                   isSelected
-                    ? 'bg-blue-50/60 dark:bg-blue-950/30 border-l-2 border-primary'
-                    : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                    ? 'bg-primary/8 dark:bg-primary/15 border-l-2 border-primary'
+                    : 'hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50'
                 }`}
               >
                 {columns.map((col, idx) => (
                   <td
                     key={col.key}
-                    className={`py-3.5 px-4 text-sm text-slate-800 dark:text-slate-200 ${
+                    className={`py-3.5 px-4 text-sm text-[#1C2434] dark:text-[#DEE4EE] ${
                       col.align === 'center'
                         ? 'text-center'
                         : col.align === 'right'
@@ -1558,7 +1622,7 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
                     {col.render ? col.render(item) : (item as any)[col.key]}
                   </td>
                 ))}
-                <td className="py-3.5 px-3 text-right text-slate-400 md:hidden w-8">
+                <td className="py-3.5 px-3 text-right text-[#64748B] dark:text-[#8A99AD] md:hidden w-8">
                   <Icon
                     name={isExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
                     size={18}
@@ -1569,13 +1633,13 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
 
               {/* Collapsible details drawer for mobile viewports */}
               {isExpanded && renderMobileExpandedContent && (
-                <tr className="md:hidden bg-slate-50/80 dark:bg-slate-800/80">
+                <tr className="md:hidden bg-[#F7F9FC] dark:bg-[#24303F]">
                   <td
                     colSpan={columns.filter((c) => !c.hideOnMobile).length + 1}
-                    className="p-4 border-b border-slate-200 dark:border-slate-700 max-w-full min-w-0 overflow-hidden box-border"
+                    className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] max-w-full min-w-0 overflow-hidden box-border"
                     style={{ maxWidth: '100%', minWidth: 0 }}
                   >
-                    <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 animate-fadeIn max-w-full min-w-0 overflow-hidden">
+                    <div className="space-y-3 text-xs text-[#475569] dark:text-[#CBD5E1] animate-fadeIn max-w-full min-w-0 overflow-hidden">
                       {renderMobileExpandedContent(item)}
                     </div>
                   </td>
@@ -1589,7 +1653,7 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
           <tr>
             <td
               colSpan={columns.length + 1}
-              className="py-10 text-center text-sm text-slate-400 dark:text-slate-500"
+              className="py-10 text-center text-sm text-[#64748B] dark:text-[#8A99AD]"
             >
               {emptyMessage}
             </td>
@@ -1599,4 +1663,160 @@ export function ResponsiveMasterDetailTable<T extends { id: string | number }>({
     </table>
   );
 }
+
+// ============================================================================
+// 6. WORKSPACE SIDE DRAWER & DRAWER SECTION ORGANISMS
+// ============================================================================
+
+export interface WorkspaceDrawerSectionProps {
+  title: ReactNode;
+  icon?: string;
+  rightSlot?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}
+
+export const WorkspaceDrawerSection: React.FC<WorkspaceDrawerSectionProps> = ({
+  title,
+  icon,
+  rightSlot,
+  children,
+  className = '',
+}) => (
+  <section
+    className={`bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg overflow-hidden shadow-2xs ${className}`}
+  >
+    <div className="px-3.5 py-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]/70 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2 min-w-0">
+        {icon && <Icon name={icon} size={16} className="text-primary shrink-0" />}
+        <h4 className="text-xs font-bold text-[#1C2434] dark:text-white truncate">{title}</h4>
+      </div>
+      {rightSlot && <div className="shrink-0 flex items-center">{rightSlot}</div>}
+    </div>
+    <div className="p-3.5">{children}</div>
+  </section>
+);
+
+export interface WorkspaceSideDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  badge?: ReactNode;
+  icon?: string;
+  closeLabel?: string;
+  headerActions?: ReactNode;
+  tabs?: ReactNode;
+  footer?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}
+
+export const WorkspaceSideDrawer: React.FC<WorkspaceSideDrawerProps> = ({
+  isOpen,
+  onClose,
+  title,
+  subtitle,
+  badge,
+  icon,
+  closeLabel = 'Close',
+  headerActions,
+  tabs,
+  footer,
+  children,
+  className = '',
+}) => {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          variants={BACKDROP_VARIANTS}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          transition={POPOVER_TRANSITION}
+          className="fixed inset-0 z-50 bg-slate-950/65 dark:bg-black/80 backdrop-blur-xs flex items-stretch justify-end"
+          onClick={onClose}
+        >
+          <motion.aside
+            initial={{ x: '100%', opacity: 0.9 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0.9 }}
+            transition={SHEET_SPRING}
+            onClick={(e) => e.stopPropagation()}
+            className={`w-full md:max-w-2xl h-full bg-[#F7F9FC] dark:bg-[#1A222C] border-l border-[#E2E8F0] dark:border-[#2E3A47] rounded-none shadow-2xl flex flex-col overflow-hidden ${className}`}
+          >
+            {/* Sticky Header */}
+            <header className="px-4 sm:px-5 py-3.5 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                {icon && (
+                  <div className="w-9 h-9 rounded-lg bg-[#F1F5F9] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-center text-primary shrink-0">
+                    <Icon name={icon} size={20} />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm sm:text-base font-extrabold text-[#1C2434] dark:text-white truncate">
+                      {title}
+                    </h3>
+                    {badge}
+                  </div>
+                  {subtitle && (
+                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#8A99AD] font-medium flex-wrap">
+                      {subtitle}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                {headerActions}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label={closeLabel}
+                  title={closeLabel}
+                  className="min-w-[36px] min-h-[36px] p-1.5 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#333A48] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                >
+                  <Icon name="close" size={18} />
+                </button>
+              </div>
+            </header>
+
+            {/* Optional Flush Tab Strip */}
+            {tabs && (
+              <div className="w-full shrink-0 bg-[#F8FAFC] dark:bg-[#1E293B]/70">{tabs}</div>
+            )}
+
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-3.5 touch-scroll">
+              {children}
+            </div>
+
+            {/* Sticky Footer */}
+            {footer && (
+              <footer className="px-4 sm:px-5 py-3 pb-safe bg-white dark:bg-[#1C2434] border-t border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
+                {footer}
+              </footer>
+            )}
+          </motion.aside>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 

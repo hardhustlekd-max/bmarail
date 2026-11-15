@@ -655,7 +655,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             onClick={() => handleActionClick('quick_verify')}
             className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shadow-md group cursor-pointer hover:bg-blue-500/20 active:scale-95 touch-manipulation transition-all duration-300"
           >
-            <Icon className="material-symbols-outlined text-[42px] sm:text-[48px] text-slate-700 group-hover:scale-110 transition-transform duration-300">
+            <Icon className="material-symbols-outlined text-[length:calc(42px*var(--ui-scale))] sm:text-[length:calc(48px*var(--ui-scale))] text-slate-700 group-hover:scale-110 transition-transform duration-300">
               qr_code_scanner
             </Icon>
           </div>
@@ -677,9 +677,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             whileTap={TAP_SCALE}
             transition={TACTILE_SPRING}
             onClick={() => handleActionClick('quick_verify')}
-            className="w-full max-w-xs min-h-[48px] py-3.5 px-6 rounded-lg bg-primary hover:bg-primary-hover border-0 shadow-none hover:shadow-none touch-manipulation transition-colors font-black text-xs sm:text-sm text-on-primary tracking-wider flex items-center justify-center gap-2.5 cursor-pointer"
+            className="w-full max-w-xs min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] py-3.5 px-6 rounded-lg bg-primary hover:bg-primary-hover border-0 shadow-none hover:shadow-none touch-manipulation transition-colors font-black text-xs sm:text-sm text-on-primary tracking-wider flex items-center justify-center gap-2.5 cursor-pointer"
           >
-            <Icon className="material-symbols-outlined text-[22px]">photo_camera</Icon>
+            <Icon className="material-symbols-outlined text-icon-xl">photo_camera</Icon>
             <span>{isAmharic ? 'ፍተሻ ጀምር' : 'Launch QR Scanner'}</span>
           </motion.button>
         </div>
@@ -687,7 +687,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* ==================== UNIFIED OVERVIEW CONTAINER ==================== */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-xl overflow-hidden mb-6">
         <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800/60 px-4 sm:px-5 py-3.5 bg-slate-50/40 dark:bg-slate-900/40">
-          <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0">dashboard</Icon>
+          <Icon className="material-symbols-outlined text-icon-md text-slate-600 dark:text-slate-400 shrink-0">dashboard</Icon>
           <h2 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
             {isAmharic ? 'አጠቃላይ እይታ' : 'Overview'}
           </h2>
@@ -699,7 +699,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[20px] text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
               <div>
                 <h3 className="text-sm sm:text-base font-black text-on-surface  tracking-wider">
                   {isAmharic ? 'የሲስተሙ ተጠቃሚዎች ስታቲስቲክስ' : 'System Users Statistics'}
@@ -715,7 +715,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
               </div>
@@ -730,7 +730,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
                   {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
                 </span>
               </div>
@@ -747,7 +747,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'የታገዱ' : 'Blocked'}
                 </span>
               </div>
@@ -773,7 +773,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           >
             <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[16px] shrink-0">qr_code_scanner</Icon>
+                <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-icon-sm shrink-0">qr_code_scanner</Icon>
                 <h3 className="font-extrabold text-sm text-on-surface">
                   {isAmharic ? 'የቀጥታ QR እና ሰሌዳ መለያ ፍተሻ' : 'Live QR & License Plate Scanner'}
                 </h3>
@@ -784,9 +784,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={() => setShowLookupModal(false)}
-                className="min-h-[40px] text-secondary hover:text-on-surface px-2.5 py-1 rounded-lg hover:bg-surface-container text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer touch-manipulation"
+                className="min-h-[var(--ui-control-h-md)] text-secondary hover:text-on-surface px-2.5 py-1 rounded-lg hover:bg-surface-container text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+                <Icon className="material-symbols-outlined text-icon-md">close</Icon>
                 <span>{isAmharic ? 'ዝጋ' : 'Close Scanner'}</span>
               </motion.button>
             </div>
@@ -810,7 +810,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-slate-100 dark:border-slate-800/60 pb-3">
             {/* Title */}
             <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-              <Icon className="material-symbols-outlined text-[20px] sm:text-[22px] text-slate-600 dark:text-slate-400 shrink-0">payments</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg sm:text-icon-xl text-slate-600 dark:text-slate-400 shrink-0">payments</Icon>
               <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight truncate">
                 {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
               </h3>
@@ -892,7 +892,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <div className="p-4 sm:p-5 space-y-3">
               <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
                   <div>
                     <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white  tracking-wider">
                       {isAmharic ? 'የመሰክ ፍተሻ ስታትስቲክስ' : 'Patrol Inspection Stats'}
@@ -908,7 +908,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-slate-400/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                       {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                     </span>
                   </div>
@@ -925,7 +925,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50 hover:bg-amber-100/70 dark:hover:bg-amber-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                       {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                     </span>
                   </div>
@@ -942,7 +942,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                   className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/80 dark:bg-rose-900/20 border border-rose-200/70 dark:border-rose-800/50 hover:bg-rose-100/70 dark:hover:bg-rose-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                       {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                     </span>
                   </div>
@@ -961,7 +961,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
+              <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
               <div>
                 <h2 className="font-extrabold text-sm sm:text-base text-on-surface tracking-wider">
                   {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
@@ -978,7 +978,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-slate-400/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                 </span>
               </div>
@@ -995,7 +995,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-emerald-50/80 dark:bg-emerald-900/20 border border-emerald-200/70 dark:border-emerald-800/50 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'የፀደቁ' : 'Valid'}
                 </span>
               </div>
@@ -1010,7 +1010,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50 hover:bg-amber-100/70 dark:hover:bg-amber-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                 </span>
               </div>
@@ -1027,7 +1027,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
               className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/80 dark:bg-rose-900/20 border border-rose-200/70 dark:border-rose-800/50 hover:bg-rose-100/70 dark:hover:bg-rose-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
                   {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                 </span>
               </div>
@@ -1049,12 +1049,12 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         <div className="p-3 sm:p-5 bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-2xs space-y-2.5 sm:space-y-3.5">
           <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2 sm:pb-2.5">
             <div className="flex items-center gap-2 sm:gap-2.5">
-              <Icon className="material-symbols-outlined text-[18px] text-primary shrink-0">{currentRoleConfig.headerIcon}</Icon>
+              <Icon className="material-symbols-outlined text-icon-md text-primary shrink-0">{currentRoleConfig.headerIcon}</Icon>
               <h3 className="text-xs sm:text-sm font-black text-on-surface uppercase tracking-wider">
                 {currentRoleConfig.title}
               </h3>
             </div>
-            <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary">
+            <span className="text-2xs sm:text-xs font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary">
               {currentRoleConfig.actions.length} {isAmharic ? 'አቋራጮች' : 'Actions'}
             </span>
           </div>
@@ -1068,23 +1068,23 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 whileTap={SUBTLE_TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={() => handleActionClick(act.key)}
-                className="group relative min-h-[50px] sm:min-h-[54px] px-3 py-2.5 sm:px-3.5 bg-surface-container-low/70 hover:bg-surface-container active:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-colors duration-150 cursor-pointer flex items-center justify-between gap-2.5 shadow-2xs hover:shadow-xs touch-manipulation select-none overflow-hidden"
+                className="group relative min-h-[44px] sm:min-h-[calc(54px*var(--ui-scale))] px-3 py-2.5 sm:px-3.5 bg-surface-container-low/70 hover:bg-surface-container active:bg-surface-container border border-outline-variant/60 rounded-xl text-left transition-colors duration-150 cursor-pointer flex items-center justify-between gap-2.5 shadow-2xs hover:shadow-xs touch-manipulation select-none overflow-hidden"
               >
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${act.iconBg} flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform`}>
-                    <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">{act.icon}</Icon>
+                    <Icon className="material-symbols-outlined text-icon-md sm:text-icon-lg">{act.icon}</Icon>
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="text-xs sm:text-sm font-bold text-on-surface group-hover:text-primary transition-colors truncate">
                       {act.title}
                     </h4>
-                    <p className="text-[10px] sm:text-xs text-secondary truncate font-medium">
+                    <p className="text-2xs sm:text-xs text-secondary truncate font-medium">
                       {act.subtitle}
                     </p>
                   </div>
                 </div>
 
-                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
+                <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-secondary group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
                   chevron_right
                 </Icon>
               </motion.button>

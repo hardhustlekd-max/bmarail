@@ -65,137 +65,219 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+:root {
+  /* Master UI Scale & Proportional Control Heights */
+  --ui-scale: 1;
+  --ui-control-h-xs: calc(1.875rem * var(--ui-scale)); /* 30px at 1.0 */
+  --ui-control-h-sm: calc(2.125rem * var(--ui-scale)); /* 34px at 1.0 */
+  --ui-control-h-md: calc(2.5rem * var(--ui-scale));   /* 40px at 1.0 */
+  --ui-control-h-lg: calc(2.875rem * var(--ui-scale)); /* 46px at 1.0 */
+
+  /* Scaled Micro Text & Icon Size Tokens */
+  --ui-text-2xs: calc(0.625rem * var(--ui-scale));     /* 10px at 1.0 */
+  --ui-text-11: calc(0.6875rem * var(--ui-scale));     /* 11px at 1.0 */
+  --ui-text-13: calc(0.8125rem * var(--ui-scale));     /* 13px at 1.0 */
+  --ui-text-15: calc(0.9375rem * var(--ui-scale));     /* 15px at 1.0 */
+  --ui-icon-xs: calc(0.875rem * var(--ui-scale));      /* 14px at 1.0 */
+  --ui-icon-sm: calc(1rem * var(--ui-scale));          /* 16px at 1.0 */
+  --ui-icon-md: calc(1.125rem * var(--ui-scale));      /* 18px at 1.0 */
+  --ui-icon-lg: calc(1.25rem * var(--ui-scale));       /* 20px at 1.0 */
+  --ui-icon-xl: calc(1.5rem * var(--ui-scale));        /* 24px at 1.0 */
+  --ui-icon-2xl: calc(1.875rem * var(--ui-scale));     /* 30px at 1.0 */
+  --ui-icon-3xl: calc(2.25rem * var(--ui-scale));      /* 36px at 1.0 */
+}
+
+/* Breakpoint-Adaptive Auto UI Scaling (active unless user overrides in Settings) */
+@media screen and (max-width: 389px) {
+  html:not([data-ui-scale]),
+  html[data-ui-scale="auto"] {
+    font-size: 15px;
+    --ui-scale: 0.96;
+  }
+}
+
+@media screen and (min-width: 1024px) and (max-width: 1366px),
+       screen and (min-width: 1024px) and (max-height: 780px) {
+  html:not([data-ui-scale]),
+  html[data-ui-scale="auto"] {
+    font-size: 15px;
+    --ui-scale: 0.94;
+  }
+}
+
+@media screen and (min-width: 1800px) {
+  html:not([data-ui-scale]),
+  html[data-ui-scale="auto"] {
+    font-size: 16.5px;
+    --ui-scale: 1.04;
+  }
+}
+
+/* Explicit User-Selectable Display Scale Presets */
+html[data-ui-scale="compact"] {
+  font-size: 14.5px;
+  --ui-scale: 0.9;
+}
+
+html[data-ui-scale="standard"] {
+  font-size: 16px;
+  --ui-scale: 1;
+}
+
+html[data-ui-scale="large"] {
+  font-size: 17px;
+  --ui-scale: 1.08;
+}
+
 :root, html.light {
-  /* Light Mode Tokens (Charcoal Text on Crisp Slate Canvas) */
-  --color-text-primary: #0F172A;
+  /* Light Mode Tokens — Executive Slate & Crisp TailAdmin Surfaces */
+  --color-text-primary: #1C2434;
   --color-text-secondary: #475569;
   --color-text-muted: #64748B;
   --color-bg-main: #FFFFFF;
-  --color-bg-surface: #F8FAFC;
+  --color-bg-surface: #F1F5F9;
 
-  /* UI Component Accents */
-  --assoc-accent: #0F172A;
-  --assoc-accent-hover: #1E293B;
-  --assoc-on-accent: #FFFFFF;
-  --assoc-success: #15803D;
-  --assoc-success-bg: #DCFCE7;
-  --assoc-success-text: #14532D;
-  --assoc-warning: #D97706;
-  --assoc-warning-bg: #FEF3C7;
-  --assoc-warning-text: #78350F;
-  --assoc-danger: #DC2626;
-  --assoc-danger-bg: #FEE2E2;
-  --assoc-danger-text: #7F1D1D;
-  --assoc-info: #475569;
-  --assoc-info-bg: #F1F5F9;
-  --assoc-info-text: #0F172A;
-
+  /* Primary Brand & Action Accents (Executive Slate Ink) */
   --color-primary: #0F172A;
   --color-primary-hover: #1E293B;
   --color-on-primary: #FFFFFF;
   --color-primary-container: #F1F5F9;
   --color-primary-light: #E2E8F0;
   --color-secondary-container: #F1F5F9;
-  --color-surface: #F8FAFC;
-  --color-on-surface: #0F172A;
-  --color-on-surface-variant: #475569;
-  --color-surface-container: #F1F5F9;
+  --color-brand-indigo: #0F172A;
+
+  /* Surface Hierarchy (Light) */
+  --color-surface: #F1F5F9;
+  --color-surface-dim: #E2E8F0;
+  --color-surface-bright: #FFFFFF;
+  --color-surface-variant: #F7F9FC;
   --color-surface-container-lowest: #FFFFFF;
   --color-surface-container-low: #F8FAFC;
-  --color-surface-container-high: #E2E8F0;
-  --color-surface-container-highest: #CBD5E1;
-  --color-surface-bright: #FFFFFF;
-  --color-surface-dim: #F1F5F9;
-  --color-surface-variant: #F1F5F9;
-  --color-secondary: #475569;
+  --color-surface-container: #F7F9FC;
+  --color-surface-container-high: #F1F5F9;
+  --color-surface-container-highest: #E2E8F0;
+
+  /* Typography & Outline Tokens (Light) */
+  --color-on-surface: #0F172A;
+  --color-on-surface-variant: #475569;
+  --color-secondary: #64748B;
   --color-outline: #64748B;
   --color-outline-variant: #E2E8F0;
-  --color-brand-indigo: #0F172A;
+  --color-error: #EF4444;
+
+  /* Persistent Dark Navigation Chrome (Sidebar & Mobile Topbar) */
   --color-topnav: #FFFFFF;
   --color-topnav-hover: #F8FAFC;
-  --color-topnav-dark: #1C2434;
-  --color-sidebar-bg: #1C2434;
-  --color-sidebar-hover: #24303F;
+  --color-topnav-dark: #1E293B;
+  --color-sidebar-bg: #0F172A;
+  --color-sidebar-hover: #1E293B;
   --color-sidebar-text: #CBD5E1;
-  --color-sidebar-active-text: #F8FAFC;
+  --color-sidebar-active-text: #FFFFFF;
+
+  /* Semantic Status Accents (Light) */
+  --assoc-accent: #0F172A;
+  --assoc-accent-hover: #1E293B;
+  --assoc-on-accent: #FFFFFF;
+  --assoc-success: #10B981;
+  --assoc-success-bg: #ECFDF5;
+  --assoc-success-text: #047857;
+  --assoc-warning: #F59E0B;
+  --assoc-warning-bg: #FFFBEB;
+  --assoc-warning-text: #B45309;
+  --assoc-danger: #EF4444;
+  --assoc-danger-bg: #FFF1F2;
+  --assoc-danger-text: #BE123C;
+  --assoc-info: #475569;
+  --assoc-info-bg: #F1F5F9;
+  --assoc-info-text: #1E293B;
 
   /* Association Design System Tokens (Light Mode) */
-  --assoc-bg-primary: #F8FAFC;
-  --assoc-sidebar-bg: #1C2434;
-  --assoc-text-main: #0F172A;
+  --assoc-bg-primary: #F1F5F9;
+  --assoc-sidebar-bg: #0F172A;
+  --assoc-text-main: #1C2434;
   --assoc-text-muted: #64748B;
   --assoc-text-subtle: #475569;
   --assoc-card-bg: #FFFFFF;
+  --assoc-surface-subtle: #F7F9FC;
   --assoc-border: #E2E8F0;
   --assoc-backdrop: rgba(15, 23, 42, 0.6);
   color-scheme: light;
 }
 
 html.dark {
-  /* Dark Mode Tokens (High-Contrast Slate Palette) */
-  --color-text-primary: #F8FAFC;
+  /* Dark Mode Tokens — TailAdmin Deep Navy-Slate Surfaces */
+  --color-text-primary: #DEE4EE;
   --color-text-secondary: #CBD5E1;
-  --color-text-muted: #94A3B8;
-  --color-bg-main: #0F172A;
+  --color-text-muted: #8A99AD;
+  --color-bg-main: #1A222C;
   --color-bg-surface: #1C2434;
   --color-text-dark-primary: #F8FAFC;
-  --color-text-dark-secondary: #CBD5E1;
+  --color-text-dark-secondary: #DEE4EE;
 
-  /* Paired Primary Action Tokens for WCAG AA Contrast in Dark Mode */
-  --assoc-accent: #F8FAFC;
-  --assoc-accent-hover: #E2E8F0;
-  --assoc-on-accent: #0F172A;
-  --assoc-success: #10B981;
-  --assoc-success-bg: rgba(16, 185, 129, 0.18);
-  --assoc-success-text: #6EE7B7;
-  --assoc-warning: #F59E0B;
-  --assoc-warning-bg: rgba(245, 158, 11, 0.18);
-  --assoc-warning-text: #FCD34D;
-  --assoc-danger: #EF4444;
-  --assoc-danger-bg: rgba(239, 68, 68, 0.18);
-  --assoc-danger-text: #FCA5A5;
-  --assoc-info: #CBD5E1;
-  --assoc-info-bg: rgba(148, 163, 184, 0.15);
-  --assoc-info-text: #F8FAFC;
-
+  /* Primary Brand & Action Accents (High-Contrast Inverted Slate) */
   --color-primary: #F8FAFC;
-  --color-primary-hover: #E2E8F0;
+  --color-primary-hover: #FFFFFF;
   --color-on-primary: #0F172A;
   --color-primary-container: #1C2434;
   --color-primary-light: #334155;
-  --color-secondary-container: #1C2434;
-  --color-surface: #0F172A;
+  --color-secondary-container: #24303F;
+  --color-brand-indigo: #F8FAFC;
+
+  /* Surface Hierarchy (Dark) */
+  --color-surface: #1A222C;
+  --color-surface-dim: #0F172A;
+  --color-surface-bright: #24303F;
+  --color-surface-variant: #24303F;
+  --color-surface-container-lowest: #1C2434;
+  --color-surface-container-low: #1E293B;
+  --color-surface-container: #24303F;
+  --color-surface-container-high: #24303F;
+  --color-surface-container-highest: #333A48;
+
+  /* Typography & Outline Tokens (Dark) */
   --color-on-surface: #F8FAFC;
   --color-on-surface-variant: #CBD5E1;
-  --color-surface-container: #1C2434;
-  --color-surface-container-lowest: #161F30;
-  --color-surface-container-low: #1A2436;
-  --color-surface-container-high: #24303F;
-  --color-surface-container-highest: #334155;
-  --color-surface-bright: #24303F;
-  --color-surface-dim: #0F172A;
-  --color-surface-variant: #1C2434;
-  --color-secondary: #94A3B8;
-  --color-outline: #64748B;
+  --color-secondary: #8A99AD;
+  --color-outline: #8A99AD;
   --color-outline-variant: #2E3A47;
-  --color-brand-indigo: #F8FAFC;
+  --color-error: #FB5454;
+
+  /* Persistent Dark Navigation Chrome */
   --color-topnav: #1C2434;
   --color-topnav-hover: #24303F;
   --color-topnav-dark: #0F172A;
-  --color-sidebar-bg: #1C2434;
-  --color-sidebar-hover: #24303F;
+  --color-sidebar-bg: #0F172A;
+  --color-sidebar-hover: #1E293B;
   --color-sidebar-text: #CBD5E1;
-  --color-sidebar-active-text: #F8FAFC;
+  --color-sidebar-active-text: #FFFFFF;
+
+  /* Semantic Status Accents (Dark) */
+  --assoc-accent: #F8FAFC;
+  --assoc-accent-hover: #FFFFFF;
+  --assoc-on-accent: #0F172A;
+  --assoc-success: #10B981;
+  --assoc-success-bg: rgba(16, 185, 129, 0.16);
+  --assoc-success-text: #6EE7B7;
+  --assoc-warning: #F59E0B;
+  --assoc-warning-bg: rgba(245, 158, 11, 0.16);
+  --assoc-warning-text: #FCD34D;
+  --assoc-danger: #FB5454;
+  --assoc-danger-bg: rgba(244, 63, 94, 0.16);
+  --assoc-danger-text: #FDA4AF;
+  --assoc-info: #CBD5E1;
+  --assoc-info-bg: rgba(148, 163, 184, 0.14);
+  --assoc-info-text: #E2E8F0;
 
   /* Association Design System Tokens (Dark Mode) */
-  --assoc-bg-primary: #0F172A;
-  --assoc-sidebar-bg: #1C2434;
-  --assoc-text-main: #F8FAFC;
-  --assoc-text-muted: #94A3B8;
-  --assoc-text-subtle: #64748B;
+  --assoc-bg-primary: #1A222C;
+  --assoc-sidebar-bg: #0F172A;
+  --assoc-text-main: #DEE4EE;
+  --assoc-text-muted: #8A99AD;
+  --assoc-text-subtle: #CBD5E1;
   --assoc-card-bg: #1C2434;
+  --assoc-surface-subtle: #24303F;
   --assoc-border: #2E3A47;
-  --assoc-backdrop: rgba(2, 6, 23, 0.82);
+  --assoc-backdrop: rgba(2, 6, 23, 0.8);
   color-scheme: dark;
 }
 
@@ -204,22 +286,36 @@ html.dark {
   --font-ethiopic: 'Abyssinica SIL', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'Abyssinica SIL', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-  /* Charcoal & Slate Design Tokens */
+  /* Scaled Typography & Icon Size Utilities */
+  --text-2xs: var(--ui-text-2xs);
+  --text-11: var(--ui-text-11);
+  --text-13: var(--ui-text-13);
+  --text-15: var(--ui-text-15);
+  --text-icon-xs: var(--ui-icon-xs);
+  --text-icon-sm: var(--ui-icon-sm);
+  --text-icon-md: var(--ui-icon-md);
+  --text-icon-lg: var(--ui-icon-lg);
+  --text-icon-xl: var(--ui-icon-xl);
+  --text-icon-2xl: var(--ui-icon-2xl);
+  --text-icon-3xl: var(--ui-icon-3xl);
+
+  /* Executive Slate & TailAdmin Design Tokens */
   --color-text-primary: var(--color-text-primary);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-muted: var(--color-text-muted);
   --color-bg-main: var(--color-bg-main);
   --color-bg-surface: var(--color-bg-surface);
   --color-text-dark-primary: #F8FAFC;
-  --color-text-dark-secondary: #CBD5E1;
+  --color-text-dark-secondary: #DEE4EE;
 
   --color-assoc-bg: var(--assoc-bg-primary);
   --color-assoc-sidebar: var(--assoc-sidebar-bg);
   --color-assoc-card: var(--assoc-card-bg);
+  --color-assoc-surface: var(--assoc-surface-subtle);
   --color-assoc-border: var(--assoc-border);
   --color-assoc-accent: var(--assoc-accent);
   --color-assoc-accent-hover: var(--assoc-accent-hover);
-  --color-on-accent: var(--assoc-on-accent);
+  --color-assoc-on-accent: var(--assoc-on-accent);
   --color-accent: var(--assoc-accent);
   --color-accent-hover: var(--assoc-accent-hover);
   --color-assoc-text: var(--assoc-text-main);
@@ -246,6 +342,7 @@ html.dark {
   --color-secondary: var(--color-secondary);
   --color-outline: var(--color-outline);
   --color-outline-variant: var(--color-outline-variant);
+  --color-error: var(--color-error);
   --color-brand-indigo: var(--assoc-accent);
   --color-topnav: var(--color-topnav);
   --color-topnav-hover: var(--color-topnav-hover);
@@ -259,12 +356,12 @@ html.dark {
   --color-stroke: #E2E8F0;
   --color-strokedark: #2E3A47;
   --color-boxdark: #1C2434;
-  --color-boxdark-2: #161F30;
-  --color-whiten: #F8FAFC;
-  --color-tailadmin-sidebar: #1C2434;
-  --color-tailadmin-hover: #24303F;
+  --color-boxdark-2: #1A222C;
+  --color-whiten: #F7F9FC;
+  --color-tailadmin-sidebar: #0F172A;
+  --color-tailadmin-hover: #1E293B;
   --color-tailadmin-text: #F8FAFC;
-  --color-tailadmin-muted: #94A3B8;
+  --color-tailadmin-muted: #8A99AD;
   --color-tailadmin-primary: #1E293B;
   --color-tailadmin-accent: var(--assoc-accent);
 }
@@ -306,19 +403,13 @@ html,
 
 html.light body,
 html:not(.dark) body {
-  background-color: var(--color-surface);
-  color: var(--color-on-surface);
+  background-color: #F1F5F9;
+  color: #1C2434;
 }
 
 html.dark body {
-  background-color: var(--color-surface);
-  color: var(--color-on-surface);
-}
-
-/* Global safeguard: ensure bg-primary paired with text-white remains high-contrast in dark mode */
-html.dark .bg-primary.text-white,
-.dark .bg-primary.text-white {
-  color: var(--color-on-primary);
+  background-color: #1A222C;
+  color: #DEE4EE;
 }
 
 button,
@@ -496,25 +587,36 @@ html.dark,
   color-scheme: dark;
 }
 
-/* Refined Dark Mode Modals & Table Surfaces (No brittle pitch-black !important overrides) */
-html.dark .bg-black\/50,
-.dark .bg-black\/50 {
-  background-color: rgba(2, 6, 23, 0.78);
+/* Modals & Dialog overlays */
+html.dark [class*="bg-black/50"],
+.dark [class*="bg-black/50"],
+html.dark [class*="bg-slate-900/60"],
+.dark [class*="bg-slate-900/60"] {
+  background-color: rgba(0, 0, 0, 0.85) !important;
 }
 
+/* Tables in Dark Mode (Aligned with TailAdmin #24303F header & #2E3A47 hairline grid) */
 html.dark tr:hover,
 .dark tr:hover {
-  background-color: rgba(248, 250, 252, 0.04);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 html.dark th,
 .dark th {
+  background-color: var(--color-surface-container);
+  color: var(--color-text-secondary);
   border-color: var(--color-outline-variant);
 }
 
 html.dark td,
 .dark td {
-  border-color: rgba(46, 58, 71, 0.65);
+  border-color: var(--color-outline-variant);
+}
+
+/* Primary Button Dark-Mode Contrast Safeguard (when solid bg-primary is paired with text-white) */
+html.dark .bg-primary.text-white,
+.dark .bg-primary.text-white {
+  color: var(--color-on-primary);
 }
 
 /* Ensure printable ID cards and A4 documents retain clean light appearance for official scanning */
@@ -540,6 +642,11 @@ html.dark .printable-a4-document,
   @page {
     size: portrait;
     margin: 0;
+  }
+
+  html {
+    font-size: 16px !important;
+    --ui-scale: 1 !important;
   }
 
   html, body {
@@ -702,41 +809,39 @@ html.dark .printable-a4-document,
 
 @keyframes whiteLaser {
   0% {
-    transform: translate3d(0, 0, 0);
-    opacity: 0.75;
+    top: 6%;
+    opacity: 0.7;
   }
   50% {
-    transform: translate3d(0, 170px, 0);
+    top: 92%;
     opacity: 1;
   }
   100% {
-    transform: translate3d(0, 0, 0);
-    opacity: 0.75;
+    top: 6%;
+    opacity: 0.7;
   }
 }
 
 .animate-white-laser {
-  will-change: transform, opacity;
   animation: whiteLaser 2.2s ease-in-out infinite;
 }
 
 @keyframes scannerLaser {
   0% {
-    transform: translate3d(0, 0, 0);
+    top: 5%;
     opacity: 0.8;
   }
   50% {
-    transform: translate3d(0, 170px, 0);
+    top: 92%;
     opacity: 1;
   }
   100% {
-    transform: translate3d(0, 0, 0);
+    top: 5%;
     opacity: 0.8;
   }
 }
 
 .animate-scanner-laser {
-  will-change: transform, opacity;
   animation: scannerLaser 2.2s ease-in-out infinite;
 }
 
@@ -826,43 +931,51 @@ button, [role="button"], a, select, input[type="checkbox"], input[type="radio"],
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Universal Smooth Compositor-Friendly Transitions for Interactive Elements */
+/* Universal Smooth Transitions for Interactive Elements */
 button:not(:disabled),
 [role="button"]:not([aria-disabled="true"]),
 a:not([aria-disabled="true"]):not([href=""]),
 .clickable,
 .touch-press {
-  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  position: relative;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   transition-duration: 140ms;
 }
 
-/* Universal Tactile Active Press Feedback (pure transform, zero paint filter overhead) */
-button:not(:disabled):not([class*="cursor-default"]):not([class*="cursor-not-allowed"]):not([data-motion-control="true"]):active,
-[role="button"]:not([aria-disabled="true"]):not([class*="cursor-default"]):not([data-motion-control="true"]):active,
-a:not([aria-disabled="true"]):not([class*="cursor-default"]):not([data-motion-control="true"]):active,
-.clickable:not([data-motion-control="true"]):active,
+/* Universal Tactile Active Press Feedback */
+button:not(:disabled):not([class*="cursor-default"]):not([class*="cursor-not-allowed"]):active,
+[role="button"]:not([aria-disabled="true"]):not([class*="cursor-default"]):active,
+a:not([aria-disabled="true"]):not([class*="cursor-default"]):active,
+.clickable:active,
 .touch-press:active {
-  transform: scale(0.972);
-  transition-duration: 60ms;
+  transform: scale(0.972) translateY(0.5px);
+  filter: brightness(0.94);
+  transition-duration: 50ms !important;
 }
 
 /* Inline text links: subtle opacity press without jumping line layout */
 p a:not([class*="btn"]):not([class*="rounded"]):active,
 span a:not([class*="btn"]):not([class*="rounded"]):active {
   transform: none !important;
-  opacity: 0.75;
+  opacity: 0.72;
+}
+
+/* Tactile hover elevation on primary & secondary buttons */
+button:not(:disabled):not([class*="cursor-default"]):not([class*="no-hover"]):hover,
+.clickable:hover {
+  filter: brightness(1.02);
 }
 
 /* Link transitions */
 a:not([class*="no-underline"]) {
-  transition: color 140ms ease, opacity 140ms ease, text-decoration-color 140ms ease, transform 120ms ease;
+  transition: color 150ms ease, opacity 150ms ease, text-decoration-color 150ms ease, transform 120ms ease;
 }
 
 /* Checkbox & radio button active press micro-interaction */
 input[type="checkbox"]:active,
 input[type="radio"]:active {
-  transform: scale(0.9);
+  transform: scale(0.90);
   transition: transform 80ms ease;
 }
 
@@ -962,20 +1075,22 @@ input[type="radio"]:active {
   overflow: hidden;
 }
 
-/* Keyframe entrance for collapsible sections (compositor-only) */
+/* Keyframe entrance for collapsible sections */
 @keyframes collapsibleSlideDown {
   0% {
     opacity: 0;
-    transform: translate3d(0, -6px, 0);
+    transform: translateY(-8px);
+    max-height: 0;
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translateY(0);
+    max-height: 1200px;
   }
 }
 
 .animate-collapsible-expand {
-  animation: collapsibleSlideDown 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: collapsibleSlideDown 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ==========================================================================
@@ -983,12 +1098,12 @@ input[type="radio"]:active {
    ========================================================================== */
 .side-menu-drawer {
   will-change: transform;
-  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .side-menu-backdrop {
-  will-change: opacity;
-  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, backdrop-filter;
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), backdrop-filter 350ms ease;
 }
 
 /* Grounded, solid page footer styles preventing floating overlay bugs */
@@ -1000,54 +1115,101 @@ input[type="radio"]:active {
 }
 
 /* ==========================================================================
-   MOBILE ERGONOMIC TOUCH CONTROLS (44px+ HIT TARGETS)
+   MOBILE RESPONSIVE FORM CONTROLS (INPUTS, SELECTORS & RADIO BUTTONS)
+   Ensures compact, proportional sizing and matching font size on mobile view
+   without changing the design style.
    ========================================================================== */
 @media screen and (max-width: 767px) {
-  /* Ergonomic >= 44px touch targets for standard form inputs & selects */
+  /* Input fields: proportional mobile height and matched typography */
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]) {
-    font-size: 0.875rem; /* 14px crisp legible mobile typography */
-    line-height: 1.4;
-    min-height: 44px;
+    font-size: 0.8125rem !important; /* 13px matching text-xs/text-sm design style */
+    line-height: 1.35 !important;
+    padding-top: 0.42rem !important;
+    padding-bottom: 0.42rem !important;
+    min-height: 34px !important;
   }
 
+  /* Compact search inputs and table filter inputs on mobile */
+  input[type="search"],
+  input.pl-8,
+  input.pl-9,
+  input.pl-10 {
+    font-size: 0.8125rem !important;
+    min-height: 32px !important;
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  /* Selectors / Dropdown selects: compact proportional height and matched font size */
   select {
-    font-size: 0.875rem;
-    line-height: 1.4;
-    min-height: 44px;
+    font-size: 0.8125rem !important; /* 13px matching inputs */
+    line-height: 1.35 !important;
+    padding-top: 0.42rem !important;
+    padding-bottom: 0.42rem !important;
+    min-height: 34px !important;
   }
 
-  /* Compact inline selectors inside popovers & pagination retain 36px touch room */
+  /* Compact selectors inside popovers, date-pickers, and pagination on mobile */
   select.text-\[11px\],
   select.py-0\.5,
   select.py-1 {
-    font-size: 0.75rem;
-    min-height: 36px;
+    font-size: 0.75rem !important;
+    min-height: 26px !important;
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
+    padding-left: 0.45rem !important;
+    padding-right: 0.45rem !important;
   }
 
+  /* Textareas */
   textarea {
-    font-size: 0.875rem;
-    line-height: 1.45;
+    font-size: 0.8125rem !important;
+    line-height: 1.4 !important;
+    padding-top: 0.45rem !important;
+    padding-bottom: 0.45rem !important;
   }
 
-  /* Accessible touch target sizing for checkboxes & radios (visually clean, generous hit box) */
-  input[type="radio"],
-  input[type="checkbox"] {
-    width: 1.125rem;
-    height: 1.125rem;
-    margin: 0;
-    flex-shrink: 0;
-    vertical-align: middle;
+  /* Radio buttons: compact, crisp, non-bloated on mobile */
+  input[type="radio"] {
+    width: 0.9375rem !important; /* 15px */
+    height: 0.9375rem !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    vertical-align: middle !important;
   }
 
+  /* Radio button labels & wrapper alignment */
   label:has(> input[type="radio"]),
   label:has(input[type="radio"]),
-  label:has(> input[type="checkbox"]),
-  label:has(input[type="checkbox"]),
   .radio-label {
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
+    font-size: 0.75rem !important; /* 12px text-xs matching design style */
+    line-height: 1.3 !important;
+    gap: 0.375rem !important;
+  }
+
+  label:has(> input[type="radio"]) span,
+  label:has(input[type="radio"]) span,
+  input[type="radio"] + span,
+  input[type="radio"] ~ span {
+    font-size: 0.75rem !important; /* 12px text-xs */
+    line-height: 1.3 !important;
+  }
+
+  /* Checkboxes: compact mobile size */
+  input[type="checkbox"] {
+    width: 0.9375rem !important; /* 15px */
+    height: 0.9375rem !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    vertical-align: middle !important;
+  }
+
+  label:has(> input[type="checkbox"]) span,
+  label:has(input[type="checkbox"]) span,
+  input[type="checkbox"] + span,
+  input[type="checkbox"] ~ span {
+    font-size: 0.75rem !important; /* 12px text-xs */
+    line-height: 1.3 !important;
   }
 }
 
@@ -1264,10 +1426,10 @@ html.dark .animate-shimmer-state {
 
 @keyframes toastCountdown {
   0% {
-    transform: scaleX(1);
+    width: 100%;
   }
   100% {
-    transform: scaleX(0);
+    width: 0%;
   }
 }
 
@@ -1281,15 +1443,15 @@ html.dark .animate-shimmer-state {
 }
 
 .animate-toast-in {
-  animation: toastSlideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: toastSlideInRight 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-toast-out {
-  animation: toastSlideOutRight 0.16s cubic-bezier(0.4, 0, 1, 1) forwards;
+  animation: toastSlideOutRight 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 .animate-toast-pop {
-  animation: toastSuccessPop 0.24s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: toastSuccessPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .animate-toast-shimmer {
@@ -1297,8 +1459,6 @@ html.dark .animate-shimmer-state {
 }
 
 .animate-toast-countdown {
-  transform-origin: left center;
-  will-change: transform;
   animation: toastCountdown 4.5s linear forwards;
 }
 
@@ -1308,6 +1468,9 @@ html.dark .animate-shimmer-state {
 
 /* ==========================================================================
    GLOBAL FOCUS STYLING ARCHITECTURE
+   - Eliminates jarring default browser focus rings on mouse click and touch
+   - Enforces clean, high-visibility, accessible focus rings for keyboard users (focus-visible)
+   - Harmonizes active segmented pills & tabs without harsh high-contrast glare
    ========================================================================== */
 
 :focus:not(:focus-visible) {
@@ -1329,39 +1492,15 @@ button:focus-visible,
 [role="button"]:focus-visible,
 [role="tab"]:focus-visible,
 a:focus-visible {
-  outline: 2px solid rgba(15, 23, 42, 0.45);
-  outline-offset: 2px;
+  outline: 2px solid rgba(15, 23, 42, 0.4);
+  outline-offset: 1px;
 }
 
 .dark button:focus-visible,
 .dark [role="button"]:focus-visible,
 .dark [role="tab"]:focus-visible,
 .dark a:focus-visible {
-  outline: 2px solid rgba(248, 250, 252, 0.55);
-  outline-offset: 2px;
-}
-
-/* ==========================================================================
-   REDUCED MOTION ACCESSIBILITY SUPPORT
-   ========================================================================== */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-
-  .animate-pulse,
-  .animate-shimmer-state,
-  .animate-scan-beam,
-  .animate-white-laser,
-  .animate-scanner-laser,
-  .shadow-pulse-accent,
-  .shadow-glow-success {
-    animation: none !important;
-  }
+  outline: 2px solid rgba(248, 250, 252, 0.45);
+  outline-offset: 1px;
 }
 

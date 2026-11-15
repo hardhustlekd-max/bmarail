@@ -415,28 +415,28 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
       case 'approved':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-600 shadow-2xs">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">check_circle</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">check_circle</Icon>
             <span>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-600 shadow-2xs">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">print</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">print</Icon>
             <span>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 shadow-2xs">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">local_printshop</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">local_printshop</Icon>
             <span>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
         );
       case 'rejected':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-600 shadow-2xs">
-            <Icon className="material-symbols-outlined text-[13px] shrink-0">cancel</Icon>
+            <Icon className="material-symbols-outlined text-13 shrink-0">cancel</Icon>
             <span>{isAmharic ? 'ውድቅ' : 'Rejected'}</span>
           </span>
         );
@@ -610,7 +610,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           <div className="px-3.5 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434]">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 shadow-xs">
-                <Icon className="material-symbols-outlined text-[20px]">edit_note</Icon>
+                <Icon className="material-symbols-outlined text-icon-lg">edit_note</Icon>
               </div>
               <div>
                 <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-tight leading-none mb-1">
@@ -619,7 +619,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     : (isAdminOrSuperAdmin ? 'Submitted Corrections' : 'Submission Correction')}
                 </h3>
                 {!isAdminOrSuperAdmin && (
-                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
+                  <p className="text-11 text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
                     {isAmharic
                       ? 'በስራ አስኪያጅ ውድቅ የተደረጉና ማፅደቅ በመጠባበቅ ላይ ያሉ ማመልከቻዎች ማስተካከያ'
                       : 'Rejection corrections by the clerk waiting for manager approval'}
@@ -636,9 +636,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={onNavigateToNewRegistration}
-                  className="inline-flex items-center justify-center min-h-[44px] sm:min-h-[34px] gap-1.5 rounded-lg bg-primary hover:bg-primary-hover py-2 px-3.5 text-center font-bold text-on-primary cursor-pointer text-xs border-0 shadow-none hover:shadow-none transition-colors duration-150 touch-manipulation"
+                  className="inline-flex items-center justify-center min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] gap-1.5 rounded-lg bg-primary hover:bg-primary-hover py-2 px-3.5 text-center font-bold text-on-primary cursor-pointer text-xs border-0 shadow-none hover:shadow-none transition-colors duration-150 touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">add_circle</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">add_circle</Icon>
                   <span>{isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}</span>
                 </motion.button>
               )}
@@ -679,7 +679,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
                   <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
-                    <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                    <Icon className="material-symbols-outlined text-icon-sm">search</Icon>
                   </div>
                   <input
                     type="text"
@@ -697,7 +697,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       onClick={() => setSearchQuery('')}
                       className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
                     >
-                      <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                      <Icon className="material-symbols-outlined text-icon-sm">close</Icon>
                     </button>
                   )}
                 </div>
@@ -713,7 +713,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   }`}
                   title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">tune</Icon>
                   <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
                   {hasActiveSecondaryFilters && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
@@ -730,7 +730,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setDateFilter('today');
                       setPage(1);
                     }}
-                    className={`h-7 px-2.5 rounded-sm text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                    className={`h-7 px-2.5 rounded-sm text-11 font-bold transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                       dateFilter === 'today'
                         ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
                         : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
@@ -744,7 +744,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       setDateFilter('all');
                       setPage(1);
                     }}
-                    className={`h-7 px-2.5 rounded-sm text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                    className={`h-7 px-2.5 rounded-sm text-11 font-bold transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                       dateFilter === 'all'
                         ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
                         : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
@@ -764,12 +764,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={POPOVER_TRANSITION}
-                  className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C]"
+                  className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47]"
                 >
                 <div className="flex flex-wrap items-center gap-2.5 text-xs">
                   {/* SubCity Filter */}
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider">
                       {isAmharic ? 'ክፍለ ከተማ:' : 'Sub-City:'}
                     </span>
                     <select
@@ -778,7 +778,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                         setSelectedSubCity(e.target.value);
                         setPage(1);
                       }}
-                      className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-xs text-[#1C2434] dark:text-white focus:outline-none focus:border-primary font-medium"
+                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
                     >
                       <option value="all">{isAmharic ? 'ሁሉም ክ/ከተሞች' : 'All Sub-Cities'}</option>
                       <option value="Fasilo">Fasilo / ፋሲሎ</option>
@@ -794,13 +794,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                   {/* Sort Field */}
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider">
                       {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
                     </span>
                     <select
                       value={sortField}
                       onChange={(e) => setSortField(e.target.value as any)}
-                      className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-xs text-[#1C2434] dark:text-white focus:outline-none focus:border-primary font-medium"
+                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
                     >
                       <option value="date">{isAmharic ? 'በምዝገባ ቀን' : 'Date'}</option>
                       <option value="name">{isAmharic ? 'በባለቤት ስም' : 'Name'}</option>
@@ -813,10 +813,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       whileTap={TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                      className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-7 sm:w-7 flex items-center justify-center bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                      className="h-8 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
                       title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
                     >
-                      <Icon className="material-symbols-outlined text-[15px]">
+                      <Icon className="material-symbols-outlined text-15">
                         {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
                       </Icon>
                     </motion.button>
@@ -839,7 +839,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       }}
                       className="min-h-[44px] sm:min-h-0 sm:h-7 px-3 sm:px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
                     >
-                      <Icon className="material-symbols-outlined text-[14px]">restart_alt</Icon>
+                      <Icon className="material-symbols-outlined text-icon-xs">restart_alt</Icon>
                       <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
                     </motion.button>
                   )}
@@ -863,7 +863,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             >
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-sm bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 flex items-center justify-center shrink-0 border border-emerald-400 dark:border-emerald-700">
-                  <Icon className="material-symbols-outlined text-[20px]">checklist</Icon>
+                  <Icon className="material-symbols-outlined text-icon-lg">checklist</Icon>
                 </div>
                 <div>
                   <span className="font-bold text-xs text-emerald-900 dark:text-emerald-100">
@@ -871,7 +871,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                       ? `${selectedRegIds.size} ማመልከቻዎች ተመርጠዋል`
                       : `${selectedRegIds.size} submission(s) selected`}
                   </span>
-                  <p className="text-[11px] text-emerald-800 dark:text-emerald-300 font-medium">
+                  <p className="text-11 text-emerald-800 dark:text-emerald-300 font-medium">
                     {isAmharic
                       ? 'የተመረጡትን ማመልከቻዎች በአንድ ጊዜ በጅምላ ማጽደቅ ይችላሉ'
                       : 'You can approve all selected corrected submissions at once'}
@@ -886,7 +886,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={() => setSelectedRegIds(new Set())}
-                  className="min-h-[44px] sm:min-h-[34px] px-3.5 sm:px-3 py-1.5 rounded-sm border border-emerald-300 dark:border-emerald-700 text-xs font-semibold text-emerald-900 dark:text-emerald-200 hover:bg-emerald-200/60 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-3.5 sm:px-3 py-1.5 rounded-sm border border-emerald-300 dark:border-emerald-700 text-xs font-semibold text-emerald-900 dark:text-emerald-200 hover:bg-emerald-200/60 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer"
                 >
                   {isAmharic ? 'ምርጫውን ሰርዝ' : 'Clear Selection'}
                 </motion.button>
@@ -897,12 +897,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   transition={TACTILE_SPRING}
                   onClick={triggerBulkApprove}
                   disabled={isSubmittingBulk || isReadOnly}
-                  className="min-h-[44px] sm:min-h-[34px] px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   {isSubmittingBulk ? (
-                    <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+                    <Icon className="material-symbols-outlined text-icon-sm animate-spin">refresh</Icon>
                   ) : (
-                    <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                    <Icon className="material-symbols-outlined text-icon-sm">check_circle</Icon>
                   )}
                   <span>{isAmharic ? 'በጅምላ አጽድቅ' : 'Approve Selected'}</span>
                 </motion.button>
@@ -912,9 +912,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         </AnimatePresence>
 
         {/* --- REGISTRATIONS DATA TABLE (TAILADMIN DATATABLE DESIGN) --- */}
-        <div className="flex flex-col min-h-[460px] justify-between">
+        <div className="flex flex-col min-h-[calc(460px*var(--ui-scale))] justify-between">
           {/* Desktop Data Table (>= md) WITH FIXED WIDTH & ESSENTIAL COLUMNS */}
-          <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] h-[420px] [scrollbar-gutter:stable] scrollbar-thin flex-1">
+          <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-270px)] sm:max-h-[calc(100vh-285px)] h-[calc(420px*var(--ui-scale))] [scrollbar-gutter:stable] scrollbar-thin flex-1">
             <table className="w-full text-left border-collapse table-fixed">
               <thead className="sticky top-0 z-10 bg-[#F7F9FC] dark:bg-[#24303F] shadow-2xs">
                 <tr className="bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold border-b border-[#E2E8F0] dark:border-[#2E3A47]">
@@ -936,7 +936,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     </th>
                   )}
                   <th className="py-2.5 px-3 text-center w-12 font-medium">#</th>
-                  <th className="py-2.5 px-3 font-medium min-w-[200px]">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
+                  <th className="py-2.5 px-3 font-medium min-w-[calc(200px*var(--ui-scale))]">{isAmharic ? 'የባለቤት ስም' : 'Owner Name'}</th>
                   <th className="py-2.5 px-3 font-medium w-36 whitespace-nowrap">{isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}</th>
                   <th className="py-2.5 px-3 font-medium w-28 whitespace-nowrap">{isAmharic ? 'አይነት' : 'Category'}</th>
                   <th className="py-2.5 px-3 font-medium w-36 text-center whitespace-nowrap">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
@@ -948,7 +948,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   <tr>
                     <td colSpan={canApproveBulk ? 7 : 6} className="py-16 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
-                        <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD]">inbox</Icon>
+                        <Icon className="material-symbols-outlined text-[length:calc(36px*var(--ui-scale))] text-[#8A99AD]">inbox</Icon>
                         <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
                           {isAmharic ? 'ምንም የተመዘገቡ መረጃዎች የሉም' : 'No Vehicle Submissions Found'}
                         </span>
@@ -964,7 +964,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   <tr>
                     <td colSpan={canApproveBulk ? 7 : 6} className="py-14 px-4 text-center text-[#64748B] dark:text-[#8A99AD]">
                       <div className="flex flex-col items-center justify-center gap-2 py-4">
-                        <Icon className="material-symbols-outlined text-[32px] text-[#8A99AD]">search_off</Icon>
+                        <Icon className="material-symbols-outlined text-icon-3xl text-[#8A99AD]">search_off</Icon>
                         <span className="font-semibold text-sm text-[#1C2434] dark:text-white">
                           {isAmharic ? 'ምንም የሚመሳሰል ማመልከቻ አልተገኘም' : 'No matching applications found.'}
                         </span>
@@ -1021,7 +1021,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                 }`}
                                 title={isExpanded ? (isAmharic ? 'አጣጥፍ' : 'Collapse') : (isAmharic ? 'ሰነዶችን እና ዝርዝር አሳይ' : 'Expand Documents & Details')}
                               >
-                                <Icon className="material-symbols-outlined text-[18px]">
+                                <Icon className="material-symbols-outlined text-icon-md">
                                   {isExpanded ? 'expand_less' : 'expand_more'}
                                 </Icon>
                               </button>
@@ -1030,7 +1030,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                           </td>
 
                           {/* Column 1: Owner Name with Full Visibility */}
-                          <td className="py-2.5 px-3 align-middle min-w-[200px]">
+                          <td className="py-2.5 px-3 align-middle min-w-[calc(200px*var(--ui-scale))]">
                             <span
                               className="font-semibold text-xs text-[#1C2434] dark:text-white block break-words leading-snug"
                               title={reg.fullName || '—'}
@@ -1073,7 +1073,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               title={isExpanded ? (isAmharic ? 'ተግባራትን እና ሰነዶችን ዝጋ' : 'Close Actions & Documents') : (isAmharic ? 'ተግባራትን እና ሰነዶችን ዘርጋ' : 'Expand Actions & Documents')}
                             >
                               <span>{isExpanded ? (isAmharic ? 'ዝጋ' : 'Close') : (isAmharic ? 'ተግባራት' : 'Actions')}</span>
-                              <Icon className="material-symbols-outlined text-[16px]">
+                              <Icon className="material-symbols-outlined text-icon-sm">
                                 {isExpanded ? 'expand_less' : 'expand_more'}
                               </Icon>
                             </button>
@@ -1120,7 +1120,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                       className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap shadow-2xs"
                                       title={isAmharic ? 'የተያያዙ ሰነዶችን በሙሉ እይ' : 'View Attached Documents Carousel'}
                                     >
-                                      <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">photo_library</Icon>
+                                      <Icon className="material-symbols-outlined text-icon-sm text-slate-500 dark:text-slate-400">photo_library</Icon>
                                       <span>{isAmharic ? `የተያያዙ ሰነዶች (${getRegistrationDocCount(reg)})` : `Documents (${getRegistrationDocCount(reg)})`}</span>
                                     </button>
 
@@ -1134,7 +1134,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                           className="h-8.5 px-3 rounded-md bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-2xs disabled:opacity-50 whitespace-nowrap"
                                           title={isAmharic ? 'ማመልከቻውን አጽድቅ' : 'Approve application'}
                                         >
-                                          <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                                          <Icon className="material-symbols-outlined text-icon-sm">check_circle</Icon>
                                           <span>
                                             {approvingId === reg.id
                                               ? (isAmharic ? 'በማጽደቅ ላይ...' : 'Approving...')
@@ -1148,7 +1148,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                           className="h-8.5 px-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
                                           title={isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit application'}
                                         >
-                                          <Icon className="material-symbols-outlined text-[16px]">edit</Icon>
+                                          <Icon className="material-symbols-outlined text-icon-sm">edit</Icon>
                                           <span>{isAmharic ? 'ማመልከቻውን አስተካክል' : 'Edit Application'}</span>
                                         </button>
                                       )
@@ -1165,7 +1165,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                                         className="h-8.5 px-3 rounded-md bg-primary hover:bg-primary-hover text-on-primary font-semibold text-xs transition-colors cursor-pointer inline-flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
                                         title={isAmharic ? 'ፈቃድ እይ' : 'Inspect permit card'}
                                       >
-                                        <Icon className="material-symbols-outlined text-[16px]">badge</Icon>
+                                        <Icon className="material-symbols-outlined text-icon-sm">badge</Icon>
                                         <span>{isAmharic ? 'ፈቃድ መርምር' : 'Inspect Permit'}</span>
                                       </motion.button>
                                     )}
@@ -1184,10 +1184,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
 
           {/* Mobile Card List (< md) */}
-          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800 h-[420px] max-h-[calc(100vh-260px)] overflow-y-auto [scrollbar-gutter:stable] flex-1">
+          <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800 h-[calc(420px*var(--ui-scale))] max-h-[calc(100vh-260px)] overflow-y-auto [scrollbar-gutter:stable] flex-1">
             {canApproveBulk && allSelectableRegs.length > 0 && (
               <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F]/60 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between">
-                <label className="inline-flex items-center gap-2 min-h-[44px] text-xs font-bold text-[#1C2434] dark:text-white cursor-pointer select-none">
+                <label className="inline-flex items-center gap-2 min-h-[44px] md:min-h-[var(--ui-control-h-md)] text-xs font-bold text-[#1C2434] dark:text-white cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
@@ -1197,7 +1197,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   <span>{isAmharic ? 'ሁሉንም መዝገቦች ምረጥ (Select All)' : 'Select All Records'}</span>
                 </label>
                 {selectedRegIds.size > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-on-primary shadow-2xs tabular-nums">
+                  <span className="px-2 py-0.5 rounded-full text-2xs font-bold bg-primary text-on-primary shadow-2xs tabular-nums">
                     {isAmharic ? `${selectedRegIds.size} ተመርጠዋል` : `${selectedRegIds.size} selected`}
                   </span>
                 )}
@@ -1205,7 +1205,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             )}
             {finalFilteredRegs.length === 0 ? (
               <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-                <Icon className="material-symbols-outlined text-[32px] text-slate-400">search_off</Icon>
+                <Icon className="material-symbols-outlined text-icon-3xl text-slate-400">search_off</Icon>
                 <p className="font-bold text-xs mt-1">{isAmharic ? 'ምንም ማመልከቻ አልተገኘም' : 'No applications found'}</p>
               </div>
             ) : (
@@ -1264,7 +1264,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                           <div className="flex items-center flex-wrap gap-1.5 pt-0.5">
                             {/* Motor Type Tag - Clean */}
-                            <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD]">
+                            <span className="text-11 font-medium text-[#64748B] dark:text-[#8A99AD]">
                               {reg.vehicleCategory === 'electric'
                                 ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
                                 : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
@@ -1282,7 +1282,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                       {/* Right Side Expand Toggle */}
                       <div className="shrink-0 pl-1 text-[#64748B] dark:text-[#8A99AD] flex items-center justify-center">
-                        <Icon className="material-symbols-outlined text-[20px] transition-transform">
+                        <Icon className="material-symbols-outlined text-icon-lg transition-transform">
                           {isExpanded ? 'expand_less' : 'expand_more'}
                         </Icon>
                       </div>
@@ -1290,7 +1290,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                     <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-[#E2E8F0] dark:border-[#2E3A47] mt-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium">{reg.subCity || '—'}</span>
+                        <span className="text-11 text-[#64748B] dark:text-[#8A99AD] font-medium">{reg.subCity || '—'}</span>
                       </div>
 
                       <div className="flex items-center gap-1.5">
@@ -1304,10 +1304,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               transition={TACTILE_SPRING}
                               disabled={approvingId === reg.id}
                               onClick={() => handleSingleApprove(reg)}
-                              className="min-h-[40px] px-3 py-1.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-xs font-semibold flex items-center gap-1 shadow-2xs disabled:opacity-50 cursor-pointer touch-manipulation"
+                              className="min-h-[var(--ui-control-h-md)] px-3 py-1.5 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-xs font-semibold flex items-center gap-1 shadow-2xs disabled:opacity-50 cursor-pointer touch-manipulation"
                               title={isAmharic ? 'ማመልከቻውን አጽድቅ' : 'Approve application'}
                             >
-                              <Icon className="material-symbols-outlined text-[15px]">check_circle</Icon>
+                              <Icon className="material-symbols-outlined text-15">check_circle</Icon>
                               <span>
                                 {approvingId === reg.id
                                   ? (isAmharic ? 'በማጽደቅ...' : 'Approving...')
@@ -1321,9 +1321,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                               whileTap={TAP_SCALE}
                               transition={TACTILE_SPRING}
                               onClick={() => handleOpenEdit(reg)}
-                              className="min-h-[40px] px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-md text-xs font-semibold flex items-center gap-1 cursor-pointer touch-manipulation"
+                              className="min-h-[var(--ui-control-h-md)] px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-md text-xs font-semibold flex items-center gap-1 cursor-pointer touch-manipulation"
                             >
-                              <Icon className="material-symbols-outlined text-[15px]">edit</Icon>
+                              <Icon className="material-symbols-outlined text-15">edit</Icon>
                               <span>{isAmharic ? 'አስተካክል' : 'Edit'}</span>
                             </motion.button>
                           )
@@ -1336,7 +1336,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             className="min-w-[44px] min-h-[44px] flex items-center justify-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white rounded-md cursor-pointer touch-manipulation"
                             title={isAmharic ? 'ዝርዝር መርምር' : 'Inspect'}
                           >
-                            <Icon className="material-symbols-outlined text-[18px]">badge</Icon>
+                            <Icon className="material-symbols-outlined text-icon-md">badge</Icon>
                           </button>
                         )}
                       </div>
@@ -1372,9 +1372,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                             whileTap={TAP_SCALE}
                             transition={TACTILE_SPRING}
                             onClick={() => openMemberDocumentCarousel(reg)}
-                            className="w-full min-h-[44px] py-2 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold rounded-md text-xs cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs touch-manipulation"
+                            className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2 px-3 border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white font-semibold rounded-md text-xs cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs touch-manipulation"
                           >
-                            <Icon className="material-symbols-outlined text-[16px] text-slate-500 dark:text-slate-400">photo_library</Icon>
+                            <Icon className="material-symbols-outlined text-icon-sm text-slate-500 dark:text-slate-400">photo_library</Icon>
                             <span>{isAmharic ? `የተያያዙ ሰነዶችን እይ (${getRegistrationDocCount(reg)})` : `View Attached Documents (${getRegistrationDocCount(reg)})`}</span>
                           </motion.button>
                         </div>
@@ -1416,9 +1416,9 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   type="button"
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
                   disabled={activePage <= 1}
-                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs touch-manipulation"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-xs)] px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">chevron_left</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">chevron_left</Icon>
                   <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
                 </button>
 
@@ -1430,10 +1430,10 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   type="button"
                   onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                   disabled={activePage >= totalPages}
-                  className="min-h-[44px] sm:min-h-[32px] px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs touch-manipulation"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-xs)] px-3 py-1.5 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm disabled:opacity-40 disabled:cursor-not-allowed font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-2xs touch-manipulation"
                 >
                   <span>{isAmharic ? 'ቀጣይ' : 'Next'}</span>
-                  <Icon className="material-symbols-outlined text-[16px]">chevron_right</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">chevron_right</Icon>
                 </button>
               </div>
           </div>
@@ -1453,12 +1453,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             {/* Modal Header */}
             <div className="p-4 sm:p-5 border-b border-outline-variant dark:border-slate-800 flex items-center justify-between bg-surface-container/30 dark:bg-slate-800/40 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
-                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">edit_note</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-slate-700 dark:text-slate-300 shrink-0">edit_note</Icon>
                 <div className="min-w-0">
                   <h3 className="font-black text-sm sm:text-base text-on-surface dark:text-white truncate">
                     {isAmharic ? 'የማመልከቻ መረጃ ማስተካከያና ማቅረቢያ' : 'Edit & Re-Submit Application'}
                   </h3>
-                  <p className="text-[11px] text-secondary font-mono">
+                  <p className="text-11 text-secondary font-mono">
                     {isAmharic ? 'የታርጋ ቁጥር: ' : 'Plate No: '}
                     <span className="font-bold text-slate-700 dark:text-blue-400">{editingReg.plateNumber}</span>
                   </p>
@@ -1474,7 +1474,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 aria-label={isAmharic ? 'ዝጋ' : 'Close'}
                 className="w-11 h-11 sm:w-9 sm:h-9 text-secondary hover:text-on-surface dark:hover:text-white rounded-lg hover:bg-surface-container dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center shrink-0 touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+                <Icon className="material-symbols-outlined text-icon-lg">close</Icon>
               </motion.button>
             </div>
 
@@ -1482,7 +1482,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
             <form onSubmit={handleSaveEdit} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 min-h-0 pb-[max(1rem,env(safe-area-inset-bottom,16px))]">
               {isReadOnly && (
                 <div className="p-3 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
+                  <Icon className="material-symbols-outlined text-icon-md text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
                   <span>
                     {isAmharic ? 'ተነባቢ ብቻ ሁነታ ተተግብሯል፡ ማስተካከል እና ማስቀመጥ አይፈቀድም።' : 'Read-Only Mode Active: Form editing and saving is disabled.'}
                   </span>
@@ -1493,7 +1493,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                 {editingReg.status === 'rejected' && (
                 <div className="p-3.5 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-md space-y-1.5">
                   <div className="flex items-center gap-2 text-red-800 dark:text-red-200 font-bold text-xs">
-                    <Icon className="material-symbols-outlined text-[18px]">error</Icon>
+                    <Icon className="material-symbols-outlined text-icon-md">error</Icon>
                     <span>{isAmharic ? 'ውድቅ የተደረገበት ምክንያት:' : 'Rejection Reason from Manager:'}</span>
                   </div>
                   <p className="text-xs text-red-700 dark:text-red-300 pl-6 font-medium">
@@ -1505,7 +1505,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               {/* Section 1: Owner Info */}
               <div className="space-y-3">
                 <h4 className="text-xs font-black text-on-surface dark:text-white  tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
-                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">person</Icon>
+                  <Icon className="material-symbols-outlined text-icon-xs text-slate-600 dark:text-slate-400">person</Icon>
                   <span>{isAmharic ? '1. የባለቤት መረጃ' : '1. Owner Information'}</span>
                 </h4>
 
@@ -1578,7 +1578,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               {/* Section 2: Vehicle Info */}
               <div className="space-y-3 pt-2">
                 <h4 className="text-xs font-black text-on-surface dark:text-white  tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
-                  <Icon className="material-symbols-outlined text-[14px] text-slate-600 dark:text-slate-400">two_wheeler</Icon>
+                  <Icon className="material-symbols-outlined text-icon-xs text-slate-600 dark:text-slate-400">two_wheeler</Icon>
                   <span>{isAmharic ? '2. የተሽከርካሪ መረጃ' : '2. Vehicle Information'}</span>
                 </h4>
 
@@ -1650,21 +1650,21 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               {/* Section 3: Document Attachments Preview & Upload */}
               <div className="space-y-3 pt-2">
                 <h4 className="text-xs font-black text-on-surface dark:text-white  tracking-wider flex items-center gap-1.5 border-b border-outline-variant/60 dark:border-slate-800 pb-1.5">
-                  <Icon className="material-symbols-outlined text-[16px] text-slate-700">attachment</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm text-slate-700">attachment</Icon>
                   <span>{isAmharic ? '3. ሰነዶችና ፎቶዎች' : '3. Documents & Photos'}</span>
                 </h4>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {/* Portrait */}
                   <div className="p-2 bg-surface-container/50 dark:bg-slate-800/60 border border-outline-variant dark:border-slate-700 rounded-md space-y-1.5 text-center">
-                    <p className="text-[10px] font-bold text-on-surface dark:text-slate-300 truncate">
+                    <p className="text-2xs font-bold text-on-surface dark:text-slate-300 truncate">
                       {isAmharic ? 'የባለቤት ፎቶ' : 'Driver Portrait'}
                     </p>
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editUserPortrait} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover" />
                     </div>
                     <label className="block cursor-pointer">
-                      <span className="text-[10px] font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
                         {isAmharic ? 'ቀይር' : 'Change'}
                       </span>
                       <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditUserPortrait)} />
@@ -1673,14 +1673,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                   {/* National ID Front */}
                   <div className="p-2 bg-surface-container/50 dark:bg-slate-800/60 border border-outline-variant dark:border-slate-700 rounded-md space-y-1.5 text-center">
-                    <p className="text-[10px] font-bold text-on-surface dark:text-slate-300 truncate">
+                    <p className="text-2xs font-bold text-on-surface dark:text-slate-300 truncate">
                       {isAmharic ? 'መታወቂያ ፊት' : 'National ID Front'}
                     </p>
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editNationalIdPhoto} alt="ID Front" fallbackIcon="badge" className="w-full h-full object-cover" />
                     </div>
                     <label className="block cursor-pointer">
-                      <span className="text-[10px] font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
                         {isAmharic ? 'ቀይር' : 'Change'}
                       </span>
                       <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditNationalIdPhoto)} />
@@ -1689,14 +1689,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                   {/* National ID Back */}
                   <div className="p-2 bg-surface-container/50 dark:bg-slate-800/60 border border-outline-variant dark:border-slate-700 rounded-md space-y-1.5 text-center">
-                    <p className="text-[10px] font-bold text-on-surface dark:text-slate-300 truncate">
+                    <p className="text-2xs font-bold text-on-surface dark:text-slate-300 truncate">
                       {isAmharic ? 'መታወቂያ ጀርባ' : 'National ID Back'}
                     </p>
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editNationalIdBackPhoto} alt="ID Back" fallbackIcon="badge" className="w-full h-full object-cover" />
                     </div>
                     <label className="block cursor-pointer">
-                      <span className="text-[10px] font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
                         {isAmharic ? 'ቀይር' : 'Change'}
                       </span>
                       <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditNationalIdBackPhoto)} />
@@ -1705,14 +1705,14 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
                   {/* Driving License */}
                   <div className="p-2 bg-surface-container/50 dark:bg-slate-800/60 border border-outline-variant dark:border-slate-700 rounded-md space-y-1.5 text-center">
-                    <p className="text-[10px] font-bold text-on-surface dark:text-slate-300 truncate">
+                    <p className="text-2xs font-bold text-on-surface dark:text-slate-300 truncate">
                       {isAmharic ? 'መንጃ ፍቃድ' : 'License'}
                     </p>
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editDrivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover" />
                     </div>
                     <label className="block cursor-pointer">
-                      <span className="text-[10px] font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
                         {isAmharic ? 'ቀይር' : 'Change'}
                       </span>
                       <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditDrivingLicensePhoto)} />
@@ -1731,7 +1731,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={() => setEditingReg(null)}
-                  className="min-h-[44px] sm:min-h-[38px] px-4 py-2 rounded-md text-xs font-bold text-secondary hover:text-on-surface dark:hover:text-white hover:bg-surface-container dark:hover:bg-slate-800 transition-colors cursor-pointer touch-manipulation"
+                  className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-4 py-2 rounded-md text-xs font-bold text-secondary hover:text-on-surface dark:hover:text-white hover:bg-surface-container dark:hover:bg-slate-800 transition-colors cursor-pointer touch-manipulation"
                 >
                   {isReadOnly ? (isAmharic ? 'ዝጋ' : 'Close') : (isAmharic ? 'ይቅር' : 'Cancel')}
                 </motion.button>
@@ -1743,12 +1743,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     whileTap={isSubmitting ? undefined : TAP_SCALE}
                     transition={TACTILE_SPRING}
                     disabled={isSubmitting}
-                    className="min-h-[44px] sm:min-h-[38px] px-5 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 text-on-primary text-xs font-bold rounded-lg border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer touch-manipulation"
+                    className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-5 py-2.5 bg-primary hover:bg-primary-hover disabled:opacity-50 text-on-primary text-xs font-bold rounded-lg border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer touch-manipulation"
                   >
                     {isSubmitting ? (
-                      <Icon className="material-symbols-outlined text-[18px] animate-spin">refresh</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md animate-spin">refresh</Icon>
                     ) : (
-                      <Icon className="material-symbols-outlined text-[18px]">cloud_upload</Icon>
+                      <Icon className="material-symbols-outlined text-icon-md">cloud_upload</Icon>
                     )}
                     <span>
                       {editingReg.status === 'rejected'
@@ -1807,7 +1807,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
         <div className="p-6 space-y-5 pb-[max(1.5rem,env(safe-area-inset-bottom,24px))]">
           {/* Modal Header */}
           <div className="flex items-start gap-2.5">
-            <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0 mt-0.5">verified</Icon>
+            <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-slate-700 dark:text-slate-300 shrink-0 mt-0.5">verified</Icon>
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-base text-[#1C2434] dark:text-white">
                 {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}
@@ -1827,13 +1827,13 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               aria-label={isAmharic ? 'ዝጋ' : 'Close'}
               className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0 touch-manipulation"
             >
-              <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg">close</Icon>
             </motion.button>
           </div>
 
           {/* Selected Items List Preview */}
           <div className="bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm p-3 max-h-48 overflow-y-auto space-y-1.5">
-            <p className="text-[11px] font-bold text-[#1C2434] dark:text-white tracking-wider mb-2">
+            <p className="text-11 font-bold text-[#1C2434] dark:text-white tracking-wider mb-2">
               {isAmharic ? 'የተመረጡት ማመልከቻዎች ዝርዝር:' : 'Selected Submissions List:'}
             </p>
             {Array.from(selectedRegIds).map((id, idx) => {
@@ -1853,7 +1853,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
 
           {/* Warning Message */}
           <div className="p-3 bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-sm text-xs text-slate-800 dark:text-slate-200 flex items-start gap-2">
-            <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">info</Icon>
+            <Icon className="material-symbols-outlined text-icon-md text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">info</Icon>
             <span>
               {isAmharic
                 ? 'የተመረጡትን ማመልከቻዎች በአንድ ጊዜ ያጸድቃል።'
@@ -1869,7 +1869,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               whileTap={TAP_SCALE}
               transition={TACTILE_SPRING}
               onClick={() => setShowBulkConfirmModal(false)}
-              className="min-h-[44px] sm:min-h-[38px] px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer touch-manipulation"
+              className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer touch-manipulation"
             >
               {isAmharic ? 'ሰርዝ' : 'Cancel'}
             </motion.button>
@@ -1881,12 +1881,12 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
               transition={TACTILE_SPRING}
               onClick={executeBulkApprove}
               disabled={isSubmittingBulk}
-              className="min-h-[44px] sm:min-h-[38px] px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:opacity-50 touch-manipulation"
+              className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:opacity-50 touch-manipulation"
             >
               {isSubmittingBulk ? (
-                <Icon className="material-symbols-outlined text-[16px] animate-spin">refresh</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm animate-spin">refresh</Icon>
               ) : (
-                <Icon className="material-symbols-outlined text-[16px]">check_circle</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm">check_circle</Icon>
               )}
               <span>
                 {isAmharic

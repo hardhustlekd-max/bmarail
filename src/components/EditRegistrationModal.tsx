@@ -332,7 +332,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               <h3 className="font-black text-base sm:text-lg text-on-surface tracking-tight truncate">
                 {isAmharic ? 'የአባል መረጃ ማሻሻያ' : 'Edit Member Registration'}
               </h3>
-              <p className="text-[11px] sm:text-xs text-secondary font-mono mt-0.5 truncate">
+              <p className="text-11 sm:text-xs text-secondary font-mono mt-0.5 truncate">
                 ID: {registration.id} • {registration.fullName}
               </p>
             </div>
@@ -354,12 +354,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         {/* RBAC Warning Banner if user is not authorized */}
         {!canEdit && (
           <div className="mx-3 sm:mx-6 mt-2.5 sm:mt-3 p-2.5 sm:p-3 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg flex items-start gap-2.5 text-xs text-slate-800 dark:text-slate-200 shrink-0">
-            <Icon className="material-symbols-outlined text-[18px] sm:text-[20px] text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
+            <Icon className="material-symbols-outlined text-icon-md sm:text-icon-lg text-slate-600 dark:text-slate-400 shrink-0">lock</Icon>
             <div>
               <p className="font-black">
                 {isAmharic ? 'የማስተካከል ፈቃድ አልተሰጠም' : 'Editing Disabled'}
               </p>
-              <p className="text-[11px] mt-0.5 text-slate-600 dark:text-slate-400">
+              <p className="text-11 mt-0.5 text-slate-600 dark:text-slate-400">
                 {isAmharic
                   ? 'የአባላት መረጃን የማስተካከል ፈቃድ የለዎትም።'
                   : 'Editing is disabled for your user role.'}
@@ -371,7 +371,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         {/* Form Error Banner */}
         {formError && (
           <div className="mx-3 sm:mx-6 mt-2.5 sm:mt-3 p-2.5 sm:p-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-700 rounded-lg text-xs text-rose-900 dark:text-rose-200 flex items-center gap-2 shrink-0">
-            <Icon className="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
+            <Icon className="material-symbols-outlined text-icon-md text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
             <span>{formError}</span>
           </div>
         )}
@@ -379,7 +379,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         {/* In-Flight Upload Status Banner */}
         {uploadProgressText && (
           <div className="mx-3 sm:mx-6 mt-2.5 sm:mt-3 p-2.5 sm:p-3 bg-primary/10 border border-primary/30 rounded-lg text-xs text-primary font-bold flex items-center gap-2 shrink-0">
-            <Icon className="material-symbols-outlined text-[18px] animate-spin">progress_activity</Icon>
+            <Icon className="material-symbols-outlined text-icon-md animate-spin">progress_activity</Icon>
             <span>{uploadProgressText}</span>
           </div>
         )}
@@ -403,7 +403,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               className="flex flex-col items-center justify-center gap-0.5 sm:gap-1 cursor-pointer transition-opacity hover:opacity-90 disabled:opacity-50 shrink-0 min-h-[44px] min-w-[44px] px-1.5 sm:px-2 touch-manipulation"
             >
               <div
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[11px] sm:text-xs font-black transition-colors ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-11 sm:text-xs font-black transition-colors ${
                   currentStep === item.step
                     ? 'bg-primary text-on-primary shadow-sm ring-2 ring-primary/30'
                     : currentStep > item.step
@@ -412,13 +412,13 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                 }`}
               >
                 {currentStep > item.step ? (
-                  <Icon className="material-symbols-outlined text-[14px] sm:text-[16px]">check</Icon>
+                  <Icon className="material-symbols-outlined text-icon-xs sm:text-icon-sm">check</Icon>
                 ) : (
                   item.step
                 )}
               </div>
               <span
-                className={`text-[9.5px] sm:text-[11px] font-bold whitespace-nowrap ${
+                className={`text-3xs sm:text-11 font-bold whitespace-nowrap ${
                   currentStep === item.step
                     ? 'text-primary'
                     : 'text-slate-500 dark:text-slate-400'
@@ -444,7 +444,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             >
             <SectionCard className="space-y-4">
               <div className="flex items-center gap-2 border-b border-outline-variant/60 pb-2">
-                <Icon className="material-symbols-outlined text-[18px] text-primary">person</Icon>
+                <Icon className="material-symbols-outlined text-icon-md text-primary">person</Icon>
                 <span className="font-bold text-xs text-on-surface">
                   {isAmharic ? 'የባለቤት መረጃ' : 'Owner Information'}
                 </span>
@@ -526,7 +526,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             >
             <SectionCard className="space-y-4">
               <div className="flex items-center gap-2 border-b border-outline-variant/60 pb-2">
-                <Icon className="material-symbols-outlined text-[18px] text-primary">two_wheeler</Icon>
+                <Icon className="material-symbols-outlined text-icon-md text-primary">two_wheeler</Icon>
                 <span className="font-bold text-xs text-on-surface">
                   {isAmharic ? 'የተሽከርካሪ መረጃ' : 'Vehicle Specifications'}
                 </span>
@@ -641,12 +641,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             <SectionCard className="space-y-4">
               <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2">
                 <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px] text-primary">attach_file</Icon>
+                  <Icon className="material-symbols-outlined text-icon-md text-primary">attach_file</Icon>
                   <span className="font-bold text-xs text-on-surface">
                     {isAmharic ? 'የተያያዙ 5ቱ ሰነዶችና ፎቶዎች' : 'All 5 Attached Documents & Photos'}
                   </span>
                 </div>
-                <span className="text-[11px] text-secondary font-mono">5 Files</span>
+                <span className="text-11 text-secondary font-mono">5 Files</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -725,7 +725,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             >
             <SectionCard className="space-y-4">
               <div className="flex items-center gap-2 border-b border-outline-variant/60 pb-2">
-                <Icon className="material-symbols-outlined text-[18px] text-primary">verified_user</Icon>
+                <Icon className="material-symbols-outlined text-icon-md text-primary">verified_user</Icon>
                 <span className="font-bold text-xs text-on-surface">
                   {isAmharic ? 'የፈቃድ ሁኔታና ማጠቃለያ' : 'Permit Status & Review'}
                 </span>
@@ -747,7 +747,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                       transition={TACTILE_SPRING}
                       disabled={!canEdit || isSubmitting}
                       onClick={() => setStatus(st.id as any)}
-                      className={`min-h-[44px] p-2.5 rounded-lg border text-center font-bold text-xs transition-colors cursor-pointer touch-manipulation ${
+                      className={`min-h-[44px] md:min-h-[var(--ui-control-h-md)] p-2.5 rounded-lg border text-center font-bold text-xs transition-colors cursor-pointer touch-manipulation ${
                         status === st.id
                           ? 'bg-primary text-on-primary border-primary shadow-sm'
                           : 'bg-surface-container border-outline-variant text-on-surface hover:bg-surface-container-high'
@@ -775,12 +775,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
 
               {/* SuperAdmin Visibility Toggle */}
               {isSuperAdmin && (
-                <label className="flex items-center justify-between gap-3 p-3 min-h-[48px] rounded-lg border border-outline-variant bg-surface-container/40 cursor-pointer touch-manipulation">
+                <label className="flex items-center justify-between gap-3 p-3 min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] rounded-lg border border-outline-variant bg-surface-container/40 cursor-pointer touch-manipulation">
                   <div>
                     <span className="font-bold text-xs text-on-surface block">
                       {isAmharic ? 'ከሌሎች ተጠቃሚዎች ደብቅ' : 'Hide from Other Users'}
                     </span>
-                    <span className="text-[11px] text-secondary block mt-0.5">
+                    <span className="text-11 text-secondary block mt-0.5">
                       {isAmharic
                         ? 'ለሱፐር አድሚን ብቻ የሚታይ ሚስጥራዊ ተሽከርካሪ መዝገብ'
                         : 'Confidential record visible only to SuperAdmin'}
@@ -849,16 +849,16 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
               transition={TACTILE_SPRING}
               onClick={handleSave}
               disabled={isSubmitting || !canEdit}
-              className="inline-flex items-center justify-center gap-1.5 px-5 min-h-[44px] py-2 bg-primary hover:bg-primary-hover text-on-primary rounded-lg text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50 touch-manipulation"
+              className="inline-flex items-center justify-center gap-1.5 px-5 min-h-[44px] md:min-h-[var(--ui-control-h-md)] py-2 bg-primary hover:bg-primary-hover text-on-primary rounded-lg text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50 touch-manipulation"
             >
               {isSubmitting ? (
                 <>
-                  <Icon className="material-symbols-outlined text-[16px] animate-spin">progress_activity</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm animate-spin">progress_activity</Icon>
                   <span>{isAmharic ? 'እየተቀመጠ ነው...' : 'Saving Changes...'}</span>
                 </>
               ) : (
                 <>
-                  <Icon className="material-symbols-outlined text-[16px]">save</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">save</Icon>
                   <span>{isAmharic ? 'ማሻሻያዎችን አስቀምጥ' : 'Save Changes'}</span>
                 </>
               )}

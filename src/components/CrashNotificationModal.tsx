@@ -89,14 +89,14 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
           {/* Header Alert Strip */}
           <div className="bg-rose-700 text-white px-5 py-4 flex items-center justify-between border-b border-rose-800 shrink-0">
             <div className="flex items-center gap-2.5 min-w-0">
-              <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-rose-100 shrink-0">
+              <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-rose-100 shrink-0">
                 report_problem
               </Icon>
               <div className="min-w-0">
                 <h2 id="crash-dialog-title" className="text-base sm:text-lg font-black tracking-tight leading-tight truncate">
                   {isAmharic ? 'የስርዓት ስህተት ማሳወቂያ' : 'Application Crash Notification'}
                 </h2>
-                <p className="text-[11px] sm:text-xs text-rose-100 font-medium">
+                <p className="text-11 sm:text-xs text-rose-100 font-medium">
                   {isAmharic
                     ? 'ያልተጠበቀ የስርዓት ስህተት ተመዝግቧል'
                     : 'A runtime error was caught and safely captured'}
@@ -113,7 +113,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
               aria-label={isAmharic ? 'ዝጋ' : 'Close'}
               className="w-11 h-11 sm:w-9 sm:h-9 rounded-lg bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 touch-manipulation"
             >
-              <Icon className="material-symbols-outlined text-[20px]">close</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg">close</Icon>
             </motion.button>
           </div>
 
@@ -122,11 +122,11 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
             {/* Summary Box */}
             <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-xl p-3.5 sm:p-4">
               <div className="flex items-start justify-between gap-2 mb-2">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider bg-rose-200 dark:bg-rose-900 text-rose-900 dark:text-rose-200">
-                  <Icon className="material-symbols-outlined text-[13px]">bug_report</Icon>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-2xs font-black tracking-wider bg-rose-200 dark:bg-rose-900 text-rose-900 dark:text-rose-200">
+                  <Icon className="material-symbols-outlined text-13">bug_report</Icon>
                   {activeReport.type}
                 </span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+                <span className="text-11 text-slate-500 dark:text-slate-400 font-mono">
                   {activeReport.id}
                 </span>
               </div>
@@ -135,7 +135,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                 {activeReport.errorMessage}
               </p>
 
-              <div className="mt-2.5 pt-2.5 border-t border-rose-200/60 dark:border-rose-900/40 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-400">
+              <div className="mt-2.5 pt-2.5 border-t border-rose-200/60 dark:border-rose-900/40 flex flex-wrap items-center gap-x-4 gap-y-1 text-11 text-slate-600 dark:text-slate-400">
                 <span>
                   <strong>{isAmharic ? 'ሰዓት' : 'Time'}:</strong> {activeReport.localTime}
                 </span>
@@ -159,10 +159,10 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
               <button
                 type="button"
                 onClick={() => setShowDetails(!showDetails)}
-                className="w-full min-h-[44px] px-4 py-2.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer touch-manipulation"
+                className="w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer touch-manipulation"
               >
                 <div className="flex items-center gap-2">
-                  <Icon className="material-symbols-outlined text-[18px] text-slate-500">
+                  <Icon className="material-symbols-outlined text-icon-md text-slate-500">
                     code
                   </Icon>
                   <span>
@@ -170,7 +170,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                   </span>
                 </div>
                 <Icon
-                  className={`material-symbols-outlined text-[18px] transition-transform ${
+                  className={`material-symbols-outlined text-icon-md transition-transform ${
                     showDetails ? 'rotate-180' : ''
                   }`}
                 >
@@ -185,14 +185,14 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
                     transition={POPOVER_TRANSITION}
-                    className="p-3 bg-slate-900 text-slate-200 text-[11px] font-mono overflow-x-auto max-h-56 leading-relaxed select-all"
+                    className="p-3 bg-slate-900 text-slate-200 text-11 font-mono overflow-x-auto max-h-56 leading-relaxed select-all"
                   >
                     {activeReport.componentStack && (
                       <div className="mb-2">
                         <span className="text-amber-400 font-bold block mb-1">
                           [React Component Stack]
                         </span>
-                        <pre className="whitespace-pre-wrap text-slate-300 text-[10px]">
+                        <pre className="whitespace-pre-wrap text-slate-300 text-2xs">
                           {activeReport.componentStack}
                         </pre>
                       </div>
@@ -201,7 +201,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                       <span className="text-rose-400 font-bold block mb-1">
                         [Error Stack Trace]
                       </span>
-                      <pre className="whitespace-pre-wrap text-slate-300 text-[10px]">
+                      <pre className="whitespace-pre-wrap text-slate-300 text-2xs">
                         {activeReport.stack || activeReport.errorMessage}
                       </pre>
                     </div>
@@ -216,9 +216,9 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setViewingHistory(!viewingHistory)}
-                  className="min-h-[40px] text-xs text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer touch-manipulation"
+                  className="min-h-[var(--ui-control-h-md)] text-xs text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer touch-manipulation"
                 >
-                  <Icon className="material-symbols-outlined text-[16px]">history</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm">history</Icon>
                   <span>
                     {isAmharic
                       ? `የተመዘገቡ ስህተቶች ታሪክ (${allReports.length})`
@@ -239,21 +239,21 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                         <div
                           key={rep.id}
                           onClick={() => setActiveReport(rep)}
-                          className={`p-2 rounded-md text-[11px] flex items-center justify-between cursor-pointer transition-colors ${
+                          className={`p-2 rounded-md text-11 flex items-center justify-between cursor-pointer transition-colors ${
                             activeReport.id === rep.id
                               ? 'bg-rose-100 dark:bg-rose-900/50 text-rose-900 dark:text-rose-100 font-bold'
                               : 'hover:bg-slate-200/60 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          <span className="truncate max-w-[280px]">{rep.errorMessage}</span>
-                          <span className="text-[10px] text-slate-500 shrink-0">{rep.localTime}</span>
+                          <span className="truncate max-w-[calc(280px*var(--ui-scale))]">{rep.errorMessage}</span>
+                          <span className="text-2xs text-slate-500 shrink-0">{rep.localTime}</span>
                         </div>
                       ))}
                       <div className="pt-1 flex justify-end">
                         <button
                           type="button"
                           onClick={handleClearHistory}
-                          className="text-[11px] text-rose-600 dark:text-rose-400 hover:underline font-bold cursor-pointer py-1 px-2"
+                          className="text-11 text-rose-600 dark:text-rose-400 hover:underline font-bold cursor-pointer py-1 px-2"
                         >
                           {isAmharic ? 'ታሪክ አጽዳ' : 'Clear All History'}
                         </button>
@@ -273,13 +273,13 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
               whileTap={TAP_SCALE}
               transition={TACTILE_SPRING}
               onClick={handleCopy}
-              className={`min-h-[44px] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border transition-colors cursor-pointer touch-manipulation ${
+              className={`min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border transition-colors cursor-pointer touch-manipulation ${
                 copied
                   ? 'bg-emerald-600 border-emerald-600 text-white'
                   : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
               }`}
             >
-              <Icon className="material-symbols-outlined text-[18px]">
+              <Icon className="material-symbols-outlined text-icon-md">
                 {copied ? 'check_circle' : 'content_copy'}
               </Icon>
               <span>
@@ -300,7 +300,7 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={handleClose}
-                className="flex-1 sm:flex-none min-h-[44px] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer touch-manipulation"
+                className="flex-1 sm:flex-none min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer touch-manipulation"
               >
                 {isAmharic ? 'ዝጋ እና ቀጥል' : 'Dismiss'}
               </motion.button>
@@ -311,9 +311,9 @@ export const CrashNotificationModal: React.FC<CrashNotificationModalProps> = ({
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={handleReload}
-                className="flex-1 sm:flex-none min-h-[44px] px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm bg-rose-600 hover:bg-rose-700 text-white shadow-md flex items-center justify-center gap-2 transition-colors cursor-pointer touch-manipulation"
+                className="flex-1 sm:flex-none min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-5 py-2.5 rounded-xl font-black text-xs sm:text-sm bg-rose-600 hover:bg-rose-700 text-white shadow-md flex items-center justify-center gap-2 transition-colors cursor-pointer touch-manipulation"
               >
-                <Icon className="material-symbols-outlined text-[18px]">refresh</Icon>
+                <Icon className="material-symbols-outlined text-icon-md">refresh</Icon>
                 <span>{isAmharic ? 'ድጋሚ ጫን (Reload)' : 'Reload App'}</span>
               </motion.button>
             </div>

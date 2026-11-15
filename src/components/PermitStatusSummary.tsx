@@ -98,7 +98,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
       {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-outline-variant/60 pb-3.5">
         <div className="flex items-center gap-3">
-          <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">analytics</Icon>
+          <Icon className="material-symbols-outlined text-icon-xl text-primary shrink-0">analytics</Icon>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-black text-sm sm:text-base text-on-surface  tracking-wider">
@@ -119,7 +119,7 @@ export const PermitStatusSummary: React.FC<PermitStatusSummaryProps> = ({
               className={`p-2.5 sm:p-3 rounded-lg ${card.bg} border border-slate-200/70 dark:border-slate-800/70 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors`}
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-[10px] sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-primary transition-colors">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-primary transition-colors">
                   {card.label}
                 </span>
               </div>

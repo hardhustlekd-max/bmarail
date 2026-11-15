@@ -282,13 +282,13 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
             className="fixed bottom-5 right-5 z-[999999] max-w-sm bg-emerald-600 border border-emerald-500 rounded-xl shadow-xl shadow-emerald-950/25 p-3.5 flex items-start gap-3 text-white overflow-hidden"
           >
             <div className="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-              <Icon className="material-symbols-outlined text-[20px]">verified_user</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg">verified_user</Icon>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-black text-white">
                 {isAmharic ? 'የስራ ክፍለ ጊዜዎ ተራዝሟል!' : 'Session Successfully Extended!'}
               </p>
-              <p className="text-[11px] text-white/90 mt-0.5 leading-relaxed">
+              <p className="text-11 text-white/90 mt-0.5 leading-relaxed">
                 {isAmharic
                   ? 'ተጨማሪ 15 ደቂቃዎች ተጨምረዋል።'
                   : '15 minutes added to session.'}
@@ -303,7 +303,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
               className="w-9 h-9 -m-1 text-white/80 hover:text-white hover:bg-white/15 rounded-lg cursor-pointer shrink-0 flex items-center justify-center transition-colors"
               title={isAmharic ? 'ዝጋ' : 'Dismiss'}
             >
-              <Icon className="material-symbols-outlined text-[18px]">close</Icon>
+              <Icon className="material-symbols-outlined text-icon-md">close</Icon>
             </motion.button>
           </motion.div>
         )}
@@ -326,7 +326,7 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
           {/* Warning Header Bar */}
           <div className="bg-amber-500/15 dark:bg-amber-950/40 border-b border-amber-500/30 px-5 sm:px-6 py-4 flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-xl bg-amber-500/25 dark:bg-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 shadow-xs">
-              <Icon className="material-symbols-outlined text-[26px]">alarm</Icon>
+              <Icon className="material-symbols-outlined text-[length:calc(26px*var(--ui-scale))]">alarm</Icon>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
@@ -337,12 +337,12 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
                   {isAmharic ? 'ክፍለ ጊዜው ሊጠናቀቅ ነው' : 'Session Expiring Soon'}
                 </h3>
                 {isTestPreview && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-100 dark:bg-blue-900/60 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-slate-800">
+                  <span className="px-2 py-0.5 rounded-full text-2xs font-black bg-blue-100 dark:bg-blue-900/60 text-slate-800 dark:text-blue-300 border border-blue-300 dark:border-slate-800">
                     Test Preview
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-amber-800/90 dark:text-amber-400/80 font-semibold mt-0.5">
+              <p className="text-11 text-amber-800/90 dark:text-amber-400/80 font-semibold mt-0.5">
                 {isAmharic
                   ? 'የእንቅስቃሴ አልባነት ማብቂያ'
                   : 'Inactivity timeout'}
@@ -364,11 +364,11 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
             {/* Countdown Clock Display Card */}
             <div className="p-4 rounded-xl bg-surface-container-high dark:bg-slate-800/80 border border-outline-variant/70 dark:border-slate-700 max-w-xs mx-auto shadow-inner space-y-3">
               <div className="flex items-center justify-center gap-2">
-                <Icon className="material-symbols-outlined text-[24px] text-amber-600 dark:text-amber-400 animate-spin">
+                <Icon className="material-symbols-outlined text-icon-2xl text-amber-600 dark:text-amber-400 animate-spin">
                   schedule
                 </Icon>
                 <div className="text-left">
-                  <span className="text-[10px] font-extrabold text-outline dark:text-slate-400 block tracking-wider">
+                  <span className="text-2xs font-extrabold text-outline dark:text-slate-400 block tracking-wider">
                     {isAmharic ? 'የቀረው ጊዜ (Countdown)' : 'Automatic Logout In'}
                   </span>
                   <span className="text-2xl sm:text-3xl font-black text-on-surface dark:text-white tabular-nums tracking-tight">
@@ -393,10 +393,10 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
             </div>
 
             <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-3 text-left flex items-start gap-2.5">
-              <Icon className="material-symbols-outlined text-[18px] text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
+              <Icon className="material-symbols-outlined text-icon-md text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
                 info
               </Icon>
-              <p className="text-[11px] text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+              <p className="text-11 text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
                 {isAmharic
                   ? 'ስራዎን ሳያቋርጡ ለመቀጠል ከታች ያለውን "በመለያዬ እንዳለሁ አቆየኝ" የሚለውን ይጫኑ ወይም የቁልፍ ሰሌዳዎን "Enter" ይጫኑ። ይህ ተጨማሪ 15 ደቂቃ ይሰጥዎታል።'
                   : 'Click "Keep me logged in" below or press [Enter] to extend your session for another 15 minutes without losing any unsaved work.'}
@@ -412,9 +412,9 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
               whileTap={TAP_SCALE}
               transition={TACTILE_SPRING}
               onClick={handleImmediateLogout}
-              className="order-2 sm:order-1 min-h-[44px] px-4 py-2.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5 touch-manipulation"
+              className="order-2 sm:order-1 min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2.5 rounded-lg text-xs font-bold text-secondary dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5 touch-manipulation"
             >
-              <Icon className="material-symbols-outlined text-[16px]">logout</Icon>
+              <Icon className="material-symbols-outlined text-icon-sm">logout</Icon>
               <span>{isAmharic ? 'አሁን ውጣ' : 'Sign Out Now'}</span>
             </motion.button>
 
@@ -425,13 +425,13 @@ export const AutoLogoutManager: React.FC<AutoLogoutManagerProps> = ({
               whileTap={TAP_SCALE}
               transition={TACTILE_SPRING}
               onClick={handleKeepLoggedIn}
-              className="order-1 sm:order-2 min-h-[44px] px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-primary hover:bg-primary-hover text-on-primary border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer flex items-center justify-center gap-2 group touch-manipulation"
+              className="order-1 sm:order-2 min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-6 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-primary hover:bg-primary-hover text-on-primary border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer flex items-center justify-center gap-2 group touch-manipulation"
             >
-              <Icon className="material-symbols-outlined text-[18px] group-hover:rotate-180 transition-transform duration-500">
+              <Icon className="material-symbols-outlined text-icon-md group-hover:rotate-180 transition-transform duration-500">
                 lock_reset
               </Icon>
               <span>{isAmharic ? 'በመለያዬ እንዳለሁ አቆየኝ' : 'Keep me logged in'}</span>
-              <span className="ml-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-white/15 dark:bg-black/15 text-on-primary">
+              <span className="ml-1 px-2 py-0.5 rounded-md text-2xs font-bold bg-white/15 dark:bg-black/15 text-on-primary">
                 +15 min
               </span>
             </motion.button>

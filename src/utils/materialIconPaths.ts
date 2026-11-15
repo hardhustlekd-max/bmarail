@@ -210,6 +210,9 @@ export const getMaterialIconPath = (name: string): string => {
   if (iconName === "copy") iconName = "content_copy";
   if (iconName === "wallet") iconName = "account_balance_wallet";
   if (iconName === "bank") iconName = "account_balance";
+  if (iconName === "fact_check") iconName = "checklist";
+  if (iconName === "qr_code_2") iconName = "qr_code";
+  if (iconName === "note") iconName = "description";
   
   if (materialIconPaths[iconName]) {
     return materialIconPaths[iconName];

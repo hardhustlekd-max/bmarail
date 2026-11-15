@@ -209,7 +209,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       */}
       <div
         id="toast-notifications-container"
-        className="fixed top-[62px] sm:top-[68px] left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-auto sm:right-6 z-[99999] pointer-events-none flex flex-col items-center sm:items-end w-[92vw] max-w-sm sm:max-w-md sm:w-auto"
+        className="fixed top-[calc(62px*var(--ui-scale))] sm:top-[calc(68px*var(--ui-scale))] left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-auto sm:right-6 z-[99999] pointer-events-none flex flex-col items-center sm:items-end w-[92vw] max-w-sm sm:max-w-md sm:w-auto"
         aria-live="polite"
         aria-atomic="true"
       >
@@ -245,7 +245,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
               <div className="flex items-start gap-2.5 relative z-10">
                 {/* Icon badge with crisp contrasting container */}
                 <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0 mt-0.5 shadow-xs text-white">
-                  <Icon className="material-symbols-outlined text-[18px] sm:text-[20px]">
+                  <Icon className="material-symbols-outlined text-icon-md sm:text-icon-lg">
                     {activeToast.type === 'success'
                       ? 'check_circle'
                       : activeToast.type === 'warning'
@@ -260,11 +260,11 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 <div className="flex-1 min-w-0 pr-1 text-left">
                   {activeToast.title && (
                     <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[11px] font-black tracking-wide opacity-95">
+                      <span className="text-11 font-black tracking-wide opacity-95">
                         {activeToast.title}
                       </span>
                       {activeToast.tag && (
-                        <span className="px-1.5 py-0.2 rounded bg-black/25 text-[10px] font-mono font-bold">
+                        <span className="px-1.5 py-0.2 rounded bg-black/25 text-2xs font-mono font-bold">
                           {activeToast.tag}
                         </span>
                       )}
@@ -286,7 +286,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                           }
                           nextToast();
                         }}
-                        className="min-h-[36px] px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30 text-[11px] font-black text-white cursor-pointer transition-colors border border-white/30 active:scale-95"
+                        className="min-h-[var(--ui-control-h-sm)] px-3 py-1.5 rounded-md bg-white/20 hover:bg-white/30 text-11 font-black text-white cursor-pointer transition-colors border border-white/30 active:scale-95"
                       >
                         {activeToast.action.label}
                       </button>
@@ -296,7 +296,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
                 {/* Queue badge counter if more notifications are waiting */}
                 {queue.length > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-md bg-black/25 text-[10px] font-mono font-bold text-white/90 shrink-0 self-center">
+                  <span className="px-1.5 py-0.5 rounded-md bg-black/25 text-2xs font-mono font-bold text-white/90 shrink-0 self-center">
                     +{queue.length}
                   </span>
                 )}
@@ -309,7 +309,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                   title="Dismiss"
                   aria-label="Dismiss notification"
                 >
-                  <Icon className="material-symbols-outlined text-[18px] font-bold">close</Icon>
+                  <Icon className="material-symbols-outlined text-icon-md font-bold">close</Icon>
                 </button>
               </div>
 
