@@ -5,6 +5,8 @@ export interface SpinnerIconProps {
   size?: number;
   className?: string;
   trackClassName?: string;
+  spinning?: boolean;
+  rotationDeg?: number;
 }
 
 /**
@@ -15,6 +17,8 @@ export const SpinnerIcon: React.FC<SpinnerIconProps> = ({
   size = 34,
   className = 'text-primary',
   trackClassName = 'text-primary/15 dark:text-primary/20',
+  spinning = true,
+  rotationDeg = 0,
 }) => {
   const scaledSize = `calc(${size}px * var(--ui-scale, 1))`;
 
@@ -40,11 +44,16 @@ export const SpinnerIcon: React.FC<SpinnerIconProps> = ({
           strokeWidth="60"
         />
       </svg>
-      <Icon
-        name="progress_activity"
-        size={size}
-        className={`animate-spinner-spin ${className}`}
-      />
+      <span
+        className={`inline-flex items-center justify-center ${spinning ? 'animate-spin' : ''}`}
+        style={!spinning ? { transform: `rotate(${rotationDeg}deg)` } : undefined}
+      >
+        <Icon
+          name="progress_activity"
+          size={size}
+          className={className}
+        />
+      </span>
     </span>
   );
 };

@@ -16,10 +16,12 @@ export interface DocumentViewerItem {
 export const buildRegistrationDocumentList = (
   reg: any,
   lang: Language = 'en',
-  isSuperAdmin: boolean = true
+  isSuperAdmin: boolean = true,
+  options?: { includeReceipt?: boolean }
 ): DocumentViewerItem[] => {
   if (!reg) return [];
   const isAmharic = lang === 'am';
+  const includeReceipt = options?.includeReceipt !== false;
   const list: DocumentViewerItem[] = [];
 
   // 1. Police Permit
@@ -82,16 +84,18 @@ export const buildRegistrationDocumentList = (
     });
   }
 
-  // 6. Payment Receipt Screenshot
-  const receiptScreenshot = reg.receiptScreenshot || reg.receipt_screenshot;
-  if (receiptScreenshot && typeof receiptScreenshot === 'string' && receiptScreenshot.trim() !== '') {
-    list.push({
-      url: receiptScreenshot,
-      title: isAmharic ? 'የባንክ ክፍያ ደረሰኝ' : 'Payment Receipt Slip',
-      subtitle: `${reg.receiptNumber || reg.receipt_number ? `#${reg.receiptNumber || reg.receipt_number}` : ''} ${reg.paymentAmount || reg.payment_amount ? `• ${reg.paymentAmount || reg.payment_amount} ETB` : ''}`,
-      icon: 'receipt_long',
-      type: 'receipt-slip',
-    });
+  // 6. Payment Receipt Screenshot (optional)
+  if (includeReceipt) {
+    const receiptScreenshot = reg.receiptScreenshot || reg.receipt_screenshot;
+    if (receiptScreenshot && typeof receiptScreenshot === 'string' && receiptScreenshot.trim() !== '') {
+      list.push({
+        url: receiptScreenshot,
+        title: isAmharic ? 'የባንክ ክፍያ ደረሰኝ' : 'Payment Receipt Slip',
+        subtitle: `${reg.receiptNumber || reg.receipt_number ? `#${reg.receiptNumber || reg.receipt_number}` : ''} ${reg.paymentAmount || reg.payment_amount ? `• ${reg.paymentAmount || reg.payment_amount} ETB` : ''}`,
+        icon: 'receipt_long',
+        type: 'receipt-slip',
+      });
+    }
   }
 
   return list;

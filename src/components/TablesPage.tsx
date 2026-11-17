@@ -392,9 +392,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     initialIndex: number;
   } | null>(null);
 
-  const openDocumentCarousel = (targetUrl: string, reg: MotorcycleRegistration, fallbackTitle?: string) => {
+  const openDocumentCarousel = (
+    targetUrl: string,
+    reg: MotorcycleRegistration,
+    fallbackTitle?: string,
+    includeReceipt: boolean = false
+  ) => {
     if (!targetUrl) return;
-    const docs = buildRegistrationDocumentList(reg, lang);
+    const docs = buildRegistrationDocumentList(reg, lang, isSuperAdmin, { includeReceipt });
     const foundIdx = docs.findIndex((d) => d.url === targetUrl);
     if (foundIdx >= 0) {
       setCarouselModal({
@@ -409,8 +414,16 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     }
   };
 
+  const openPaymentReceiptPreview = (url: string, title: string) => {
+    if (!url) return;
+    setCarouselModal({
+      items: [{ url, title, icon: 'receipt_long', type: 'receipt-slip' }],
+      initialIndex: 0,
+    });
+  };
+
   const openMemberDocumentCarousel = (reg: MotorcycleRegistration) => {
-    const docs = buildRegistrationDocumentList(reg, lang);
+    const docs = buildRegistrationDocumentList(reg, lang, isSuperAdmin, { includeReceipt: false });
     if (docs.length > 0) {
       setCarouselModal({
         items: docs,
@@ -433,8 +446,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     if (r.nationalIdBackPhoto || r.national_id_back_photo || r.nationalIdBack) count++;
     if (r.drivingLicensePhoto || r.driving_license_photo || r.driverLicensePhoto) count++;
     if (r.drivingPermitPhoto || r.driving_permit_photo || r.policePermitPhoto) count++;
-    const latestRc = getLatestReceiptForRegistration(reg, paymentReceipts);
-    if (latestRc?.receiptScreenshot || (latestRc as any)?.receipt_screenshot || r.receiptScreenshot || r.receipt_screenshot) count++;
     return count;
   };
 
@@ -1664,7 +1675,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             id: 'documents',
             label: isAmharic ? 'ሰነዶች' : 'Documents',
             icon: 'photo_library',
-            count: `${docCount}/6`,
+            count: `${docCount}/5`,
           },
         ];
 
@@ -1693,7 +1704,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <button
                         type="button"
                         onClick={() => onApproveRegistration(selectedRegForDetails.id)}
-                        className="py-2 px-3 rounded-sm bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer transition-all"
+                        className="min-h-[38px] py-2 px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer transition-all"
                       >
                         <Icon name="check_circle" size={15} />
                         <span>{isAmharic ? 'አፅድቅ' : 'Approve'}</span>
@@ -1701,7 +1712,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <button
                         type="button"
                         onClick={() => setRejectingId(selectedRegForDetails.id)}
-                        className="py-2 px-3 rounded-sm bg-[#FB5454]/10 hover:bg-[#FB5454]/20 border border-[#FB5454]/30 text-[#FB5454] font-semibold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer transition-all"
+                        className="min-h-[38px] py-2 px-3 rounded-lg bg-[#FB5454]/10 hover:bg-[#FB5454]/20 border border-[#FB5454]/30 text-[#FB5454] font-semibold text-xs inline-flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] cursor-pointer transition-all"
                       >
                         <Icon name="cancel" size={15} />
                         <span>{isAmharic ? 'ሰርዝ' : 'Reject'}</span>
@@ -1721,7 +1732,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setSelectedRegForDetails(null);
                           setEditingRegistration(reg);
                         }}
-                        className="py-1.5 sm:py-2 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs inline-flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
+                        className="min-h-[36px] py-1.5 sm:py-2 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs inline-flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
                         title={isAmharic ? 'መረጃ አሻሽል' : 'Edit Registration'}
                       >
                         <Icon name="edit" size={14} />
@@ -1737,7 +1748,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setSelectedRegForDetails(null);
                           setSelectedRegForQR(reg);
                         }}
-                        className="py-1.5 sm:py-2 px-3 rounded-sm bg-primary hover:bg-primary-hover text-white dark:text-slate-900 font-semibold text-xs inline-flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
+                        className="min-h-[36px] py-1.5 sm:py-2 px-3 rounded-lg bg-primary hover:bg-primary-hover text-white dark:text-slate-900 font-semibold text-xs inline-flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
                         title={isAmharic ? 'የመታወቂያ ካርድ አትም' : 'Print ID Card'}
                       >
                         <Icon name="badge" size={14} />
@@ -1756,7 +1767,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             setSelectedRegForDetails(null);
                             setSelectedRegForA4(reg);
                           }}
-                          className="py-1.5 sm:py-2 px-3 rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs inline-flex items-center justify-center cursor-pointer transition-colors shadow-2xs shrink-0"
+                          className="min-h-[36px] py-1.5 sm:py-2 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white hover:text-primary font-semibold text-xs inline-flex items-center justify-center cursor-pointer transition-colors shadow-2xs shrink-0"
                           title={isAmharic ? 'የመንቀሳቀሻ ፍቃድ አትም' : 'Print Permit'}
                         >
                           <span>{isAmharic ? 'ፍቃድ' : 'Permit'}</span>
@@ -1769,7 +1780,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             setSelectedRegForDetails(null);
                             setSelectedRegForSticker(reg);
                           }}
-                          className="py-1.5 sm:py-2 px-3 rounded-sm border border-[#10B981]/30 bg-[#10B981]/10 hover:bg-[#10B981]/20 text-[#10B981] font-semibold text-xs inline-flex items-center justify-center cursor-pointer shadow-2xs transition-colors shrink-0"
+                          className="min-h-[36px] py-1.5 sm:py-2 px-3 rounded-lg border border-[#10B981]/30 bg-[#10B981]/10 hover:bg-[#10B981]/20 text-[#10B981] font-semibold text-xs inline-flex items-center justify-center cursor-pointer shadow-2xs transition-colors shrink-0"
                           title={isAmharic ? 'ተለጣፊ QR ኮድ አትም' : 'Print Sticker'}
                         >
                           <span>{isAmharic ? 'ተለጣፊ' : 'Sticker'}</span>
@@ -1781,7 +1792,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <button
                         type="button"
                         onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
-                        className="py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-sm bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs inline-flex items-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
+                        className="min-h-[36px] py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white font-semibold text-xs inline-flex items-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
                         title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
                       >
                         <Icon name="add_card" size={14} />
@@ -2186,7 +2197,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                       {rc.receiptScreenshot ? (
                                         <button
                                           type="button"
-                                          onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
+                                          onClick={() => openPaymentReceiptPreview(rc.receiptScreenshot!, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
                                           className="text-primary hover:underline font-semibold cursor-pointer flex items-center gap-0.5"
                                         >
                                           <Icon name="image" size={15} />
@@ -2277,7 +2288,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                         {rc.receiptScreenshot ? (
                                           <button
                                             type="button"
-                                            onClick={() => openDocumentCarousel(rc.receiptScreenshot!, selectedRegForDetails, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
+                                            onClick={() => openPaymentReceiptPreview(rc.receiptScreenshot!, `${selectedRegForDetails.fullName} — Receipt #${rc.receiptNumber}`)}
                                             className="text-primary hover:underline font-semibold cursor-pointer flex items-center gap-1 py-0.5"
                                           >
                                             <Icon name="image" size={14} />
@@ -2326,7 +2337,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     const nationalIdBackUrl = r.nationalIdBackPhoto || r.national_id_back_photo || r.nationalIdBack;
                     const drivingLicenseUrl = r.drivingLicensePhoto || r.driving_license_photo || r.driverLicensePhoto;
                     const drivingPermitUrl = r.drivingPermitPhoto || r.driving_permit_photo || r.policePermitPhoto;
-                    const slipPhoto = latestRc?.receiptScreenshot || (latestRc as any)?.receipt_screenshot || r.receiptScreenshot || r.receipt_screenshot;
 
                     const docCards = [
                       {
@@ -2348,7 +2358,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         title: `${getDisplayName(selectedRegForDetails)} — National ID Back`,
                       },
                       {
-                        label: isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License',
+                        label: isAmharic ? 'የመንጃ ፈቃድ' : 'Driving License',
                         url: drivingLicenseUrl,
                         icon: 'card_membership',
                         title: `${getDisplayName(selectedRegForDetails)} — License`,
@@ -2358,12 +2368,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         url: drivingPermitUrl,
                         icon: 'menu_book',
                         title: `${getDisplayName(selectedRegForDetails)} — Permit`,
-                      },
-                      {
-                        label: isAmharic ? 'የክፍያ ደረሰኝ' : 'Receipt Slip',
-                        url: slipPhoto,
-                        icon: 'receipt_long',
-                        title: `${getDisplayName(selectedRegForDetails)} — Receipt Slip`,
                       },
                     ];
 

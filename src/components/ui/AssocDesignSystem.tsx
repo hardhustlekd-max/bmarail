@@ -2,7 +2,7 @@ import React, { ReactNode, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './Icon';
 import { ETHIOPIAN_MONTHS } from '../../utils/ethiopianCalendar';
-import { BACKDROP_VARIANTS, POPOVER_TRANSITION, SHEET_SPRING } from '../../utils/motionPresets';
+import { BACKDROP_VARIANTS, POPOVER_TRANSITION, SHEET_SPRING, TACTILE_SPRING } from '../../utils/motionPresets';
 
 // ============================================================================
 // 0. CANONICAL DESIGN TOKENS (Synchronized with src/index.css)
@@ -1818,5 +1818,124 @@ export const WorkspaceSideDrawer: React.FC<WorkspaceSideDrawerProps> = ({
     </AnimatePresence>
   );
 };
+
+// ============================================================================
+// 7. UNIFIED MULTI-STEP STEPPER NAVIGATION
+// ============================================================================
+
+export interface StepperItem<T extends string | number = number> {
+  id: T;
+  label: string;
+  subLabel?: string;
+}
+
+export interface StepperProps<T extends string | number = number> {
+  steps: StepperItem<T>[];
+  currentStep: T;
+  onStepClick?: (stepId: T) => void;
+  disabled?: boolean;
+  ariaLabel?: string;
+  variant?: 'flush' | 'standalone';
+  maxWidthClass?: string;
+  className?: string;
+}
+
+export function Stepper<T extends string | number = number>({
+  steps,
+  currentStep,
+  onStepClick,
+  disabled = false,
+  ariaLabel = 'Progress steps',
+  variant = 'flush',
+  maxWidthClass = 'max-w-2xl',
+  className = '',
+}: StepperProps<T>) {
+  if (steps.length === 0) return null;
+
+  const activeIndex = Math.max(
+    0,
+    steps.findIndex((s) => s.id === currentStep)
+  );
+  const edgeOffsetPct = 50 / steps.length;
+  const progressRatio = steps.length > 1 ? activeIndex / (steps.length - 1) : 0;
+
+  const containerClasses =
+    variant === 'standalone'
+      ? 'bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg px-2 sm:px-6 py-2 shadow-xs shrink-0'
+      : 'bg-[#F8FAFC] dark:bg-[#1E293B]/70 border-b border-[#E2E8F0] dark:border-[#2E3A47] px-2 sm:px-6 py-2 shrink-0';
+
+  return (
+    <div className={`${containerClasses} ${className}`}>
+      <nav
+        aria-label={ariaLabel}
+        className={`relative grid ${maxWidthClass} mx-auto`}
+        style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}
+      >
+        {steps.length > 1 && (
+          <div
+            aria-hidden="true"
+            style={{ left: `${edgeOffsetPct}%`, right: `${edgeOffsetPct}%` }}
+            className="absolute top-5 sm:top-[1.375rem] -translate-y-1/2 h-[1.5px] bg-[#E2E8F0] dark:bg-[#334155] z-0 overflow-hidden"
+          >
+            <motion.div
+              className="h-full w-full bg-primary origin-left"
+              initial={false}
+              animate={{ scaleX: progressRatio }}
+              transition={TACTILE_SPRING}
+            />
+          </div>
+        )}
+
+        {steps.map((item, idx) => {
+          const isActive = idx === activeIndex;
+          const isCompleted = idx < activeIndex;
+
+          return (
+            <button
+              key={String(item.id)}
+              type="button"
+              disabled={disabled}
+              onClick={() => onStepClick?.(item.id)}
+              aria-current={isActive ? 'step' : undefined}
+              title={item.subLabel ? `${item.label} - ${item.subLabel}` : item.label}
+              className="relative z-10 flex flex-col items-center justify-start pt-1.5 pb-1 px-0.5 sm:px-1 min-h-[44px] cursor-pointer group select-none touch-manipulation rounded-md disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              <div
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-11 sm:text-xs font-black tabular-nums transition-colors duration-150 shrink-0 ${
+                  isActive
+                    ? 'bg-primary text-on-primary shadow-sm ring-2 ring-primary/25'
+                    : isCompleted
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-white dark:bg-[#1C2434] border border-[#CBD5E1] dark:border-[#334155] text-[#64748B] dark:text-[#8A99AD] group-hover:border-primary/50 group-hover:text-[#1C2434] dark:group-hover:text-white'
+                }`}
+              >
+                {isCompleted ? (
+                  <Icon className="material-symbols-outlined text-icon-xs font-black">check</Icon>
+                ) : (
+                  <span>{idx + 1}</span>
+                )}
+              </div>
+
+              <div className="mt-1 w-full text-center px-0.5">
+                <span
+                  className={`block truncate text-2xs sm:text-11 leading-tight tracking-tight transition-colors ${
+                    isActive
+                      ? 'font-bold text-primary'
+                      : isCompleted
+                      ? 'font-semibold text-[#1C2434] dark:text-[#DEE4EE]'
+                      : 'font-medium text-[#64748B] dark:text-[#8A99AD] group-hover:text-[#1C2434] dark:group-hover:text-white'
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}
+
 
 

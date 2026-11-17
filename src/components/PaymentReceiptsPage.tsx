@@ -30,6 +30,7 @@ import { formatEthiopianDate, formatEthiopianDateTime, toEthiopianDate, ethiopia
 import { LoadingSpinner, TableSkeleton } from './ui/Skeleton';
 import { EthiopianDateRangePicker, DateRangePreset, computeEthiopianPresetRange } from './EthiopianDateRangePicker';
 import { EthiopianDatePickerPopover } from './ui/EthiopianDatePickerPopover';
+import { CameraCaptureModal } from './CameraCaptureModal';
 
 interface PaymentReceiptsPageProps {
   userBadgeId: string;
@@ -115,6 +116,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   );
   const [amount, setAmount] = useState<string>('500');
   const [receiptScreenshot, setReceiptScreenshot] = useState<string>('');
+  const [showReceiptCamera, setShowReceiptCamera] = useState(false);
   const [notes, setNotes] = useState('');
 
   // In-form Cheki Verifier State
@@ -507,10 +509,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   };
 
   // Image screenshot file upload handler
-  const handleScreenshotUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processScreenshotFile = (file: File) => {
     if (file.size > 8 * 1024 * 1024) {
       if (onShowToast) {
         onShowToast(
@@ -528,6 +527,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       setReceiptScreenshot(reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleScreenshotUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    processScreenshotFile(file);
+    e.target.value = '';
   };
 
   // Submit payment receipt entry form
@@ -1935,7 +1941,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 </div>
               )}
 
-              <div className="space-y-1 text-center sm:text-left">
+              <div className="space-y-1.5 text-center sm:text-left">
                 <input
                   type="file"
                   accept="image/*"
@@ -1943,13 +1949,24 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   id="receipt-screenshot-upload"
                   className="hidden"
                 />
-                <label
-                  htmlFor="receipt-screenshot-upload"
-                  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold cursor-pointer transition-all shadow-xs"
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">cloud_upload</Icon>
-                  <span>{isAmharic ? 'የደረሰኝ ፎቶ ስቀል' : 'Upload Receipt Screenshot'}</span>
-                </label>
+                <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                  <label
+                    htmlFor="receipt-screenshot-upload"
+                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold cursor-pointer transition-all shadow-xs"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">cloud_upload</Icon>
+                    <span>{isAmharic ? 'የደረሰኝ ፎቶ ስቀል' : 'Upload File'}</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowReceiptCamera(true)}
+                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold cursor-pointer transition-all shadow-xs"
+                  >
+                    <Icon className="material-symbols-outlined text-[16px]">photo_camera</Icon>
+                    <span>{isAmharic ? 'በካሜራ አንሳ' : 'Capture from Camera'}</span>
+                  </button>
+                </div>
                 <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300">
                   {isAmharic
                     ? 'የቴሌብር/የባንክ ማረጋገጫ ስክሪንሾት ወይም የወረቀት ደረሰኙን ፎቶ ያያይዙ።'
@@ -1958,6 +1975,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               </div>
             </div>
           </div>
+
+          <CameraCaptureModal
+            isOpen={showReceiptCamera}
+            onClose={() => setShowReceiptCamera(false)}
+            onCapture={processScreenshotFile}
+            isAmharic={isAmharic}
+            title={isAmharic ? 'የደረሰኝ ፎቶ በካሜራ አንሳ' : 'Capture Receipt Photo'}
+          />
 
           {/* Optional Notes */}
           <div className="space-y-1">

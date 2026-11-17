@@ -310,7 +310,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
   const openDocumentCarousel = (targetUrl: string, fallbackTitle?: string) => {
     if (!targetUrl) return;
-    const docs = buildRegistrationDocumentList(scannedRegResult, lang, isSuperAdmin);
+    const docs = buildRegistrationDocumentList(scannedRegResult, lang, isSuperAdmin, {
+      includeReceipt: false,
+    });
     const foundIdx = docs.findIndex((d) => d.url === targetUrl);
     if (foundIdx >= 0) {
       setCarouselModal({

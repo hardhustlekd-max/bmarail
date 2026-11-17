@@ -13,7 +13,7 @@ import { uploadDocumentPhoto } from '../services/storageService';
 import { savePaymentReceiptToDb } from '../services/dbService';
 import { calculateOneMonthExpiration, calculateRegistrationPayment, calculateNMonthsExpiration } from '../utils/paymentUtils';
 import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, formatEthiopianDate } from '../utils/ethiopianCalendar';
-import { SectionCard, DataField } from './ui/StreamlinedUI';
+import { SectionCard, DataField, Stepper } from './ui/StreamlinedUI';
 import { Icon } from './ui/Icon';
 import { motion, AnimatePresence } from 'motion/react';
 import { BaseModal } from './ui/BaseModal';
@@ -1180,85 +1180,20 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
         </div>
       </BaseModal>
 
-      {/* =========================================================================
-          COMPACT STEPPER HEADER (DECREASED SIZE & MARGIN ON DESKTOP)
-          ========================================================================= */}
-      {!isSubmittedSuccessfully && (
-        <div className="w-full py-0.5 my-0 md:my-0.5">
-          <div className="relative flex items-center justify-between max-w-md md:max-w-lg mx-auto px-3 sm:px-5">
-            
-            {/* Horizontal Connecting Line running across the step circles (GPU scaleX) */}
-            <div className="absolute left-6 right-6 sm:left-8 sm:right-8 top-3 -translate-y-1/2 h-[1.5px] bg-surface-container-high z-0 overflow-hidden">
-              <motion.div 
-                className="h-full w-full bg-primary origin-left"
-                initial={false}
-                animate={{ scaleX: (currentStep - 1) / (STEP_ITEMS.length - 1) }}
-                transition={TACTILE_SPRING}
-              />
-            </div>
+      {/* UNIFIED WORKSPACE CARD SHELL (MATCHING DIRECTORY & MODAL HEADER + STEPPER STYLE) */}
+      <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-xs overflow-hidden">
 
-            {/* 5 Step Nodes */}
-            {STEP_ITEMS.map((item) => {
-              const isActive = currentStep === item.id;
-              const isCompleted = currentStep > item.id;
-
-              return (
-                <div
-                  key={item.id}
-                  onClick={() => handleStepClick(item.id)}
-                  className="flex flex-col items-center justify-center relative z-10 cursor-pointer group select-none px-1 py-1 min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] min-w-[44px] sm:min-w-[calc(48px*var(--ui-scale))] touch-manipulation active:scale-95"
-                  title={`${item.label} - ${item.subLabel}`}
-                >
-                  {/* Step Circle */}
-                  <div
-                    className={`w-7 h-7 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center text-11 sm:text-2xs font-black transition-all duration-150 ${
-                      isActive
-                        ? 'bg-surface-container-lowest border border-primary ring-1 ring-primary/20 text-primary shadow-xs'
-                        : isCompleted
-                        ? 'bg-primary border border-primary text-on-primary shadow-2xs'
-                        : 'bg-surface-container-lowest border border-outline-variant text-secondary group-hover:border-outline'
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <Icon className="material-symbols-outlined text-icon-xs font-black">check</Icon>
-                    ) : (
-                      <span>{item.id}</span>
-                    )}
-                  </div>
-
-                  {/* Step Label Underneath */}
-                  <div className="mt-0.5 text-center flex flex-col items-center">
-                    <span
-                      className={`text-3xs sm:text-2xs tracking-tight transition-colors whitespace-nowrap ${
-                        isActive
-                          ? 'font-black text-on-surface'
-                          : isCompleted
-                          ? 'font-bold text-on-surface'
-                          : 'font-semibold text-secondary'
-                      }`}
-                    >
-                      {item.label}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* FORM BODY CONTAINER */}
-      <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
-        
-        {/* CONTAINER SECTION HEADER (MATCHING RECORDS PAGE STYLE) */}
-        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800">
+        {/* 1. INTEGRATED TITLE BAR / HEADER */}
+        <div className="py-2.5 px-3.5 sm:px-5 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
           <div className="flex items-center gap-2.5">
-            <Icon className="material-symbols-outlined text-icon-xl text-primary shrink-0">how_to_reg</Icon>
+            <div className="w-8 h-8 rounded-lg bg-[#F1F5F9] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary flex items-center justify-center shrink-0">
+              <Icon className="material-symbols-outlined text-icon-lg">how_to_reg</Icon>
+            </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+              <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-tight">
                 {isAmharic ? 'አዲስ ምዝገባ' : 'New Registration'}
               </h3>
-              <p className="hidden sm:block text-11 font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+              <p className="hidden sm:block text-11 font-medium text-[#64748B] dark:text-[#8A99AD] mt-0.5">
                 {isAmharic
                   ? 'የባለቤት እና የተሽከርካሪ መረጃ መመዝገቢያ ባለ 5-ደረጃ ቅጽ'
                   : '5-step owner & vehicle intake registration form'}
@@ -1271,7 +1206,7 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
               <button
                 type="button"
                 onClick={onViewRegistered}
-                className="hidden sm:flex px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-bold text-xs rounded-md shadow-2xs transition-all items-center gap-1.5 cursor-pointer active:scale-95 shrink-0"
+                className="hidden sm:flex px-3.5 py-1.5 bg-[#F8FAFC] dark:bg-[#24303F] hover:bg-[#F1F5F9] dark:hover:bg-[#333A48] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] font-bold text-xs rounded-lg transition-colors items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <Icon className="material-symbols-outlined text-icon-sm">table_chart</Icon>
                 <span>{isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'}</span>
@@ -1279,6 +1214,16 @@ export const MultiStepRegistrationForm: React.FC<MultiStepRegistrationFormProps>
             )}
           </div>
         </div>
+
+        {/* 2. FLUSH 5-STEP STEPPER STRIP */}
+        {!isSubmittedSuccessfully && (
+          <Stepper<1 | 2 | 3 | 4 | 5>
+            steps={STEP_ITEMS}
+            currentStep={currentStep}
+            onStepClick={handleStepClick}
+            ariaLabel={isAmharic ? 'የምዝገባ ደረጃዎች' : 'Registration steps'}
+          />
+        )}
 
         <div className="p-3.5 sm:p-5 space-y-3 sm:space-y-4">
 

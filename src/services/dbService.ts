@@ -1969,9 +1969,17 @@ export async function syncPaymentReceipts(force = false): Promise<boolean> {
 export async function syncActivePageCollection(activePage: string, force = false): Promise<void> {
   switch (activePage) {
     case 'dashboard':
-      await Promise.allSettled([syncRegistrations(force), syncPaymentReceipts(force), syncOfficers(force)]);
+      await Promise.allSettled([
+        fetchPreAggregatedKPIs(),
+        fetchMonthlyFeeStatisticsServerSide(),
+        syncRegistrations(force),
+        syncPaymentReceipts(force),
+        syncOfficers(force),
+      ]);
       break;
     case 'tables':
+    case 'forms':
+    case 'today_submissions_adjust':
     case 'new_registration':
     case 'submissions':
     case 'renewals':
@@ -1979,27 +1987,40 @@ export async function syncActivePageCollection(activePage: string, force = false
     case 'duplicate_plate':
     case 'ownership_transfer':
     case 'superadmin_owners':
-      await syncRegistrations(force);
+      await Promise.allSettled([syncRegistrations(force), syncPaymentReceipts(force)]);
       break;
     case 'officer_assignments':
       await syncOfficers(force);
       break;
     case 'print_queue':
+    case 'superadmin_permits':
       await Promise.allSettled([syncPrintOrders(force), syncRegistrations(force)]);
       break;
     case 'unregistered_reports':
+    case 'unregistered_list':
+    case 'report_unregistered':
       await syncUnregisteredReports(force);
       break;
     case 'officer_verifications':
+    case 'inspection_report':
       await Promise.allSettled([syncVerifications(force), syncRegistrations(force)]);
       break;
     case 'payments':
     case 'payment_receipts':
-      await Promise.allSettled([syncPaymentReceipts(force), syncRegistrations(force)]);
+      await Promise.allSettled([
+        fetchMonthlyFeeStatisticsServerSide(),
+        syncPaymentReceipts(force),
+        syncRegistrations(force),
+      ]);
       break;
     case 'settings':
     case 'superadmin':
-      await Promise.allSettled([syncSettings(force), syncOfficers(force)]);
+    case 'superadmin_users':
+    case 'superadmin_roles':
+    case 'superadmin_subcities':
+    case 'superadmin_security':
+    case 'superadmin_maintenance':
+      await Promise.allSettled([syncSettings(force), syncOfficers(force), syncRegistrations(force)]);
       break;
     default:
       await syncRegistrations(force);

@@ -56,7 +56,7 @@ interface DataContextType {
   paymentReceipts: PaymentReceipt[];
   settings: SystemSettings;
   isLoading: boolean;
-  refreshData: () => Promise<void>;
+  refreshData: (options?: { silent?: boolean }) => Promise<void>;
 
   // Domain Actions
   saveRegistration: (newReg: MotorcycleRegistration, options?: any) => Promise<{ success: boolean; error?: string }>;
@@ -189,14 +189,19 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   const settings = qSettings || localSettings || DEFAULT_SETTINGS;
   const isLoading = isRefreshing || (isRegLoading && registrations.length === 0);
 
-  const refreshData = useCallback(async () => {
-    setIsRefreshing(true);
+  const refreshData = useCallback(async (options?: { silent?: boolean }) => {
+    const isSilent = Boolean(options?.silent);
+    if (!isSilent) {
+      setIsRefreshing(true);
+    }
     try {
       invalidateAllCoreQueries();
       const activePage = getStoredActivePage();
       await syncActivePageCollection(activePage, true);
     } finally {
-      setIsRefreshing(false);
+      if (!isSilent) {
+        setIsRefreshing(false);
+      }
     }
   }, []);
 

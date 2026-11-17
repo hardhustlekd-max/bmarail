@@ -4,6 +4,7 @@ import { Language, UserRole, UnregisteredVehicleReport, BAHIR_DAR_SUBCITIES } fr
 import { compressImageToBlob } from '../utils/imageCompressor';
 import { uploadDocumentPhoto } from '../services/storageService';
 import { getTodayEthiopianDateTimeIso } from '../utils/ethiopianCalendar';
+import { CameraCaptureModal } from './CameraCaptureModal';
 
 interface UnregisteredVehicleFormProps {
   lang: Language;
@@ -31,27 +32,32 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
   const [evidencePhoto, setEvidencePhoto] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
+  const [showCameraModal, setShowCameraModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+
+  const processEvidenceFile = async (file: File) => {
+    setIsPhotoUploading(true);
+    try {
+      const compressed = await compressImageToBlob(file, {
+        maxWidth: 1400,
+        maxHeight: 1400,
+        quality: 0.60,
+        preferredFormat: 'image/jpeg',
+        maxBytes: 100 * 1024,
+      });
+      setEvidencePhoto(compressed.dataUrl);
+    } catch (err) {
+      console.error('Failed to process evidence photo:', err);
+    } finally {
+      setIsPhotoUploading(false);
+    }
+  };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setIsPhotoUploading(true);
-      try {
-        const compressed = await compressImageToBlob(file, {
-          maxWidth: 1400,
-          maxHeight: 1400,
-          quality: 0.60,
-          preferredFormat: 'image/jpeg',
-          maxBytes: 100 * 1024,
-        });
-        setEvidencePhoto(compressed.dataUrl);
-      } catch (err) {
-        console.error('Failed to process evidence photo:', err);
-      } finally {
-        setIsPhotoUploading(false);
-        e.target.value = '';
-      }
+      await processEvidenceFile(file);
+      e.target.value = '';
     }
   };
 
@@ -245,21 +251,33 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
                 id="unreg-photo-upload"
                 className="hidden"
               />
-              <label
-                htmlFor={isPhotoUploading ? undefined : 'unreg-photo-upload'}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-bold transition-all shadow-xs ${
-                  isPhotoUploading ? 'bg-slate-400 cursor-wait' : 'bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 cursor-pointer'
-                }`}
-              >
-                <Icon className={`material-symbols-outlined text-[18px] ${isPhotoUploading ? 'animate-spin' : ''}`}>
-                  {isPhotoUploading ? 'progress_activity' : 'add_a_photo'}
-                </Icon>
-                <span>
-                  {isPhotoUploading
-                    ? isAmharic ? 'ፎቶ እየተጫነ ነው...' : 'Uploading photo...'
-                    : isAmharic ? 'የተሽከርካሪ ፎቶ ስቀል' : 'Upload Evidence Photo'}
-                </span>
-              </label>
+              <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                <label
+                  htmlFor={isPhotoUploading ? undefined : 'unreg-photo-upload'}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-bold transition-all shadow-xs ${
+                    isPhotoUploading ? 'bg-slate-400 cursor-wait' : 'bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 cursor-pointer'
+                  }`}
+                >
+                  <Icon className={`material-symbols-outlined text-[18px] ${isPhotoUploading ? 'animate-spin' : ''}`}>
+                    {isPhotoUploading ? 'progress_activity' : 'upload_file'}
+                  </Icon>
+                  <span>
+                    {isPhotoUploading
+                      ? isAmharic ? 'ፎቶ እየተጫነ ነው...' : 'Uploading photo...'
+                      : isAmharic ? 'ፋይል ስቀል' : 'Upload File'}
+                  </span>
+                </label>
+
+                <button
+                  type="button"
+                  disabled={isPhotoUploading}
+                  onClick={() => setShowCameraModal(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                >
+                  <Icon className="material-symbols-outlined text-[18px]">photo_camera</Icon>
+                  <span>{isAmharic ? 'በካሜራ አንሳ' : 'Capture from Camera'}</span>
+                </button>
+              </div>
               <p className="text-[11px] text-secondary">
                 {isAmharic
                   ? 'የተሽከርካሪውን ወይም ቦታውን ፎቶ ቢያያይዙ ይመረጣል።'
@@ -333,6 +351,14 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
         </div>
       </form>
       </div>
+
+      <CameraCaptureModal
+        isOpen={showCameraModal}
+        onClose={() => setShowCameraModal(false)}
+        onCapture={processEvidenceFile}
+        isAmharic={isAmharic}
+        title={isAmharic ? 'የተሽከርካሪው ፎቶ / ማስረጃ' : 'Evidence Photo'}
+      />
     </div>
   );
 };

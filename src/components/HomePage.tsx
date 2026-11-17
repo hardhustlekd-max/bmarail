@@ -64,7 +64,7 @@ import {
 import { ToastProvider, useToast } from '../context/ToastContext';
 import { DataProvider, useData } from '../context/DataContext';
 import { ActionProvider } from '../context/ActionContext';
-import { CentralPageSpinner } from './ui/CentralPageSpinner';
+import { CentralPageSpinner, SpinnerIcon } from './ui/CentralPageSpinner';
 import { BaseModal } from './ui/BaseModal';
 import {
   BACKDROP_VARIANTS,
@@ -126,6 +126,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
 
   // Toast Notifications from ToastContext
   const { addToast } = useToast();
+  const { refreshData } = useData();
 
   // User profile dropdown toggle state for topbar
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -269,6 +270,20 @@ const HomePageShell: React.FC<HomePageProps> = ({
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [pageLoading, setPageLoading] = useState(false);
   const hasMountedPageSyncRef = React.useRef(false);
+
+  // Swipe-down pull-to-refresh state (suppresses CentralPageSpinner while active)
+  const mainScrollRef = useRef<HTMLElement>(null);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const [isSwipeRefreshing, setIsSwipeRefreshing] = useState(false);
+  const isSwipeRefreshingRef = useRef(false);
+  const swipeGestureRef = useRef({
+    armed: false,
+    pulling: false,
+    startX: 0,
+    startY: 0,
+    distance: 0,
+  });
 
   useEffect(() => {
     const unsubscribe = subscribeActionLoading((state) => {
@@ -756,6 +771,164 @@ const HomePageShell: React.FC<HomePageProps> = ({
       active = false;
     };
   }, [userRole]);
+
+  const handleSwipeRefresh = useCallback(async () => {
+    if (isSwipeRefreshingRef.current) return;
+    isSwipeRefreshingRef.current = true;
+    setIsSwipeRefreshing(true);
+    setPullDistance(44);
+
+    const minVisualHold = new Promise((resolve) => window.setTimeout(resolve, 400));
+    const timeoutGuard = new Promise((resolve) => window.setTimeout(resolve, 10000));
+
+    try {
+      await Promise.race([
+        Promise.all([
+          Promise.allSettled([
+            refreshData({ silent: true }),
+            syncActivePageCollection(activePage, true),
+            fetchMaterializedNotifications(userRole).then((notifs) => {
+              if (Array.isArray(notifs)) {
+                setMaterializedNotifs(notifs);
+              }
+            }),
+          ]),
+          minVisualHold,
+        ]),
+        timeoutGuard,
+      ]);
+    } finally {
+      setPullDistance(0);
+      isSwipeRefreshingRef.current = false;
+      setIsSwipeRefreshing(false);
+    }
+  }, [activePage, refreshData, userRole]);
+
+  useEffect(() => {
+    const container = mainScrollRef.current;
+    if (!container || activePage === 'scan') return;
+
+    const PULL_START_DEADZONE = 10;
+    const PULL_THRESHOLD = 44;
+    const PULL_MAX = 68;
+
+    const isBlockedTarget = (target: EventTarget | null): boolean => {
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) {
+        return true;
+      }
+      let el = target as HTMLElement | null;
+      while (el && el !== container) {
+        if (
+          el.getAttribute('role') === 'dialog' ||
+          el.getAttribute('aria-modal') === 'true' ||
+          el.dataset.noPullRefresh === 'true'
+        ) {
+          return true;
+        }
+        const tag = el.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'CANVAS') {
+          return true;
+        }
+        if (el.scrollTop > 1) {
+          const style = window.getComputedStyle(el);
+          if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+            return true;
+          }
+        }
+        el = el.parentElement;
+      }
+      return false;
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (
+        isSwipeRefreshingRef.current ||
+        isMobileMenuOpen ||
+        isNotificationOpen ||
+        isLogoutModalOpen ||
+        e.touches.length !== 1 ||
+        container.scrollTop > 1 ||
+        isBlockedTarget(e.target)
+      ) {
+        swipeGestureRef.current.armed = false;
+        return;
+      }
+      const touch = e.touches[0];
+      swipeGestureRef.current = {
+        armed: true,
+        pulling: false,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        distance: 0,
+      };
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const g = swipeGestureRef.current;
+      if (!g.armed || isSwipeRefreshingRef.current || e.touches.length !== 1) return;
+
+      const touch = e.touches[0];
+      const dy = touch.clientY - g.startY;
+      const dx = touch.clientX - g.startX;
+
+      if (!g.pulling) {
+        if (container.scrollTop > 1 || dy < 0 || Math.abs(dx) > Math.abs(dy)) {
+          g.armed = false;
+          return;
+        }
+        if (dy > PULL_START_DEADZONE && Math.abs(dy) > Math.abs(dx)) {
+          g.pulling = true;
+          setIsPulling(true);
+        } else {
+          return;
+        }
+      }
+
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      const resisted = Math.min(PULL_MAX, Math.max(0, (dy - PULL_START_DEADZONE) * 0.45));
+      g.distance = resisted;
+      setPullDistance(resisted);
+    };
+
+    const finishPull = () => {
+      const g = swipeGestureRef.current;
+      if (!g.armed && !g.pulling) return;
+
+      const finalDistance = g.distance;
+      const wasPulling = g.pulling;
+
+      swipeGestureRef.current = {
+        armed: false,
+        pulling: false,
+        startX: 0,
+        startY: 0,
+        distance: 0,
+      };
+      setIsPulling(false);
+
+      if (!wasPulling) return;
+
+      if (finalDistance >= PULL_THRESHOLD && !isSwipeRefreshingRef.current) {
+        void handleSwipeRefresh();
+      } else {
+        setPullDistance(0);
+      }
+    };
+
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: false });
+    container.addEventListener('touchend', finishPull, { passive: true });
+    container.addEventListener('touchcancel', finishPull, { passive: true });
+
+    return () => {
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('touchend', finishPull);
+      container.removeEventListener('touchcancel', finishPull);
+    };
+  }, [activePage, handleSwipeRefresh, isLogoutModalOpen, isMobileMenuOpen, isNotificationOpen]);
 
   // Dynamic Municipal System Notifications routed strictly by RBAC recipient responsibility
   const systemNotifications = useMemo<NotificationItem[]>(() => {
@@ -3061,11 +3234,61 @@ const HomePageShell: React.FC<HomePageProps> = ({
         </header>
 
         {/* Main Content Area */}
-        <main className={
-          activePage === 'scan'
-            ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
-            : "flex-1 overflow-y-auto overflow-x-hidden w-full max-w-full px-2.5 sm:px-4 md:px-5 pt-1.5 sm:pt-2 pb-3 min-h-0 flex flex-col"
-        }>
+        <main
+          ref={mainScrollRef}
+          className={
+            activePage === 'scan'
+              ? "flex-1 w-full mx-auto p-0 max-w-none h-full min-h-0 max-h-full flex flex-col overflow-hidden"
+              : "flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain w-full max-w-full px-2.5 sm:px-4 md:px-5 pt-1.5 sm:pt-2 pb-3 min-h-0 flex flex-col touch-scroll"
+          }
+        >
+          {/* Swipe-Down Circular Pull-to-Refresh Loader matching CentralPageSpinner */}
+          {activePage !== 'scan' && (
+            <div
+              role="status"
+              aria-live="polite"
+              aria-busy={isSwipeRefreshing}
+              style={{
+                height: `${isSwipeRefreshing ? 44 : pullDistance}px`,
+                opacity: isSwipeRefreshing || pullDistance > 6 ? 1 : 0,
+              }}
+              className={`w-full flex items-center justify-center overflow-hidden shrink-0 select-none pointer-events-none ${
+                isPulling ? '' : 'transition-[height,opacity] duration-150 ease-out'
+              }`}
+            >
+              <div
+                style={
+                  !isSwipeRefreshing
+                    ? {
+                        transform: `scale(${Math.min(1, Math.max(0.75, pullDistance / 44))})`,
+                      }
+                    : undefined
+                }
+                className={`w-8 h-8 rounded-full bg-surface-container border border-outline-variant shadow-sm flex items-center justify-center shrink-0 ${
+                  isPulling ? '' : 'transition-transform duration-150 ease-out'
+                }`}
+              >
+                <SpinnerIcon
+                  size={22}
+                  spinning={isSwipeRefreshing}
+                  rotationDeg={Math.min(360, (pullDistance / 44) * 300)}
+                  className={
+                    pullDistance >= 44 || isSwipeRefreshing
+                      ? 'text-primary'
+                      : 'text-primary/70'
+                  }
+                />
+              </div>
+              <span className="sr-only">
+                {isSwipeRefreshing
+                  ? isAmharic ? 'በማደስ ላይ...' : 'Refreshing...'
+                  : pullDistance >= 44
+                  ? isAmharic ? 'ለማደስ ይልቀቁ' : 'Release to refresh'
+                  : isAmharic ? 'ለማደስ ወደ ታች ይጎትቱ' : 'Pull down to refresh'}
+              </span>
+            </div>
+          )}
+
           {/* BREADCRUMB NAVIGATION MENU */}
           {activePage !== 'scan' && (
             <nav aria-label="Breadcrumb" className="bg-transparent px-0 py-0 mb-2 sm:mb-3 flex items-center overflow-x-auto scrollbar-none transition-all">
@@ -3254,8 +3477,8 @@ const HomePageShell: React.FC<HomePageProps> = ({
         </div>
       </BaseModal>
 
-      {/* Central Spinning Page Loader — only appears when data loading or network requests take time */}
-      {(actionLoadingState.isLoading || pageLoading) && (
+      {/* Central Spinning Page Loader — hidden when swiping down to refresh */}
+      {!isSwipeRefreshing && (actionLoadingState.isLoading || pageLoading) && (
         <CentralPageSpinner delayMs={pageLoading ? 0 : 400} />
       )}
     </div>

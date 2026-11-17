@@ -37,6 +37,7 @@ import { checkDuplicateRegistration } from '../utils/validation';
 import { LoadingSpinner } from './ui/Skeleton';
 import { getChassisDisplay, getChassisNumber } from '../utils/unifiedMemberUtils';
 import { UnifiedWorkspaceCard, TabList, TabItem } from './ui/AssocDesignSystem';
+import { CameraCaptureModal } from './CameraCaptureModal';
 
 interface TodaySubmissionsPageProps {
   lang: Language;
@@ -112,6 +113,7 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   const [editNationalIdBackPhoto, setEditNationalIdBackPhoto] = useState('');
   const [editDrivingLicensePhoto, setEditDrivingLicensePhoto] = useState('');
   const [editDrivingPermitPhoto, setEditDrivingPermitPhoto] = useState('');
+  const [cameraDocSlot, setCameraDocSlot] = useState<'portrait' | 'natIdFront' | 'natIdBack' | 'license' | null>(null);
 
   // Today's date string (YYYY-MM-DD)
   const todayStr = getDefaultEthiopianRegistrationDate();
@@ -136,20 +138,25 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
   };
 
   // Handle Photo File Upload
+  const processPhotoFile = (file: File, setter: (val: string) => void) => {
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      const result = uploadEvent.target?.result as string;
+      if (result) {
+        setter(result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handlePhotoUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
     setter: (val: string) => void
   ) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        const result = uploadEvent.target?.result as string;
-        if (result) {
-          setter(result);
-        }
-      };
-      reader.readAsDataURL(file);
+      processPhotoFile(file, setter);
+      e.target.value = '';
     }
   };
 
@@ -1663,12 +1670,21 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editUserPortrait} alt="Portrait" fallbackIcon="person" className="w-full h-full object-cover" />
                     </div>
-                    <label className="block cursor-pointer">
-                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
-                        {isAmharic ? 'ቀይር' : 'Change'}
-                      </span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditUserPortrait)} />
-                    </label>
+                    <div className="flex items-center justify-center gap-2 pt-0.5">
+                      <label className="cursor-pointer inline-flex items-center gap-0.5 text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                        <Icon name="upload_file" size={12} />
+                        <span>{isAmharic ? 'ፋይል' : 'File'}</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditUserPortrait)} />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setCameraDocSlot('portrait')}
+                        className="inline-flex items-center gap-0.5 text-2xs font-bold text-primary hover:underline cursor-pointer"
+                      >
+                        <Icon name="photo_camera" size={12} />
+                        <span>{isAmharic ? 'ካሜራ' : 'Camera'}</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* National ID Front */}
@@ -1679,12 +1695,21 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editNationalIdPhoto} alt="ID Front" fallbackIcon="badge" className="w-full h-full object-cover" />
                     </div>
-                    <label className="block cursor-pointer">
-                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
-                        {isAmharic ? 'ቀይር' : 'Change'}
-                      </span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditNationalIdPhoto)} />
-                    </label>
+                    <div className="flex items-center justify-center gap-2 pt-0.5">
+                      <label className="cursor-pointer inline-flex items-center gap-0.5 text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                        <Icon name="upload_file" size={12} />
+                        <span>{isAmharic ? 'ፋይል' : 'File'}</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditNationalIdPhoto)} />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setCameraDocSlot('natIdFront')}
+                        className="inline-flex items-center gap-0.5 text-2xs font-bold text-primary hover:underline cursor-pointer"
+                      >
+                        <Icon name="photo_camera" size={12} />
+                        <span>{isAmharic ? 'ካሜራ' : 'Camera'}</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* National ID Back */}
@@ -1695,12 +1720,21 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editNationalIdBackPhoto} alt="ID Back" fallbackIcon="badge" className="w-full h-full object-cover" />
                     </div>
-                    <label className="block cursor-pointer">
-                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
-                        {isAmharic ? 'ቀይር' : 'Change'}
-                      </span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditNationalIdBackPhoto)} />
-                    </label>
+                    <div className="flex items-center justify-center gap-2 pt-0.5">
+                      <label className="cursor-pointer inline-flex items-center gap-0.5 text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                        <Icon name="upload_file" size={12} />
+                        <span>{isAmharic ? 'ፋይል' : 'File'}</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditNationalIdBackPhoto)} />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setCameraDocSlot('natIdBack')}
+                        className="inline-flex items-center gap-0.5 text-2xs font-bold text-primary hover:underline cursor-pointer"
+                      >
+                        <Icon name="photo_camera" size={12} />
+                        <span>{isAmharic ? 'ካሜራ' : 'Camera'}</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Driving License */}
@@ -1711,12 +1745,21 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
                     <div className="w-14 h-16 mx-auto rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-surface-container dark:bg-slate-800">
                       <SmartImage src={editDrivingLicensePhoto} alt="License" fallbackIcon="card_membership" className="w-full h-full object-cover" />
                     </div>
-                    <label className="block cursor-pointer">
-                      <span className="text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
-                        {isAmharic ? 'ቀይር' : 'Change'}
-                      </span>
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditDrivingLicensePhoto)} />
-                    </label>
+                    <div className="flex items-center justify-center gap-2 pt-0.5">
+                      <label className="cursor-pointer inline-flex items-center gap-0.5 text-2xs font-bold text-slate-700 dark:text-blue-400 hover:underline">
+                        <Icon name="upload_file" size={12} />
+                        <span>{isAmharic ? 'ፋይል' : 'File'}</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handlePhotoUpload(e, setEditDrivingLicensePhoto)} />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setCameraDocSlot('license')}
+                        className="inline-flex items-center gap-0.5 text-2xs font-bold text-primary hover:underline cursor-pointer"
+                      >
+                        <Icon name="photo_camera" size={12} />
+                        <span>{isAmharic ? 'ካሜራ' : 'Camera'}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1897,6 +1940,27 @@ export const TodaySubmissionsPage: React.FC<TodaySubmissionsPageProps> = ({
           </div>
         </div>
       </BaseModal>
+
+      <CameraCaptureModal
+        isOpen={cameraDocSlot !== null}
+        onClose={() => setCameraDocSlot(null)}
+        onCapture={(file) => {
+          if (cameraDocSlot === 'portrait') processPhotoFile(file, setEditUserPortrait);
+          else if (cameraDocSlot === 'natIdFront') processPhotoFile(file, setEditNationalIdPhoto);
+          else if (cameraDocSlot === 'natIdBack') processPhotoFile(file, setEditNationalIdBackPhoto);
+          else if (cameraDocSlot === 'license') processPhotoFile(file, setEditDrivingLicensePhoto);
+        }}
+        isAmharic={isAmharic}
+        title={
+          cameraDocSlot === 'portrait'
+            ? isAmharic ? 'የባለቤት ፎቶ' : 'Driver Portrait'
+            : cameraDocSlot === 'natIdFront'
+            ? isAmharic ? 'መታወቂያ ፊት' : 'National ID Front'
+            : cameraDocSlot === 'natIdBack'
+            ? isAmharic ? 'መታወቂያ ጀርባ' : 'National ID Back'
+            : isAmharic ? 'መንጃ ፍቃድ' : 'License'
+        }
+      />
     </div>
   );
 };
