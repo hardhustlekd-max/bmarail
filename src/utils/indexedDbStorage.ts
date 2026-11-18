@@ -2,7 +2,6 @@ import { openDB, IDBPDatabase } from 'idb';
 import {
   MotorcycleRegistration,
   OfficerAssignment,
-  PrintBatchOrder,
   VerificationLog,
   UnregisteredVehicleReport,
   PaymentReceipt,
@@ -244,7 +243,6 @@ export async function scrubIndexedDbMedia(): Promise<void> {
 export async function migrateLocalStorageToIndexedDb(): Promise<{
   registrations?: MotorcycleRegistration[];
   officers?: OfficerAssignment[];
-  printOrders?: PrintBatchOrder[];
   verifications?: VerificationLog[];
   unregisteredReports?: UnregisteredVehicleReport[];
   paymentReceipts?: PaymentReceipt[];
@@ -275,7 +273,6 @@ export async function migrateLocalStorageToIndexedDb(): Promise<{
 
     // Migrate secondary stores
     if (parsed.officers) await asyncSaveKeyVal('officers', parsed.officers);
-    if (parsed.printOrders) await asyncSaveKeyVal('printOrders', parsed.printOrders);
     if (parsed.verifications) await asyncSaveKeyVal('verifications', parsed.verifications);
     if (parsed.unregisteredReports) await asyncSaveKeyVal('unregisteredReports', parsed.unregisteredReports);
     if (parsed.paymentReceipts) await asyncSaveKeyVal('paymentReceipts', parsed.paymentReceipts);

@@ -10,7 +10,6 @@ import {
   notifyRegistrations,
   notifyPaymentReceipts,
   notifyOfficers,
-  notifyPrintOrders,
   notifyVerifications,
   notifyUnregisteredReports,
   notifySettings,
@@ -152,18 +151,6 @@ function handleDatabaseChange(rawEvent: MessageEvent) {
       } else if (action === 'delete' && docId) {
         inMemory.officers = inMemory.officers.filter((o) => o.id !== docId);
         notifyOfficers();
-      }
-      saveStateToLocalStorage();
-    } else if (collection === 'print_batch_orders') {
-      if (action === 'upsert' && data && (data.id || docId)) {
-        const targetId = data.id || docId;
-        const idx = inMemory.printOrders.findIndex((po) => po.id === targetId);
-        if (idx >= 0) {
-          inMemory.printOrders[idx] = { ...inMemory.printOrders[idx], ...data };
-        } else {
-          inMemory.printOrders.unshift(data);
-        }
-        notifyPrintOrders();
       }
       saveStateToLocalStorage();
     } else if (collection === 'verification_logs') {

@@ -197,7 +197,7 @@ export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
 
     docCardBg: 'bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100',
     docCardBorder: 'border border-slate-200 dark:border-slate-700',
-    footerText: 'text-slate-500',
+    footerText: 'text-slate-500 dark:text-slate-400',
   },
 
   emerald_law: {
@@ -329,7 +329,7 @@ export const SCANNER_THEMES: Record<ScannerResultTheme, ScannerThemeConfig> = {
 
     docCardBg: 'bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100',
     docCardBorder: 'border border-slate-200 dark:border-slate-700',
-    footerText: 'text-slate-500',
+    footerText: 'text-slate-500 dark:text-slate-400',
   },
 };
 

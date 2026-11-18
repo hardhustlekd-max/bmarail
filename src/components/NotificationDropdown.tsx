@@ -19,7 +19,7 @@ export interface NotificationItem {
   title: string;
   description: string;
   time?: string;
-  type: 'pending_approval' | 'unregistered_alert' | 'flagged_inspection' | 'pending_payment' | 'print_order' | 'info';
+  type: 'pending_approval' | 'unregistered_alert' | 'flagged_inspection' | 'pending_payment' | 'info';
   icon: string;
   iconBg: string;
   badgeLabel: string;

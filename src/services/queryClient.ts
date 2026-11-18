@@ -2,7 +2,6 @@ import { QueryClient } from '@tanstack/react-query';
 import {
   MotorcycleRegistration,
   OfficerAssignment,
-  PrintBatchOrder,
   VerificationLog,
   UnregisteredVehicleReport,
   PaymentReceipt,
@@ -20,7 +19,6 @@ export const queryKeys = {
   registrationById: (id: string) => ['registrations', id] as const,
   paymentReceipts: ['paymentReceipts'] as const,
   officers: ['officers'] as const,
-  printOrders: ['printOrders'] as const,
   verificationLogs: ['verificationLogs'] as const,
   unregisteredReports: ['unregisteredReports'] as const,
   settings: ['settings'] as const,
@@ -99,22 +97,6 @@ export async function fetchOfficersQuery(): Promise<OfficerAssignment[]> {
     console.warn('[TanStack Query] Fallback to local memory for officers:', err);
   }
   return getInMemoryState().officers;
-}
-
-export async function fetchPrintOrdersQuery(): Promise<PrintBatchOrder[]> {
-  try {
-    const res = await safeJsonFetch<{ success: boolean; printOrders?: PrintBatchOrder[] }>(
-      '/api/print-orders',
-      undefined,
-      8000
-    );
-    if (res && Array.isArray(res.printOrders)) {
-      return res.printOrders;
-    }
-  } catch (err) {
-    console.warn('[TanStack Query] Fallback to local memory for print orders:', err);
-  }
-  return getInMemoryState().printOrders;
 }
 
 export async function fetchVerificationLogsQuery(): Promise<VerificationLog[]> {
@@ -267,20 +249,6 @@ export function applySseToTanStackCache(event: SsePayloadEvent) {
         });
       }
       queryClient.invalidateQueries({ queryKey: queryKeys.kpis });
-    } else if (collection === 'print_batch_orders') {
-      if (action === 'upsert' && data && (data.id || docId)) {
-        const targetId = data.id || docId;
-        queryClient.setQueryData<PrintBatchOrder[]>(queryKeys.printOrders, (prev) => {
-          const list = prev ? [...prev] : [...getInMemoryState().printOrders];
-          const idx = list.findIndex((po) => po.id === targetId);
-          if (idx >= 0) {
-            list[idx] = { ...list[idx], ...data };
-          } else {
-            list.unshift(data);
-          }
-          return list;
-        });
-      }
     } else if (collection === 'verification_logs') {
       if (action === 'upsert' && data && (data.id || docId)) {
         const targetId = data.id || docId;
@@ -333,7 +301,6 @@ export function invalidateAllCoreQueries() {
   queryClient.invalidateQueries({ queryKey: queryKeys.registrations });
   queryClient.invalidateQueries({ queryKey: queryKeys.paymentReceipts });
   queryClient.invalidateQueries({ queryKey: queryKeys.officers });
-  queryClient.invalidateQueries({ queryKey: queryKeys.printOrders });
   queryClient.invalidateQueries({ queryKey: queryKeys.verificationLogs });
   queryClient.invalidateQueries({ queryKey: queryKeys.unregisteredReports });
   queryClient.invalidateQueries({ queryKey: queryKeys.settings });

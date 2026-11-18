@@ -11,7 +11,7 @@ import { MotorcycleRegistration, VerificationLog, Language, SystemSettings } fro
 import { QRCodeCard } from './QRCodeCard';
 import { ZoomableDocumentContainer } from './ZoomableDocumentContainer';
 import { SmartImage } from './SmartImage';
-import { lookupRegistrationInDb, subscribeSettings, DEFAULT_SETTINGS } from '../services/dbService';
+import { lookupRegistrationInDb, subscribeSettings, DEFAULT_SETTINGS, isTaskViewable } from '../services/dbService';
 import { getScannerTheme } from '../utils/scannerThemes';
 import {
   createFastScannerPipeline,
@@ -60,6 +60,7 @@ interface SharedScannerModalProps {
   registrations: MotorcycleRegistration[];
   userBadgeId: string;
   onAddVerificationLog: (log: VerificationLog, isNoteUpdate?: boolean) => void;
+  onReportUnregistered?: (query?: string) => void;
   isPage?: boolean;
   autoStart?: boolean;
   userRole?: string;
@@ -72,6 +73,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   registrations,
   userBadgeId,
   onAddVerificationLog,
+  onReportUnregistered,
   isPage = false,
   autoStart = true,
   userRole = 'officer',
@@ -81,6 +83,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const [searchMode, setSearchMode] = useState<'camera' | 'manual'>('camera');
   const [searchPlate, setSearchPlate] = useState('');
   const [rawScannedRegResult, setScannedRegResult] = useState<MotorcycleRegistration | 'not_found' | null>(null);
+  const [lastScannedQuery, setLastScannedQuery] = useState('');
+  const [lastScanSource, setLastScanSource] = useState<'camera' | 'image' | 'manual'>('camera');
+  const [lastScanTime, setLastScanTime] = useState('');
 
   // System settings state for reactive global scanner result theme
   const [systemSettings, setSystemSettings] = useState<SystemSettings>(DEFAULT_SETTINGS);
@@ -98,6 +103,59 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     () => getScannerTheme(systemSettings.scannerResultTheme),
     [systemSettings.scannerResultTheme]
   );
+
+  const isAlwaysDarkScannerTheme =
+    activeTheme.id === 'deep_cobalt_navy' || activeTheme.id === 'tactical_dark';
+  const isAlwaysLightScannerTheme =
+    activeTheme.id === 'warm_ivory_cream' || activeTheme.id === 'soft_ice_blue';
+
+  const scannerSemanticApprovedText = isAlwaysDarkScannerTheme
+    ? 'text-emerald-300'
+    : isAlwaysLightScannerTheme
+    ? 'text-emerald-700'
+    : 'text-emerald-700 dark:text-emerald-300';
+
+  const scannerSemanticPendingText = isAlwaysDarkScannerTheme
+    ? 'text-amber-300'
+    : isAlwaysLightScannerTheme
+    ? 'text-amber-700'
+    : 'text-amber-700 dark:text-amber-300';
+
+  const scannerSemanticRejectedText = isAlwaysDarkScannerTheme
+    ? 'text-rose-300'
+    : isAlwaysLightScannerTheme
+    ? 'text-rose-700'
+    : 'text-rose-700 dark:text-rose-300';
+
+  const scannerSemanticBloodText = isAlwaysDarkScannerTheme
+    ? 'text-rose-300'
+    : isAlwaysLightScannerTheme
+    ? 'text-red-700'
+    : 'text-red-700 dark:text-rose-300';
+
+  const scannerHairlineBorder = isAlwaysDarkScannerTheme
+    ? 'border-white/15'
+    : isAlwaysLightScannerTheme
+    ? 'border-slate-300/70'
+    : 'border-slate-300/70 dark:border-white/15';
+
+  const scannerHairlineBorderLeft = isAlwaysDarkScannerTheme
+    ? 'sm:border-l sm:border-white/15'
+    : isAlwaysLightScannerTheme
+    ? 'sm:border-l sm:border-slate-300/70'
+    : 'sm:border-l sm:border-slate-300/70 dark:sm:border-white/15';
+
+  const scannerSecondaryButtonSurface = isAlwaysDarkScannerTheme
+    ? `${activeTheme.chipBg} ${activeTheme.headingText} hover:brightness-110`
+    : isAlwaysLightScannerTheme
+    ? `${activeTheme.chipBg} ${activeTheme.headingText} hover:bg-slate-50`
+    : `${activeTheme.chipBg} ${activeTheme.headingText} hover:brightness-95 dark:hover:brightness-110`;
+
+  const scannerNotesInputClass = isAlwaysDarkScannerTheme
+    ? 'bg-slate-950/50 border-white/20 text-white placeholder:text-slate-400'
+    : isAlwaysLightScannerTheme
+    ? 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-500'
+    : 'bg-white dark:bg-[#1C2434] border-slate-300 dark:border-white/20 text-slate-900 dark:text-white placeholder:text-slate-500 dark:placeholder:text-slate-400';
 
   // Memoized fully populated registration resolving documents & photo fields
   const scannedRegResult = useMemo(() => {
@@ -174,7 +232,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const [croppedQrSrc, setCroppedQrSrc] = useState<string | null>(null);
   const [qrMotionOffset, setQrMotionOffset] = useState<{ x: number; y: number; scale: number }>({ x: 0, y: 0, scale: 1 });
   const [isBackgroundRemoved, setIsBackgroundRemoved] = useState(false);
-  const [scannedVerificationState, setScannedVerificationState] = useState<'idle' | 'verified'>('idle');
+  const [scannedVerificationState, setScannedVerificationState] = useState<
+    'idle' | 'approved' | 'pending' | 'expired' | 'rejected' | 'not_found'
+  >('idle');
   const [showNotesSection, setShowNotesSection] = useState(false);
   const [showDigitalIdModal, setShowDigitalIdModal] = useState(false);
   const [showTopMenu, setShowTopMenu] = useState(false);
@@ -182,6 +242,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     items: DocumentViewerItem[];
     initialIndex: number;
   } | null>(null);
+  const [isPickingImage, setIsPickingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraContainerRef = useRef<HTMLDivElement>(null);
@@ -189,6 +250,26 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   const animFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const isProcessingRef = useRef(false);
+  const scanSessionRef = useRef(0);
+  const filePickOpenedRef = useRef(false);
+  const pickerCancelTimerRef = useRef<number | null>(null);
+
+  const resolveVerificationVisualStatus = (
+    match: MotorcycleRegistration | null
+  ): 'approved' | 'pending' | 'expired' | 'rejected' | 'not_found' => {
+    if (!match) return 'not_found';
+    const statusLower = (match.status || '').toLowerCase();
+    if (statusLower === 'approved' || statusLower === 'printed' || statusLower === 'ordered_print') {
+      return 'approved';
+    }
+    if (statusLower === 'expired') {
+      return 'expired';
+    }
+    if (statusLower === 'rejected') {
+      return 'rejected';
+    }
+    return 'pending';
+  };
 
   // Captures and crops ONLY the detected QR code cleanly without black borders
   const captureCroppedQr = (
@@ -438,9 +519,88 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
 // Fullscreen forced request removed per user preference.
 
+  // Synchronously stop active camera tracks and scan loop to prevent device lag when picking or scanning an image
+  const stopLiveCamera = () => {
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      try {
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
+      } catch (e) {}
+    }
+    setIsTorchOn(false);
+  };
+
+  const openImagePicker = () => {
+    if (pickerCancelTimerRef.current !== null) {
+      window.clearTimeout(pickerCancelTimerRef.current);
+      pickerCancelTimerRef.current = null;
+    }
+    filePickOpenedRef.current = true;
+    stopLiveCamera();
+    setIsPickingImage(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    } else {
+      filePickOpenedRef.current = false;
+      setIsPickingImage(false);
+    }
+  };
+
+  // Resume camera if user closes the OS file explorer / photo picker without choosing an image
+  useEffect(() => {
+    const inputEl = fileInputRef.current;
+
+    const handlePickerCancel = () => {
+      if (pickerCancelTimerRef.current !== null) {
+        window.clearTimeout(pickerCancelTimerRef.current);
+        pickerCancelTimerRef.current = null;
+      }
+      if (filePickOpenedRef.current) {
+        filePickOpenedRef.current = false;
+        setIsPickingImage(false);
+      }
+    };
+
+    const handleWindowFocus = () => {
+      if (!filePickOpenedRef.current) return;
+      if (pickerCancelTimerRef.current !== null) {
+        window.clearTimeout(pickerCancelTimerRef.current);
+      }
+      pickerCancelTimerRef.current = window.setTimeout(() => {
+        pickerCancelTimerRef.current = null;
+        if (filePickOpenedRef.current && (!fileInputRef.current?.files || fileInputRef.current.files.length === 0)) {
+          filePickOpenedRef.current = false;
+          setIsPickingImage(false);
+        }
+      }, 650);
+    };
+
+    inputEl?.addEventListener('cancel', handlePickerCancel);
+    window.addEventListener('focus', handleWindowFocus);
+    return () => {
+      inputEl?.removeEventListener('cancel', handlePickerCancel);
+      window.removeEventListener('focus', handleWindowFocus);
+      if (pickerCancelTimerRef.current !== null) {
+        window.clearTimeout(pickerCancelTimerRef.current);
+        pickerCancelTimerRef.current = null;
+      }
+    };
+  }, [isOpen]);
+
   // Reset and start camera scanner whenever modal/page is opened
   useEffect(() => {
     if (isOpen) {
+      filePickOpenedRef.current = false;
+      setIsPickingImage(false);
       setIsScanning(autoStart);
       setScannedRegResult(null);
       setCameraError('');
@@ -548,7 +708,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     let active = true;
     let pipeline = createFastScannerPipeline();
 
-    if (isOpen && isScanning && searchMode === 'camera' && !scannedRegResult) {
+    if (isOpen && isScanning && searchMode === 'camera' && !scannedRegResult && !uploadedImageSrc && !isPickingImage) {
       setCameraError('');
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -595,6 +755,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                   isProcessingRef.current = true;
                   
                   if (detected.boundingBox && video.videoWidth && video.videoHeight) {
+                    const sessionAtDetect = scanSessionRef.current;
                     setIsLocked(true);
                     playShutterSound();
                     const initialOffset = computeQrInitialOffset(detected.boundingBox, video.videoWidth, video.videoHeight);
@@ -603,31 +764,38 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     if (croppedSrc) {
                       setCroppedQrSrc(croppedSrc);
                     }
-                    
+
+                    const lookupPromise = lookupRegistrationInDb(
+                      detected.rawValue.trim(),
+                      registrations
+                    ).catch(() => null);
+
                     try {
                       video.pause();
                     } catch (e) {}
 
                     // Background stays kept while QR is picked from fullscreen image (500ms), then smoothly removed
                     setTimeout(() => {
-                      if (active) {
+                      if (active && scanSessionRef.current === sessionAtDetect) {
                         setIsBackgroundRemoved(true);
                       }
                     }, 500);
 
-                    // Paced scanning: allow laser line to sweep across the docked QR code before verifying
-                    setTimeout(() => {
-                      if (active) {
-                        setScannedVerificationState('verified');
-                        playScanFeedback(true);
-                        setTimeout(() => {
-                          if (active) {
-                            active = false;
-                            isProcessingRef.current = false;
-                            processQRData(detected.rawValue);
-                          }
-                        }, 900);
-                      }
+                    // Paced scanning: allow laser line to sweep across the docked QR code before displaying status-colored verification
+                    setTimeout(async () => {
+                      if (!active || scanSessionRef.current !== sessionAtDetect) return;
+                      const prefetchedMatch = await lookupPromise;
+                      if (!active || scanSessionRef.current !== sessionAtDetect) return;
+                      const visualStatus = resolveVerificationVisualStatus(prefetchedMatch);
+                      setScannedVerificationState(visualStatus);
+                      playScanFeedback(visualStatus === 'approved');
+                      setTimeout(() => {
+                        if (active && scanSessionRef.current === sessionAtDetect) {
+                          active = false;
+                          isProcessingRef.current = false;
+                          processQRData(detected.rawValue, undefined, prefetchedMatch, true);
+                        }
+                      }, 900);
                     }, 2600);
                   } else {
                     setTimeout(() => {
@@ -675,9 +843,15 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
         streamRef.current.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
       }
+      if (videoRef.current) {
+        try {
+          videoRef.current.pause();
+          videoRef.current.srcObject = null;
+        } catch (e) {}
+      }
       pipeline.destroy();
     };
-  }, [isOpen, isScanning, searchMode, scannedRegResult, isAmharic, facingMode]);
+  }, [isOpen, isScanning, searchMode, scannedRegResult, uploadedImageSrc, isPickingImage, isAmharic, facingMode]);
 
   if (!isOpen) return null;
 
@@ -699,10 +873,18 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     return null;
   };
 
-  const processQRData = async (qrData: string, imageOverride?: string) => {
+  const processQRData = async (
+    qrData: string,
+    imageOverride?: string,
+    prefetchedMatch?: MotorcycleRegistration | null,
+    alreadyPlayedFeedback = false
+  ) => {
     const cleanData = qrData.trim();
     if (!cleanData) return;
 
+    setLastScannedQuery(cleanData);
+    setLastScanSource(imageOverride ? 'image' : 'camera');
+    setLastScanTime(getTodayEthiopianDateTimeIso());
     setIsProcessingScan(true);
 
     if (imageOverride) {
@@ -714,8 +896,11 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       }
     }
 
-    // Perform query against both local cache and live Firestore permit database
-    const match = await lookupRegistrationInDb(cleanData, registrations);
+    // Perform query against both local cache and live permit database if not already resolved
+    const match =
+      prefetchedMatch !== undefined
+        ? prefetchedMatch
+        : await lookupRegistrationInDb(cleanData, registrations);
 
     setIsProcessingScan(false);
     if (match) {
@@ -725,7 +910,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       setScanFlash(null);
       isProcessingRef.current = false;
     } else {
-      playScanFeedback(false);
+      if (!alreadyPlayedFeedback) {
+        playScanFeedback(false);
+      }
       setScannedRegResult('not_found');
       setIsScanning(false);
       setScanFlash(null);
@@ -741,11 +928,15 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
   const handleSearchLookup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchPlate.trim()) return;
+    const query = searchPlate.trim();
+    if (!query) return;
 
     playShutterSound();
+    setLastScannedQuery(query);
+    setLastScanSource('manual');
+    setLastScanTime(getTodayEthiopianDateTimeIso());
     setIsProcessingScan(true);
-    const found = await lookupRegistrationInDb(searchPlate.trim(), registrations);
+    const found = await lookupRegistrationInDb(query, registrations);
     setIsProcessingScan(false);
 
     if (found) {
@@ -771,12 +962,27 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    filePickOpenedRef.current = false;
+    if (pickerCancelTimerRef.current !== null) {
+      window.clearTimeout(pickerCancelTimerRef.current);
+      pickerCancelTimerRef.current = null;
+    }
+    setIsPickingImage(false);
+
     const file = e.target.files?.[0];
     if (!file) return;
 
+    stopLiveCamera();
+    const sessionAtUpload = ++scanSessionRef.current;
+
     // Synchronously set object URL for instant 0ms preview & immediate scanning animation
     const instantPreviewUrl = URL.createObjectURL(file);
-    setUploadedImageSrc(instantPreviewUrl);
+    setUploadedImageSrc((prev) => {
+      if (prev && prev.startsWith('blob:')) {
+        URL.revokeObjectURL(prev);
+      }
+      return instantPreviewUrl;
+    });
     setCapturedFrameSrc(null);
     setIsScanning(true);
     setScannedRegResult(null);
@@ -789,7 +995,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     const img = new Image();
     img.onload = async () => {
       const detected = await decodeQRFromImage(img);
-      
+      if (scanSessionRef.current !== sessionAtUpload) return;
+
       if (detected && detected.rawValue) {
         const origW = img.naturalWidth || img.width;
         const origH = img.naturalHeight || img.height;
@@ -804,32 +1011,52 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             setCroppedQrSrc(croppedSrc);
           }
 
+          const lookupPromise = lookupRegistrationInDb(
+            detected.rawValue.trim(),
+            registrations
+          ).catch(() => null);
+
           // Background stays kept while QR is picked from fullscreen image (500ms), then smoothly removed
           setTimeout(() => {
-            setIsBackgroundRemoved(true);
+            if (scanSessionRef.current === sessionAtUpload) {
+              setIsBackgroundRemoved(true);
+            }
           }, 500);
 
-          // Paced scanning: allow laser line to sweep across the docked QR code before verifying
-          setTimeout(() => {
-            setScannedVerificationState('verified');
-            playScanFeedback(true);
+          // Paced scanning: allow laser line to sweep across the docked QR code before displaying status-colored verification
+          setTimeout(async () => {
+            if (scanSessionRef.current !== sessionAtUpload) return;
+            const prefetchedMatch = await lookupPromise;
+            if (scanSessionRef.current !== sessionAtUpload) return;
+            const visualStatus = resolveVerificationVisualStatus(prefetchedMatch);
+            setScannedVerificationState(visualStatus);
+            playScanFeedback(visualStatus === 'approved');
             setTimeout(() => {
-              isProcessingRef.current = false;
-              processQRData(detected.rawValue, instantPreviewUrl);
+              if (scanSessionRef.current === sessionAtUpload) {
+                isProcessingRef.current = false;
+                processQRData(detected.rawValue, instantPreviewUrl, prefetchedMatch, true);
+              }
             }, 900);
           }, 2600);
         } else {
           setTimeout(() => {
-            isProcessingRef.current = false;
-            processQRData(detected.rawValue, instantPreviewUrl);
+            if (scanSessionRef.current === sessionAtUpload) {
+              isProcessingRef.current = false;
+              processQRData(detected.rawValue, instantPreviewUrl);
+            }
           }, 2500);
         }
       } else {
         setTimeout(() => {
+          if (scanSessionRef.current !== sessionAtUpload) return;
           setIsProcessingScan(false);
           playScanFeedback(false);
           setScanFlash('not_found');
           setTimeout(() => {
+            if (scanSessionRef.current !== sessionAtUpload) return;
+            setLastScannedQuery('');
+            setLastScanSource('image');
+            setLastScanTime(getTodayEthiopianDateTimeIso());
             setScannedRegResult('not_found');
             setIsScanning(false);
             setScanFlash(null);
@@ -846,9 +1073,17 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   };
 
   const handleStartCameraScan = () => {
+    scanSessionRef.current += 1;
+    filePickOpenedRef.current = false;
+    setIsPickingImage(false);
     setCameraError('');
     setIsScanning(true);
-    setUploadedImageSrc(null);
+    setUploadedImageSrc((prev) => {
+      if (prev && prev.startsWith('blob:')) {
+        URL.revokeObjectURL(prev);
+      }
+      return null;
+    });
     setCapturedFrameSrc(null);
     setIsProcessingScan(false);
     setScannedRegResult(null);
@@ -860,13 +1095,23 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
   };
 
   const handleRescan = () => {
+    scanSessionRef.current += 1;
+    filePickOpenedRef.current = false;
+    setIsPickingImage(false);
     setScannedRegResult(null);
     setCurrentLog(null);
     setSearchPlate('');
+    setLastScannedQuery('');
+    setLastScanTime('');
     setVerificationNotes('');
     setShowNotesSection(false);
     setCarouselModal(null);
-    setUploadedImageSrc(null);
+    setUploadedImageSrc((prev) => {
+      if (prev && prev.startsWith('blob:')) {
+        URL.revokeObjectURL(prev);
+      }
+      return null;
+    });
     setCapturedFrameSrc(null);
     setIsProcessingScan(false);
     setCroppedQrSrc(null);
@@ -1037,21 +1282,33 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                               alt="Extracted QR Code"
                               className="max-w-full max-h-full object-contain rounded-none shadow-sm"
                             />
-                            {/* Verification Success Animation Overlay inside reticle */}
+                            {/* Status-Aware Verification Animation Overlay inside reticle */}
                             <AnimatePresence>
-                              {scannedVerificationState === 'verified' && (
+                              {scannedVerificationState !== 'idle' && (
                                 <motion.div
                                   initial={{ opacity: 0 }}
                                   animate={{ opacity: 1 }}
                                   exit={{ opacity: 0 }}
                                   transition={{ duration: 0.16 }}
-                                  className="absolute inset-0 bg-emerald-500/25 backdrop-blur-[2px] rounded-none flex items-center justify-center z-30"
+                                  className={`absolute inset-0 backdrop-blur-[2px] rounded-none flex items-center justify-center z-30 ${
+                                    scannedVerificationState === 'approved'
+                                      ? 'bg-emerald-500/25'
+                                      : scannedVerificationState === 'pending' || scannedVerificationState === 'expired'
+                                      ? 'bg-amber-500/25'
+                                      : 'bg-rose-500/25'
+                                  }`}
                                 >
                                   <motion.div
                                     initial={{ scale: 0.5, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     transition={TACTILE_SPRING}
-                                    className="w-14 h-14 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg"
+                                    className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${
+                                      scannedVerificationState === 'approved'
+                                        ? 'bg-emerald-500'
+                                        : scannedVerificationState === 'pending' || scannedVerificationState === 'expired'
+                                        ? 'bg-amber-500'
+                                        : 'bg-rose-600'
+                                    }`}
                                   >
                                     <Icon className="material-symbols-outlined text-icon-3xl text-white">check</Icon>
                                   </motion.div>
@@ -1068,15 +1325,45 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-bl-md z-20" />
                       <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-br-md z-20" />
 
-                      {/* Scanning Line: White sweep with optimized gradient transparency */}
+                      {/* Scanning Beam: Solid horizontal line followed by matching transparent gradient trail */}
                       {scannedVerificationState === 'idle' && (
-                        <motion.div
-                          className="absolute inset-x-2 top-[8%] bottom-[8%] pointer-events-none z-20"
-                          animate={{ y: ['0%', '96%', '0%'] }}
-                          transition={{ duration: 1.8, ease: 'easeInOut', repeat: Infinity }}
-                        >
-                          <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-white/85 to-transparent shadow-[0_0_12px_rgba(255,255,255,0.5)] rounded-full" />
-                        </motion.div>
+                        <div className="absolute inset-1.5 overflow-hidden pointer-events-none z-20">
+                          <motion.div
+                            className="relative w-full h-full"
+                            animate={{ y: ['1%', '98%', '1%'] }}
+                            transition={{
+                              duration: 2.2,
+                              times: [0, 0.5, 1],
+                              ease: 'easeInOut',
+                              repeat: Infinity,
+                            }}
+                          >
+                            <div className="relative w-full h-[2.5px] bg-white shadow-[0_0_12px_rgba(255,255,255,0.85)]">
+                              {/* Trailing gradient wake above bar during downward sweep */}
+                              <motion.div
+                                className="absolute bottom-full inset-x-0 h-12 bg-gradient-to-t from-white/35 via-white/10 to-transparent pointer-events-none"
+                                animate={{ opacity: [0.15, 1, 1, 0, 0, 0.15] }}
+                                transition={{
+                                  duration: 2.2,
+                                  times: [0, 0.08, 0.44, 0.5, 0.94, 1],
+                                  ease: 'easeInOut',
+                                  repeat: Infinity,
+                                }}
+                              />
+                              {/* Trailing gradient wake below bar during upward sweep */}
+                              <motion.div
+                                className="absolute top-full inset-x-0 h-12 bg-gradient-to-b from-white/35 via-white/10 to-transparent pointer-events-none"
+                                animate={{ opacity: [0, 0, 1, 1, 0.15] }}
+                                transition={{
+                                  duration: 2.2,
+                                  times: [0, 0.48, 0.56, 0.92, 1],
+                                  ease: 'easeInOut',
+                                  repeat: Infinity,
+                                }}
+                              />
+                            </div>
+                          </motion.div>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -1087,10 +1374,26 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     <div className="text-center pointer-events-none select-none">
                       <span className="text-xs sm:text-sm font-semibold text-white/90 drop-shadow-md">
                         {croppedQrSrc
-                          ? scannedVerificationState === 'verified'
+                          ? scannedVerificationState === 'approved'
                             ? isAmharic
-                              ? 'QR ኮድ ተረጋግጧል!'
-                              : 'QR Code Verified!'
+                              ? 'ለመንቀሳቀስ የተፈቀደለት ነው!'
+                              : 'Permitted to Move'
+                            : scannedVerificationState === 'expired'
+                            ? isAmharic
+                              ? 'ፈቃድ ያልታደሰ ነው'
+                              : 'Permit Expired'
+                            : scannedVerificationState === 'pending'
+                            ? isAmharic
+                              ? 'መንቀሳቀሻ ፈቃድ በመጠበቅ ላይ ነው'
+                              : 'Pending Permit'
+                            : scannedVerificationState === 'rejected'
+                            ? isAmharic
+                              ? 'ፈቃድ ያልተሰጠው ነው'
+                              : 'Permit Not Granted'
+                            : scannedVerificationState === 'not_found'
+                            ? isAmharic
+                              ? 'ያልተመዘገበ QR ኮድ'
+                              : 'Unregistered QR Code'
                             : isAmharic
                             ? 'QR ኮድ ተለይቷል - በመተንተን ላይ...'
                             : 'QR Code Detected - Verifying...'
@@ -1138,12 +1441,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         data-motion-control="true"
                         whileTap={{ scale: 0.9 }}
                         transition={TACTILE_SPRING}
-                        onClick={() => {
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = '';
-                            fileInputRef.current.click();
-                          }
-                        }}
+                        onClick={openImagePicker}
                         className="w-11 h-11 sm:w-12 sm:h-12 min-w-[44px] min-h-[44px] rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white backdrop-blur-md transition-colors touch-manipulation flex items-center justify-center shadow-lg cursor-pointer"
                         title={isAmharic ? 'ምስል ስካን' : 'Select Photo'}
                       >
@@ -1222,12 +1520,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                           data-motion-control="true"
                           whileTap={SUBTLE_TAP_SCALE}
                           transition={TACTILE_SPRING}
-                          onClick={() => {
-                            if (fileInputRef.current) {
-                              fileInputRef.current.value = '';
-                              fileInputRef.current.click();
-                            }
-                          }}
+                          onClick={openImagePicker}
                           className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-lg text-xs font-bold cursor-pointer transition-colors border border-slate-700 flex items-center gap-1.5 touch-manipulation"
                         >
                           <Icon className="material-symbols-outlined text-icon-sm">image</Icon>
@@ -1276,12 +1569,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     data-motion-control="true"
                     whileTap={SUBTLE_TAP_SCALE}
                     transition={TACTILE_SPRING}
-                    onClick={() => {
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = '';
-                        fileInputRef.current.click();
-                      }
-                    }}
+                    onClick={openImagePicker}
                     className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center justify-center gap-1.5 border border-slate-700 touch-manipulation"
                   >
                     <Icon className="material-symbols-outlined text-icon-md">image</Icon>
@@ -1296,52 +1584,314 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.16 }}
-          className="flex-1 w-full bg-transparent p-4 sm:p-6 m-0 rounded-none border-0 text-xs sm:text-sm shadow-none space-y-3 flex flex-col h-full max-h-full overflow-hidden justify-center"
+          transition={{ duration: 0.18 }}
+          className={`flex-1 min-h-0 w-full ${activeTheme.containerBg} p-0 m-0 text-xs sm:text-sm flex flex-col h-full max-h-full overflow-hidden shadow-none`}
         >
-          {/* Top Status Header Bar inside the container */}
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex-1 flex items-center justify-between bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/80 text-red-950 dark:text-red-300 rounded-md px-3.5 py-1.5 shadow-2xs">
-              <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-icon-2xl select-none text-red-600 dark:text-red-400">
-                  cancel
-                </Icon>
-                <span className="font-black text-sm sm:text-base">
-                  {isAmharic ? 'ያልተፈቀደለት የሞተር ፈቃድ' : 'Motor Permit Status'}
-                </span>
-              </div>
-              <div className="bg-red-200/60 dark:bg-red-900/60 text-red-900 dark:text-red-200 border border-red-300 dark:border-red-700 text-xs px-2.5 py-0.5 rounded-lg tracking-wider font-extrabold shadow-2xs">
-                {isAmharic ? 'ያልተመዘገበ' : 'UNREGISTERED'}
-              </div>
-            </div>
-          </div>
+          {(() => {
+            const canReportUnregistered =
+              Boolean(onReportUnregistered) && isTaskViewable(userRole, 7);
+            const scanMethodLabel =
+              lastScanSource === 'manual'
+                ? isAmharic
+                  ? 'በሰሌዳ / መለያ ፍለጋ'
+                  : 'Manual Lookup'
+                : lastScanSource === 'image'
+                ? isAmharic
+                  ? 'ምስል ስካን'
+                  : 'Image Scan'
+                : isAmharic
+                ? 'ካሜራ QR ስካን'
+                : 'Camera QR Scan';
+            const checkedTimestamp = lastScanTime || getTodayEthiopianDateTimeIso();
 
-          <div className="space-y-2 flex flex-col items-center justify-center py-4">
-            <div className="w-12 h-12 rounded-full bg-error-container/30 border border-error/30 flex items-center justify-center text-error mb-1">
-              <Icon className="material-symbols-outlined text-[length:calc(28px*var(--ui-scale))]">
-                error_outline
-              </Icon>
-            </div>
-            <h4 className="text-xs sm:text-sm font-bold text-on-surface">
-              {isAmharic ? 'መረጃው አልተገኘም' : 'Record Not Found'}
-            </h4>
-            <p className="text-11 text-secondary text-center max-w-sm">
-              {isAmharic 
-                ? 'የቃኙት QR ኮድ ወይም ያስገቡት መረጃ አልተገኘም። እባክዎ በድጋሚ ይሞክሩ።' 
-                : 'Scanned record not found in system registry.'}
-            </p>
-            <motion.button
-               type="button"
-               data-motion-control="true"
-               whileTap={TAP_SCALE}
-               transition={TACTILE_SPRING}
-               onClick={handleRescan}
-               className="min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-primary hover:bg-primary-hover text-on-primary px-5 py-2 rounded-md text-xs font-bold cursor-pointer transition-colors flex items-center gap-1.5 shadow-xs touch-manipulation"
-             >
-               <Icon className="material-symbols-outlined text-icon-sm">qr_code_scanner</Icon>
-               <span>{isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}</span>
-             </motion.button>
-          </div>
+            return (
+              <>
+                {/* 1. TOP VERIFICATION STATUS HEADER BAR */}
+                <div
+                  className={`flex items-center justify-between py-2 sm:py-3 px-2.5 sm:px-4 shrink-0 border-b-2 z-10 shadow-sm transition-colors duration-200 gap-2 ${activeTheme.headerRejected}`}
+                >
+                  <motion.button
+                    type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
+                    onClick={handleRescan}
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white touch-manipulation transition-colors cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
+                    title={isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}
+                    aria-label={isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan'}
+                  >
+                    <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl font-bold">
+                      chevron_left
+                    </Icon>
+                  </motion.button>
+
+                  <div className="flex items-center gap-1.5 min-w-0 flex-1 justify-center">
+                    <Icon className="material-symbols-outlined text-icon-lg sm:text-[length:calc(26px*var(--ui-scale))] text-white shrink-0">
+                      gpp_bad
+                    </Icon>
+                    <span className="font-black text-xs sm:text-base md:text-lg tracking-tight text-white truncate text-center">
+                      {isAmharic ? 'ያልተመዘገበ የሞተር ፈቃድ' : 'Motor Permit Unregistered'}
+                    </span>
+                  </div>
+
+                  <motion.button
+                    type="button"
+                    data-motion-control="true"
+                    whileTap={TAP_SCALE}
+                    transition={TACTILE_SPRING}
+                    onClick={onClose}
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-white/20 hover:bg-white/30 text-white touch-manipulation transition-colors cursor-pointer flex items-center justify-center shrink-0 shadow-sm border border-white/40"
+                    title={isAmharic ? 'ዝጋ' : 'Close'}
+                    aria-label={isAmharic ? 'ዝጋ' : 'Close'}
+                  >
+                    <Icon className="material-symbols-outlined text-icon-xl sm:text-icon-2xl font-bold">
+                      close
+                    </Icon>
+                  </motion.button>
+                </div>
+
+                {/* 2. SCROLLABLE VERDICT & RECOVERY BODY */}
+                <div
+                  className={`flex-1 overflow-y-auto overscroll-contain min-h-0 ${activeTheme.bodyBg}`}
+                >
+                  <div className="max-w-2xl mx-auto w-full p-2.5 sm:p-4 space-y-3 sm:space-y-3.5">
+                    {/* Primary Verdict Surface */}
+                    <section
+                      className={`${activeTheme.ownerCardBg || activeTheme.cardBg} border rounded-xl p-3.5 sm:p-4.5 shadow-xs`}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+                        <div
+                          className={`w-13 h-13 sm:w-14 sm:h-14 rounded-lg flex items-center justify-center shrink-0 border ${
+                            isAlwaysDarkScannerTheme
+                              ? 'bg-rose-500/20 border-rose-400/35 text-rose-300'
+                              : isAlwaysLightScannerTheme
+                              ? 'bg-rose-50 border-rose-200 text-rose-600'
+                              : 'bg-rose-50 dark:bg-rose-950/50 border-rose-200 dark:border-rose-800/60 text-rose-600 dark:text-rose-400'
+                          }`}
+                        >
+                          <Icon className="material-symbols-outlined text-[length:calc(30px*var(--ui-scale))]">
+                            no_accounts
+                          </Icon>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div
+                            className={`flex flex-wrap items-center gap-x-2 gap-y-0.5 text-11 font-bold ${activeTheme.labelText}`}
+                          >
+                            <span>
+                              {isAmharic ? 'የሞተር ፈቃድ ሁኔታ' : 'Motor Permit Status'}
+                            </span>
+                            <span aria-hidden="true">·</span>
+                            <span className="font-mono tabular-nums">
+                              {checkedTimestamp}
+                            </span>
+                          </div>
+
+                          <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                            <h2
+                              className={`text-lg sm:text-xl font-black tracking-tight text-balance ${activeTheme.headingText}`}
+                            >
+                              {isAmharic ? 'ያልተመዘገበ' : 'UNREGISTERED'}
+                            </h2>
+                            <span
+                              className={`inline-flex items-center gap-1 text-xs font-extrabold ${scannerSemanticRejectedText}`}
+                            >
+                              <Icon className="material-symbols-outlined text-icon-sm shrink-0">
+                                error_outline
+                              </Icon>
+                              <span>
+                                {isAmharic ? 'በመዝገብ ውስጥ አልተገኘም' : 'No Matching Permit'}
+                              </span>
+                            </span>
+                          </div>
+
+                          <p
+                            className={`mt-1 text-xs leading-relaxed ${activeTheme.labelText}`}
+                          >
+                            {isAmharic
+                              ? 'የቃኙት QR ኮድ ወይም ያስገቡት መለያ በማህበሩ መዝገብ ውስጥ አልተገኘም።'
+                              : 'No matching permit record was found in the association registry.'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Hairline-Divided Query Telemetry Strip */}
+                      <div className={`mt-3.5 pt-3.5 border-t ${scannerHairlineBorder} grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5`}>
+                        <div className="min-w-0">
+                          <span
+                            className={`text-2xs font-extrabold block ${activeTheme.labelText}`}
+                          >
+                            {isAmharic ? 'የተፈተሸ መረጃ' : 'Checked Input'}
+                          </span>
+                          <span
+                            className={`mt-0.5 text-xs font-black font-mono tabular-nums block truncate ${activeTheme.valueText}`}
+                            title={lastScannedQuery || undefined}
+                          >
+                            {lastScannedQuery ||
+                              (isAmharic ? 'ያልተነበበ QR' : 'Unreadable QR')}
+                          </span>
+                        </div>
+
+                        <div className={`min-w-0 ${scannerHairlineBorderLeft} sm:pl-3.5`}>
+                          <span
+                            className={`text-2xs font-extrabold block ${activeTheme.labelText}`}
+                          >
+                            {isAmharic ? 'የፍተሻ ዘዴ' : 'Scan Method'}
+                          </span>
+                          <span
+                            className={`mt-0.5 text-xs font-black block truncate ${activeTheme.valueText}`}
+                          >
+                            {scanMethodLabel}
+                          </span>
+                        </div>
+
+                        <div className={`min-w-0 ${scannerHairlineBorderLeft} sm:pl-3.5`}>
+                          <span
+                            className={`text-2xs font-extrabold block ${activeTheme.labelText}`}
+                          >
+                            {isAmharic ? 'የመዝገብ ውጤት' : 'Registry Result'}
+                          </span>
+                          <span
+                            className={`mt-0.5 text-xs font-black tabular-nums block ${scannerSemanticRejectedText}`}
+                          >
+                            {isAmharic ? '0 ተዛማጅ መዝገብ' : '0 Matches Found'}
+                          </span>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Inline Manual Lookup Recovery */}
+                    <section
+                      className={`${activeTheme.chipBg} border rounded-xl p-3.5 sm:p-4 shadow-xs space-y-2.5`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <label
+                          htmlFor="unregistered-manual-lookup"
+                          className={`text-xs sm:text-sm font-black flex items-center gap-1.5 ${activeTheme.headingText}`}
+                        >
+                          <Icon
+                            className={`material-symbols-outlined text-icon-md ${activeTheme.sectionIconColor}`}
+                          >
+                            manage_search
+                          </Icon>
+                          <span>
+                            {isAmharic
+                              ? 'በሰሌዳ ቁጥር ወይም በባለቤት ስም እንደገና ፈልግ'
+                              : 'Verify Manually by Plate or Owner Name'}
+                          </span>
+                        </label>
+                      </div>
+
+                      <form
+                        onSubmit={handleSearchLookup}
+                        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2"
+                      >
+                        <div className="relative flex-1 min-w-0">
+                          <div
+                            className={`absolute inset-y-0 left-3 flex items-center pointer-events-none ${activeTheme.labelText}`}
+                          >
+                            <Icon className="material-symbols-outlined text-icon-md">
+                              search
+                            </Icon>
+                          </div>
+                          <input
+                            id="unregistered-manual-lookup"
+                            type="text"
+                            value={searchPlate}
+                            onChange={(e) => setSearchPlate(e.target.value)}
+                            placeholder={
+                              isAmharic
+                                ? 'የሰሌዳ ቁጥር፣ ሞተር ቁጥር ወይም ስም ያስገቡ...'
+                                : 'Enter Plate No, ID, or Owner Name...'
+                            }
+                            className={`w-full min-h-[44px] md:min-h-[var(--ui-control-h-md)] select-text rounded-lg pl-10 pr-3 py-2 text-xs sm:text-sm border focus:outline-none focus:ring-2 focus:ring-primary/40 transition-colors ${scannerNotesInputClass}`}
+                          />
+                        </div>
+
+                        <motion.button
+                          type="submit"
+                          data-motion-control="true"
+                          whileTap={TAP_SCALE}
+                          transition={TACTILE_SPRING}
+                          disabled={!searchPlate.trim() || isProcessingScan}
+                          className={`min-h-[44px] md:min-h-[var(--ui-control-h-md)] px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation ${activeTheme.actionButton}`}
+                        >
+                          <Icon className="material-symbols-outlined text-icon-md">
+                            search
+                          </Icon>
+                          <span>{isAmharic ? 'ፈልግ' : 'Lookup'}</span>
+                        </motion.button>
+                      </form>
+                    </section>
+
+                    {/* Municipal Copyright Footer */}
+                    <div className="pt-1 pb-0.5 text-center text-2xs sm:text-11 font-medium opacity-80">
+                      <p className={activeTheme.footerText}>
+                        {isAmharic
+                          ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።'
+                          : '© 2026 Bahirdar Motorist Association Permit Control System. All rights reserved.'}
+                      </p>
+                    </div>
+
+                    {/* Primary & Contextual Enforcement Actions */}
+                    <div
+                      className={`grid grid-cols-1 gap-2.5 pb-4 ${
+                        canReportUnregistered
+                          ? 'sm:grid-cols-3'
+                          : 'sm:grid-cols-2'
+                      }`}
+                    >
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={handleRescan}
+                        className={`min-h-[44px] sm:min-h-[calc(46px*var(--ui-scale))] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer touch-manipulation ${activeTheme.actionButton}`}
+                      >
+                        <Icon className="material-symbols-outlined text-icon-md">
+                          qr_code_scanner
+                        </Icon>
+                        <span>{isAmharic ? 'ድጋሚ ቃኝ' : 'Rescan QR'}</span>
+                      </motion.button>
+
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={SUBTLE_TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={openImagePicker}
+                        className={`min-h-[44px] sm:min-h-[calc(46px*var(--ui-scale))] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer touch-manipulation border shadow-xs ${scannerSecondaryButtonSurface}`}
+                      >
+                        <Icon className="material-symbols-outlined text-icon-md">
+                          image
+                        </Icon>
+                        <span>{isAmharic ? 'ምስል ስካን' : 'Scan Image'}</span>
+                      </motion.button>
+
+                      {canReportUnregistered && (
+                        <motion.button
+                          type="button"
+                          data-motion-control="true"
+                          whileTap={TAP_SCALE}
+                          transition={TACTILE_SPRING}
+                          onClick={() => onReportUnregistered?.(lastScannedQuery)}
+                          className="min-h-[44px] sm:min-h-[calc(46px*var(--ui-scale))] bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer shadow-xs touch-manipulation"
+                        >
+                          <Icon className="material-symbols-outlined text-icon-md">
+                            report_problem
+                          </Icon>
+                          <span>
+                            {isAmharic ? 'ያልተመዘገበ ሪፖርት' : 'Report Vehicle'}
+                          </span>
+                        </motion.button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </motion.div>
       ) : (
         <motion.div
@@ -1426,418 +1976,439 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                 </div>
 
                 {/* 2. MIDDLE SCROLLABLE BODY CONTENT */}
-                <div className={`flex-1 overflow-y-auto overscroll-contain min-h-0 p-1.5 sm:p-2.5 space-y-2 max-w-2xl mx-auto w-full ${activeTheme.bodyBg}`}>
-                  
-                  {/* Warning Alert for Pending Status */}
-                  {isPending && (
-                    <div className="bg-amber-100/90 dark:bg-amber-950/90 border border-amber-500 dark:border-amber-600 p-2 rounded-md text-xs flex items-start gap-2 shadow-xs">
-                      <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 font-black">
-                        <Icon className="material-symbols-outlined text-icon-lg">warning</Icon>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-black text-amber-950 dark:text-amber-100 text-xs">
-                          {isAmharic ? 'ማረጋገጫ በመጠባበቅ ላይ ያለ' : 'PENDING APPROVAL'}
-                        </p>
-                        <p className="mt-0.5 text-2xs text-amber-900 dark:text-amber-200 font-extrabold leading-tight">
-                          {isAmharic
-                            ? 'ይህ ተሽከርካሪ በአስተዳዳሪ ገና አልጸደቀም።'
-                            : 'This vehicle record is pending admin approval.'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                <div className={`flex-1 overflow-y-auto overscroll-contain min-h-0 ${activeTheme.bodyBg}`}>
+                  <div className="p-2 sm:p-3 space-y-2.5 max-w-2xl mx-auto w-full">
 
-                  {/* Association Motor (Company Vehicle) Notice - Visible strictly on scanner results */}
-                  {scannedRegResult.hideFromOtherUsers && (
-                    <div className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 p-2 sm:p-2.5 rounded-md text-xs flex items-start gap-2 shadow-xs">
-                      <div className="w-7 h-7 rounded-lg bg-slate-900 dark:bg-slate-700 text-white flex items-center justify-center shrink-0 font-black">
-                        <Icon className="material-symbols-outlined text-icon-md">business</Icon>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <p className="font-black text-slate-900 dark:text-white text-xs">
-                            {isAmharic ? 'የማህበር ተሽከርካሪ' : 'ASSOCIATION MOTOR'}
-                          </p>
-                          <span className="text-3xs font-bold px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
-                            {isAmharic ? 'በፍተሻ ውጤት ብቻ የሚታይ' : 'Scanner Verified Result'}
-                          </span>
+                    {/* Warning Alert for Pending Status */}
+                    {isPending && (
+                      <div className={`border p-2.5 rounded-xl text-xs flex items-start gap-2.5 shadow-xs ${
+                        isAlwaysDarkScannerTheme
+                          ? 'bg-amber-500/15 border-amber-400/40'
+                          : isAlwaysLightScannerTheme
+                          ? 'bg-amber-50 border-amber-400'
+                          : 'bg-amber-50 dark:bg-amber-950/70 border-amber-400 dark:border-amber-600'
+                      }`}>
+                        <div className="w-7 h-7 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center shrink-0 font-black">
+                          <Icon className="material-symbols-outlined text-icon-lg">warning</Icon>
                         </div>
-                        <p className="mt-0.5 text-2xs text-slate-600 dark:text-slate-400 font-medium leading-tight">
-                          {isAmharic
-                            ? 'ይህ ተሽከርካሪ የማህበር መዝገብ በመሆኑ በሰንጠረዥና በሜትሪክስ የተደበቀ ሲሆን፣ በፍተሻ ውጤት ላይ ብቻ የሚታይ ነው።'
-                            : 'This motor is registered as an Association vehicle (hidden from general lists & metrics, verified on scanner result).'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* =========================================================
-                      CARD 1: OWNER & PRIMARY MOTORCYCLE INFO
-                      ========================================================= */}
-                  <div className={`${activeTheme.ownerCardBg || activeTheme.cardBg} border rounded-md p-2 sm:p-2.5 shadow-xs space-y-2`}>
-                    
-                    {/* Top Row: Portrait Image on Left & Info Details on Right */}
-                    <div className="flex items-start gap-2.5">
-                      
-                      {/* Left: Portrait Photo or Cyan Monogram (As in Attachment 1) */}
-                      <div 
-                        onClick={() => openDocumentCarousel(portraitUrl, `${scannedRegResult.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}`)}
-                        className="w-28 h-36 sm:w-32 sm:h-40 rounded-md overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 shrink-0 shadow-xs cursor-pointer relative group flex items-center justify-center"
-                      >
-                        {scannedRegResult.userPortraitPhoto ? (
-                          <SmartImage
-                            src={portraitUrl}
-                            alt={scannedRegResult.fullName || 'Owner Portrait'}
-                            fallbackIcon="person"
-                            className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-[#0284c7] flex items-center justify-center text-white font-black text-3xl sm:text-4xl select-none">
-                            {(() => {
-                              const parts = (scannedRegResult.fullName || '').trim().split(/\s+/);
-                              if (parts.length >= 2) {
-                                return `${parts[0].slice(0, 2)}${parts[parts.length - 1].slice(0, 1)}`;
-                              }
-                              return (scannedRegResult.fullName || 'ሙ').slice(0, 2);
-                            })()}
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                          <Icon className="material-symbols-outlined text-icon-2xl font-black">zoom_in</Icon>
-                        </div>
-                      </div>
-
-                      {/* Right: Owner & Vehicle Specs List */}
-                      <div className="flex-1 min-w-0 space-y-1.5 text-xs">
-                        {/* Owner Full Name */}
-                        <div>
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
-                            {isAmharic ? 'የባለቤት መረጃ' : 'Owner Info'}
-                          </span>
-                          <h3 className={`text-sm sm:text-base font-black ${activeTheme.headingText} leading-tight mt-0.5 truncate`}>
-                            {scannedRegResult.fullName}
-                          </h3>
-                        </div>
-
-                        {/* ID Number */}
-                        <div>
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
-                            {isAmharic ? 'መለያ ቁጥር' : 'ID Number'}
-                          </span>
-                          <span className={`text-xs font-black font-mono ${activeTheme.headingText} block mt-0.5`}>
-                            {scannedRegResult.id}
-                          </span>
-                        </div>
-
-                        {/* Plate Number */}
-                        <div>
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
-                            {isAmharic ? 'ሰሌዳ ቁጥር' : 'Plate Number'}
-                          </span>
-                          <span className={`text-xs font-black font-mono ${activeTheme.plateBadge} block mt-0.5 px-2 py-0.5 rounded-md inline-block`}>
-                            {scannedRegResult.plateNumber}
-                          </span>
-                        </div>
-
-                        {/* Authorized Motor */}
-                        <div>
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
-                            {isAmharic ? 'የተፈቀደለት ሞተር' : 'Authorized Motor'}
-                          </span>
-                          <span className={`text-xs font-black ${activeTheme.headingText} block mt-0.5 truncate`}>
-                            {[scannedRegResult.motorBrand, scannedRegResult.motorModel].filter(Boolean).join(' ') || 'ቦክሰር 2015'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* =========================================================
-                      CARD 2: MERGED VEHICLE & CONTACT DETAILS (2-COLUMN HORIZONTAL GRID)
-                      ========================================================= */}
-                  <div className={`${activeTheme.specCardBg || activeTheme.cardBg} border rounded-md p-2 sm:p-2.5 shadow-xs space-y-2`}>
-                    <h3 className={`text-xs sm:text-sm font-black ${activeTheme.headingText} flex items-center gap-1.5`}>
-                      <Icon className={`material-symbols-outlined ${activeTheme.sectionIconColor} text-icon-md`}>two_wheeler</Icon>
-                      <span>{isAmharic ? 'ተጨማሪ የተሽከርካሪ ዝርዝሮች' : 'Additional Vehicle Details'}</span>
-                    </h3>
-
-                    {/* 2-Column Horizontal Grid with Related Info Grouped in Rows */}
-                    <div className="grid grid-cols-2 gap-2">
-                      {/* Pair 1, Col 1: Motor Brand */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">two_wheeler</Icon>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'የሞተር ምርት' : 'Motor Brand'}
-                          </span>
-                          <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
-                            {scannedRegResult.motorBrand || '—'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Pair 1, Col 2: Model */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">calendar_today</Icon>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'ሞዴል' : 'Model'}
-                          </span>
-                          <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
-                            {scannedRegResult.motorModel || '—'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Pair 2, Col 1: Registration Date */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">date_range</Icon>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'የተመዘገበበት ቀን' : 'Reg. Date'}
-                          </span>
-                          <span className={`text-xs font-black font-mono ${activeTheme.headingText} block truncate`}>
-                            {scannedRegResult.registrationDate || '—'}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Pair 2, Col 2: Permit Status */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">
-                            {isApproved ? 'check_circle' : isExpired || isPending ? 'warning' : 'cancel'}
-                          </Icon>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}
-                          </span>
-                          <span className={`text-xs font-black block truncate ${
-                            isApproved
-                              ? 'text-emerald-700 dark:text-emerald-300'
-                              : isExpired || isPending
-                              ? 'text-amber-700 dark:text-amber-300'
-                              : 'text-rose-700 dark:text-rose-300'
+                        <div className="flex-1 min-w-0">
+                          <p className={`font-black text-xs ${
+                            isAlwaysDarkScannerTheme
+                              ? 'text-amber-200'
+                              : isAlwaysLightScannerTheme
+                              ? 'text-amber-950'
+                              : 'text-amber-950 dark:text-amber-100'
                           }`}>
-                            {isApproved
-                              ? (isAmharic ? 'የተፈቀደ' : 'Approved')
-                              : isExpired
-                              ? (isAmharic ? 'ያልታደሰ' : 'Expired')
-                              : isPending
-                              ? (isAmharic ? 'በመጠበቅ ላይ' : 'Pending')
-                              : (isAmharic ? 'ያልተሰጠ' : 'Not Granted')}
-                          </span>
+                            {isAmharic ? 'ማረጋገጫ በመጠባበቅ ላይ ያለ' : 'PENDING APPROVAL'}
+                          </p>
+                          <p className={`mt-0.5 text-2xs font-bold leading-tight ${
+                            isAlwaysDarkScannerTheme
+                              ? 'text-amber-100/90'
+                              : isAlwaysLightScannerTheme
+                              ? 'text-amber-900'
+                              : 'text-amber-900 dark:text-amber-200'
+                          }`}>
+                            {isAmharic
+                              ? 'ይህ ተሽከርካሪ በአስተዳዳሪ ገና አልጸደቀም።'
+                              : 'This vehicle record is pending admin approval.'}
+                          </p>
                         </div>
                       </div>
+                    )}
 
-                      {/* Pair 3, Col 1: Sub-City */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">location_city</Icon>
+                    {/* Association Motor (Company Vehicle) Notice - Visible strictly on scanner results */}
+                    {scannedRegResult.hideFromOtherUsers && (
+                      <div className={`${activeTheme.cardBg} border p-2.5 rounded-xl text-xs flex items-start gap-2.5 shadow-xs`}>
+                        <div className={`w-7 h-7 rounded-lg ${activeTheme.iconCircle} flex items-center justify-center shrink-0 font-black`}>
+                          <Icon className="material-symbols-outlined text-icon-md">business</Icon>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}
-                          </span>
-                          <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
-                            {scannedRegResult.subCity || '—'}
-                          </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className={`font-black text-xs ${activeTheme.headingText}`}>
+                              {isAmharic ? 'የማህበር ተሽከርካሪ' : 'ASSOCIATION MOTOR'}
+                            </p>
+                            <span aria-hidden="true" className={activeTheme.labelText}>·</span>
+                            <span className={`text-2xs font-bold ${activeTheme.labelText}`}>
+                              {isAmharic ? 'በፍተሻ ውጤት ብቻ የሚታይ' : 'Scanner Verified Result'}
+                            </span>
+                          </div>
+                          <p className={`mt-0.5 text-2xs font-medium leading-tight ${activeTheme.labelText}`}>
+                            {isAmharic
+                              ? 'ይህ ተሽከርካሪ የማህበር መዝገብ በመሆኑ በሰንጠረዥና በሜትሪክስ የተደበቀ ሲሆን፣ በፍተሻ ውጤት ላይ ብቻ የሚታይ ነው።'
+                              : 'This motor is registered as an Association vehicle (hidden from general lists & metrics, verified on scanner result).'}
+                          </p>
                         </div>
                       </div>
+                    )}
 
-                      {/* Pair 3, Col 2: Phone Number */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">call</Icon>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}
-                          </span>
-                          <span className={`text-xs font-black font-mono ${activeTheme.headingText} block truncate`}>
-                            {scannedRegResult.phone || '—'}
-                          </span>
-                        </div>
-                      </div>
+                    {/* =========================================================
+                        CARD 1: OWNER & PRIMARY MOTORCYCLE INFO
+                        ========================================================= */}
+                    <div className={`${activeTheme.ownerCardBg || activeTheme.cardBg} border rounded-xl p-2.5 sm:p-3.5 shadow-xs space-y-2`}>
 
-                      {/* Pair 4, Col 1: Blood Group */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">bloodtype</Icon>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'የደም ዓይነት' : 'Blood Group'}
-                          </span>
-                          <span className="text-xs font-black text-red-700 dark:text-red-400 block truncate">
-                            {scannedRegResult.bloodGroup || '—'}
-                          </span>
-                        </div>
-                      </div>
+                      {/* Top Row: Portrait Image on Left & Info Details on Right */}
+                      <div className="flex items-start gap-3">
 
-                      {/* Pair 4, Col 2: Vehicle Category / Fuel */}
-                      <div className={`flex items-center gap-2 p-1.5 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
-                        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                          <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">
-                            {scannedRegResult.vehicleCategory === 'electric' ? 'electric_moped' : 'local_gas_station'}
-                          </Icon>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                            {isAmharic ? 'የሞተር ምድብ' : 'Vehicle Type'}
-                          </span>
-                          <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
-                            {scannedRegResult.vehicleCategory === 'electric'
-                              ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
-                              : (isAmharic ? 'ቤንዚን (<110cc)' : 'Gas (<110cc)')}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Pair 5, Col 1: Driving License in More Info */}
-                      {(() => {
-                        const dlPhoto =
-                          scannedRegResult.drivingLicensePhoto ||
-                          (scannedRegResult as any).driving_license_photo ||
-                          (scannedRegResult as any).driverLicensePhoto ||
-                          (scannedRegResult as any).licensePhoto || '';
-
-                        const ppPhoto =
-                          scannedRegResult.drivingPermitPhoto ||
-                          (scannedRegResult as any).driving_permit_photo ||
-                          (scannedRegResult as any).policePermitPhoto ||
-                          (scannedRegResult as any).policePermit || '';
-
-                        return (
-                          <>
-                            <div
-                              onClick={() => {
-                                if (dlPhoto) {
-                                  openDocumentCarousel(
-                                    dlPhoto,
-                                    `${scannedRegResult.fullName} — ${isAmharic ? 'የመንጃ ፍቃድ' : 'Driver License'}`
-                                  );
+                        {/* Left: Portrait Photo or Cyan Monogram */}
+                        <div
+                          onClick={() => openDocumentCarousel(portraitUrl, `${scannedRegResult.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}`)}
+                          className={`w-28 h-36 sm:w-32 sm:h-40 rounded-lg overflow-hidden bg-black/5 border ${scannerHairlineBorder} shrink-0 shadow-xs cursor-pointer relative group flex items-center justify-center`}
+                        >
+                          {scannedRegResult.userPortraitPhoto ? (
+                            <SmartImage
+                              src={portraitUrl}
+                              alt={scannedRegResult.fullName || 'Owner Portrait'}
+                              fallbackIcon="person"
+                              className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-[#0284c7] flex items-center justify-center text-white font-black text-3xl sm:text-4xl select-none">
+                              {(() => {
+                                const parts = (scannedRegResult.fullName || '').trim().split(/\s+/);
+                                if (parts.length >= 2) {
+                                  return `${parts[0].slice(0, 2)}${parts[parts.length - 1].slice(0, 1)}`;
                                 }
-                              }}
-                              className={`flex items-center gap-2 p-1.5 rounded-lg border min-w-0 transition-all ${
-                                dlPhoto
-                                  ? `${activeTheme.chipBg} cursor-pointer shadow-xs hover:brightness-105`
-                                  : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-300/60 dark:border-slate-700/60'
-                              }`}
-                              title={dlPhoto ? (isAmharic ? 'መንጃ ፍቃድ ለማየት ይጫኑ' : 'Click to view driving license') : undefined}
-                            >
-                              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                                <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">card_membership</Icon>
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                                  {isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
-                                </span>
-                                <span className={`text-xs font-black block truncate flex items-center gap-1 ${
-                                  dlPhoto ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400'
-                                }`}>
-                                  {dlPhoto ? (
-                                    <>
-                                      <span>{isAmharic ? 'የተያያዘ (ይመልከቱ)' : 'Attached (View)'}</span>
-                                      <Icon className="material-symbols-outlined text-13">visibility</Icon>
-                                    </>
-                                  ) : (
-                                    isAmharic ? 'ያልተያያዘ' : 'Not Attached'
-                                  )}
-                                </span>
-                              </div>
+                                return (scannedRegResult.fullName || 'ሙ').slice(0, 2);
+                              })()}
                             </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                            <Icon className="material-symbols-outlined text-icon-2xl font-black">zoom_in</Icon>
+                          </div>
+                        </div>
 
-                            {/* Pair 5, Col 2: Police Permit in More Info */}
-                            <div
-                              onClick={() => {
-                                if (ppPhoto) {
-                                  openDocumentCarousel(
-                                    ppPhoto,
-                                    `${scannedRegResult.fullName} — ${isAmharic ? 'የፖሊስ የመንቀሳቀሻ ፈቃድ' : 'Police Permit'}`
-                                  );
-                                }
-                              }}
-                              className={`flex items-center gap-2 p-1.5 rounded-lg border min-w-0 transition-all ${
-                                ppPhoto
-                                  ? `${activeTheme.chipBg} cursor-pointer shadow-xs hover:brightness-105`
-                                  : 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-300/60 dark:border-slate-700/60'
-                              }`}
-                              title={ppPhoto ? (isAmharic ? 'የፖሊስ ፈቃድ ለማየት ይጫኑ' : 'Click to view police permit') : undefined}
-                            >
-                              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
-                                <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">local_police</Icon>
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
-                                  {isAmharic ? 'የፖሊስ ፈቃድ' : 'Police Permit'}
-                                </span>
-                                <span className={`text-xs font-black block truncate flex items-center gap-1 ${
-                                  ppPhoto ? 'text-emerald-700 dark:text-emerald-300' : 'text-slate-500 dark:text-slate-400'
-                                }`}>
-                                  {ppPhoto ? (
-                                    <>
-                                      <span>{isAmharic ? 'የተሰጠ (ይመልከቱ)' : 'Valid (View)'}</span>
-                                      <Icon className="material-symbols-outlined text-13">visibility</Icon>
-                                    </>
-                                  ) : (
-                                    isAmharic ? 'ያልተያያዘ' : 'Not Attached'
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                          </>
-                        );
-                      })()}
+                        {/* Right: Owner & Vehicle Specs List */}
+                        <div className="flex-1 min-w-0 space-y-1.5 text-xs">
+                          {/* Owner Full Name */}
+                          <div>
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
+                              {isAmharic ? 'የባለቤት መረጃ' : 'Owner Info'}
+                            </span>
+                            <h3 className={`text-sm sm:text-base font-black ${activeTheme.headingText} leading-tight mt-0.5 truncate`}>
+                              {scannedRegResult.fullName}
+                            </h3>
+                          </div>
+
+                          {/* ID Number */}
+                          <div>
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
+                              {isAmharic ? 'መለያ ቁጥር' : 'ID Number'}
+                            </span>
+                            <span className={`text-xs font-black font-mono tabular-nums ${activeTheme.headingText} block mt-0.5 truncate`}>
+                              {scannedRegResult.id}
+                            </span>
+                          </div>
+
+                          {/* Plate Number */}
+                          <div>
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
+                              {isAmharic ? 'ሰሌዳ ቁጥር' : 'Plate Number'}
+                            </span>
+                            <span className={`text-xs font-black font-mono tabular-nums ${activeTheme.plateBadge} mt-0.5 px-2 py-0.5 rounded-md inline-flex items-center`}>
+                              {scannedRegResult.plateNumber}
+                            </span>
+                          </div>
+
+                          {/* Authorized Motor */}
+                          <div>
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block`}>
+                              {isAmharic ? 'የተፈቀደለት ሞተር' : 'Authorized Motor'}
+                            </span>
+                            <span className={`text-xs font-black ${activeTheme.headingText} block mt-0.5 truncate`}>
+                              {[scannedRegResult.motorBrand, scannedRegResult.motorModel].filter(Boolean).join(' ') || 'ቦክሰር 2015'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Municipal Copyright Footer matching Attachment Screenshots */}
-                  <div className="pt-3 pb-1 text-center text-2xs sm:text-11 font-medium opacity-80">
-                    <p className={activeTheme.footerText}>
-                      {isAmharic
-                        ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።'
-                        : '© 2026 Bahirdar Motorist Association Permit Control System. All rights reserved.'}
-                    </p>
-                  </div>
+                    {/* =========================================================
+                        CARD 2: MERGED VEHICLE & CONTACT DETAILS (2-COLUMN HORIZONTAL GRID)
+                        ========================================================= */}
+                    <div className={`${activeTheme.specCardBg || activeTheme.cardBg} border rounded-xl p-2.5 sm:p-3.5 shadow-xs space-y-2.5`}>
+                      <h3 className={`text-xs sm:text-sm font-black ${activeTheme.headingText} flex items-center gap-1.5`}>
+                        <Icon className={`material-symbols-outlined ${activeTheme.sectionIconColor} text-icon-md`}>two_wheeler</Icon>
+                        <span>{isAmharic ? 'ተጨማሪ የተሽከርካሪ ዝርዝሮች' : 'Additional Vehicle Details'}</span>
+                      </h3>
 
-                  {/* Action Buttons: Scan Again / Back */}
-                  <div className="pt-2 pb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-                    <motion.button
-                      type="button"
-                      data-motion-control="true"
-                      whileTap={TAP_SCALE}
-                      transition={TACTILE_SPRING}
-                      onClick={handleRescan}
-                      className="flex-1 bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-black min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer border border-outline-variant/60 shadow-xs touch-manipulation"
-                    >
-                      <Icon className="material-symbols-outlined text-icon-lg">qr_code_scanner</Icon>
-                      <span>{isAmharic ? 'ሌላ QR ኮድ ቃኝ' : 'Scan Next QR'}</span>
-                    </motion.button>
+                      {/* 2-Column Horizontal Grid with Related Info Grouped in Rows */}
+                      <div className="grid grid-cols-2 gap-2">
+                        {/* Pair 1, Col 1: Motor Brand */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">two_wheeler</Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'የሞተር ምርት' : 'Motor Brand'}
+                            </span>
+                            <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
+                              {scannedRegResult.motorBrand || '—'}
+                            </span>
+                          </div>
+                        </div>
 
-                    <motion.button
-                      type="button"
-                      data-motion-control="true"
-                      whileTap={SUBTLE_TAP_SCALE}
-                      transition={TACTILE_SPRING}
-                      onClick={() => setShowNotesSection(!showNotesSection)}
-                      className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 font-black min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] py-3.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs touch-manipulation"
-                    >
-                      <Icon className="material-symbols-outlined text-icon-lg">edit_note</Icon>
-                      <span>{isAmharic ? 'ማስታወሻ ጨምር' : 'Add Notes'}</span>
-                    </motion.button>
+                        {/* Pair 1, Col 2: Model */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">calendar_today</Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'ሞዴል' : 'Model'}
+                            </span>
+                            <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
+                              {scannedRegResult.motorModel || '—'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pair 2, Col 1: Registration Date */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">date_range</Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'የተመዘገበበት ቀን' : 'Reg. Date'}
+                            </span>
+                            <span className={`text-xs font-black font-mono tabular-nums ${activeTheme.headingText} block truncate`}>
+                              {scannedRegResult.registrationDate || '—'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pair 2, Col 2: Permit Status */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">
+                              {isApproved ? 'check_circle' : isExpired || isPending ? 'warning' : 'cancel'}
+                            </Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'የፈቃድ ሁኔታ' : 'Permit Status'}
+                            </span>
+                            <span className={`text-xs font-black block truncate ${
+                              isApproved
+                                ? scannerSemanticApprovedText
+                                : isExpired || isPending
+                                ? scannerSemanticPendingText
+                                : scannerSemanticRejectedText
+                            }`}>
+                              {isApproved
+                                ? (isAmharic ? 'የተፈቀደ' : 'Approved')
+                                : isExpired
+                                ? (isAmharic ? 'ያልታደሰ' : 'Expired')
+                                : isPending
+                                ? (isAmharic ? 'በመጠበቅ ላይ' : 'Pending')
+                                : (isAmharic ? 'ያልተሰጠ' : 'Not Granted')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pair 3, Col 1: Sub-City */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">location_city</Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}
+                            </span>
+                            <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
+                              {scannedRegResult.subCity || '—'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pair 3, Col 2: Phone Number */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">call</Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'ስልክ ቁጥር' : 'Phone Number'}
+                            </span>
+                            <span className={`text-xs font-black font-mono tabular-nums ${activeTheme.headingText} block truncate`}>
+                              {scannedRegResult.phone || '—'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pair 4, Col 1: Blood Group */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">bloodtype</Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'የደም ዓይነት' : 'Blood Group'}
+                            </span>
+                            <span className={`text-xs font-black ${scannerSemanticBloodText} block truncate`}>
+                              {scannedRegResult.bloodGroup || '—'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pair 4, Col 2: Vehicle Category / Fuel */}
+                        <div className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0`}>
+                          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                            <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">
+                              {scannedRegResult.vehicleCategory === 'electric' ? 'electric_moped' : 'local_gas_station'}
+                            </Icon>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                              {isAmharic ? 'የሞተር ምድብ' : 'Vehicle Type'}
+                            </span>
+                            <span className={`text-xs font-black ${activeTheme.headingText} block truncate`}>
+                              {scannedRegResult.vehicleCategory === 'electric'
+                                ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
+                                : (isAmharic ? 'ቤንዚን (<110cc)' : 'Gas (<110cc)')}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pair 5, Col 1: Driving License in More Info */}
+                        {(() => {
+                          const dlPhoto =
+                            scannedRegResult.drivingLicensePhoto ||
+                            (scannedRegResult as any).driving_license_photo ||
+                            (scannedRegResult as any).driverLicensePhoto ||
+                            (scannedRegResult as any).licensePhoto || '';
+
+                          const ppPhoto =
+                            scannedRegResult.drivingPermitPhoto ||
+                            (scannedRegResult as any).driving_permit_photo ||
+                            (scannedRegResult as any).policePermitPhoto ||
+                            (scannedRegResult as any).policePermit || '';
+
+                          return (
+                            <>
+                              <div
+                                onClick={() => {
+                                  if (dlPhoto) {
+                                    openDocumentCarousel(
+                                      dlPhoto,
+                                      `${scannedRegResult.fullName} — ${isAmharic ? 'የመንጃ ፍቃድ' : 'Driver License'}`
+                                    );
+                                  }
+                                }}
+                                className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0 transition-all ${
+                                  dlPhoto
+                                    ? 'cursor-pointer shadow-xs hover:brightness-105'
+                                    : 'opacity-70'
+                                }`}
+                                title={dlPhoto ? (isAmharic ? 'መንጃ ፍቃድ ለማየት ይጫኑ' : 'Click to view driving license') : undefined}
+                              >
+                                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                                  <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">card_membership</Icon>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                                    {isAmharic ? 'የመንጃ ፍቃድ' : 'Driving License'}
+                                  </span>
+                                  <span className={`text-xs font-black truncate flex items-center gap-1 ${
+                                    dlPhoto ? scannerSemanticApprovedText : activeTheme.labelText
+                                  }`}>
+                                    {dlPhoto ? (
+                                      <>
+                                        <span className="truncate">{isAmharic ? 'የተያያዘ (ይመልከቱ)' : 'Attached (View)'}</span>
+                                        <Icon className="material-symbols-outlined text-13 shrink-0">visibility</Icon>
+                                      </>
+                                    ) : (
+                                      isAmharic ? 'ያልተያያዘ' : 'Not Attached'
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* Pair 5, Col 2: Police Permit in More Info */}
+                              <div
+                                onClick={() => {
+                                  if (ppPhoto) {
+                                    openDocumentCarousel(
+                                      ppPhoto,
+                                      `${scannedRegResult.fullName} — ${isAmharic ? 'የፖሊስ የመንቀሳቀሻ ፈቃድ' : 'Police Permit'}`
+                                    );
+                                  }
+                                }}
+                                className={`flex items-center gap-2 p-2 ${activeTheme.chipBg} rounded-lg border min-w-0 transition-all ${
+                                  ppPhoto
+                                    ? 'cursor-pointer shadow-xs hover:brightness-105'
+                                    : 'opacity-70'
+                                }`}
+                                title={ppPhoto ? (isAmharic ? 'የፖሊስ ፈቃድ ለማየት ይጫኑ' : 'Click to view police permit') : undefined}
+                              >
+                                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${activeTheme.iconCircle} flex items-center justify-center shrink-0 shadow-xs`}>
+                                  <Icon className="material-symbols-outlined text-15 sm:text-icon-sm">local_police</Icon>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <span className={`text-2xs ${activeTheme.labelText} font-extrabold block truncate`}>
+                                    {isAmharic ? 'የፖሊስ ፈቃድ' : 'Police Permit'}
+                                  </span>
+                                  <span className={`text-xs font-black truncate flex items-center gap-1 ${
+                                    ppPhoto ? scannerSemanticApprovedText : activeTheme.labelText
+                                  }`}>
+                                    {ppPhoto ? (
+                                      <>
+                                        <span className="truncate">{isAmharic ? 'የተሰጠ (ይመልከቱ)' : 'Valid (View)'}</span>
+                                        <Icon className="material-symbols-outlined text-13 shrink-0">visibility</Icon>
+                                      </>
+                                    ) : (
+                                      isAmharic ? 'ያልተያያዘ' : 'Not Attached'
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+
+                    {/* Municipal Copyright Footer matching Attachment Screenshots */}
+                    <div className="pt-2 pb-1 text-center text-2xs sm:text-11 font-medium opacity-80">
+                      <p className={activeTheme.footerText}>
+                        {isAmharic
+                          ? '© 2016 የግንቦት 12 ባህር ዳር ሞተረኞች ማህበር ፈቃድ ቁጥጥር ስርዓት። መብቱ የተጠበቀ ነው።'
+                          : '© 2026 Bahirdar Motorist Association Permit Control System. All rights reserved.'}
+                      </p>
+                    </div>
+
+                    {/* Action Buttons: Scan Again / Add Notes */}
+                    <div className="pt-1 pb-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={handleRescan}
+                        className={`flex-1 ${activeTheme.actionButton} font-black min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer touch-manipulation`}
+                      >
+                        <Icon className="material-symbols-outlined text-icon-lg">qr_code_scanner</Icon>
+                        <span>{isAmharic ? 'ሌላ QR ኮድ ቃኝ' : 'Scan Next QR'}</span>
+                      </motion.button>
+
+                      <motion.button
+                        type="button"
+                        data-motion-control="true"
+                        whileTap={SUBTLE_TAP_SCALE}
+                        transition={TACTILE_SPRING}
+                        onClick={() => setShowNotesSection(!showNotesSection)}
+                        className={`${scannerSecondaryButtonSurface} border font-black min-h-[44px] sm:min-h-[calc(48px*var(--ui-scale))] py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs touch-manipulation`}
+                      >
+                        <Icon className={`material-symbols-outlined text-icon-lg ${activeTheme.sectionIconColor}`}>edit_note</Icon>
+                        <span>{isAmharic ? 'ማስታወሻ ጨምር' : 'Add Notes'}</span>
+                      </motion.button>
+                    </div>
                   </div>
                 </div>
 
                 {/* 3. FIXED BOTTOM SECTION WITH SLIDEOUT INSPECTION NOTES */}
-                <div className="shrink-0 bg-surface-container-lowest border-t border-outline-variant/60 z-20 shadow-lg relative flex flex-col">
+                <div className={`shrink-0 ${activeTheme.ownerCardBg || activeTheme.cardBg} border-t ${scannerHairlineBorder} z-20 shadow-lg relative flex flex-col`}>
                   {/* Slideout Inspection Notes Form (GPU transform+opacity reveal) */}
                   <AnimatePresence>
                     {showNotesSection && (
@@ -1846,18 +2417,18 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={TACTILE_SPRING}
-                        className="bg-surface-container-low/70 border-b border-outline-variant/40"
+                        className={`${activeTheme.specCardBg || activeTheme.cardBg} border-b ${scannerHairlineBorder}`}
                       >
-                        <div className="p-3.5 sm:p-4 pb-[max(0.875rem,env(safe-area-inset-bottom,12px))] space-y-2.5">
+                        <div className="max-w-2xl mx-auto w-full p-3.5 sm:p-4 pb-[max(0.875rem,env(safe-area-inset-bottom,12px))] space-y-2.5">
                           <div className="flex items-center justify-between">
-                            <label className="text-xs font-bold text-on-surface flex items-center gap-1.5">
-                              <Icon className="material-symbols-outlined text-icon-md text-primary">edit_note</Icon>
+                            <label className={`text-xs font-black flex items-center gap-1.5 ${activeTheme.headingText}`}>
+                              <Icon className={`material-symbols-outlined text-icon-md ${activeTheme.sectionIconColor}`}>edit_note</Icon>
                               <span>{isAmharic ? 'የተቆጣጣሪ ማስታወሻ' : 'Inspection Notes'}</span>
                             </label>
                             <button
                               type="button"
                               onClick={() => setShowNotesSection(false)}
-                              className="min-h-[var(--ui-control-h-md)] text-secondary hover:text-on-surface px-2.5 py-1 rounded-lg hover:bg-surface-container text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors touch-manipulation"
+                              className={`min-h-[var(--ui-control-h-md)] ${activeTheme.labelText} hover:opacity-80 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-opacity touch-manipulation`}
                             >
                               <Icon className="material-symbols-outlined text-icon-md">keyboard_arrow_down</Icon>
                               <span>{isAmharic ? 'ደብቅ' : 'Hide'}</span>
@@ -1868,10 +2439,10 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                             value={verificationNotes}
                             onChange={(e) => handleNoteChange(e.target.value)}
                             placeholder={isAmharic ? 'ማስታወሻ ይጻፉ...' : 'Type inspection notes...'}
-                            className="w-full bg-surface border border-outline-variant rounded-md px-3 py-2 text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-xs"
+                            className={`w-full select-text border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/40 shadow-xs ${scannerNotesInputClass}`}
                             autoFocus
                           />
-                          
+
                           {/* Record Button ('መዝግብ' / 'Record') inside inspection notes container */}
                           <div className="flex justify-end pt-1">
                             <motion.button
@@ -1891,7 +2462,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                                 onClose();
                                 handleRescan();
                               }}
-                              className="w-full sm:w-auto min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-md transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
+                              className="w-full sm:w-auto min-h-[44px] md:min-h-[var(--ui-control-h-md)] bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-xs touch-manipulation"
                             >
                               <Icon className="material-symbols-outlined text-icon-md shrink-0">check_circle</Icon>
                               <span>{isAmharic ? 'መዝግብ' : 'Record'}</span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
 import { Language, UserRole, UnregisteredVehicleReport, BAHIR_DAR_SUBCITIES } from '../types';
 import { compressImageToBlob } from '../utils/imageCompressor';
@@ -11,6 +11,7 @@ interface UnregisteredVehicleFormProps {
   userRole: UserRole;
   userBadgeId?: string;
   officerName?: string;
+  initialPlateNumber?: string;
   onSubmitReport: (report: UnregisteredVehicleReport) => Promise<void>;
   onCancel?: () => void;
 }
@@ -19,12 +20,19 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
   lang,
   userBadgeId = 'BADGE-OFFICER-1',
   officerName = 'Traffic Patrol Officer',
+  initialPlateNumber = '',
   onSubmitReport,
   onCancel,
 }) => {
   const isAmharic = lang === 'am';
 
-  const [plateNumber, setPlateNumber] = useState('');
+  const [plateNumber, setPlateNumber] = useState(initialPlateNumber);
+
+  useEffect(() => {
+    if (initialPlateNumber) {
+      setPlateNumber(initialPlateNumber);
+    }
+  }, [initialPlateNumber]);
   const [driverName, setDriverName] = useState('');
   const [driverPhone, setDriverPhone] = useState('');
   const [locationName, setLocationName] = useState('');

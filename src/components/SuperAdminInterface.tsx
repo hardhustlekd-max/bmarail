@@ -3009,8 +3009,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               {dangerActionType === 'reset' && (
                 <p>
                   {isAmharic
-                    ? 'ሁሉንም የምዝገባዎች፣ የባች ትዕዛዞች፣ ኦፊሰሮችና የፍተሻ ታሪክ ዳታዎች ከዳታቤዝ ላይ ይጠፋሉ እና ወደ ፋብሪካ ደረጃ ይመለሳሉ።'
-                    : 'All registration records, print batches, and scan logs will be permanently deleted and restored to empty state.'}
+                    ? 'ሁሉንም የምዝገባዎች፣ ኦፊሰሮችና የፍተሻ ታሪክ ዳታዎች ከዳታቤዝ ላይ ይጠፋሉ እና ወደ ፋብሪካ ደረጃ ይመለሳሉ።'
+                    : 'All registration records, officer logs, and scan logs will be permanently deleted and restored to empty state.'}
                 </p>
               )}
               {dangerActionType === 'purge_rejected' && (

@@ -76,17 +76,6 @@ export interface OfficerAssignment {
   assignedDate?: string;
 }
 
-export interface PrintBatchOrder {
-  id: string;
-  orderDate: string;
-  totalItems: number;
-  totalCount?: number;
-  registrationIds: string[];
-  status: 'pending' | 'in_printing' | 'completed';
-  notes: string;
-  updatedAt: string;
-}
-
 export interface VerificationLog {
   id: string;
   scannedAt: string;

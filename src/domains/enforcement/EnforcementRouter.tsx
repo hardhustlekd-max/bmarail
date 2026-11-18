@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { UserRole } from '../../types';
 import { useData } from '../../context/DataContext';
 import { SharedScannerModal } from '../../components/SharedScannerModal';
@@ -32,6 +32,7 @@ export const EnforcementRouter: React.FC<EnforcementRouterProps> = ({
     saveUnregisteredReport,
     updateUnregisteredReportStatus,
   } = useData();
+  const [prefilledUnregisteredPlate, setPrefilledUnregisteredPlate] = useState('');
 
   if (activePage === 'scan') {
     if (!isTaskViewable(userRole, 5)) {
@@ -54,6 +55,10 @@ export const EnforcementRouter: React.FC<EnforcementRouterProps> = ({
         userBadgeId={userBadgeId}
         userRole={userRole}
         onAddVerificationLog={addVerificationLog}
+        onReportUnregistered={(query) => {
+          setPrefilledUnregisteredPlate(query || '');
+          setActivePage('report_unregistered');
+        }}
         isPage={true}
       />
     );
@@ -101,8 +106,15 @@ export const EnforcementRouter: React.FC<EnforcementRouterProps> = ({
         userRole={userRole}
         userBadgeId={userBadgeId}
         officerName={userRole === 'officer' ? 'Traffic Patrol Officer' : 'System Officer'}
-        onSubmitReport={saveUnregisteredReport}
-        onCancel={() => setActivePage('unregistered_list')}
+        initialPlateNumber={prefilledUnregisteredPlate}
+        onSubmitReport={async (report) => {
+          await saveUnregisteredReport(report);
+          setPrefilledUnregisteredPlate('');
+        }}
+        onCancel={() => {
+          setPrefilledUnregisteredPlate('');
+          setActivePage('unregistered_list');
+        }}
       />
     );
   }

@@ -25,7 +25,6 @@ const memoryStore: Record<string, Map<string, any>> = {
   system_users: new Map(),
   motorcycle_registrations: new Map(),
   officer_assignments: new Map(),
-  print_batch_orders: new Map(),
   verification_logs: new Map(),
   unregistered_vehicle_reports: new Map(),
   payment_receipts: new Map(),
@@ -203,10 +202,6 @@ export function invalidateCacheForTable(tableName: string): void {
     case 'officer_assignments':
       invalidateCacheByTag('officers');
       invalidateCacheByTag('kpis');
-      invalidateCacheByTag('sync');
-      break;
-    case 'print_batch_orders':
-      invalidateCacheByTag('print_orders');
       invalidateCacheByTag('sync');
       break;
     case 'unregistered_vehicle_reports':
@@ -1855,17 +1850,6 @@ const TABLE_COLUMNS: Record<string, Set<string>> = {
     'created_at',
     'updated_at',
   ]),
-  print_batch_orders: new Set([
-    'id',
-    'order_date',
-    'total_items',
-    'total_count',
-    'registration_ids',
-    'status',
-    'notes',
-    'created_at',
-    'updated_at',
-  ]),
   verification_logs: new Set([
     'id',
     'scanned_at',
@@ -2181,7 +2165,6 @@ function normalizeRowToPg(tableName: string, data: Record<string, any>): Record<
     }
 
     if (
-      (tableName === 'print_batch_orders' && (colName === 'total_items' || colName === 'total_count')) ||
       (tableName === 'file_uploads' && colName === 'file_size') ||
       (tableName === 'system_settings' && colName === 'system_reset_epoch')
     ) {

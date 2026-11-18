@@ -6,7 +6,6 @@ import {
   UserRole,
   MotorcycleRegistration,
   OfficerAssignment,
-  PrintBatchOrder,
   VerificationLog,
   UnregisteredVehicleReport,
   PaymentReceipt,
@@ -19,15 +18,12 @@ import {
 import {
   subscribeRegistrations,
   subscribeOfficers,
-  subscribePrintOrders,
   subscribeVerificationLogs,
   subscribeUnregisteredReports,
   subscribePaymentReceipts,
   saveRegistrationToDb,
   updateRegistrationStatusInDb,
   saveOfficerToDb,
-  savePrintOrderToDb,
-  updatePrintOrderStatusInDb,
   saveVerificationLogToDb,
   saveUnregisteredReportToDb,
   updateUnregisteredReportStatusInDb,
@@ -96,7 +92,6 @@ export type ActiveHomePage =
   | 'forms'
   | 'tables'
   | 'today_submissions_adjust'
-  | 'workstation'
   | 'scan'
   | 'inspection_report'
   | 'report_unregistered'
@@ -364,7 +359,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
       unregistered_list: 'verification',
       inspection_report: 'verification',
       superadmin_users: 'superadmin',
-      print_batches: 'superadmin',
       activity_logs: 'superadmin',
       settings: 'settings',
     };
@@ -463,8 +457,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
         return 'የህገወጥ ሞተሮች ማህደር';
       case 'payment_receipts':
         return 'የክፍያ ደረሰኞች';
-      case 'workstation':
-        return 'የተጠቃሚ ሚና ስራ ማዕከል';
       case 'scan':
         return 'ኮውአር ኮድ ፈትሽ';
       case 'superadmin_users':
@@ -654,16 +646,15 @@ const HomePageShell: React.FC<HomePageProps> = ({
     return [homeItem];
   }, [activePage, isAmharic, userRole, tableInitialTab]);
 
-  // Shared System State connected to Firestore "permit" database
+  // Shared System State connected to PostgreSQL database
   const [registrations, setRegistrations] = useState<MotorcycleRegistration[]>([]);
   const [officers, setOfficers] = useState<OfficerAssignment[]>([]);
-  const [printOrders, setPrintOrders] = useState<PrintBatchOrder[]>([]);
   const [verificationLogs, setVerificationLogs] = useState<VerificationLog[]>([]);
   const [unregisteredReports, setUnregisteredReports] = useState<UnregisteredVehicleReport[]>([]);
   const [paymentReceipts, setPaymentReceipts] = useState<PaymentReceipt[]>([]);
   const [settings, setSettings] = useState<SystemSettings>(DEFAULT_SETTINGS);
 
-  // Real-time Firestore subscriptions with smart, quota-safe local-first cache
+  // Real-time subscriptions with smart, local-first cache
   useEffect(() => {
     let active = true;
     // Fast startup: sync settings, officers, and initial page collection
@@ -687,7 +678,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
     // Subscribe to in-memory state listeners
     const unsubRegs = subscribeRegistrations(setRegistrations);
     const unsubOffs = subscribeOfficers(setOfficers);
-    const unsubPrints = subscribePrintOrders(setPrintOrders);
     const unsubLogs = subscribeVerificationLogs(setVerificationLogs);
     const unsubUnregistered = subscribeUnregisteredReports(setUnregisteredReports);
     const unsubPayments = subscribePaymentReceipts(setPaymentReceipts);
@@ -700,7 +690,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
       window.clearTimeout(slowStartupTimer);
       unsubRegs();
       unsubOffs();
-      unsubPrints();
       unsubLogs();
       unsubUnregistered();
       unsubPayments();
@@ -1178,7 +1167,7 @@ const HomePageShell: React.FC<HomePageProps> = ({
           description: isAmharic
             ? 'የጸደቁ ፈቃዶች ለህትመትና ፈቃድ አሰጣጥ ዝግጁ ናቸው።'
             : 'Approved permits ready for card printing and issuance.',
-          type: 'print_order',
+          type: 'info',
           icon: 'check_circle',
           iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
           badgeLabel: isAmharic ? 'በስራ አስኪያጅ ጸድቋል' : 'Approved by Manager',
@@ -1207,32 +1196,10 @@ const HomePageShell: React.FC<HomePageProps> = ({
             ? `ለ ${reg.fullName} (${reg.plateNumber || 'ሰሌዳ'}) የቀረበው ማመልከቻ ጸድቋል፤ የባጅ/ሰሌዳ ፈቃድ ማተም ይችላሉ።`
             : `Registration for ${reg.fullName} (${reg.plateNumber || 'Plate'}) was approved by manager. Ready for permit issue.`,
           time: reg.registrationDate,
-          type: 'print_order',
+          type: 'info',
           icon: 'check_circle',
           iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
           badgeLabel: isAmharic ? 'በስራ አስኪያጅ ጸድቋል' : 'Approved by Manager',
-          badgeBg: 'bg-emerald-500/20',
-          badgeText: 'text-emerald-700 dark:text-emerald-300',
-          actionPage: 'tables',
-          actionTab: 'approved',
-        });
-      }
-
-      // Pending print batches ready for card printing
-      const pendingPrints = printOrders.filter((p) => p.status === 'pending' || p.status === 'in_printing');
-      if (pendingPrints.length > 0) {
-        list.push({
-          id: `print_orders_clerk_${pendingPrints.length}`,
-          title: isAmharic
-            ? `${pendingPrints.length} የህትመት ትዕዛዞች ለማተም ዝግጁ ናቸው`
-            : `${pendingPrints.length} Permit Batches Ready for Printing`,
-          description: isAmharic
-            ? 'የተረጋገጡ የባጅና የሰሌዳ ፈቃድ ህትመቶች በህትመት ክፍል ይገኛሉ።'
-            : 'Approved permit cards and plates queued in the printing workstation.',
-          type: 'print_order',
-          icon: 'print',
-          iconBg: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
-          badgeLabel: isAmharic ? 'የህትመት ክፍል' : 'Print Queue',
           badgeBg: 'bg-emerald-500/20',
           badgeText: 'text-emerald-700 dark:text-emerald-300',
           actionPage: 'tables',
@@ -1328,7 +1295,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
     registrations,
     verificationLogs,
     unregisteredReports,
-    printOrders,
     paymentReceipts,
     clearedNotificationIds,
     isAmharic,
@@ -1561,49 +1527,6 @@ const HomePageShell: React.FC<HomePageProps> = ({
     }
   };
 
-  const handleCreatePrintOrder = async (registrationIds: string[], notes: string) => {
-    try {
-      const newOrder: PrintBatchOrder = {
-        id: `BATCH-PRINT-${Math.floor(900 + Math.random() * 99)}`,
-        orderDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
-        registrationIds,
-        status: 'pending',
-        notes,
-        totalItems: registrationIds.length,
-        totalCount: registrationIds.length,
-        updatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      };
-      await savePrintOrderToDb(newOrder);
-      addToast(
-        isAmharic
-          ? 'የሕትመት ትእዛዝ በተሳካ ሁኔታ ተፈጥሯል!'
-          : 'Batch print order created successfully in database!',
-        'success'
-      );
-    } catch (err) {
-      addToast(
-        isAmharic ? 'የሕትመት ትእዛዝ መፍጠር አልተሳካም!' : 'Failed to create print order!',
-        'error'
-      );
-    }
-  };
-
-  const handleUpdateOrderStatus = async (
-    orderId: string,
-    status: 'pending' | 'in_printing' | 'completed'
-  ) => {
-    await updatePrintOrderStatusInDb(orderId, status);
-
-    if (status === 'completed') {
-      const order = printOrders.find((o) => o.id === orderId);
-      if (order) {
-        for (const regId of order.registrationIds) {
-          await updateRegistrationStatusInDb(regId, 'printed');
-        }
-      }
-    }
-  };
-
   const handleQuickAction = (actionKey: string) => {
     if (actionKey === 'today_submissions_adjust') {
       setTableInitialTab('pending');
@@ -1659,24 +1582,21 @@ const HomePageShell: React.FC<HomePageProps> = ({
       setActivePage('superadmin_maintenance');
     } else if (
       actionKey === 'new_registration' ||
-      actionKey === 'deploy_officer' ||
-      actionKey === 'batch_print'
+      actionKey === 'deploy_officer'
     ) {
       setActivePage('forms');
     } else if (
       actionKey === 'view_submissions' ||
       actionKey === 'vehicle_directory' ||
       actionKey === 'system_records' ||
-      actionKey === 'officers_directory' ||
-      actionKey === 'print_history'
+      actionKey === 'officers_directory'
     ) {
       setActivePage('tables');
     } else if (
-      actionKey === 'print_queue' ||
       actionKey === 'inspect_proofs' ||
       actionKey === 'checkpoint_status'
     ) {
-      setActivePage('workstation');
+      setActivePage('inspection_report');
     }
   };
 

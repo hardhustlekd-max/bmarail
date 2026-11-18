@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import {
   MotorcycleRegistration,
   OfficerAssignment,
-  PrintBatchOrder,
   VerificationLog,
   UnregisteredVehicleReport,
   PaymentReceipt,
@@ -12,7 +11,6 @@ import {
 import {
   subscribeRegistrations,
   subscribeOfficers,
-  subscribePrintOrders,
   subscribeVerificationLogs,
   subscribeUnregisteredReports,
   subscribePaymentReceipts,
@@ -20,8 +18,6 @@ import {
   saveRegistrationToDb,
   updateRegistrationStatusInDb,
   saveOfficerToDb,
-  savePrintOrderToDb,
-  updatePrintOrderStatusInDb,
   saveVerificationLogToDb,
   saveUnregisteredReportToDb,
   updateUnregisteredReportStatusInDb,
@@ -36,7 +32,6 @@ import {
   queryKeys,
   fetchRegistrationsQuery,
   fetchOfficersQuery,
-  fetchPrintOrdersQuery,
   fetchVerificationLogsQuery,
   fetchUnregisteredReportsQuery,
   fetchPaymentReceiptsQuery,
@@ -50,7 +45,6 @@ import { initRealtimeSync } from '../services/realtimeSync';
 interface DataContextType {
   registrations: MotorcycleRegistration[];
   officers: OfficerAssignment[];
-  printOrders: PrintBatchOrder[];
   verificationLogs: VerificationLog[];
   unregisteredReports: UnregisteredVehicleReport[];
   paymentReceipts: PaymentReceipt[];
@@ -66,8 +60,6 @@ interface DataContextType {
   deletePaymentReceipt: (id: string) => Promise<void>;
   addVerificationLog: (log: VerificationLog) => Promise<void>;
   saveOfficerAssignment: (assignment: OfficerAssignment) => Promise<void>;
-  createPrintOrder: (registrationIds: string[], notes: string) => Promise<void>;
-  updatePrintOrderStatus: (orderId: string, status: 'pending' | 'in_printing' | 'completed') => Promise<void>;
   saveUnregisteredReport: (report: UnregisteredVehicleReport) => Promise<void>;
   updateUnregisteredReportStatus: (id: string, status: any, resolutionNotes?: string) => Promise<void>;
 }
@@ -89,12 +81,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     queryKey: queryKeys.officers,
     queryFn: fetchOfficersQuery,
     initialData: () => getInMemoryState().officers,
-  });
-
-  const { data: qPrintOrders } = useQuery({
-    queryKey: queryKeys.printOrders,
-    queryFn: fetchPrintOrdersQuery,
-    initialData: () => getInMemoryState().printOrders,
   });
 
   const { data: qVerificationLogs } = useQuery({
@@ -124,7 +110,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   // Local fallback listeners for instant in-tab updates
   const [localRegistrations, setLocalRegistrations] = useState<MotorcycleRegistration[]>(() => getInMemoryState().registrations);
   const [localOfficers, setLocalOfficers] = useState<OfficerAssignment[]>(() => getInMemoryState().officers);
-  const [localPrintOrders, setLocalPrintOrders] = useState<PrintBatchOrder[]>(() => getInMemoryState().printOrders);
   const [localVerificationLogs, setLocalVerificationLogs] = useState<VerificationLog[]>(() => getInMemoryState().verifications);
   const [localUnregisteredReports, setLocalUnregisteredReports] = useState<UnregisteredVehicleReport[]>(() => getInMemoryState().unregisteredReports);
   const [localPaymentReceipts, setLocalPaymentReceipts] = useState<PaymentReceipt[]>(() => getInMemoryState().paymentReceipts);
@@ -138,7 +123,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
 
     const unsubRegs = subscribeRegistrations(setLocalRegistrations);
     const unsubOffs = subscribeOfficers(setLocalOfficers);
-    const unsubPrints = subscribePrintOrders(setLocalPrintOrders);
     const unsubLogs = subscribeVerificationLogs(setLocalVerificationLogs);
     const unsubUnregistered = subscribeUnregisteredReports(setLocalUnregisteredReports);
     const unsubPayments = subscribePaymentReceipts(setLocalPaymentReceipts);
@@ -150,7 +134,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
       cleanupRealtime();
       unsubRegs();
       unsubOffs();
-      unsubPrints();
       unsubLogs();
       unsubUnregistered();
       unsubPayments();
@@ -171,7 +154,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
   }, [qRegistrations, localRegistrations]);
 
   const officers = (qOfficers && qOfficers.length > 0) ? qOfficers : localOfficers;
-  const printOrders = (qPrintOrders && qPrintOrders.length > 0) ? qPrintOrders : localPrintOrders;
   const verificationLogs = (qVerificationLogs && qVerificationLogs.length > 0) ? qVerificationLogs : localVerificationLogs;
   const unregisteredReports = (qUnregisteredReports && qUnregisteredReports.length > 0) ? qUnregisteredReports : localUnregisteredReports;
 
@@ -341,48 +323,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
     [addToast, isAmharic]
   );
 
-  const createPrintOrder = useCallback(
-    async (registrationIds: string[], notes: string) => {
-      try {
-        const newOrder: PrintBatchOrder = {
-          id: `BATCH-PRINT-${Math.floor(900 + Math.random() * 99)}`,
-          orderDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
-          registrationIds,
-          status: 'pending',
-          notes,
-          totalItems: registrationIds.length,
-          totalCount: registrationIds.length,
-          updatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-        };
-        await savePrintOrderToDb(newOrder);
-        addToast(
-          isAmharic
-            ? 'የሕትመት ትእዛዝ በተሳካ ሁኔታ ተፈጥሯል!'
-            : 'Batch print order created successfully!',
-          'success'
-        );
-      } catch (err) {
-        addToast(isAmharic ? 'የሕትመት ትእዛዝ መፍጠር አልተሳካም!' : 'Failed to create print order!', 'error');
-      }
-    },
-    [addToast, isAmharic]
-  );
-
-  const updatePrintOrderStatus = useCallback(
-    async (orderId: string, status: 'pending' | 'in_printing' | 'completed') => {
-      try {
-        await updatePrintOrderStatusInDb(orderId, status);
-        addToast(
-          isAmharic ? 'የትዕዛዝ ሁኔታ ተሻሽሏል!' : 'Order status updated successfully!',
-          'info'
-        );
-      } catch (err) {
-        addToast(isAmharic ? 'የትዕዛዝ ሁኔታ ማሻሻል አልተሳካም!' : 'Failed to update order status!', 'error');
-      }
-    },
-    [addToast, isAmharic]
-  );
-
   const saveUnregisteredReport = useCallback(
     async (report: UnregisteredVehicleReport) => {
       try {
@@ -420,7 +360,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
       value={{
         registrations,
         officers,
-        printOrders,
         verificationLogs,
         unregisteredReports,
         paymentReceipts,
@@ -434,8 +373,6 @@ export const DataProvider: React.FC<{ children: ReactNode; lang?: 'am' | 'en' }>
         deletePaymentReceipt,
         addVerificationLog,
         saveOfficerAssignment,
-        createPrintOrder,
-        updatePrintOrderStatus,
         saveUnregisteredReport,
         updateUnregisteredReportStatus,
       }}

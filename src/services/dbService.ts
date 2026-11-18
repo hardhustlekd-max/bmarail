@@ -1,7 +1,6 @@
 import {
   MotorcycleRegistration,
   OfficerAssignment,
-  PrintBatchOrder,
   VerificationLog,
   UnregisteredVehicleReport,
   PaymentReceipt,
@@ -160,7 +159,6 @@ export const DEFAULT_SETTINGS: SystemSettings = {
 interface InMemoryState {
   registrations: MotorcycleRegistration[];
   officers: OfficerAssignment[];
-  printOrders: PrintBatchOrder[];
   verifications: VerificationLog[];
   unregisteredReports: UnregisteredVehicleReport[];
   paymentReceipts: PaymentReceipt[];
@@ -176,7 +174,6 @@ function getInitialBootState(): InMemoryState {
   const defaultState: InMemoryState = {
     registrations: [],
     officers: [],
-    printOrders: [],
     verifications: [],
     unregisteredReports: [],
     paymentReceipts: [],
@@ -202,7 +199,6 @@ function getInitialBootState(): InMemoryState {
     return {
       registrations: Array.isArray(parsed.registrations) ? parsed.registrations : [],
       officers: Array.isArray(parsed.officers) ? parsed.officers : [],
-      printOrders: Array.isArray(parsed.printOrders) ? parsed.printOrders : [],
       verifications: Array.isArray(parsed.verifications) ? parsed.verifications : [],
       unregisteredReports: Array.isArray(parsed.unregisteredReports) ? parsed.unregisteredReports : [],
       paymentReceipts: Array.isArray(parsed.paymentReceipts) ? parsed.paymentReceipts : [],
@@ -261,7 +257,6 @@ export function getInMemoryState(): InMemoryState {
 const listeners = {
   registrations: new Set<(data: MotorcycleRegistration[]) => void>(),
   officers: new Set<(data: OfficerAssignment[]) => void>(),
-  printOrders: new Set<(data: PrintBatchOrder[]) => void>(),
   verifications: new Set<(data: VerificationLog[]) => void>(),
   unregisteredReports: new Set<(data: UnregisteredVehicleReport[]) => void>(),
   paymentReceipts: new Set<(data: PaymentReceipt[]) => void>(),
@@ -343,7 +338,6 @@ export function saveStateToLocalStorage(immediate = false) {
       // 1. Asynchronous full persistence to IndexedDB (off main thread)
       asyncSaveRegistrations(textOnlyRegistrations);
       asyncSaveKeyVal('officers', inMemory.officers);
-      asyncSaveKeyVal('printOrders', inMemory.printOrders);
       asyncSaveKeyVal('verifications', textOnlyVerifications);
       asyncSaveKeyVal('unregisteredReports', textOnlyReports);
       asyncSaveKeyVal('paymentReceipts', textOnlyReceipts);
@@ -355,7 +349,6 @@ export function saveStateToLocalStorage(immediate = false) {
       const payload = {
         registrations: textOnlyRegistrations.slice(0, 50),
         officers: inMemory.officers,
-        printOrders: inMemory.printOrders,
         verifications: textOnlyVerifications.slice(0, 50),
         unregisteredReports: textOnlyReports.slice(0, 50),
         paymentReceipts: textOnlyReceipts.slice(0, 50),
@@ -384,7 +377,6 @@ export function saveStateToLocalStorage(immediate = false) {
 function applySystemReset(resetEpoch: number, resetTimestamp?: string) {
   inMemory.registrations = [];
   inMemory.officers = [];
-  inMemory.printOrders = [];
   inMemory.verifications = [];
   inMemory.unregisteredReports = [];
   inMemory.paymentReceipts = [];
@@ -401,7 +393,6 @@ function applySystemReset(resetEpoch: number, resetTimestamp?: string) {
 
   notifyRegistrations();
   notifyOfficers();
-  notifyPrintOrders();
   notifyVerifications();
   notifyUnregisteredReports();
   notifyPaymentReceipts();
@@ -440,7 +431,6 @@ export async function hydrateFromIndexedDb(): Promise<boolean> {
     const [
       idbRegs,
       idbOfficers,
-      idbPrintOrders,
       idbVerifications,
       idbUnregistered,
       idbReceipts,
@@ -450,7 +440,6 @@ export async function hydrateFromIndexedDb(): Promise<boolean> {
     ] = await Promise.all([
       asyncLoadRegistrations(),
       asyncLoadKeyVal<OfficerAssignment[]>('officers'),
-      asyncLoadKeyVal<PrintBatchOrder[]>('printOrders'),
       asyncLoadKeyVal<VerificationLog[]>('verifications'),
       asyncLoadKeyVal<UnregisteredVehicleReport[]>('unregisteredReports'),
       asyncLoadKeyVal<PaymentReceipt[]>('paymentReceipts'),
@@ -477,12 +466,6 @@ export async function hydrateFromIndexedDb(): Promise<boolean> {
     if (Array.isArray(idbOfficers) && idbOfficers.length > 0) {
       inMemory.officers = mergeById(idbOfficers, inMemory.officers);
       notifyOfficers();
-      hasUpdates = true;
-    }
-
-    if (Array.isArray(idbPrintOrders) && idbPrintOrders.length > 0) {
-      inMemory.printOrders = mergeById(idbPrintOrders, inMemory.printOrders);
-      notifyPrintOrders();
       hasUpdates = true;
     }
 
@@ -565,14 +548,6 @@ export function loadStateFromLocalStorage(): boolean {
       if (inMemory.officers.length === 0) {
         inMemory.officers = parsed.officers;
         notifyOfficers();
-        loaded = true;
-      }
-    }
-
-    if (Array.isArray(parsed.printOrders) && parsed.printOrders.length > 0) {
-      if (inMemory.printOrders.length === 0) {
-        inMemory.printOrders = parsed.printOrders;
-        notifyPrintOrders();
         loaded = true;
       }
     }
@@ -722,18 +697,6 @@ export function notifyOfficers() {
       cb(data);
     } catch (e) {
       console.error('Error in officers listener callback:', e);
-    }
-  });
-  saveStateToLocalStorage();
-}
-
-export function notifyPrintOrders() {
-  const data = [...inMemory.printOrders];
-  listeners.printOrders.forEach((cb) => {
-    try {
-      cb(data);
-    } catch (e) {
-      console.error('Error in printOrders listener callback:', e);
     }
   });
   saveStateToLocalStorage();
@@ -938,8 +901,6 @@ export function initLiveDbListeners(): () => void {
           syncRegistrations(true).catch(() => {});
         } else if (msg.collection === 'officer_assignments') {
           syncOfficers(true).catch(() => {});
-        } else if (msg.collection === 'print_batch_orders') {
-          syncPrintOrders(true).catch(() => {});
         } else if (msg.collection === 'unregistered_vehicle_reports') {
           syncUnregisteredReports(true).catch(() => {});
         } else if (msg.collection === 'verification_logs') {
@@ -1400,78 +1361,6 @@ export async function deleteOfficerFromDb(id: string): Promise<void> {
   );
 }
 
-// --- PRINT ORDERS ---
-export function subscribePrintOrders(
-  callback: (orders: PrintBatchOrder[]) => void
-): () => void {
-  callback(inMemory.printOrders);
-  listeners.printOrders.add(callback);
-  return () => {
-    listeners.printOrders.delete(callback);
-  };
-}
-
-export async function savePrintOrderToDb(order: PrintBatchOrder): Promise<void> {
-  return trackGlobalAction(
-    async () => {
-      const index = inMemory.printOrders.findIndex((o) => o.id === order.id);
-      if (index >= 0) {
-        inMemory.printOrders[index] = { ...inMemory.printOrders[index], ...order };
-      } else {
-        inMemory.printOrders.unshift(order);
-      }
-      notifyPrintOrders();
-      saveStateToLocalStorage();
-      broadcastCrossTabSync('print_batch_orders', 'upsert', order.id, order);
-      lastSyncTime = new Date();
-      isCloudConnected = true;
-      setGlobalDbError(null);
-
-      try {
-        await safeJsonFetch('/api/print-orders', {
-          method: 'POST',
-          body: JSON.stringify(order),
-        });
-      } catch (apiErr) {
-        console.warn('Backend API save print order notice:', apiErr);
-      }
-    },
-    'የማተሚያ ትዕዛዝ እየተቀመጠ ነው...',
-    'Creating print batch order...'
-  );
-}
-
-export async function updatePrintOrderStatusInDb(
-  id: string,
-  status: PrintBatchOrder['status']
-): Promise<void> {
-  return trackGlobalAction(
-    async () => {
-      const index = inMemory.printOrders.findIndex((o) => o.id === id);
-      if (index >= 0) {
-        inMemory.printOrders[index] = { ...inMemory.printOrders[index], status };
-        notifyPrintOrders();
-        saveStateToLocalStorage();
-        broadcastCrossTabSync('print_batch_orders', 'status', id, { status });
-        lastSyncTime = new Date();
-        isCloudConnected = true;
-        setGlobalDbError(null);
-      }
-
-      try {
-        await safeJsonFetch('/api/print-orders/status', {
-          method: 'POST',
-          body: JSON.stringify({ id, status }),
-        });
-      } catch (apiErr) {
-        console.warn('Backend API update print order status notice:', apiErr);
-      }
-    },
-    'የትዕዛዙ ሁኔታ እየተዘመነ ነው...',
-    'Updating print batch status...'
-  );
-}
-
 // --- UNREGISTERED VEHICLE REPORTS ---
 export function subscribeUnregisteredReports(
   callback: (reports: UnregisteredVehicleReport[]) => void
@@ -1894,24 +1783,6 @@ export async function syncRegistrations(force = false): Promise<boolean> {
   }
 }
 
-export async function syncPrintOrders(force = false): Promise<boolean> {
-  if (isSyncThrottled('printOrders', force)) return true;
-
-  try {
-    const res = await safeJsonFetch<{ success: boolean; printOrders?: PrintBatchOrder[] }>('/api/print-orders');
-    if (res && Array.isArray(res.printOrders) && res.printOrders.length > 0) {
-      inMemory.printOrders = mergeById(res.printOrders, inMemory.printOrders);
-      notifyPrintOrders();
-    }
-    markCollectionSynced('printOrders');
-    saveStateToLocalStorage();
-    return true;
-  } catch (err: any) {
-    console.warn('[Sync] Print orders sync notice:', err?.message);
-    return false;
-  }
-}
-
 export async function syncVerifications(force = false): Promise<boolean> {
   if (isSyncThrottled('verifications', force)) return true;
 
@@ -1992,9 +1863,8 @@ export async function syncActivePageCollection(activePage: string, force = false
     case 'officer_assignments':
       await syncOfficers(force);
       break;
-    case 'print_queue':
     case 'superadmin_permits':
-      await Promise.allSettled([syncPrintOrders(force), syncRegistrations(force)]);
+      await syncRegistrations(force);
       break;
     case 'unregistered_reports':
     case 'unregistered_list':
@@ -2107,10 +1977,6 @@ export async function syncAllCollectionsWithDb(force = false): Promise<void> {
         inMemory.officers = mergeById(d.officers, inMemory.officers);
         notifyOfficers();
       }
-      if (Array.isArray(d.printOrders)) {
-        inMemory.printOrders = mergeById(d.printOrders, inMemory.printOrders);
-        notifyPrintOrders();
-      }
       if (Array.isArray(d.verifications)) {
         inMemory.verifications = mergeById(d.verifications, inMemory.verifications);
         notifyVerifications();
@@ -2132,7 +1998,6 @@ export async function syncAllCollectionsWithDb(force = false): Promise<void> {
       syncSettings(force),
       syncRegistrations(force),
       syncOfficers(force),
-      syncPrintOrders(force),
       syncVerifications(force),
       syncUnregisteredReports(force),
       syncPaymentReceipts(force),
@@ -2335,31 +2200,31 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
     'role-secretary': {
       1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
       5: 'view_only', 6: 'view_only', 7: 'view_only', 8: 'view_only',
-      9: 'deny', 10: 'allow', 17: 'allow', 16: 'allow',
+      10: 'allow', 17: 'allow', 16: 'allow',
       11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny', 15: 'deny',
     },
     'role-officer': {
       1: 'deny', 2: 'deny', 3: 'view_only', 4: 'view_only',
       5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
-      9: 'deny', 10: 'deny', 17: 'deny', 16: 'deny',
+      10: 'deny', 17: 'deny', 16: 'deny',
       11: 'deny', 12: 'deny', 13: 'deny', 14: 'deny', 15: 'deny',
     },
     'role-manager': {
       1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
       5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
-      9: 'allow', 10: 'allow', 17: 'allow', 16: 'allow',
+      10: 'allow', 17: 'allow', 16: 'allow',
       11: 'view_only', 12: 'view_only', 13: 'view_only', 14: 'deny', 15: 'view_only',
     },
     'role-it': {
       1: 'view_only', 2: 'view_only', 3: 'view_only', 4: 'view_only',
       5: 'allow', 6: 'view_only', 7: 'view_only', 8: 'view_only',
-      9: 'allow', 10: 'allow', 17: 'allow', 16: 'allow',
+      10: 'allow', 17: 'allow', 16: 'allow',
       11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow', 15: 'allow',
     },
     'role-superadmin': {
       1: 'allow', 2: 'allow', 3: 'allow', 4: 'allow',
       5: 'allow', 6: 'allow', 7: 'allow', 8: 'allow',
-      9: 'allow', 10: 'allow', 17: 'allow', 16: 'allow',
+      10: 'allow', 17: 'allow', 16: 'allow',
       11: 'allow', 12: 'allow', 13: 'allow', 14: 'allow', 15: 'allow',
     },
   };
@@ -2380,7 +2245,6 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
   const p3 = getS(3);
   const p5 = getS(5);
   const p8 = getS(8);
-  const p9 = getS(9);
   const p10 = getS(10);
   const p14 = getS(14);
   const p16 = getS(16);
@@ -2396,7 +2260,6 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       '6': getS(6),
       '7': getS(7),
       '8': p8,
-      '9': p9,
       '10': p10,
       '11': getS(11),
       '12': getS(12),
@@ -2417,7 +2280,6 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       canViewPaymentRecordsTable: p16,
       canManageSettings: 'deny',
       canAssignOfficers: 'deny',
-      canPrintBatch: 'deny',
       canVerifyVehicles: p5,
       canExportExcel: 'deny',
     };
@@ -2433,7 +2295,6 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       '6': getS(6),
       '7': getS(7),
       '8': p8,
-      '9': p9,
       '10': p10,
       '11': getS(11),
       '12': getS(12),
@@ -2454,7 +2315,6 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
       canViewPaymentRecordsTable: p16,
       canManageSettings: p14 === 'allow' ? 'allow' : 'deny',
       canAssignOfficers: p8 === 'allow' ? 'allow' : 'deny',
-      canPrintBatch: p9 === 'allow' ? 'allow' : 'deny',
       canVerifyVehicles: p5,
       canExportExcel: p3,
     };
@@ -2469,7 +2329,6 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
     '6': getS(6),
     '7': getS(7),
     '8': p8,
-    '9': p9,
     '10': p10,
     '11': getS(11),
     '12': getS(12),
@@ -2490,7 +2349,6 @@ export function getUserRolePermissions(userRole: string): Record<string, 'allow'
     canViewPaymentRecordsTable: p16,
     canManageSettings: p14 === 'allow' ? 'allow' : 'deny',
     canAssignOfficers: p8 === 'allow' ? 'allow' : 'deny',
-    canPrintBatch: p9 === 'allow' ? 'allow' : 'deny',
     canVerifyVehicles: p5,
     canExportExcel: p3,
   };
@@ -2527,7 +2385,6 @@ export async function resetSystemToFactoryDefaults(): Promise<void> {
 
       inMemory.registrations = [];
       inMemory.officers = [];
-      inMemory.printOrders = [];
       inMemory.verifications = [];
       inMemory.unregisteredReports = [];
       inMemory.paymentReceipts = [];
@@ -2544,7 +2401,6 @@ export async function resetSystemToFactoryDefaults(): Promise<void> {
 
       notifyRegistrations();
       notifyOfficers();
-      notifyPrintOrders();
       notifyVerifications();
       notifyUnregisteredReports();
       notifyPaymentReceipts();

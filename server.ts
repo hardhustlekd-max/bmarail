@@ -216,7 +216,6 @@ export const collectionVersions: Record<string, number> = {
   motorcycle_registrations: 1,
   payment_receipts: 1,
   officer_assignments: 1,
-  print_batch_orders: 1,
   verification_logs: 1,
   unregistered_vehicle_reports: 1,
   system_settings: 1,
@@ -1173,17 +1172,15 @@ app.get('/api/sync', async (req, res) => {
     // Scoped queries according to user role
     const pRegistrations = dbGetRegistrationsScoped({ scope, limit: 2000 }).then((r) => r.rows);
     const pOfficers = dbGetAll('officer_assignments');
-    const pPrintOrders = (scope.isAdmin || scope.isSuperAdmin) ? dbGetAll('print_batch_orders') : Promise.resolve([]);
     const pVerifications = dbGetVerificationLogsScoped({ scope, limit: 300 }).then((r) => r.rows);
     const pUnregistered = dbGetAll('unregistered_vehicle_reports');
     const pReceipts = dbGetPaymentReceiptsScoped({ scope, limit: 1000 }).then((r) => r.rows);
     const pSettings = dbGetById('system_settings', 'global_config');
 
-    const [registrations, officers, printOrders, verifications, unregisteredReports, paymentReceipts, settingsDoc] =
+    const [registrations, officers, verifications, unregisteredReports, paymentReceipts, settingsDoc] =
       await Promise.all([
         pRegistrations,
         pOfficers,
-        pPrintOrders,
         pVerifications,
         pUnregistered,
         pReceipts,
@@ -1193,7 +1190,6 @@ app.get('/api/sync', async (req, res) => {
     const payload = {
       registrations: registrations || [],
       officers: officers || [],
-      printOrders: printOrders || [],
       verifications: verifications || [],
       unregisteredReports: unregisteredReports || [],
       paymentReceipts: paymentReceipts || [],
@@ -1214,7 +1210,6 @@ app.get('/api/sync', async (req, res) => {
     res.status(500).json({
       registrations: [],
       officers: [],
-      printOrders: [],
       verifications: [],
       unregisteredReports: [],
       paymentReceipts: [],
@@ -1476,50 +1471,7 @@ app.delete('/api/officers/:id', async (req, res) => {
 });
 
 // ============================================================================
-// 7. PRINT BATCH ORDERS ENDPOINTS
-// ============================================================================
-app.get('/api/print-orders', async (req, res) => {
-  if (handleConditionalGet(req, res, 'print_batch_orders')) return;
-  try {
-    const rows = await dbGetAll('print_batch_orders');
-    res.json({ success: true, printOrders: rows });
-  } catch (err: any) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-app.post('/api/print-orders', async (req, res) => {
-  try {
-    const order = req.body;
-    if (!order.id) {
-      return res.status(400).json({ error: 'Missing print order ID' });
-    }
-    await dbUpsert('print_batch_orders', order.id, order);
-    broadcastSseChange({ collection: 'print_batch_orders', action: 'upsert', docId: order.id, data: order });
-    res.json({ success: true });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.post('/api/print-orders/status', async (req, res) => {
-  try {
-    const { id, status, notes } = req.body;
-    if (!id) {
-      return res.status(400).json({ error: 'Missing print order ID' });
-    }
-    const updates: Record<string, any> = { status };
-    if (notes !== undefined) updates.notes = notes;
-    await dbUpdateFields('print_batch_orders', id, updates);
-    broadcastSseChange({ collection: 'print_batch_orders', action: 'upsert', docId: id, data: updates });
-    res.json({ success: true });
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ============================================================================
-// 8. UNREGISTERED VEHICLE REPORTS ENDPOINTS
+// 7. UNREGISTERED VEHICLE REPORTS ENDPOINTS
 // ============================================================================
 app.get('/api/unregistered-reports', async (req, res) => {
   if (handleConditionalGet(req, res, 'unregistered_vehicle_reports')) return;
@@ -1942,7 +1894,6 @@ app.post('/api/reset-database', async (req, res) => {
     await Promise.allSettled([
       dbClearTable('motorcycle_registrations'),
       dbClearTable('officer_assignments'),
-      dbClearTable('print_batch_orders'),
       dbClearTable('verification_logs'),
       dbClearTable('unregistered_vehicle_reports'),
       dbClearTable('payment_receipts'),
@@ -1977,7 +1928,6 @@ app.post('/api/reset-data', async (req, res) => {
   try {
     await Promise.allSettled([
       dbClearTable('motorcycle_registrations'),
-      dbClearTable('print_batch_orders'),
       dbClearTable('verification_logs'),
       dbClearTable('unregistered_vehicle_reports'),
       dbClearTable('payment_receipts'),

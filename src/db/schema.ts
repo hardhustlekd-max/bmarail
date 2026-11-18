@@ -1,7 +1,6 @@
 import {
   MotorcycleRegistration,
   OfficerAssignment,
-  PrintBatchOrder,
   VerificationLog,
   UnregisteredVehicleReport,
   PaymentReceipt,
@@ -14,7 +13,6 @@ import { getDefaultEthiopianRegistrationDate, getTodayEthiopianDateTimeIso, norm
 export const TABLES = {
   REGISTRATIONS: 'motorcycle_registrations',
   OFFICERS: 'officer_assignments',
-  PRINT_ORDERS: 'print_batch_orders',
   VERIFICATIONS: 'verification_logs',
   UNREGISTERED_REPORTS: 'unregistered_vehicle_reports',
   PAYMENT_RECEIPTS: 'payment_receipts',
@@ -145,38 +143,6 @@ export function mapOfficerFromDb(row: any): OfficerAssignment {
     phone: row.phone,
     shiftHours: row.shiftHours || row.shift_hours,
     assignedDate: row.assignedDate || row.assigned_date,
-  };
-}
-
-export function mapPrintOrderToDb(order: PrintBatchOrder) {
-  return {
-    id: order.id,
-    orderDate: order.orderDate,
-    totalItems: order.totalItems || 0,
-    totalCount: order.totalCount || order.totalItems || 0,
-    registrationIds: order.registrationIds || [],
-    status: order.status || 'pending',
-    notes: order.notes || null,
-    updatedAt: order.updatedAt || new Date().toISOString(),
-  };
-}
-
-export function mapPrintOrderFromDb(row: any): PrintBatchOrder {
-  return {
-    id: row.id,
-    orderDate: row.orderDate || row.order_date || '',
-    totalItems: row.totalItems ?? row.total_items ?? 0,
-    totalCount: row.totalCount ?? row.total_count,
-    registrationIds: Array.isArray(row.registrationIds)
-      ? row.registrationIds
-      : Array.isArray(row.registration_ids)
-      ? row.registration_ids
-      : typeof row.registration_ids === 'string'
-      ? JSON.parse(row.registration_ids || '[]')
-      : [],
-    status: row.status || 'pending',
-    notes: row.notes || '',
-    updatedAt: row.updatedAt || row.updated_at || '',
   };
 }
 

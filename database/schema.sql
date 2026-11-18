@@ -113,22 +113,9 @@ CREATE INDEX IF NOT EXISTS idx_officer_assignments_sub_city ON officer_assignmen
 CREATE INDEX IF NOT EXISTS idx_officer_assignments_status ON officer_assignments(status);
 
 -- ----------------------------------------------------------------------------
--- 4. PRINT BATCH ORDERS
+-- 4. CLEANUP OBSOLETE PRINT BATCH ORDERS TABLE
 -- ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS print_batch_orders (
-    id VARCHAR(128) PRIMARY KEY,
-    order_date VARCHAR(50) NOT NULL,
-    total_items INTEGER DEFAULT 0,
-    total_count INTEGER DEFAULT 0,
-    registration_ids JSONB DEFAULT '[]'::jsonb,
-    status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'in_printing', 'completed')),
-    notes TEXT,
-    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE INDEX IF NOT EXISTS idx_print_batch_orders_status ON print_batch_orders(status);
-CREATE INDEX IF NOT EXISTS idx_print_batch_orders_order_date ON print_batch_orders(order_date);
+DROP TABLE IF EXISTS print_batch_orders CASCADE;
 
 -- ----------------------------------------------------------------------------
 -- 5. VERIFICATION LOGS (scanned_at and timestamp default to Ethiopian datetime)

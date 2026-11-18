@@ -202,7 +202,6 @@ export const TablesPage: React.FC<TablesPageProps> = ({
   }
 
   const canShowRegistration = userRole === 'clerk' || userRole === 'admin';
-  const canShowPrint = userRole === 'admin';
 
   // Helper functions for member details
   const getDisplayName = (reg: MotorcycleRegistration) => reg.fullName || '—';

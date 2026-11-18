@@ -157,37 +157,8 @@ export const SYSTEM_MODULES: SystemModule[] = [
     ],
   },
   {
-    id: 'print_production',
-    titleAm: '3. የካርድ ህትመትና ባች ትዕዛዝ ሞጁል',
-    titleEn: 'Card Production & Batch Orders Module',
-    descriptionAm: 'የካርድ ህትመት ወረፋ፣ የባች ማዘዣዎች እና ኤክስፖርት',
-    descriptionEn: 'Card printing queues, batch printing orders, and export.',
-    icon: 'print',
-    badgeBg: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-2xs',
-    governedComponents: {
-      sideMenuAm: 'የህትመት ወረፋ፣ የባች ትዕዛዞች',
-      sideMenuEn: 'Print Queue, Batch Orders',
-      metricsAm: 'በህትመት ላይ ያሉ ባቾች፣ የተጠናቀቁ ካርዶች',
-      metricsEn: 'Pending Print Batches, Cards In-Printing, Completed Prints',
-      quickMenusAm: 'የባች ህትመት ማዘዣ፣ ኤክስፖርት',
-      quickMenusEn: 'Order Batch Print, Export Print List',
-      tablesAm: 'የህትመት ባች ትዕዛዞች ሰንጠረዥ',
-      tablesEn: 'Print Batch Orders Table & Card Queue',
-    },
-    tasks: [
-      {
-        id: 9,
-        icon: 'inventory_2',
-        titleAm: 'የካርድ ህትመትና የባች ትዕዛዝ ማኔጅመንት',
-        titleEn: 'Card Printing Queue & Batch Orders',
-        descriptionAm: 'የጸደቁ ፈቃዶችን ወደ ህትመት ማስተላለፍና የባች ትዕዛዝ ማዘዝ',
-        descriptionEn: 'Process approved permits into print batch orders.',
-      },
-    ],
-  },
-  {
     id: 'revenue_payments',
-    titleAm: '4. የገቢና የንግድ ባንክ ክፍያ ደረሰኞች ሞጁል',
+    titleAm: '3. የገቢና የንግድ ባንክ ክፍያ ደረሰኞች ሞጁል',
     titleEn: 'Revenue & Payment Receipts Module',
     descriptionAm: 'የክፍያ ደረሰኞች፣ የባንክ ማረጋገጫ እና የገቢ ስታቲስቲክስ',
     descriptionEn: 'Bank and Telebirr payment receipts, revenue KPIs, and ledger.',
@@ -232,7 +203,7 @@ export const SYSTEM_MODULES: SystemModule[] = [
   },
   {
     id: 'governance_audit',
-    titleAm: '5. የስርዓት አስተዳደርና ሴኪዩሪቲ ኦዲት ሞጁል',
+    titleAm: '4. የስርዓት አስተዳደርና ሴኪዩሪቲ ኦዲት ሞጁል',
     titleEn: 'Authority Governance & System Audit Module',
     descriptionAm: 'የተጠቃሚዎች አካውንት አስተዳደር፣ የሚናና ፈቃዶች ማትሪክስ፣ የክፍለ ከተማ እገዳ እና ኦዲት ሎግ',
     descriptionEn: 'User accounts management, role & permissions matrix, sub-city freeze, and security audit logs.',
@@ -356,7 +327,6 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     6: 'view_only',
     7: 'view_only',
     8: 'view_only',
-    9: 'deny',
     10: 'allow',
     17: 'allow',
     16: 'allow',
@@ -375,7 +345,6 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     6: 'allow',
     7: 'allow',
     8: 'allow',
-    9: 'deny',
     10: 'deny',
     17: 'deny',
     16: 'deny',
@@ -394,7 +363,6 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     6: 'allow',
     7: 'allow',
     8: 'allow',
-    9: 'allow',
     10: 'allow',
     17: 'allow',
     16: 'allow',
@@ -413,7 +381,6 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     6: 'view_only',
     7: 'view_only',
     8: 'view_only',
-    9: 'allow',
     10: 'allow',
     17: 'allow',
     16: 'allow',
@@ -432,7 +399,6 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     6: 'allow',
     7: 'allow',
     8: 'allow',
-    9: 'allow',
     10: 'allow',
     17: 'allow',
     16: 'allow',
@@ -443,6 +409,18 @@ const INITIAL_PERMISSIONS: Record<string, Record<number, PermissionState>> = {
     15: 'allow',
   },
 };
+
+function sanitizePermissionsMatrix(
+  matrix: Record<string, Record<number, PermissionState>>
+): Record<string, Record<number, PermissionState>> {
+  const cleaned: Record<string, Record<number, PermissionState>> = {};
+  for (const [roleId, perms] of Object.entries(matrix || {})) {
+    if (!perms || typeof perms !== 'object') continue;
+    const { 9: _removedTask9, ...rest } = perms as Record<string, PermissionState>;
+    cleaned[roleId] = rest as unknown as Record<number, PermissionState>;
+  }
+  return cleaned;
+}
 
 interface RolePermissionManagementProps {
   currentLang: Language;
@@ -482,12 +460,12 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
   const [selectedRoleId, setSelectedRoleId] = useState<string>('role-secretary');
   const [permissionsMatrix, setPermissionsMatrix] = useState<Record<string, Record<number, PermissionState>>>(() => {
     if (propSettings?.rolePermissions && Object.keys(propSettings.rolePermissions).length > 0) {
-      return propSettings.rolePermissions as any;
+      return sanitizePermissionsMatrix(propSettings.rolePermissions as any);
     }
     const saved = localStorage.getItem('permit_role_permissions');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return sanitizePermissionsMatrix(JSON.parse(saved));
       } catch (e) {
         return INITIAL_PERMISSIONS;
       }
@@ -559,11 +537,12 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
   };
 
   const handleSavePermissions = async () => {
-    localStorage.setItem('permit_role_permissions', JSON.stringify(permissionsMatrix));
+    const cleanedMatrix = sanitizePermissionsMatrix(permissionsMatrix);
+    localStorage.setItem('permit_role_permissions', JSON.stringify(cleanedMatrix));
     localStorage.setItem('permit_role_definitions', JSON.stringify(roles));
 
     await saveSettingsToDb({
-      rolePermissions: permissionsMatrix,
+      rolePermissions: cleanedMatrix,
       roleDefinitions: roles,
     });
 
