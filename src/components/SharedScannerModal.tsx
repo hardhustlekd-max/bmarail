@@ -290,18 +290,21 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
       if (cropW <= 0 || cropH <= 0) return null;
 
-      // Create off-screen canvas
+      // Pad to a clean 1:1 square canvas so aspect ratio never shifts or stretches during glide/scale
+      const side = Math.ceil(Math.max(cropW, cropH));
+      const drawX = (side - cropW) / 2;
+      const drawY = (side - cropH) / 2;
+
       const canvas = document.createElement('canvas');
-      canvas.width = cropW;
-      canvas.height = cropH;
+      canvas.width = side;
+      canvas.height = side;
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
 
-      // Pre-fill white background so no black border or canvas conversion artifacts appear
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, cropW, cropH);
+      ctx.fillRect(0, 0, side, side);
 
-      ctx.drawImage(source, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+      ctx.drawImage(source, cropX, cropY, cropW, cropH, drawX, drawY, cropW, cropH);
       return canvas.toDataURL('image/png');
     } catch (e) {
       console.warn("Failed to crop QR:", e);
@@ -316,7 +319,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
     mediaHeight: number
   ) => {
     if (!cameraContainerRef.current || !viewfinderReticleRef.current || !mediaWidth || !mediaHeight) {
-      return { x: 0, y: 35, scale: 0.75 };
+      return { x: 0, y: 0, scale: 0.92 };
     }
 
     try {
@@ -325,7 +328,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
       const cW = containerRect.width;
       const cH = containerRect.height;
-      if (cW <= 0 || cH <= 0) return { x: 0, y: 35, scale: 0.75 };
+      if (cW <= 0 || cH <= 0) return { x: 0, y: 0, scale: 0.92 };
 
       // Stream / image uses object-fit: cover inside container
       const scaleCover = Math.max(cW / mediaWidth, cH / mediaHeight);
@@ -345,16 +348,19 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
       const startDx = qrScreenX - reticleCenterX;
       const startDy = qrScreenY - reticleCenterY;
 
-      // Scale relative to reticle box
-      const qrScreenWidth = boundingBox.width * scaleCover;
-      const finalDisplaySize = Math.min(reticleRect.width, reticleRect.height) * 0.85;
-      const startScale = finalDisplaySize > 0
-        ? Math.max(0.35, Math.min(1.4, qrScreenWidth / finalDisplaySize))
-        : 0.8;
+      // Match square side size (max of width/height with 5% margin) to the inner padded reticle target size
+      const qrSquareWidth = Math.max(boundingBox.width, boundingBox.height) * 1.1 * scaleCover;
+      const paddingPx = window.innerWidth >= 640 ? 32 : 24;
+      const finalDisplaySize = Math.max(1, Math.min(reticleRect.width, reticleRect.height) - paddingPx);
+      const startScale = Math.max(0.25, Math.min(1.5, qrSquareWidth / finalDisplaySize));
 
-      return { x: Math.round(startDx), y: Math.round(startDy), scale: Number(startScale.toFixed(2)) };
+      return {
+        x: Number(startDx.toFixed(1)),
+        y: Number(startDy.toFixed(1)),
+        scale: Number(startScale.toFixed(3)),
+      };
     } catch (e) {
-      return { x: 0, y: 35, scale: 0.75 };
+      return { x: 0, y: 0, scale: 0.92 };
     }
   };
 
@@ -763,6 +769,8 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     const croppedSrc = captureCroppedQr(video, detected.boundingBox, video.videoWidth, video.videoHeight);
                     if (croppedSrc) {
                       setCroppedQrSrc(croppedSrc);
+                      // Fade out live background immediately as cutout glides cleanly from its detected spot to reticle center
+                      setIsBackgroundRemoved(true);
                     }
 
                     const lookupPromise = lookupRegistrationInDb(
@@ -773,13 +781,6 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                     try {
                       video.pause();
                     } catch (e) {}
-
-                    // Background stays kept while QR is picked from fullscreen image (500ms), then smoothly removed
-                    setTimeout(() => {
-                      if (active && scanSessionRef.current === sessionAtDetect) {
-                        setIsBackgroundRemoved(true);
-                      }
-                    }, 500);
 
                     // Paced scanning: allow laser line to sweep across the docked QR code before displaying status-colored verification
                     setTimeout(async () => {
@@ -798,6 +799,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
                       }, 900);
                     }, 2600);
                   } else {
+                    setIsLocked(true);
                     setTimeout(() => {
                       if (active) {
                         active = false;
@@ -1009,19 +1011,13 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           const croppedSrc = captureCroppedQr(img, detected.boundingBox, origW, origH);
           if (croppedSrc) {
             setCroppedQrSrc(croppedSrc);
+            setIsBackgroundRemoved(true);
           }
 
           const lookupPromise = lookupRegistrationInDb(
             detected.rawValue.trim(),
             registrations
           ).catch(() => null);
-
-          // Background stays kept while QR is picked from fullscreen image (500ms), then smoothly removed
-          setTimeout(() => {
-            if (scanSessionRef.current === sessionAtUpload) {
-              setIsBackgroundRemoved(true);
-            }
-          }, 500);
 
           // Paced scanning: allow laser line to sweep across the docked QR code before displaying status-colored verification
           setTimeout(async () => {
@@ -1039,6 +1035,7 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
             }, 900);
           }, 2600);
         } else {
+          setIsLocked(true);
           setTimeout(() => {
             if (scanSessionRef.current === sessionAtUpload) {
               isProcessingRef.current = false;
@@ -1141,9 +1138,9 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
           <div className="relative bg-slate-950 rounded-none w-full flex-grow flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-center border-0">
             {isScanning ? (
               <div ref={cameraContainerRef} className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950 overflow-hidden">
-                {/* Full background camera feed/image: KEPT visible while QR floats to center, then smoothly removed */}
+                {/* Full background camera feed/image: fades cleanly as extracted QR glides to center */}
                 <div
-                  className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-out ${
+                  className={`absolute inset-0 w-full h-full transition-opacity duration-300 ease-out ${
                     isBackgroundRemoved ? 'opacity-0 pointer-events-none' : 'opacity-100'
                   }`}
                 >
@@ -1248,124 +1245,174 @@ export const SharedScannerModal: React.FC<SharedScannerModalProps> = ({
 
                   {/* 2. CENTER VIEWFINDER (Flex-grow adaptive reticle container) */}
                   <div className="flex-grow min-h-0 flex flex-col items-center justify-center my-auto pointer-events-none py-1 z-20">
-                    <div
-                      ref={viewfinderReticleRef}
-                      className="relative w-56 h-56 xs:w-64 xs:h-64 sm:w-80 sm:h-80 max-w-[75vw] max-h-[42vh] sm:max-h-[48vh] border border-white/30 rounded-none shrink-0"
-                      style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
-                    >
-                      {/* Inside scanner box: Extracted QR Code picked from fullscreen image */}
-                      {croppedQrSrc && (
-                        <div className="absolute inset-0 flex items-center justify-center p-2.5 sm:p-3.5 z-30">
-                          <motion.div
-                            initial={{
-                              scale: 0.9,
-                              opacity: 0,
-                              y: 6,
-                            }}
-                            animate={{
-                              scale: [0.9, 1.05, 1],
-                              opacity: 1,
-                              y: 0,
-                            }}
-                            transition={{
-                              duration: 0.45,
-                              times: [0, 0.65, 1],
-                              ease: 'easeOut',
-                            }}
-                            onAnimationComplete={() => {
-                              setIsBackgroundRemoved(true);
-                            }}
-                            className="relative w-full h-full flex items-center justify-center overflow-hidden"
-                          >
-                            <img
-                              src={croppedQrSrc}
-                              alt="Extracted QR Code"
-                              className="max-w-full max-h-full object-contain rounded-none shadow-sm"
-                            />
-                            {/* Status-Aware Verification Animation Overlay inside reticle */}
-                            <AnimatePresence>
-                              {scannedVerificationState !== 'idle' && (
+                    {(() => {
+                      const isQrInView = isLocked || Boolean(croppedQrSrc);
+                      const cornerColorClass =
+                        scannedVerificationState === 'approved'
+                          ? 'border-emerald-400 shadow-[0_0_16px_rgba(52,211,153,0.9)]'
+                          : scannedVerificationState === 'pending' || scannedVerificationState === 'expired'
+                          ? 'border-amber-400 shadow-[0_0_16px_rgba(251,191,36,0.9)]'
+                          : scannedVerificationState === 'rejected' || scannedVerificationState === 'not_found'
+                          ? 'border-rose-500 shadow-[0_0_16px_rgba(244,63,94,0.9)]'
+                          : isQrInView
+                          ? 'border-white shadow-[0_0_18px_rgba(255,255,255,0.95)]'
+                          : 'border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)]';
+                      const cornerPulseAnimation =
+                        isQrInView && scannedVerificationState === 'idle'
+                          ? { scale: [1, 1.16, 1], opacity: [0.85, 1, 0.85] }
+                          : { scale: 1, opacity: 1 };
+                      const cornerPulseTransition =
+                        isQrInView && scannedVerificationState === 'idle'
+                          ? { duration: 0.72, ease: 'easeInOut' as const, repeat: Infinity }
+                          : { duration: 0.2, ease: 'easeOut' as const };
+
+                      return (
+                        <div
+                          ref={viewfinderReticleRef}
+                          className={`relative w-56 h-56 xs:w-64 xs:h-64 sm:w-80 sm:h-80 max-w-[75vw] max-h-[42vh] sm:max-h-[48vh] border rounded-none shrink-0 transition-colors duration-200 ${
+                            isQrInView ? 'border-white/60' : 'border-white/30'
+                          }`}
+                          style={{ boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.42)' }}
+                        >
+                          {/* Inside scanner box: Extracted QR Code glides smoothly from detected coordinates to center */}
+                          {croppedQrSrc && (
+                            <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-4 z-20 pointer-events-none">
+                              <motion.div
+                                key={croppedQrSrc}
+                                initial={{
+                                  x: qrMotionOffset.x,
+                                  y: qrMotionOffset.y,
+                                  scale: qrMotionOffset.scale,
+                                  opacity: 0.92,
+                                }}
+                                animate={{
+                                  x: 0,
+                                  y: 0,
+                                  scale: 1,
+                                  opacity: 1,
+                                }}
+                                transition={{
+                                  duration: 0.42,
+                                  ease: [0.22, 1, 0.36, 1],
+                                }}
+                                style={{
+                                  willChange: 'transform, opacity',
+                                  backfaceVisibility: 'hidden',
+                                }}
+                                className="w-full h-full flex items-center justify-center"
+                              >
+                                <img
+                                  src={croppedQrSrc}
+                                  alt="Extracted QR Code"
+                                  className="w-full h-full object-contain rounded-sm shadow-md"
+                                />
+                              </motion.div>
+                            </div>
+                          )}
+
+                          {/* Scanning Beam: Solid horizontal line followed by matching transparent gradient trail */}
+                          {scannedVerificationState === 'idle' && (
+                            <div className="absolute inset-1.5 overflow-hidden pointer-events-none z-30">
+                              <motion.div
+                                className="relative w-full h-full"
+                                animate={{ y: ['1%', '98%', '1%'] }}
+                                transition={{
+                                  duration: 2.2,
+                                  times: [0, 0.5, 1],
+                                  ease: 'easeInOut',
+                                  repeat: Infinity,
+                                }}
+                              >
+                                <div className="relative w-full h-[2.5px] bg-white shadow-[0_0_12px_rgba(255,255,255,0.85)]">
+                                  {/* Trailing gradient wake above bar during downward sweep */}
+                                  <motion.div
+                                    className="absolute bottom-full inset-x-0 h-12 bg-gradient-to-t from-white/35 via-white/10 to-transparent pointer-events-none"
+                                    animate={{ opacity: [0.15, 1, 1, 0, 0, 0.15] }}
+                                    transition={{
+                                      duration: 2.2,
+                                      times: [0, 0.08, 0.44, 0.5, 0.94, 1],
+                                      ease: 'easeInOut',
+                                      repeat: Infinity,
+                                    }}
+                                  />
+                                  {/* Trailing gradient wake below bar during upward sweep */}
+                                  <motion.div
+                                    className="absolute top-full inset-x-0 h-12 bg-gradient-to-b from-white/35 via-white/10 to-transparent pointer-events-none"
+                                    animate={{ opacity: [0, 0, 1, 1, 0.15] }}
+                                    transition={{
+                                      duration: 2.2,
+                                      times: [0, 0.48, 0.56, 0.92, 1],
+                                      ease: 'easeInOut',
+                                      repeat: Infinity,
+                                    }}
+                                  />
+                                </div>
+                              </motion.div>
+                            </div>
+                          )}
+
+                          {/* Status-Aware Verification Animation Overlay inside reticle */}
+                          <AnimatePresence>
+                            {scannedVerificationState !== 'idle' && (
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.16 }}
+                                className={`absolute inset-0 backdrop-blur-[2px] rounded-none flex items-center justify-center z-40 ${
+                                  scannedVerificationState === 'approved'
+                                    ? 'bg-emerald-500/25'
+                                    : scannedVerificationState === 'pending' || scannedVerificationState === 'expired'
+                                    ? 'bg-amber-500/25'
+                                    : 'bg-rose-500/25'
+                                }`}
+                              >
                                 <motion.div
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  exit={{ opacity: 0 }}
-                                  transition={{ duration: 0.16 }}
-                                  className={`absolute inset-0 backdrop-blur-[2px] rounded-none flex items-center justify-center z-30 ${
+                                  initial={{ scale: 0.5, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={TACTILE_SPRING}
+                                  className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${
                                     scannedVerificationState === 'approved'
-                                      ? 'bg-emerald-500/25'
+                                      ? 'bg-emerald-500'
                                       : scannedVerificationState === 'pending' || scannedVerificationState === 'expired'
-                                      ? 'bg-amber-500/25'
-                                      : 'bg-rose-500/25'
+                                      ? 'bg-amber-500'
+                                      : 'bg-rose-600'
                                   }`}
                                 >
-                                  <motion.div
-                                    initial={{ scale: 0.5, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                    transition={TACTILE_SPRING}
-                                    className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${
-                                      scannedVerificationState === 'approved'
-                                        ? 'bg-emerald-500'
-                                        : scannedVerificationState === 'pending' || scannedVerificationState === 'expired'
-                                        ? 'bg-amber-500'
-                                        : 'bg-rose-600'
-                                    }`}
-                                  >
-                                    <Icon className="material-symbols-outlined text-icon-3xl text-white">check</Icon>
-                                  </motion.div>
+                                  <Icon className="material-symbols-outlined text-icon-3xl text-white">check</Icon>
                                 </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </motion.div>
-                        </div>
-                      )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
 
-                      {/* 4 Corner Anchors - Crisp White with Rounded Corners */}
-                      <div className="absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-tl-md z-20" />
-                      <div className="absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-tr-md z-20" />
-                      <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-bl-md z-20" />
-                      <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] border-white/85 shadow-[0_0_8px_rgba(255,255,255,0.45)] rounded-br-md z-20" />
-
-                      {/* Scanning Beam: Solid horizontal line followed by matching transparent gradient trail */}
-                      {scannedVerificationState === 'idle' && (
-                        <div className="absolute inset-1.5 overflow-hidden pointer-events-none z-20">
+                          {/* 4 Pulsing Corner Brackets — pulse immediately when QR code enters view */}
                           <motion.div
-                            className="relative w-full h-full"
-                            animate={{ y: ['1%', '98%', '1%'] }}
-                            transition={{
-                              duration: 2.2,
-                              times: [0, 0.5, 1],
-                              ease: 'easeInOut',
-                              repeat: Infinity,
-                            }}
-                          >
-                            <div className="relative w-full h-[2.5px] bg-white shadow-[0_0_12px_rgba(255,255,255,0.85)]">
-                              {/* Trailing gradient wake above bar during downward sweep */}
-                              <motion.div
-                                className="absolute bottom-full inset-x-0 h-12 bg-gradient-to-t from-white/35 via-white/10 to-transparent pointer-events-none"
-                                animate={{ opacity: [0.15, 1, 1, 0, 0, 0.15] }}
-                                transition={{
-                                  duration: 2.2,
-                                  times: [0, 0.08, 0.44, 0.5, 0.94, 1],
-                                  ease: 'easeInOut',
-                                  repeat: Infinity,
-                                }}
-                              />
-                              {/* Trailing gradient wake below bar during upward sweep */}
-                              <motion.div
-                                className="absolute top-full inset-x-0 h-12 bg-gradient-to-b from-white/35 via-white/10 to-transparent pointer-events-none"
-                                animate={{ opacity: [0, 0, 1, 1, 0.15] }}
-                                transition={{
-                                  duration: 2.2,
-                                  times: [0, 0.48, 0.56, 0.92, 1],
-                                  ease: 'easeInOut',
-                                  repeat: Infinity,
-                                }}
-                              />
-                            </div>
-                          </motion.div>
+                            animate={cornerPulseAnimation}
+                            transition={cornerPulseTransition}
+                            style={{ willChange: 'transform, opacity' }}
+                            className={`absolute -top-1 -left-1 w-6 h-6 border-t-[4px] border-l-[4px] rounded-tl-md origin-bottom-right transition-colors duration-200 z-50 ${cornerColorClass}`}
+                          />
+                          <motion.div
+                            animate={cornerPulseAnimation}
+                            transition={cornerPulseTransition}
+                            style={{ willChange: 'transform, opacity' }}
+                            className={`absolute -top-1 -right-1 w-6 h-6 border-t-[4px] border-r-[4px] rounded-tr-md origin-bottom-left transition-colors duration-200 z-50 ${cornerColorClass}`}
+                          />
+                          <motion.div
+                            animate={cornerPulseAnimation}
+                            transition={cornerPulseTransition}
+                            style={{ willChange: 'transform, opacity' }}
+                            className={`absolute -bottom-1 -left-1 w-6 h-6 border-b-[4px] border-l-[4px] rounded-bl-md origin-top-right transition-colors duration-200 z-50 ${cornerColorClass}`}
+                          />
+                          <motion.div
+                            animate={cornerPulseAnimation}
+                            transition={cornerPulseTransition}
+                            style={{ willChange: 'transform, opacity' }}
+                            className={`absolute -bottom-1 -right-1 w-6 h-6 border-b-[4px] border-r-[4px] rounded-br-md origin-top-left transition-colors duration-200 z-50 ${cornerColorClass}`}
+                          />
                         </div>
-                      )}
-                    </div>
+                      );
+                    })()}
                   </div>
 
                   {/* 3. BOTTOM SECTION: Pinned sticky controls with safe-area bottom padding */}
