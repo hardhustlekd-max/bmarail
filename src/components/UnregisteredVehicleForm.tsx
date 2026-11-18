@@ -122,14 +122,14 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
       {/* SINGLE UNIFIED CONTAINER (MATCHING TABLES PAGE PATTERN) */}
       <div className="bg-surface-container-lowest dark:bg-slate-900 border border-outline-variant dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
         {/* CONTAINER SECTION HEADER */}
-        <div className="p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-3 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800">
-          <div className="flex items-center gap-2.5">
+        <div className="p-3 sm:p-4 flex flex-row items-center justify-between gap-2 bg-surface-container-lowest dark:bg-slate-900 border-b border-outline-variant/60 dark:border-slate-800 w-full max-w-full min-w-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
             <Icon className="material-symbols-outlined text-[22px] text-primary shrink-0">report_problem</Icon>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-bold text-xs sm:text-base text-on-surface dark:text-white truncate">
                 {isAmharic ? 'ባልተመዘገበ ተሽከርካሪ ሪፖርት' : 'Report Unregistered Vehicle'}
               </h3>
-              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5">
+              <p className="hidden sm:block text-[11px] font-normal text-secondary/80 dark:text-slate-400 mt-0.5 truncate">
                 {isAmharic
                   ? 'የመስክ ሪፖርት ማቅረቢያ ቅጽ'
                   : 'Incident logging form'}
@@ -141,7 +141,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
             <button
               type="button"
               onClick={onCancel}
-              className="hidden sm:inline-flex px-3.5 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer"
+              className="inline-flex px-2.5 sm:px-3.5 py-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-bold transition-all border border-outline-variant cursor-pointer whitespace-nowrap shrink-0"
             >
               {isAmharic ? 'ሰርዝ' : 'Cancel'}
             </button>
@@ -171,7 +171,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={plateNumber}
               onChange={(e) => setPlateNumber(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ 3-12345 ወይም የታርጋ የሌለው' : 'e.g. AA 3 99812 or Unplated'}
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
@@ -185,7 +185,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ አበበ ከበደ / DL-90812' : 'e.g. Abebe Kebede / DL-90812'}
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
@@ -199,7 +199,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={driverPhone}
               onChange={(e) => setDriverPhone(e.target.value)}
               placeholder="+251 9..."
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
@@ -213,7 +213,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ ፋሲሎ ቀበሌ 04' : 'e.g. Fasilo Kebele 04 Checkpoint'}
-              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-[#0f172a]"
+              className="w-full px-3.5 py-2.5 bg-surface-container/60 border border-outline-variant rounded-lg text-xs font-semibold text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
         </div>
@@ -233,7 +233,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
                   onClick={() => setEvidencePhoto('')}
                   className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs shadow-md cursor-pointer"
                 >
-                  ✕
+                  <Icon className="material-symbols-outlined text-13">close</Icon>
                 </button>
               </div>
             ) : (
@@ -255,7 +255,7 @@ export const UnregisteredVehicleForm: React.FC<UnregisteredVehicleFormProps> = (
                 <label
                   htmlFor={isPhotoUploading ? undefined : 'unreg-photo-upload'}
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-white text-xs font-bold transition-all shadow-xs ${
-                    isPhotoUploading ? 'bg-slate-400 cursor-wait' : 'bg-slate-900 dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 cursor-pointer'
+                    isPhotoUploading ? 'bg-slate-400 cursor-wait' : 'bg-[#1C2434] hover:bg-[#24303F] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-white cursor-pointer'
                   }`}
                 >
                   <Icon className={`material-symbols-outlined text-[18px] ${isPhotoUploading ? 'animate-spin' : ''}`}>

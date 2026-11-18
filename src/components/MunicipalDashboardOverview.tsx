@@ -536,7 +536,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: isAmharic ? 'የባለቤትና ሞተር ቅጽ' : 'Register Motor & Owner',
         icon: 'app_registration',
         badge: isAmharic ? 'ቅጽ' : 'Form',
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -548,7 +548,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: `${scopedRegs.length} ${isAmharic ? 'ጠቅላላ ማህደሮች' : 'system records'}`,
         icon: 'two_wheeler',
         badge: `${scopedRegs.length} ${isAmharic ? 'ተሽከርካሪዎች' : 'Motors'}`,
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -560,7 +560,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: isAmharic ? 'በካሜራ ፈቃድ አረጋግጥ' : 'Instant camera verify',
         icon: 'qr_code_scanner',
         badge: isAmharic ? 'ፍተሻ' : 'Scanner',
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -572,7 +572,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: `${scopedVerificationLogs.length} ${isAmharic ? 'የተደረጉ ፍተሻዎች' : 'recorded scans'}`,
         icon: 'analytics',
         badge: `${scopedVerificationLogs.length} ${isAmharic ? 'ሪፖርቶች' : 'Logs'}`,
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -584,7 +584,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'incidents logged'}`,
         icon: 'policy',
         badge: `${unregisteredReports.length} ${isAmharic ? 'ሪፖርቶች' : 'Reports'}`,
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -597,7 +597,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: isAmharic ? 'የክፍያ ደረሰኝ ማስገቢያ ቅጽ' : 'Open receipt entry form',
         icon: 'receipt_long',
         badge: isAmharic ? 'ክፍያ' : 'Payment',
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -609,7 +609,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: `${users.length} ${isAmharic ? 'ተጠቃሚዎች' : 'active users'}`,
         icon: 'manage_accounts',
         badge: `${users.length} ${isAmharic ? 'ተጠቃሚ' : 'Users'}`,
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -621,7 +621,7 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         subtitle: isAmharic ? 'የተጠቃሚ ሚናዎችና ፈቃድ' : 'Configure RBAC matrix',
         icon: 'admin_panel_settings',
         badge: isAmharic ? 'ፈቃድ' : 'RBAC',
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+        iconBg: 'bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-primary',
       });
     }
 
@@ -653,9 +653,9 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
 
           <div
             onClick={() => handleActionClick('quick_verify')}
-            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shadow-md group cursor-pointer hover:bg-blue-500/20 active:scale-95 touch-manipulation transition-all duration-300"
+            className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-primary/10 border border-primary/25 flex items-center justify-center shadow-md group cursor-pointer hover:bg-primary/15 active:scale-95 touch-manipulation transition-all duration-300"
           >
-            <Icon className="material-symbols-outlined text-[length:calc(42px*var(--ui-scale))] sm:text-[length:calc(48px*var(--ui-scale))] text-slate-700 group-hover:scale-110 transition-transform duration-300">
+            <Icon className="material-symbols-outlined text-[length:calc(42px*var(--ui-scale))] sm:text-[length:calc(48px*var(--ui-scale))] text-primary group-hover:scale-110 transition-transform duration-300">
               qr_code_scanner
             </Icon>
           </div>
@@ -685,23 +685,23 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
         </div>
       )}
             {/* ==================== UNIFIED OVERVIEW CONTAINER ==================== */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-xl overflow-hidden mb-6">
-        <div className="flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800/60 px-4 sm:px-5 py-3.5 bg-slate-50/40 dark:bg-slate-900/40">
-          <Icon className="material-symbols-outlined text-icon-md text-slate-600 dark:text-slate-400 shrink-0">dashboard</Icon>
-          <h2 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
+      <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl overflow-hidden mb-6">
+        <div className="flex items-center gap-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] px-4 sm:px-5 py-3.5 bg-[#F8FAFC] dark:bg-[#24303F]/60">
+          <Icon className="material-symbols-outlined text-icon-md text-primary shrink-0">dashboard</Icon>
+          <h2 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-tight">
             {isAmharic ? 'አጠቃላይ እይታ' : 'Overview'}
           </h2>
         </div>
-        <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800/60">
+        <div className="flex flex-col divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
 
       {/* SYSTEM GOVERNANCE STATS CARDS (VISIBLE WHEN USER MANAGEMENT / RBAC TASK IS VIEWABLE) */}
       {(isTaskViewable(userRole, 13) || isTaskViewable(userRole, 14)) && (
         <div className="p-4 sm:p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60 pb-2.5">
+          <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-icon-lg text-slate-600 dark:text-slate-400 shrink-0">admin_panel_settings</Icon>
+              <Icon className="material-symbols-outlined text-icon-lg text-primary shrink-0">admin_panel_settings</Icon>
               <div>
-                <h3 className="text-sm sm:text-base font-black text-on-surface  tracking-wider">
+                <h3 className="text-sm sm:text-base font-black text-[#1C2434] dark:text-white tracking-wider">
                   {isAmharic ? 'የሲስተሙ ተጠቃሚዎች ስታቲስቲክስ' : 'System Users Statistics'}
                 </h3>
               </div>
@@ -712,14 +712,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Total Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
+              className="p-2.5 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] hover:bg-[#F1F5F9] dark:hover:bg-[#333A48] cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-[#475569] dark:text-[#CBD5E1] truncate block group-hover:text-primary">
                   {isAmharic ? 'ተጠቃሚዎች' : 'Users'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                 {users.length > 0 ? users.length : (preAggregatedKpis ? preAggregatedKpis.users.total : (isLoading ? '—' : 0))}
               </p>
             </div>
@@ -727,14 +727,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Super Admins & Admins */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
+              className="p-2.5 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] hover:bg-[#F1F5F9] dark:hover:bg-[#333A48] cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block group-hover:text-slate-700 dark:group-hover:text-slate-200">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-[#475569] dark:text-[#CBD5E1] truncate block group-hover:text-primary">
                   {isAmharic ? 'አስተዳዳሪዎች' : 'Admins'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                 {users.length > 0
                   ? users.filter((u) => u.role === 'admin' || u.role === 'superadmin').length
                   : (preAggregatedKpis ? preAggregatedKpis.users.admins : (isLoading ? '—' : 0))}
@@ -744,14 +744,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             {/* Blocked Users */}
             <div
               onClick={() => onQuickAction && onQuickAction('superadmin_users')}
-              className="p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
+              className="p-2.5 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] hover:bg-[#F1F5F9] dark:hover:bg-[#333A48] cursor-pointer group min-w-0 overflow-hidden select-none transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-[#475569] dark:text-[#CBD5E1] truncate block group-hover:text-primary">
                   {isAmharic ? 'የታገዱ' : 'Blocked'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-black text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                 {users.length > 0
                   ? users.filter((u) => u.status === 'disabled').length
                   : (preAggregatedKpis ? preAggregatedKpis.users.disabled : (isLoading ? '—' : 0))}
@@ -771,10 +771,10 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             transition={POPOVER_TRANSITION}
             className="p-4 sm:p-5 space-y-3"
           >
-            <div className="flex justify-between items-center pb-2 border-b border-outline-variant/60">
+            <div className="flex justify-between items-center pb-2 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-icon-sm shrink-0">qr_code_scanner</Icon>
-                <h3 className="font-extrabold text-sm text-on-surface">
+                <Icon className="material-symbols-outlined text-primary text-icon-sm shrink-0">qr_code_scanner</Icon>
+                <h3 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
                   {isAmharic ? 'የቀጥታ QR እና ሰሌዳ መለያ ፍተሻ' : 'Live QR & License Plate Scanner'}
                 </h3>
               </div>
@@ -807,11 +807,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {(isTaskViewable(userRole, 10) || isTaskViewable(userRole, 16) || isTaskViewable(userRole, 17)) && (
         <div className="p-4 sm:p-5 space-y-3.5">
           {/* Header with Ethiopian Month Title & Badge */}
-          <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-slate-100 dark:border-slate-800/60 pb-3">
+          <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
             {/* Title */}
             <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-              <Icon className="material-symbols-outlined text-icon-lg sm:text-icon-xl text-slate-600 dark:text-slate-400 shrink-0">payments</Icon>
-              <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight truncate">
+              <Icon className="material-symbols-outlined text-icon-lg sm:text-icon-xl text-primary shrink-0">payments</Icon>
+              <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-tight truncate">
                 {isAmharic ? 'የወርሃዊ ክፍያ ስታቲስቲክስ' : 'Monthly Fee Statistics'}
               </h3>
             </div>
@@ -890,11 +890,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
           {/* 3. Patrol & Inspection Hub (Visible when Inspection Logs Task is viewable) */}
           {isTaskViewable(userRole, 6) && (
             <div className="p-4 sm:p-5 space-y-3">
-              <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-2.5">
                 <div className="flex items-center gap-2.5">
-                  <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
+                  <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-primary shrink-0">policy</Icon>
                   <div>
-                    <h3 className="font-bold text-sm sm:text-base text-on-surface dark:text-white  tracking-wider">
+                    <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-wider">
                       {isAmharic ? 'የመሰክ ፍተሻ ስታትስቲክስ' : 'Patrol Inspection Stats'}
                     </h3>
                   </div>
@@ -905,14 +905,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-slate-400/40 group min-w-0 overflow-hidden transition-colors"
+                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] hover:bg-[#F1F5F9] dark:hover:bg-[#333A48] cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-primary/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-[#475569] dark:text-[#CBD5E1] truncate block">
                       {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                     {scopedVerificationLogs.length > 0
                       ? totalLogsCount
                       : (preAggregatedKpis ? preAggregatedKpis.verifications.total : (isLoading ? '—' : 0))}
@@ -922,14 +922,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50 hover:bg-amber-100/70 dark:hover:bg-amber-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
+                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/70 dark:bg-amber-500/10 border border-amber-200/80 dark:border-amber-500/30 hover:bg-amber-100/60 dark:hover:bg-amber-500/15 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-amber-800 dark:text-amber-300 truncate block">
                       {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                     {scopedVerificationLogs.length > 0
                       ? warningLogsCount
                       : (preAggregatedKpis ? preAggregatedKpis.verifications.warnings : (isLoading ? '—' : 0))}
@@ -939,14 +939,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
                 <button
                   type="button"
                   onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/80 dark:bg-rose-900/20 border border-rose-200/70 dark:border-rose-800/50 hover:bg-rose-100/70 dark:hover:bg-rose-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
+                  className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/70 dark:bg-[#FB5454]/10 border border-rose-200/80 dark:border-[#FB5454]/30 hover:bg-rose-100/60 dark:hover:bg-[#FB5454]/15 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
                 >
                   <div className="mb-1 sm:mb-1.5 text-center">
-                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                    <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-rose-700 dark:text-[#FDA4AF] truncate block">
                       {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                     </span>
                   </div>
-                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+                  <p className="text-base sm:text-xl lg:text-2xl font-bold text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                     {scopedVerificationLogs.length > 0
                       ? illegalVehiclesCount
                       : (preAggregatedKpis ? preAggregatedKpis.verifications.illegal : (isLoading ? '—' : 0))}
@@ -959,11 +959,11 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
       {/* ==================== FIELD OFFICER PATROL HUB (FOR OFFICER ROLE ONLY) ==================== */}
       {userRole === 'officer' && getPermissionState(userRole, 10) !== 'deny' && (
         <div className="p-4 sm:p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-outline-variant/60 pb-2.5">
+          <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-2.5">
             <div className="flex items-center gap-2.5">
-              <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-slate-700 dark:text-slate-300 shrink-0">policy</Icon>
+              <Icon className="material-symbols-outlined text-icon-sm sm:text-icon-md text-primary shrink-0">policy</Icon>
               <div>
-                <h2 className="font-extrabold text-sm sm:text-base text-on-surface tracking-wider">
+                <h2 className="font-extrabold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-wider">
                   {isAmharic ? 'የተቆጣጣሪ የመስክ መቆጣጠሪያ ማዕከል' : 'Field Officer Patrol & Inspection Hub'}
                 </h2>
               </div>
@@ -975,14 +975,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_today')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 border border-slate-200/70 dark:border-slate-800/70 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-slate-400/40 group min-w-0 overflow-hidden transition-colors"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] hover:bg-[#F1F5F9] dark:hover:bg-[#333A48] cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-primary/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-[#475569] dark:text-[#CBD5E1] truncate block">
                   {isAmharic ? 'የዛሬ ፍተሻዎች' : 'Verifications'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                 {scopedVerificationLogs.length > 0
                   ? totalLogsCount
                   : (preAggregatedKpis ? preAggregatedKpis.verifications.total : (isLoading ? '—' : 0))}
@@ -992,14 +992,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('approved_vehicles')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-emerald-50/80 dark:bg-emerald-900/20 border border-emerald-200/70 dark:border-emerald-800/50 hover:bg-emerald-100/70 dark:hover:bg-emerald-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden transition-colors"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-emerald-50/70 dark:bg-[#10B981]/10 border border-emerald-200/80 dark:border-[#10B981]/30 hover:bg-emerald-100/60 dark:hover:bg-[#10B981]/15 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-emerald-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-emerald-700 dark:text-[#6EE7B7] truncate block">
                   {isAmharic ? 'የፀደቁ' : 'Valid'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                 {approvedCount}
               </p>
             </button>
@@ -1007,14 +1007,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('officer_logs_warning')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/70 dark:border-amber-800/50 hover:bg-amber-100/70 dark:hover:bg-amber-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-amber-50/70 dark:bg-amber-500/10 border border-amber-200/80 dark:border-amber-500/30 hover:bg-amber-100/60 dark:hover:bg-amber-500/15 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-amber-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-amber-800 dark:text-amber-300 truncate block">
                   {isAmharic ? 'ማስጠንቀቂያ' : 'Warnings'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                 {scopedVerificationLogs.length > 0
                   ? warningLogsCount
                   : (preAggregatedKpis ? preAggregatedKpis.verifications.warnings : (isLoading ? '—' : 0))}
@@ -1024,14 +1024,14 @@ export const MunicipalDashboardOverview: React.FC<MunicipalDashboardOverviewProp
             <button
               type="button"
               onClick={() => onQuickAction && onQuickAction('kpi_expired')}
-              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/80 dark:bg-rose-900/20 border border-rose-200/70 dark:border-rose-800/50 hover:bg-rose-100/70 dark:hover:bg-rose-900/30 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
+              className="w-full text-left p-2.5 sm:p-3 rounded-lg bg-rose-50/70 dark:bg-[#FB5454]/10 border border-rose-200/80 dark:border-[#FB5454]/30 hover:bg-rose-100/60 dark:hover:bg-[#FB5454]/15 cursor-pointer focus:outline-hidden focus:ring-1 focus:ring-rose-500/40 group min-w-0 overflow-hidden transition-colors"
             >
               <div className="mb-1 sm:mb-1.5 text-center">
-                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-on-surface truncate block">
+                <span className="text-2xs sm:text-xs font-extrabold tracking-tight text-rose-700 dark:text-[#FDA4AF] truncate block">
                   {isAmharic ? 'ሕገ-ወጥ' : 'Illegal'}
                 </span>
               </div>
-              <p className="text-base sm:text-xl lg:text-2xl font-bold text-slate-700 dark:text-slate-300 tracking-tight leading-tight text-center">
+              <p className="text-base sm:text-xl lg:text-2xl font-bold text-[#1C2434] dark:text-white tracking-tight leading-tight text-center">
                 {scopedVerificationLogs.length > 0
                   ? illegalVehiclesCount
                   : (preAggregatedKpis ? preAggregatedKpis.verifications.illegal : (isLoading ? '—' : 0))}

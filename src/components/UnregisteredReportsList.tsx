@@ -49,7 +49,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [sortField, setSortField] = useState<'date' | 'plate' | 'driver'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const hasActiveSecondaryFilters = subCityFilter !== 'all' || sortField !== 'date' || sortOrder !== 'desc';
+  const hasActiveSecondaryFilters = Boolean(subCityFilter !== 'all' || sortField !== 'date' || sortOrder !== 'desc' || searchTerm.trim());
   const [selectedReport, setSelectedReport] = useState<UnregisteredVehicleReport | null>(null);
   const [zoomedImage, setZoomedImage] = useState<{ url: string; title: string } | null>(null);
   const [resolutionInput, setResolutionInput] = useState('');
@@ -176,16 +176,16 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
     <div className="w-full max-w-full min-w-0 pb-3">
       <UnifiedWorkspaceCard
         header={
-          <div className="px-3.5 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434]">
-            <div className="flex items-center gap-2.5">
+          <div className="flex flex-row items-center justify-between gap-2 bg-white dark:bg-[#1C2434] px-3 sm:px-5 py-2 sm:py-2.5 w-full max-w-full min-w-0">
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
               <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0 shadow-xs">
-                <Icon className="material-symbols-outlined text-icon-lg">policy</Icon>
+                <Icon className="material-symbols-outlined text-icon-lg shrink-0">policy</Icon>
               </div>
-              <div>
-                <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-tight leading-none mb-1">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-xs sm:text-base text-[#1C2434] dark:text-white tracking-tight leading-none mb-0.5 truncate">
                   {isAmharic ? 'የህገወጥ ሞተሮች ማህደር' : 'Unregistered Motors Registry'}
                 </h3>
-                <p className="text-11 text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
+                <p className="text-11 text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block truncate">
                   {isAmharic ? 'ከምዝገባ ውጭ የተገኙ ተሽከርካሪዎች እና የኦፊሰር ሪፖርቶች' : 'Ledger of unauthorized vehicles and officer incident reports'}
                 </p>
               </div>
@@ -198,10 +198,11 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                 whileTap={TAP_SCALE}
                 transition={TACTILE_SPRING}
                 onClick={onNewReportClick}
-                className="hidden sm:flex px-3.5 py-2 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 items-center gap-1.5 shrink-0 cursor-pointer"
+                className="inline-flex items-center justify-center min-h-[34px] sm:min-h-[var(--ui-control-h-sm)] gap-1 px-2.5 sm:px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 cursor-pointer touch-manipulation whitespace-nowrap shrink-0"
+                title={isAmharic ? 'አዲስ ሪፖርት' : 'New Report'}
               >
-                <Icon className="material-symbols-outlined text-icon-sm">add_alert</Icon>
-                <span>{isAmharic ? 'አዲስ ሪፖርት' : 'New Report'}</span>
+                <Icon className="material-symbols-outlined text-icon-sm shrink-0">add_alert</Icon>
+                <span className="whitespace-nowrap shrink-0">{isAmharic ? 'አዲስ' : 'New'}</span>
               </motion.button>
             )}
           </div>
@@ -246,53 +247,20 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
         toolbar={
           <div className="flex flex-col w-full bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             {/* TIER 1: PRIMARY TOOLBAR */}
-            <div className="px-3 sm:px-4 py-2 flex items-center justify-between gap-2 w-full max-w-full">
-              {/* Search Input */}
-              <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
-                <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
-                  <Icon className="material-symbols-outlined text-icon-sm">search</Icon>
-                </div>
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  placeholder={
-                    isAmharic
-                      ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ ወይም ኦፊሰር ፈልግ...'
-                      : 'Search plate, driver, location, officer...'
-                  }
-                  className="w-full h-8 rounded-md border border-[#E2E8F0] bg-white py-1 pl-8 pr-7 text-xs text-[#1C2434] outline-none transition focus:border-primary active:border-primary dark:border-[#2E3A47] dark:bg-[#1C2434] dark:text-white shadow-2xs"
-                />
-                {searchTerm && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchTerm('');
-                      setCurrentPage(1);
-                    }}
-                    className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-                  >
-                    <Icon className="material-symbols-outlined text-icon-sm">close</Icon>
-                  </button>
-                )}
-              </div>
-
+            <div className="px-2.5 sm:px-4 py-2 flex items-center justify-end gap-2 w-full max-w-full min-w-0">
               {/* Filter Drawer Toggle Button */}
               <button
                 type="button"
                 onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
-                className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                className={`h-[34px] px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap select-none ${
                   isFilterDrawerOpen || hasActiveSecondaryFilters
                     ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
                     : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
                 }`}
                 title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
               >
-                <Icon className="material-symbols-outlined text-icon-sm">tune</Icon>
-                <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                <Icon className="material-symbols-outlined text-icon-sm shrink-0">tune</Icon>
+                <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
                 {hasActiveSecondaryFilters && (
                   <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                 )}
@@ -307,12 +275,46 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={POPOVER_TRANSITION}
-                  className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47]"
+                  className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] space-y-2.5 w-full max-w-full min-w-0"
                 >
-                <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                  {/* Search Bar inside Expandable Filter Section */}
+                  <div className="relative w-full max-w-md min-w-0">
+                    <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#64748B] dark:text-[#8A99AD]">
+                      <Icon className="material-symbols-outlined text-icon-sm">search</Icon>
+                    </div>
+                    <input
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      placeholder={
+                        isAmharic
+                          ? 'በሰሌዳ፣ አሽከርካሪ፣ ቦታ ወይም ኦፊሰር ፈልግ...'
+                          : 'Search plate, driver, location, officer...'
+                      }
+                      className="w-full h-[34px] pl-8 pr-8 bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    />
+                    {searchTerm && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchTerm('');
+                          setCurrentPage(1);
+                        }}
+                        className="absolute inset-y-0 right-2 flex items-center text-[#64748B] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                        title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
+                      >
+                        <Icon className="material-symbols-outlined text-icon-sm">close</Icon>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs w-full min-w-0">
                   {/* Sub-City Filter */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                       {isAmharic ? 'ክ/ከተማ:' : 'SubCity:'}
                     </span>
                     <select
@@ -321,7 +323,7 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         setSubCityFilter(e.target.value);
                         setCurrentPage(1);
                       }}
-                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary outline-none cursor-pointer"
+                      className="h-[34px] py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary outline-none cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                     >
                       <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
                       {BAHIR_DAR_SUBCITIES.map((sc) => (
@@ -333,14 +335,14 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                   </div>
 
                   {/* Sort Field */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-11 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                       {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
                     </span>
                     <select
                       value={sortField}
                       onChange={(e) => setSortField(e.target.value as any)}
-                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+                      className="h-[34px] py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                     >
                       <option value="date">{isAmharic ? 'በሪፖርት ቀን' : 'Report Date'}</option>
                       <option value="plate">{isAmharic ? 'በሰሌዳ ቁጥር' : 'Plate No'}</option>
@@ -350,10 +352,10 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                     <button
                       type="button"
                       onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                      className="h-8 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                      className="h-[34px] px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap"
                       title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
                     >
-                      <Icon className="material-symbols-outlined text-15">
+                      <Icon className="material-symbols-outlined text-15 shrink-0">
                         {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
                       </Icon>
                     </button>
@@ -371,9 +373,9 @@ export const UnregisteredReportsList: React.FC<UnregisteredReportsListProps> = (
                         setStatusFilter('all');
                         setCurrentPage(1);
                       }}
-                      className="h-7 px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                      className="h-[34px] px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs shrink-0 whitespace-nowrap ms-auto"
                     >
-                      <Icon className="material-symbols-outlined text-icon-xs">restart_alt</Icon>
+                      <Icon className="material-symbols-outlined text-icon-xs shrink-0">restart_alt</Icon>
                       <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
                     </button>
                   )}

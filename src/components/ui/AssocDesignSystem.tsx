@@ -12,15 +12,15 @@ export const DESIGN_TOKENS = {
   brand: {
     name: 'Bahirdar Motorist Association',
     nameAm: 'ባህር ዳር ሞተረኞች ማህበር',
-    primaryLight: '#0F172A',
-    primaryLightHover: '#1E293B',
+    primaryLight: '#2563EB',
+    primaryLightHover: '#1D4ED8',
     onPrimaryLight: '#FFFFFF',
-    primaryDark: '#F8FAFC',
-    primaryDarkHover: '#FFFFFF',
-    onPrimaryDark: '#0F172A',
-    chromeSidebar: '#0F172A',
-    chromeTopbarMobile: '#1E293B',
-    chromeActiveGold: '#EAB308',
+    primaryDark: '#60A5FA',
+    primaryDarkHover: '#93C5FD',
+    onPrimaryDark: '#1C2434',
+    chromeSidebar: '#1C2434',
+    chromeTopbarMobile: '#1C2434',
+    chromeActiveGold: '#60A5FA',
   },
   surfaces: {
     light: {
@@ -116,11 +116,11 @@ export const Button: React.FC<ButtonProps> = ({
     primary:
       'bg-primary hover:bg-primary-hover text-on-primary font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-primary/40 transition-colors',
     secondary:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] font-semibold focus:ring-2 focus:ring-slate-400/30 transition-colors',
+      'bg-transparent hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] font-semibold focus:ring-2 focus:ring-primary/30 transition-colors',
     danger:
-      'bg-rose-600 hover:bg-rose-700 text-white font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-rose-500/40 transition-colors',
+      'bg-rose-600 hover:bg-rose-700 dark:bg-[#FB5454] dark:hover:bg-[#E11D48] text-white font-bold border-0 shadow-none hover:shadow-none focus:ring-2 focus:ring-rose-500/40 transition-colors',
     ghost:
-      'bg-transparent hover:bg-slate-100 dark:hover:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] font-medium focus:ring-2 focus:ring-slate-300 transition-colors',
+      'bg-transparent hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] font-medium focus:ring-2 focus:ring-primary/25 transition-colors',
   };
 
   return (
@@ -176,36 +176,36 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
 }) => {
   const variantStyles: Record<StatusBadgeVariant, { bg: string; dot: string }> = {
     active: {
-      bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60',
+      bg: 'bg-emerald-50 text-emerald-700 dark:bg-[#10B981]/15 dark:text-[#6EE7B7] border-emerald-200/80 dark:border-[#10B981]/30',
       dot: 'bg-emerald-500',
     },
     success: {
-      bg: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60',
+      bg: 'bg-emerald-50 text-emerald-700 dark:bg-[#10B981]/15 dark:text-[#6EE7B7] border-emerald-200/80 dark:border-[#10B981]/30',
       dot: 'bg-emerald-500',
     },
     overdue: {
-      bg: 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60',
+      bg: 'bg-rose-50 text-rose-700 dark:bg-[#FB5454]/15 dark:text-[#FDA4AF] border-rose-200/80 dark:border-[#FB5454]/30',
       dot: 'bg-rose-500',
     },
     danger: {
-      bg: 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60',
+      bg: 'bg-rose-50 text-rose-700 dark:bg-[#FB5454]/15 dark:text-[#FDA4AF] border-rose-200/80 dark:border-[#FB5454]/30',
       dot: 'bg-rose-500',
     },
     pending: {
-      bg: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700',
-      dot: 'bg-slate-400',
+      bg: 'bg-[#F7F9FC] text-[#1C2434] dark:bg-[#24303F] dark:text-[#DEE4EE] border-[#E2E8F0] dark:border-[#2E3A47]',
+      dot: 'bg-[#64748B] dark:bg-[#8A99AD]',
     },
     warning: {
-      bg: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
+      bg: 'bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300 border-amber-200/80 dark:border-amber-500/30',
       dot: 'bg-amber-500',
     },
     info: {
-      bg: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700',
-      dot: 'bg-slate-500',
+      bg: 'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary border-primary/25 dark:border-primary/30',
+      dot: 'bg-primary',
     },
     neutral: {
-      bg: 'bg-slate-100 text-slate-700 dark:bg-slate-800/80 dark:text-slate-300 border-slate-200 dark:border-slate-700',
-      dot: 'bg-slate-400',
+      bg: 'bg-[#F7F9FC] text-[#475569] dark:bg-[#24303F] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#2E3A47]',
+      dot: 'bg-[#64748B] dark:bg-[#8A99AD]',
     },
   };
 
@@ -242,13 +242,13 @@ export const StatusDot: React.FC<StatusDotProps> = ({
   const colorMap: Record<string, string> = {
     paid: 'bg-emerald-500',
     active: 'bg-emerald-500',
-    unpaid: 'bg-rose-500',
-    inactive: 'bg-rose-500',
+    unpaid: 'bg-rose-500 dark:bg-[#FB5454]',
+    inactive: 'bg-rose-500 dark:bg-[#FB5454]',
     pending: 'bg-amber-500',
-    muted: 'bg-slate-300 dark:bg-slate-600/70',
+    muted: 'bg-[#CBD5E1] dark:bg-[#333A48]',
   };
 
-  const bg = colorMap[status] || 'bg-slate-300 dark:bg-slate-600/70';
+  const bg = colorMap[status] || 'bg-[#CBD5E1] dark:bg-[#333A48]';
 
   return (
     <span
@@ -442,7 +442,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
 }) => (
   <div className={`flex flex-col gap-1.5 sm:gap-2 ${className}`}>
     {label && (
-      <label className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300">
+      <label className="text-xs sm:text-sm font-bold text-[#1C2434] dark:text-[#DEE4EE]">
         {label}
         {required && <span className="text-rose-500 ml-1 font-bold">*</span>}
       </label>
@@ -460,8 +460,8 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
             htmlFor={`${id}-${opt.value}`}
             className={`inline-flex items-center gap-1.5 sm:gap-2 cursor-pointer select-none text-xs font-semibold transition-colors ${
               isChecked
-                ? 'text-primary dark:text-primary font-bold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'text-primary font-bold'
+                : 'text-[#475569] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white'
             } ${opt.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <input
@@ -476,7 +476,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
             />
             <span className="text-xs">{opt.label}</span>
             {opt.description && (
-              <span className="text-[10px] text-slate-400 ml-1">({opt.description})</span>
+              <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] ml-1">({opt.description})</span>
             )}
           </label>
         );
@@ -508,7 +508,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
     <label
       htmlFor={id}
       className={`inline-flex items-center gap-2 cursor-pointer select-none text-xs font-semibold ${
-        checked ? 'text-primary dark:text-primary font-bold' : 'text-slate-700 dark:text-slate-300'
+        checked ? 'text-primary font-bold' : 'text-[#1C2434] dark:text-[#DEE4EE]'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       <input
@@ -550,7 +550,7 @@ export const TabList = <T extends string>({
 }: TabListProps<T>) => {
   if (variant === 'flush') {
     return (
-      <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-2.5 overflow-x-auto scrollbar-none ${className}`}>
+      <div className={`relative z-10 flex items-end gap-1 sm:gap-2 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F8FAFC] dark:bg-[#24303F]/70 px-3 sm:px-5 pt-2.5 overflow-x-auto scrollbar-none ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -560,7 +560,7 @@ export const TabList = <T extends string>({
               onClick={() => onChange(tab.id)}
               className={`group flex items-center gap-2 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                 isActive
-                  ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-slate-900 dark:text-white bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
+                  ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 text-[#1C2434] dark:text-white bg-white dark:bg-[#1C2434] rounded-t-md font-bold'
                   : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
               }`}
             >
@@ -569,8 +569,8 @@ export const TabList = <T extends string>({
                 <span
                   className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
                     isActive
-                      ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
-                      : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#24303F] dark:text-[#8A99AD]'
+                      ? 'bg-primary/10 dark:bg-primary/15 text-primary border border-primary/20'
+                      : 'bg-[#E2E8F0] text-[#64748B] dark:bg-[#1C2434] dark:text-[#8A99AD]'
                   }`}
                 >
                   {tab.count}
@@ -585,7 +585,7 @@ export const TabList = <T extends string>({
 
   if (variant === 'pill') {
     return (
-      <div className={`inline-flex items-center gap-1 p-1 bg-[#F1F5F9] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md ${className}`}>
+      <div className={`inline-flex items-center gap-1 p-1 bg-[#F1F5F9] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-full overflow-x-auto scrollbar-none ${className}`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -593,7 +593,7 @@ export const TabList = <T extends string>({
               key={tab.id}
               type="button"
               onClick={() => onChange(tab.id)}
-              className={`px-3 py-1.5 rounded-sm text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+              className={`px-3 py-1.5 rounded-sm text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                 isActive
                   ? 'bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
                   : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
@@ -602,7 +602,7 @@ export const TabList = <T extends string>({
               <span>{tab.label}</span>
               {tab.count !== undefined && tab.count !== '' && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold tabular-nums leading-none ${
                     isActive
                       ? 'bg-[#F1F5F9] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
                       : 'bg-[#E2E8F0]/70 dark:bg-[#1C2434]/60 text-[#64748B] dark:text-[#8A99AD]'
@@ -627,7 +627,7 @@ export const TabList = <T extends string>({
             key={tab.id}
             type="button"
             onClick={() => onChange(tab.id)}
-            className={`group flex items-center gap-1.5 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+            className={`group flex items-center gap-1.5 py-2 px-3.5 text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
               isActive
                 ? 'relative top-[1px] z-10 border-t border-l border-r border-[#E2E8F0] dark:border-[#2E3A47] border-b-0 bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-t-md font-bold'
                 : 'border border-transparent text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white font-medium'
@@ -636,7 +636,7 @@ export const TabList = <T extends string>({
             <span>{tab.label}</span>
             {tab.count !== undefined && tab.count !== '' && (
               <span
-                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold tabular-nums leading-none transition-colors ${
                   isActive
                     ? 'bg-[#F1F5F9] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
                     : 'bg-[#E2E8F0]/70 dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD]'
@@ -876,7 +876,7 @@ export const UnifiedWorkspaceCard: React.FC<UnifiedWorkspaceCardProps> = ({
     className={`rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden w-full max-w-full min-w-0 ${className}`}
   >
     {header && <div className="w-full border-b border-[#E2E8F0]/80 dark:border-[#2E3A47]">{header}</div>}
-    {tabs && <div className="w-full relative z-10 bg-[#F8FAFC] dark:bg-[#1E293B]/70">{tabs}</div>}
+    {tabs && <div className="w-full relative z-10 bg-[#F8FAFC] dark:bg-[#24303F]/70">{tabs}</div>}
     {toolbar && <div className="w-full">{toolbar}</div>}
     {legend && <div className="w-full border-t border-[#E2E8F0]/80 dark:border-[#2E3A47]">{legend}</div>}
     <div className="w-full min-w-0 overflow-x-hidden md:overflow-x-auto">{children}</div>
@@ -1088,17 +1088,17 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
         </colgroup>
 
         <thead>
-          <tr className="border-b border-slate-200 dark:border-slate-800 bg-[#F7F9FC] dark:bg-[#24303F]">
+          <tr className="border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]">
             {showNumbering && (
-              <th className="py-3 px-1.5 sm:px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap w-[38px] font-mono">
+              <th className="py-3 px-1.5 sm:px-3 text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] text-center whitespace-nowrap w-[38px] font-mono">
                 {numberHeaderLabel}
               </th>
             )}
-            <th className="py-3 px-2 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left min-w-0 sm:min-w-[170px]">
+            <th className="py-3 px-2 sm:px-4 text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] text-left min-w-0 sm:min-w-[170px]">
               {memberHeaderLabel}
             </th>
             {hasPlate && (
-              <th className="py-3 px-1.5 sm:px-4 text-xs font-semibold text-slate-700 dark:text-slate-300 text-left whitespace-nowrap font-mono w-[96px] sm:w-28 sm:min-w-[110px]">
+              <th className="py-3 px-1.5 sm:px-4 text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] text-left whitespace-nowrap font-mono w-[96px] sm:w-28 sm:min-w-[110px]">
                 {plateHeaderLabel}
               </th>
             )}
@@ -1106,18 +1106,18 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
               <th
                 key={col.key}
                 title={col.title}
-                className="hidden md:table-cell py-3 px-2 sm:px-3.5 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[38px] sm:min-w-[46px]"
+                className="hidden md:table-cell py-3 px-2 sm:px-3.5 text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] text-center whitespace-nowrap min-w-[38px] sm:min-w-[46px]"
               >
                 {col.label}
               </th>
             ))}
             {renderActions && (
-              <th className="hidden md:table-cell py-3 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 text-center whitespace-nowrap min-w-[140px]">
+              <th className="hidden md:table-cell py-3 px-3 text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] text-center whitespace-nowrap min-w-[140px]">
                 {actionsHeaderLabel}
               </th>
             )}
             {expandableMobile && (
-              <th className="py-3 px-1 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 w-10 md:hidden">
+              <th className="py-3 px-1 text-center text-xs font-semibold text-[#64748B] dark:text-[#8A99AD] w-10 md:hidden">
                 <button
                   type="button"
                   onClick={(e) => {
@@ -1125,7 +1125,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                     toggleAllMobile();
                   }}
                   title={expandedMobileRowIds.size === rows.length ? (isAmharic ? 'ሁሉንም ሰብስብ' : 'Collapse All') : (isAmharic ? 'ሁሉንም ዘርጋ' : 'Expand All')}
-                  className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
+                  className="p-1 rounded hover:bg-[#E2E8F0] dark:hover:bg-[#333A48] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer transition-colors"
                 >
                   <Icon
                     name={expandedMobileRowIds.size === rows.length ? 'unfold_less' : 'unfold_more'}
@@ -1136,7 +1136,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
             )}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+        <tbody className="divide-y divide-[#E2E8F0]/70 dark:divide-[#2E3A47]">
           {rows.map((row, index) => {
             const isExpanded = expandedMobileRowIds.has(row.id);
 
@@ -1144,29 +1144,29 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
               <React.Fragment key={row.id}>
                 <tr
                   onClick={() => handleRowClick(row)}
-                  className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer select-none ${
-                    isExpanded ? 'bg-slate-50/70 dark:bg-slate-800/40 md:bg-transparent md:dark:bg-transparent' : ''
+                  className={`hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors cursor-pointer select-none ${
+                    isExpanded ? 'bg-[#F7F9FC] dark:bg-[#24303F]/40 md:bg-transparent md:dark:bg-transparent' : ''
                   }`}
                 >
                   {showNumbering && (
-                    <td className="py-3 px-1.5 sm:px-3 text-xs font-mono font-medium text-slate-500 dark:text-slate-400 text-center whitespace-nowrap w-[38px]">
+                    <td className="py-3 px-1.5 sm:px-3 text-xs font-mono font-medium text-[#64748B] dark:text-[#8A99AD] text-center whitespace-nowrap w-[38px] tabular-nums">
                       {index + 1}
                     </td>
                   )}
-                  <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 min-w-0 overflow-hidden">
-                    <div className="font-semibold text-slate-800 dark:text-slate-100 truncate">{row.title}</div>
+                  <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-[#1C2434] dark:text-[#DEE4EE] min-w-0 overflow-hidden">
+                    <div className="font-semibold text-[#1C2434] dark:text-white truncate">{row.title}</div>
                     {row.subtitle && (
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{row.subtitle}</div>
+                      <div className="text-[11px] text-[#64748B] dark:text-[#8A99AD] truncate">{row.subtitle}</div>
                     )}
                   </td>
                   {hasPlate && (
-                    <td className="py-3 px-1.5 sm:px-4 text-xs font-mono font-medium whitespace-nowrap text-slate-800 dark:text-slate-200 w-[96px] sm:w-28">
+                    <td className="py-3 px-1.5 sm:px-4 text-xs font-mono font-medium whitespace-nowrap text-[#1C2434] dark:text-[#DEE4EE] w-[96px] sm:w-28">
                       {row.plateNumber ? (
-                        <span className="truncate inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[11px] font-bold max-w-full">
+                        <span className="truncate inline-block px-1.5 py-0.5 rounded bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-[11px] font-bold max-w-full tabular-nums">
                           {row.plateNumber}
                         </span>
                       ) : (
-                        <span className="text-slate-400 dark:text-slate-600 font-normal italic">—</span>
+                        <span className="text-[#8A99AD] font-normal italic">—</span>
                       )}
                     </td>
                   )}
@@ -1198,7 +1198,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                         e.stopPropagation();
                         toggleRow(row.id);
                       }}
-                      className="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      className="p-1 rounded-md text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] transition-colors cursor-pointer"
                       title={isExpanded ? (isAmharic ? 'ሰብስብ' : 'Collapse') : (isAmharic ? 'ዘርጋ' : 'Expand')}
                       aria-label={isExpanded ? 'Collapse row' : 'Expand row'}
                     >
@@ -1214,10 +1214,10 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
 
               {/* Collapsible/Expandable Monthly Drawer - ONLY rendered in Mobile View Mode */}
               {expandableMobile && isExpanded && (
-                <tr className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                <tr className="md:hidden bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
                   <td
                     colSpan={mobileCols}
-                    className="p-3 sm:p-4 max-w-full min-w-0 overflow-hidden box-border bg-white dark:bg-slate-900"
+                    className="p-3 sm:p-4 max-w-full min-w-0 overflow-hidden box-border bg-white dark:bg-[#1C2434]"
                     style={{ maxWidth: '100%', minWidth: 0 }}
                   >
                     <div className="w-full max-w-full min-w-0 overflow-hidden space-y-3.5">
@@ -1237,12 +1237,12 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
 
                           const statusBadgeClass =
                             status === 'paid'
-                              ? 'bg-emerald-50/80 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60 shadow-2xs'
+                              ? 'bg-emerald-50/80 text-emerald-800 dark:bg-[#10B981]/15 dark:text-[#6EE7B7] border-emerald-200 dark:border-[#10B981]/30 shadow-2xs'
                               : status === 'pending'
-                              ? 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 shadow-2xs'
+                              ? 'bg-amber-50/80 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300 border-amber-200 dark:border-amber-500/30 shadow-2xs'
                               : status === 'unpaid'
-                              ? 'bg-rose-50/80 text-rose-800 dark:bg-rose-950/30 dark:text-rose-300 border-rose-200 dark:border-rose-800/60 shadow-2xs'
-                              : 'bg-slate-50/80 text-slate-500 dark:bg-slate-800/40 dark:text-slate-400 border-slate-200 dark:border-slate-700/60';
+                              ? 'bg-rose-50/80 text-rose-800 dark:bg-[#FB5454]/15 dark:text-[#FDA4AF] border-rose-200 dark:border-[#FB5454]/30 shadow-2xs'
+                              : 'bg-[#F7F9FC] text-[#64748B] dark:bg-[#24303F]/60 dark:text-[#8A99AD] border-[#E2E8F0] dark:border-[#2E3A47]';
 
                           return (
                             <div
@@ -1250,7 +1250,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
                               className={`flex flex-col items-center justify-center py-2 px-1.5 rounded-lg border text-center transition-all min-w-0 ${statusBadgeClass}`}
                               title={`${monthFullName}: ${statusText}`}
                             >
-                              <span className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-slate-100 truncate max-w-full mb-1 leading-tight tracking-tight">
+                              <span className="text-[11px] sm:text-xs font-bold text-[#1C2434] dark:text-white truncate max-w-full mb-1 leading-tight tracking-tight">
                                 {monthFullName}
                               </span>
                               <div className="flex items-center justify-center gap-1 max-w-full">
@@ -1266,9 +1266,9 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
 
                       {/* Mobile Action Toolbar - Displayed Upfront */}
                       {(renderActions || onRowClick) && (
-                        <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2 w-full max-w-full min-w-0">
+                        <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47] space-y-2 w-full max-w-full min-w-0">
                           <div className="flex items-center px-0.5">
-                            <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                            <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD] flex items-center gap-1.5">
                               <Icon name="build" size={14} className="text-primary" />
                               <span>{isAmharic ? 'የአባል ተግባራት' : 'Action Toolbar'}</span>
                             </span>
@@ -1276,7 +1276,7 @@ export const MonthlyMatrixLedger: React.FC<MonthlyMatrixLedgerProps> = ({
 
                           <div
                             onClick={(e) => e.stopPropagation()}
-                            className="w-full max-w-full min-w-0 p-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/60"
+                            className="w-full max-w-full min-w-0 p-1.5 rounded-xl bg-[#F7F9FC] dark:bg-[#24303F]/60 border border-[#E2E8F0] dark:border-[#2E3A47]"
                           >
                             <div className="grid grid-cols-2 gap-2 w-full max-w-full min-w-0">
                               {renderActions && renderActions(row, true)}
@@ -1475,7 +1475,7 @@ export const ModalFormDialog: React.FC<ModalFormDialogProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
-      className="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 bg-slate-950/65 backdrop-blur-xs animate-modal-backdrop overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 bg-[#1A222C]/70 dark:bg-black/80 backdrop-blur-xs animate-modal-backdrop overflow-y-auto"
       onClick={onClose}
     >
       <div
@@ -1494,7 +1494,7 @@ export const ModalFormDialog: React.FC<ModalFormDialogProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-md text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#24303F] transition-colors cursor-pointer"
+            className="p-1 rounded-md text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <Icon name="close" size={20} />
@@ -1674,6 +1674,7 @@ export interface WorkspaceDrawerSectionProps {
   rightSlot?: ReactNode;
   children: ReactNode;
   className?: string;
+  variant?: 'flat' | 'card';
 }
 
 export const WorkspaceDrawerSection: React.FC<WorkspaceDrawerSectionProps> = ({
@@ -1682,20 +1683,42 @@ export const WorkspaceDrawerSection: React.FC<WorkspaceDrawerSectionProps> = ({
   rightSlot,
   children,
   className = '',
-}) => (
-  <section
-    className={`bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg overflow-hidden shadow-2xs ${className}`}
-  >
-    <div className="px-3.5 py-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]/70 flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2 min-w-0">
-        {icon && <Icon name={icon} size={16} className="text-primary shrink-0" />}
-        <h4 className="text-xs font-bold text-[#1C2434] dark:text-white truncate">{title}</h4>
+  variant = 'flat',
+}) => {
+  if (variant === 'card') {
+    return (
+      <section
+        className={`bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg overflow-hidden ${className}`}
+      >
+        <div className="px-3.5 py-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]/70 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            {icon && <Icon name={icon} size={16} className="text-primary shrink-0" />}
+            <h4 className="text-xs font-bold text-[#1C2434] dark:text-white truncate">{title}</h4>
+          </div>
+          {rightSlot && <div className="shrink-0 flex items-center">{rightSlot}</div>}
+        </div>
+        <div className="p-3.5">{children}</div>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      className={`pb-5 border-b border-[#E2E8F0] dark:border-[#2E3A47] last:border-b-0 last:pb-0 ${className}`}
+    >
+      <div className="flex items-center justify-between gap-2 pb-3">
+        <div className="flex items-center gap-2 min-w-0">
+          {icon && <Icon name={icon} size={17} className="text-primary shrink-0" />}
+          <h4 className="text-xs sm:text-[13px] font-bold text-[#1C2434] dark:text-white tracking-tight truncate">
+            {title}
+          </h4>
+        </div>
+        {rightSlot && <div className="shrink-0 flex items-center">{rightSlot}</div>}
       </div>
-      {rightSlot && <div className="shrink-0 flex items-center">{rightSlot}</div>}
-    </div>
-    <div className="p-3.5">{children}</div>
-  </section>
-);
+      <div>{children}</div>
+    </section>
+  );
+};
 
 export interface WorkspaceSideDrawerProps {
   isOpen: boolean;
@@ -1748,7 +1771,7 @@ export const WorkspaceSideDrawer: React.FC<WorkspaceSideDrawerProps> = ({
           animate="visible"
           exit="exit"
           transition={POPOVER_TRANSITION}
-          className="fixed inset-0 z-50 bg-slate-950/65 dark:bg-black/80 backdrop-blur-xs flex items-stretch justify-end"
+          className="fixed inset-0 z-50 bg-[#1A222C]/70 dark:bg-black/80 backdrop-blur-xs flex items-stretch justify-end"
           onClick={onClose}
         >
           <motion.aside
@@ -1757,16 +1780,12 @@ export const WorkspaceSideDrawer: React.FC<WorkspaceSideDrawerProps> = ({
             exit={{ x: '100%', opacity: 0.9 }}
             transition={SHEET_SPRING}
             onClick={(e) => e.stopPropagation()}
-            className={`w-full md:max-w-2xl h-full bg-[#F7F9FC] dark:bg-[#1A222C] border-l border-[#E2E8F0] dark:border-[#2E3A47] rounded-none shadow-2xl flex flex-col overflow-hidden ${className}`}
+            className={`w-full md:max-w-2xl h-full bg-white dark:bg-[#1C2434] border-l border-[#E2E8F0] dark:border-[#2E3A47] rounded-none shadow-2xl flex flex-col overflow-hidden ${className}`}
           >
             {/* Sticky Header */}
-            <header className="px-4 sm:px-5 py-3.5 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-3 shrink-0">
-              <div className="flex items-center gap-3 min-w-0">
-                {icon && (
-                  <div className="w-9 h-9 rounded-lg bg-[#F1F5F9] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-center text-primary shrink-0">
-                    <Icon name={icon} size={20} />
-                  </div>
-                )}
+            <header className="px-4 sm:px-6 py-3.5 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {icon && <Icon name={icon} size={22} className="text-primary shrink-0" />}
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-sm sm:text-base font-extrabold text-[#1C2434] dark:text-white truncate">
@@ -1789,7 +1808,7 @@ export const WorkspaceSideDrawer: React.FC<WorkspaceSideDrawerProps> = ({
                   onClick={onClose}
                   aria-label={closeLabel}
                   title={closeLabel}
-                  className="min-w-[36px] min-h-[36px] p-1.5 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#333A48] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center"
+                  className="min-w-[36px] min-h-[36px] p-1.5 rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center"
                 >
                   <Icon name="close" size={18} />
                 </button>
@@ -1798,17 +1817,17 @@ export const WorkspaceSideDrawer: React.FC<WorkspaceSideDrawerProps> = ({
 
             {/* Optional Flush Tab Strip */}
             {tabs && (
-              <div className="w-full shrink-0 bg-[#F8FAFC] dark:bg-[#1E293B]/70">{tabs}</div>
+              <div className="w-full shrink-0 bg-white dark:bg-[#1C2434]">{tabs}</div>
             )}
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-3.5 touch-scroll">
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-5 touch-scroll">
               {children}
             </div>
 
             {/* Sticky Footer */}
             {footer && (
-              <footer className="px-4 sm:px-5 py-3 pb-safe bg-white dark:bg-[#1C2434] border-t border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
+              <footer className="px-4 sm:px-6 py-3 pb-safe bg-white dark:bg-[#1C2434] border-t border-[#E2E8F0] dark:border-[#2E3A47] shrink-0">
                 {footer}
               </footer>
             )}
@@ -1862,7 +1881,7 @@ export function Stepper<T extends string | number = number>({
   const containerClasses =
     variant === 'standalone'
       ? 'bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg px-2 sm:px-6 py-2 shadow-xs shrink-0'
-      : 'bg-[#F8FAFC] dark:bg-[#1E293B]/70 border-b border-[#E2E8F0] dark:border-[#2E3A47] px-2 sm:px-6 py-2 shrink-0';
+      : 'bg-[#F8FAFC] dark:bg-[#24303F]/70 border-b border-[#E2E8F0] dark:border-[#2E3A47] px-2 sm:px-6 py-2 shrink-0';
 
   return (
     <div className={`${containerClasses} ${className}`}>
@@ -1875,7 +1894,7 @@ export function Stepper<T extends string | number = number>({
           <div
             aria-hidden="true"
             style={{ left: `${edgeOffsetPct}%`, right: `${edgeOffsetPct}%` }}
-            className="absolute top-5 sm:top-[1.375rem] -translate-y-1/2 h-[1.5px] bg-[#E2E8F0] dark:bg-[#334155] z-0 overflow-hidden"
+            className="absolute top-5 sm:top-[1.375rem] -translate-y-1/2 h-[1.5px] bg-[#E2E8F0] dark:bg-[#2E3A47] z-0 overflow-hidden"
           >
             <motion.div
               className="h-full w-full bg-primary origin-left"
@@ -1905,8 +1924,8 @@ export function Stepper<T extends string | number = number>({
                   isActive
                     ? 'bg-primary text-on-primary shadow-sm ring-2 ring-primary/25'
                     : isCompleted
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-white dark:bg-[#1C2434] border border-[#CBD5E1] dark:border-[#334155] text-[#64748B] dark:text-[#8A99AD] group-hover:border-primary/50 group-hover:text-[#1C2434] dark:group-hover:text-white'
+                    ? 'bg-[#10B981] text-white'
+                    : 'bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] group-hover:border-primary/50 group-hover:text-[#1C2434] dark:group-hover:text-white'
                 }`}
               >
                 {isCompleted ? (

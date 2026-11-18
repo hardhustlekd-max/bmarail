@@ -84,7 +84,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [isUserFilterDrawerOpen, setIsUserFilterDrawerOpen] = useState(false);
   const [userSortField, setUserSortField] = useState<'name' | 'badge' | 'role'>('name');
   const [userSortOrder, setUserSortOrder] = useState<'asc' | 'desc'>('asc');
-  const hasActiveUserSecondaryFilters = roleFilter !== 'all' || userSortField !== 'name' || userSortOrder !== 'asc';
+  const hasActiveUserSecondaryFilters = Boolean(roleFilter !== 'all' || userSortField !== 'name' || userSortOrder !== 'asc' || userSearch.trim());
 
   // Modals
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -108,7 +108,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
   const [auditViewLimit, setAuditViewLimit] = useState(25);
   const [isAuditFilterDrawerOpen, setIsAuditFilterDrawerOpen] = useState(false);
   const [auditSortOrder, setAuditSortOrder] = useState<'asc' | 'desc'>('desc');
-  const hasActiveAuditSecondaryFilters = auditSeverityFilter !== 'all' || auditViewLimit !== 25 || auditSortOrder !== 'desc';
+  const hasActiveAuditSecondaryFilters = Boolean(auditSeverityFilter !== 'all' || auditViewLimit !== 25 || auditSortOrder !== 'desc' || auditSearch.trim());
 
   // Form State for New User
   const [newFullName, setNewFullName] = useState('');
@@ -889,28 +889,57 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
     <div className="space-y-3 pb-3 font-sans text-on-surface">
       {/* Container with header with icon and header text */}
       <div className="bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm overflow-hidden">
-        {/* Header with Icon and Text */}
-        <div className="px-4 sm:px-5 py-3 sm:py-3.5 bg-surface-container border-b border-outline-variant flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-icon-xl sm:text-icon-2xl shrink-0">
-              {activeTab === 'users' && 'group'}
-              {activeTab === 'roles' && 'shield_person'}
-              {activeTab === 'subcities' && 'location_city'}
-              {activeTab === 'permits' && 'workspace_premium'}
-              {activeTab === 'maintenance' && 'storage'}
-              {activeTab === 'security' && 'security'}
-            </Icon>
-            <h2 className="text-xs sm:text-base font-black text-on-surface truncate">
-              {activeTab === 'users' && (isAmharic ? 'የተጠቃሚዎች መዝገብ አስተዳደር' : 'System User Management')}
-              {activeTab === 'roles' && (isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance')}
-              {activeTab === 'subcities' && (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')}
-              {activeTab === 'permits' && (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')}
-              {activeTab === 'maintenance' && (isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance')}
-              {activeTab === 'security' && (isAmharic ? 'የሴኪዩሪቲ ኦዲትና ቁጥጥር' : 'Security & Audit Governance')}
-            </h2>
+        {/* Header with Icon, Text, Maintenance Actions and Flush Tab Strip */}
+        <div className="bg-surface-container border-b border-outline-variant">
+          <div className="px-4 sm:px-5 py-3 sm:py-3.5 flex flex-wrap items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <Icon className="material-symbols-outlined text-amber-600 dark:text-amber-400 text-icon-xl sm:text-icon-2xl shrink-0">
+                {activeTab === 'users' && 'group'}
+                {activeTab === 'roles' && 'shield_person'}
+                {activeTab === 'subcities' && 'location_city'}
+                {activeTab === 'permits' && 'workspace_premium'}
+                {activeTab === 'maintenance' && 'storage'}
+                {activeTab === 'security' && 'security'}
+              </Icon>
+              <h2 className="text-xs sm:text-base font-black text-on-surface truncate">
+                {activeTab === 'users' && (isAmharic ? 'የተጠቃሚዎች መዝገብ አስተዳደር' : 'System User Management')}
+                {activeTab === 'roles' && (isAmharic ? 'የሚና ፈቃዶች አስተዳደር' : 'Role Permissions Governance')}
+                {activeTab === 'subcities' && (isAmharic ? 'የክፍለ ከተማ ቁጥጥር' : 'Sub-City Governance')}
+                {activeTab === 'permits' && (isAmharic ? 'የፈቃድ ቁጥጥር' : 'Master Permit Rules')}
+                {activeTab === 'maintenance' && (isAmharic ? 'የሲስተም ጥገና' : 'System Maintenance')}
+                {activeTab === 'security' && (isAmharic ? 'የሴኪዩሪቲ ኦዲትና ቁጥጥር' : 'Security & Audit Governance')}
+              </h2>
+            </div>
+
+            {activeTab === 'maintenance' && (
+              <div className="flex items-center gap-2 shrink-0">
+                <motion.button
+                  type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
+                  onClick={handleForceSyncDatabase}
+                  className="h-[34px] px-3 py-1.5 bg-surface-container-lowest hover:bg-surface-container-high text-on-surface border border-outline-variant rounded-lg text-11 font-bold transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  <Icon className="material-symbols-outlined text-15 shrink-0">sync</Icon>
+                  <span>{isAmharic ? 'ዳታቤዝ አድስ' : 'Sync DB'}</span>
+                </motion.button>
+                <motion.button
+                  type="button"
+                  data-motion-control="true"
+                  whileTap={TAP_SCALE}
+                  transition={TACTILE_SPRING}
+                  onClick={handleExportFullDatabaseBackup}
+                  className="h-[34px] px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg text-11 font-black transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  <Icon className="material-symbols-outlined text-15 shrink-0">download</Icon>
+                  <span>{isAmharic ? 'ባክአፕ አውርድ' : 'Export'}</span>
+                </motion.button>
+              </div>
+            )}
           </div>
 
-          <div className="relative z-10 flex items-end gap-1 sm:gap-2 flex-wrap sm:flex-nowrap overflow-x-auto scrollbar-none max-w-full border-b border-outline-variant/60 pt-2.5 px-2">
+          <div className="relative z-10 flex items-end gap-1 sm:gap-2 flex-nowrap overflow-x-auto scrollbar-none max-w-full min-w-0 border-t border-outline-variant/60 pt-2 px-3 sm:px-5">
             {superAdminTabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -918,7 +947,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id)}
-                  className={`group flex items-center gap-1.5 min-h-[44px] sm:min-h-0 py-2 px-3 text-xs transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
+                  className={`group flex items-center gap-1.5 h-9 py-2 px-3 text-xs transition-all cursor-pointer whitespace-nowrap shrink-0 select-none ${
                     isActive
                       ? 'relative top-[1px] z-10 border-t border-l border-r border-outline-variant border-b-0 bg-surface-container-lowest text-primary font-bold rounded-t-md'
                       : 'border border-transparent text-secondary hover:text-on-surface font-medium'
@@ -927,7 +956,7 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   <span className="tracking-tight">{tab.label}</span>
                   {typeof tab.count === 'number' && (
                     <span
-                      className={`text-2xs px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors ${
+                      className={`text-2xs px-1.5 py-0.5 rounded-full font-mono font-bold transition-colors leading-none ${
                         isActive
                           ? 'bg-primary/15 text-primary'
                           : 'bg-surface-container-highest text-secondary'
@@ -940,33 +969,6 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               );
             })}
           </div>
-          
-          {activeTab === 'maintenance' && (
-            <div className="flex items-center gap-2">
-              <motion.button
-                type="button"
-                data-motion-control="true"
-                whileTap={TAP_SCALE}
-                transition={TACTILE_SPRING}
-                onClick={handleForceSyncDatabase}
-                className="min-h-[44px] sm:min-h-0 px-3 py-1.5 bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant rounded-lg text-11 font-bold transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-15">sync</Icon>
-                <span>{isAmharic ? 'ዳታቤዝ አድስ' : 'Sync DB'}</span>
-              </motion.button>
-              <motion.button
-                type="button"
-                data-motion-control="true"
-                whileTap={TAP_SCALE}
-                transition={TACTILE_SPRING}
-                onClick={handleExportFullDatabaseBackup}
-                className="min-h-[44px] sm:min-h-0 px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg text-11 font-black transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <Icon className="material-symbols-outlined text-15">download</Icon>
-                <span>{isAmharic ? 'ባክአፕ አውርድ' : 'Export'}</span>
-              </motion.button>
-            </div>
-          )}
         </div>
 
         {/* Body Container holding page content */}
@@ -976,38 +978,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
       {activeTab === 'users' && (
         <div className="space-y-3">
           {/* Controls & Search Bar with Collapsible Filter Drawer */}
-          <div className="flex flex-col gap-2 pb-1.5">
+          <div className="flex flex-col gap-2 pb-1.5 w-full min-w-0">
             {/* TIER 1: PRIMARY TOOLBAR */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
-                  <input
-                    type="text"
-                    value={userSearch}
-                    onChange={(e) => setUserSearch(e.target.value)}
-                    placeholder={
-                      isAmharic
-                        ? 'በስም፣ መታወቂያ ወይም ስልክ ቁጥር ፈልግ...'
-                        : 'Search by name, badge ID, or phone...'
-                    }
-                    className="w-full h-8 bg-surface-container border border-outline-variant rounded-md pl-8 pr-7 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-primary"
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
-                    <Icon className="material-symbols-outlined text-icon-sm">
-                      search
-                    </Icon>
-                  </div>
-                  {userSearch && (
-                    <button
-                      type="button"
-                      onClick={() => setUserSearch('')}
-                      className="absolute inset-y-0 right-2 flex items-center text-outline hover:text-on-surface cursor-pointer"
-                    >
-                      <Icon className="material-symbols-outlined text-15">close</Icon>
-                    </button>
-                  )}
-                </div>
-
+            <div className="flex flex-row flex-wrap items-center justify-between gap-2 w-full max-w-full min-w-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {/* Filter Drawer Toggle Button */}
                 <motion.button
                   type="button"
@@ -1015,32 +989,33 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={() => setIsUserFilterDrawerOpen((prev) => !prev)}
-                  className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3 sm:px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                  className={`h-[34px] px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap select-none ${
                     isUserFilterDrawerOpen || hasActiveUserSecondaryFilters
                       ? 'border-primary bg-primary/10 text-primary'
                       : 'border-outline-variant bg-surface-container text-secondary hover:text-on-surface'
                   }`}
                   title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
                 >
-                  <Icon className="material-symbols-outlined text-icon-sm">tune</Icon>
-                  <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                  <Icon className="material-symbols-outlined text-icon-sm shrink-0">tune</Icon>
+                  <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
                   {hasActiveUserSecondaryFilters && (
                     <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                   )}
                 </motion.button>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 shrink-0">
+              <div className="flex flex-row items-center gap-1.5 shrink-0 ms-auto">
                 <motion.button
                   type="button"
                   data-motion-control="true"
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={() => setActiveTab('roles')}
-                  className="w-full sm:w-auto min-h-[44px] sm:min-h-0 sm:h-8 px-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="h-[34px] px-2.5 sm:px-3 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-md text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1 cursor-pointer whitespace-nowrap shrink-0"
+                  title={isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}
                 >
-                  <Icon className="material-symbols-outlined text-icon-sm">shield_person</Icon>
-                  <span>{isAmharic ? 'የሚና ፈቃዶች' : 'Role Permissions'}</span>
+                  <Icon className="material-symbols-outlined text-icon-sm shrink-0">shield_person</Icon>
+                  <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'ፈቃዶች' : 'Roles'}</span>
                 </motion.button>
 
                 <motion.button
@@ -1049,10 +1024,11 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   whileTap={TAP_SCALE}
                   transition={TACTILE_SPRING}
                   onClick={() => setShowAddUserModal(true)}
-                  className="w-full sm:w-auto min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-extrabold transition-colors flex items-center justify-center gap-1.5 shadow-xs shrink-0 cursor-pointer"
+                  className="h-[34px] px-2.5 sm:px-3.5 bg-primary hover:bg-primary-hover text-on-primary rounded-md text-xs font-extrabold transition-colors flex items-center justify-center gap-1 shadow-xs shrink-0 cursor-pointer whitespace-nowrap"
+                  title={isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}
                 >
-                  <Icon className="material-symbols-outlined text-icon-sm">person_add</Icon>
-                  <span>{isAmharic ? 'አዲስ ተጠቃሚ መዝግብ' : 'Add System User'}</span>
+                  <Icon className="material-symbols-outlined text-icon-sm shrink-0">person_add</Icon>
+                  <span className="whitespace-nowrap shrink-0">{isAmharic ? 'አዲስ' : 'New'}</span>
                 </motion.button>
               </div>
             </div>
@@ -1065,18 +1041,48 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={POPOVER_TRANSITION}
-                  className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md"
+                  className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md space-y-2.5 w-full max-w-full min-w-0"
                 >
-                  <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                  {/* Search Bar inside Expandable Filter Section */}
+                  <div className="relative w-full max-w-md min-w-0">
+                    <input
+                      type="text"
+                      value={userSearch}
+                      onChange={(e) => setUserSearch(e.target.value)}
+                      placeholder={
+                        isAmharic
+                          ? 'በስም፣ መታወቂያ ወይም ስልክ ቁጥር ፈልግ...'
+                          : 'Search by name, badge ID, or phone...'
+                      }
+                      className="w-full h-[34px] bg-surface-container border border-outline-variant rounded-md pl-8 pr-8 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-primary"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                      <Icon className="material-symbols-outlined text-icon-sm">
+                        search
+                      </Icon>
+                    </div>
+                    {userSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setUserSearch('')}
+                        className="absolute inset-y-0 right-2 flex items-center text-outline hover:text-on-surface cursor-pointer"
+                        title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
+                      >
+                        <Icon className="material-symbols-outlined text-15">close</Icon>
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs w-full min-w-0">
                     {/* Role Filter */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-secondary text-11 font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                      <span className="text-secondary text-11 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                         {isAmharic ? 'ሚና:' : 'Role:'}
                       </span>
                       <select
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value)}
-                        className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                        className="h-[34px] py-1 px-2.5 bg-surface-container border border-outline-variant rounded-md text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                       >
                         <option value="all">{isAmharic ? 'ሁሉም ሚናዎች (All Roles)' : 'All Roles'}</option>
                         <option value="superadmin">{isAmharic ? 'ዋና አስተዳዳሪ (Super Admin)' : 'Super Admin'}</option>
@@ -1087,14 +1093,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     </div>
 
                     {/* Sort Field */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-secondary text-11 font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                      <span className="text-secondary text-11 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                         {isAmharic ? 'ቅደም ተከተል:' : 'Sort:'}
                       </span>
                       <select
                         value={userSortField}
                         onChange={(e) => setUserSortField(e.target.value as any)}
-                        className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs text-on-surface font-medium focus:outline-hidden focus:border-primary"
+                        className="h-[34px] py-1 px-2.5 bg-surface-container border border-outline-variant rounded-md text-xs text-on-surface font-medium focus:outline-hidden focus:border-primary cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                       >
                         <option value="name">{isAmharic ? 'በስም' : 'Name'}</option>
                         <option value="badge">{isAmharic ? 'በመታወቂያ' : 'Badge ID'}</option>
@@ -1107,10 +1113,10 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                         whileTap={TAP_SCALE}
                         transition={TACTILE_SPRING}
                         onClick={() => setUserSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                        className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-7 sm:w-7 flex items-center justify-center bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer"
+                        className="h-[34px] w-[34px] flex items-center justify-center bg-surface-container border border-outline-variant rounded-md text-secondary hover:text-on-surface cursor-pointer shrink-0"
                         title={userSortOrder === 'asc' ? 'Ascending' : 'Descending'}
                       >
-                        <Icon className="material-symbols-outlined text-15">
+                        <Icon className="material-symbols-outlined text-15 shrink-0">
                           {userSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
                         </Icon>
                       </motion.button>
@@ -1129,9 +1135,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                           setUserSortOrder('asc');
                           setUserSearch('');
                         }}
-                        className="min-h-[44px] sm:min-h-0 sm:h-7 px-3 sm:px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                        className="h-[34px] px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs shrink-0 whitespace-nowrap ms-auto"
                       >
-                        <Icon className="material-symbols-outlined text-icon-xs">restart_alt</Icon>
+                        <Icon className="material-symbols-outlined text-icon-xs shrink-0">restart_alt</Icon>
                         <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
                       </motion.button>
                     )}
@@ -1624,55 +1630,33 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
 
           {/* Real-Time Audit Log Table (Semantic Tokens) */}
           <div className="rounded-sm border border-outline-variant bg-surface-container shadow-xs overflow-hidden">
-            <div className="p-3 sm:p-4 border-b border-outline-variant flex flex-col gap-2">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-sm text-on-surface flex items-center gap-2">
-                    <Icon className="material-symbols-outlined text-icon-md text-primary">history</Icon>
-                    {isAmharic ? 'የሲስተም ኦዲት ታሪክ (System Audit Logs)' : 'System Audit Trail'}
+            <div className="p-3 sm:p-4 border-b border-outline-variant flex flex-col gap-2 w-full min-w-0">
+              <div className="flex flex-row items-center justify-between gap-2 w-full min-w-0">
+                <div className="flex items-center gap-2 min-w-0 flex-1 flex-wrap">
+                  <h3 className="font-semibold text-sm text-on-surface flex items-center gap-2 min-w-0">
+                    <Icon className="material-symbols-outlined text-icon-md text-primary shrink-0">history</Icon>
+                    <span className="truncate">{isAmharic ? 'የሲስተም ኦዲት ታሪክ (System Audit Logs)' : 'System Audit Trail'}</span>
                   </h3>
-                  <span className="text-xs text-secondary font-mono">({filteredAuditLogs.length} / {auditLogs.length})</span>
+                  <span className="text-xs text-secondary font-mono shrink-0">({filteredAuditLogs.length} / {auditLogs.length})</span>
                 </div>
 
-                {/* Primary Search + Filter Button */}
-                <div className="flex items-center gap-2">
-                  <div className="relative flex-1 sm:w-64">
-                    <input
-                      type="text"
-                      value={auditSearch}
-                      onChange={(e) => setAuditSearch(e.target.value)}
-                      placeholder={isAmharic ? 'በመታወቂያ ወይም ዝርዝር ፈልግ...' : 'Search badge or details...'}
-                      className="w-full h-8 bg-surface-container-high/60 border border-outline-variant rounded-md pl-8 pr-7 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-primary"
-                    />
-                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
-                      <Icon className="material-symbols-outlined text-15">search</Icon>
-                    </div>
-                    {auditSearch && (
-                      <button
-                        type="button"
-                        onClick={() => setAuditSearch('')}
-                        className="absolute inset-y-0 right-2 flex items-center text-outline hover:text-on-surface cursor-pointer"
-                      >
-                        <Icon className="material-symbols-outlined text-15">close</Icon>
-                      </button>
-                    )}
-                  </div>
-
+                {/* Filter Drawer Toggle Button */}
+                <div className="flex items-center gap-2 shrink-0">
                   <motion.button
                     type="button"
                     data-motion-control="true"
                     whileTap={TAP_SCALE}
                     transition={TACTILE_SPRING}
                     onClick={() => setIsAuditFilterDrawerOpen((prev) => !prev)}
-                    className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3 sm:px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none ${
+                    className={`h-[34px] px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap select-none ${
                       isAuditFilterDrawerOpen || hasActiveAuditSecondaryFilters
                         ? 'border-primary bg-primary/10 text-primary'
                         : 'border-outline-variant bg-surface-container text-secondary hover:text-on-surface'
                     }`}
                     title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
                   >
-                    <Icon className="material-symbols-outlined text-icon-sm">tune</Icon>
-                    <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                    <Icon className="material-symbols-outlined text-icon-sm shrink-0">tune</Icon>
+                    <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
                     {hasActiveAuditSecondaryFilters && (
                       <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                     )}
@@ -1688,18 +1672,42 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={POPOVER_TRANSITION}
-                    className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md"
+                    className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md space-y-2.5 w-full max-w-full min-w-0"
                   >
-                    <div className="flex flex-wrap items-center gap-2.5 text-xs">
+                    {/* Search Bar inside Expandable Filter Section */}
+                    <div className="relative w-full max-w-md min-w-0">
+                      <input
+                        type="text"
+                        value={auditSearch}
+                        onChange={(e) => setAuditSearch(e.target.value)}
+                        placeholder={isAmharic ? 'በመታወቂያ ወይም ዝርዝር ፈልግ...' : 'Search badge or details...'}
+                        className="w-full h-[34px] bg-surface-container border border-outline-variant rounded-md pl-8 pr-8 py-0 text-xs font-semibold text-on-surface focus:outline-hidden focus:border-primary"
+                      />
+                      <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                        <Icon className="material-symbols-outlined text-15">search</Icon>
+                      </div>
+                      {auditSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setAuditSearch('')}
+                          className="absolute inset-y-0 right-2 flex items-center text-outline hover:text-on-surface cursor-pointer"
+                          title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
+                        >
+                          <Icon className="material-symbols-outlined text-15">close</Icon>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2.5 text-xs w-full min-w-0">
                       {/* Severity Filter */}
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-secondary text-11 font-bold uppercase tracking-wider">
+                      <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                        <span className="text-secondary text-11 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                           {isAmharic ? 'ስጋት ደረጃ:' : 'Severity:'}
                         </span>
                         <select
                           value={auditSeverityFilter}
                           onChange={(e) => setAuditSeverityFilter(e.target.value as any)}
-                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                          className="h-[34px] py-1 px-2.5 bg-surface-container border border-outline-variant rounded-md text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                         >
                           <option value="all">{isAmharic ? 'ሁሉም ደረጃዎች' : 'All Severities'}</option>
                           <option value="info">Info</option>
@@ -1709,14 +1717,14 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       </div>
 
                       {/* Limit */}
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-secondary text-11 font-bold uppercase tracking-wider">
+                      <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                        <span className="text-secondary text-11 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                           {isAmharic ? 'ገደብ:' : 'Limit:'}
                         </span>
                         <select
                           value={auditViewLimit}
                           onChange={(e) => setAuditViewLimit(Number(e.target.value))}
-                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 bg-surface-container border border-outline-variant rounded text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary"
+                          className="h-[34px] py-1 px-2.5 bg-surface-container border border-outline-variant rounded-md text-xs font-bold text-on-surface cursor-pointer focus:outline-hidden focus:border-primary min-w-0"
                         >
                           <option value={25}>25</option>
                           <option value={50}>50</option>
@@ -1725,8 +1733,8 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                       </div>
 
                       {/* Sort Order Toggle */}
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-secondary text-11 font-bold uppercase tracking-wider">
+                      <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                        <span className="text-secondary text-11 font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                           {isAmharic ? 'ቅደም ተከተል:' : 'Order:'}
                         </span>
                         <motion.button
@@ -1735,9 +1743,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                           whileTap={TAP_SCALE}
                           transition={TACTILE_SPRING}
                           onClick={() => setAuditSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-2.5 sm:px-2 flex items-center gap-1 bg-surface-container border border-outline-variant rounded text-secondary hover:text-on-surface cursor-pointer font-medium"
+                          className="h-[34px] px-2.5 flex items-center gap-1 bg-surface-container border border-outline-variant rounded-md text-secondary hover:text-on-surface cursor-pointer font-medium shrink-0 whitespace-nowrap"
                         >
-                          <Icon className="material-symbols-outlined text-15">
+                          <Icon className="material-symbols-outlined text-15 shrink-0">
                             {auditSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
                           </Icon>
                           <span>{auditSortOrder === 'asc' ? 'Oldest First' : 'Newest First'}</span>
@@ -1757,9 +1765,9 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
                             setAuditViewLimit(25);
                             setAuditSortOrder('desc');
                           }}
-                          className="min-h-[44px] sm:min-h-0 sm:h-7 px-3 sm:px-2.5 rounded text-xs font-bold text-[#FB5454] hover:bg-[#FB5454]/10 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                          className="h-[34px] px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs shrink-0 whitespace-nowrap ms-auto"
                         >
-                          <Icon className="material-symbols-outlined text-icon-xs">restart_alt</Icon>
+                          <Icon className="material-symbols-outlined text-icon-xs shrink-0">restart_alt</Icon>
                           <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
                         </motion.button>
                       )}
@@ -2046,45 +2054,106 @@ export const SuperAdminInterface: React.FC<SuperAdminInterfaceProps> = ({
               </div>
             </div>
 
-            {/* Audit Filters */}
-            <div className="flex flex-col sm:flex-row gap-2 items-center justify-between">
-              <div className="w-full sm:w-72 relative">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
-                  <Icon className="material-symbols-outlined text-icon-sm">
-                    search
-                  </Icon>
+            {/* Audit Filters (Tier 1 + Expandable Tier 2 Search Drawer) */}
+            <div className="flex flex-col gap-2 w-full min-w-0">
+              <div className="flex flex-row items-center justify-between gap-2 w-full max-w-full min-w-0">
+                <div className="flex items-center min-w-0 max-w-full flex-1 overflow-x-auto scrollbar-none">
+                  <div className="flex min-w-full w-max items-center gap-1 p-0.5 rounded-md bg-surface-container border border-outline-variant min-h-[34px] whitespace-nowrap">
+                    {(['all', 'info', 'warning', 'critical'] as const).map((sev) => (
+                      <button
+                        key={sev}
+                        type="button"
+                        onClick={() => setAuditSeverityFilter(sev)}
+                        className={`flex-1 h-7 px-2.5 rounded text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center justify-center ${
+                          auditSeverityFilter === sev
+                            ? 'bg-[#1e293b] dark:bg-primary text-white dark:text-on-primary shadow-xs'
+                            : 'text-on-surface hover:bg-surface-container-high'
+                        }`}
+                      >
+                        {sev === 'all'
+                          ? isAmharic ? 'ሁሉም' : 'All'
+                          : sev === 'critical'
+                          ? isAmharic ? 'አስጊ (Critical)' : 'Critical'
+                          : sev === 'warning'
+                          ? isAmharic ? 'ማስጠንቀቂያ' : 'Warning'
+                          : isAmharic ? 'መረጃ (Info)' : 'Info'}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  value={auditSearch}
-                  onChange={(e) => setAuditSearch(e.target.value)}
-                  placeholder={isAmharic ? 'በመታወቂያ ወይም በድርጊት ፈልግ...' : 'Search by badge, action, details...'}
-                  className="w-full h-8 pl-8 pr-3 py-0 bg-surface-container border border-outline-variant rounded-md text-xs font-semibold focus:outline-hidden focus:border-[#1e293b]"
-                />
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsAuditFilterDrawerOpen((prev) => !prev)}
+                    className={`h-[34px] px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap select-none ${
+                      isAuditFilterDrawerOpen || hasActiveAuditSecondaryFilters
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-outline-variant bg-surface-container text-secondary hover:text-on-surface'
+                    }`}
+                    title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Search'}
+                  >
+                    <Icon className="material-symbols-outlined text-icon-sm shrink-0">tune</Icon>
+                    <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                    {hasActiveAuditSecondaryFilters && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    )}
+                  </button>
+                </div>
               </div>
 
-              <div className="flex items-center gap-1 w-full sm:w-auto overflow-x-auto flex-nowrap scrollbar-none max-w-full">
-                {(['all', 'info', 'warning', 'critical'] as const).map((sev) => (
-                  <button
-                    key={sev}
-                    type="button"
-                    onClick={() => setAuditSeverityFilter(sev)}
-                    className={`h-8 px-2.5 rounded-md text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center ${
-                      auditSeverityFilter === sev
-                        ? 'bg-[#1e293b] text-white shadow-xs'
-                        : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
-                    }`}
+              <AnimatePresence>
+                {isAuditFilterDrawerOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={POPOVER_TRANSITION}
+                    className="p-2.5 bg-surface-container-high/40 border border-outline-variant rounded-md flex flex-wrap items-center gap-2.5 w-full max-w-full min-w-0"
                   >
-                    {sev === 'all'
-                      ? isAmharic ? 'ሁሉም' : 'All'
-                      : sev === 'critical'
-                      ? isAmharic ? 'አስጊ (Critical)' : 'Critical'
-                      : sev === 'warning'
-                      ? isAmharic ? 'ማስጠንቀቂያ' : 'Warning'
-                      : isAmharic ? 'መረጃ (Info)' : 'Info'}
-                  </button>
-                ))}
-              </div>
+                    <div className="relative flex-1 min-w-0 w-full sm:w-auto sm:min-w-[200px] max-w-md">
+                      <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline">
+                        <Icon className="material-symbols-outlined text-icon-sm">
+                          search
+                        </Icon>
+                      </div>
+                      <input
+                        type="text"
+                        value={auditSearch}
+                        onChange={(e) => setAuditSearch(e.target.value)}
+                        placeholder={isAmharic ? 'በመታወቂያ ወይም በድርጊት ፈልግ...' : 'Search by badge, action, details...'}
+                        className="w-full h-[34px] pl-8 pr-8 py-0 bg-surface-container border border-outline-variant rounded-md text-xs font-semibold focus:outline-hidden focus:border-primary"
+                      />
+                      {auditSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setAuditSearch('')}
+                          className="absolute inset-y-0 right-2 flex items-center text-outline hover:text-on-surface cursor-pointer"
+                          title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
+                        >
+                          <Icon className="material-symbols-outlined text-15">close</Icon>
+                        </button>
+                      )}
+                    </div>
+
+                    {(hasActiveAuditSecondaryFilters || auditSearch) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAuditSearch('');
+                          setAuditSeverityFilter('all');
+                          setAuditViewLimit(25);
+                          setAuditSortOrder('desc');
+                        }}
+                        className="h-[34px] px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs shrink-0 whitespace-nowrap ms-auto"
+                      >
+                        <Icon className="material-symbols-outlined text-icon-xs shrink-0">restart_alt</Icon>
+                        <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Audit Logs Table (Semantic Design Tokens) */}

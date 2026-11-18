@@ -90,7 +90,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining: null,
       labelAm: 'ክፍያ አልተመዘገበም',
       labelEn: 'No Receipt',
-      badgeClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-300 dark:border-slate-700',
+      badgeClass: 'bg-[#F7F9FC] text-[#475569] dark:bg-[#24303F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47]',
     };
   }
 
@@ -102,7 +102,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining,
       labelAm: `ክፍያ የፈጸሙ (${daysRemaining} ቀናት)`,
       labelEn: `Paid (${daysRemaining}d)`,
-      badgeClass: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700 font-semibold shadow-2xs',
+      badgeClass: 'bg-emerald-50 text-emerald-700 dark:bg-[#10B981]/15 dark:text-[#6EE7B7] border border-emerald-200/80 dark:border-[#10B981]/30 font-semibold shadow-2xs',
     };
   } else if (status === 'expiring_soon') {
     return {
@@ -110,7 +110,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining,
       labelAm: `ሊያልቅ የደረሰ (${daysRemaining} ቀናት)`,
       labelEn: `Expiring Soon (${daysRemaining}d)`,
-      badgeClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 font-semibold shadow-2xs',
+      badgeClass: 'bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300 border border-amber-200/80 dark:border-amber-500/30 font-semibold shadow-2xs',
     };
   } else {
     return {
@@ -118,7 +118,7 @@ export function getUnifiedPaymentCompliance(
       daysRemaining,
       labelAm: 'ጊዜው ያለፈበት',
       labelEn: 'Over due',
-      badgeClass: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-700 font-semibold shadow-2xs',
+      badgeClass: 'bg-rose-50 text-rose-700 dark:bg-[#FB5454]/15 dark:text-[#FDA4AF] border border-rose-200/80 dark:border-[#FB5454]/30 font-semibold shadow-2xs',
     };
   }
 }

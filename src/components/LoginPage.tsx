@@ -80,7 +80,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     <div className="w-full h-full flex-1 flex flex-col font-sans text-on-surface bg-surface min-h-0 overflow-y-auto">
       
       {/* ================= TOP NAVBAR ================= */}
-      <header className="w-full bg-[#1e293b] text-white shadow-sm px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4 border-b border-slate-700/60">
+      <header className="w-full bg-[#1C2434] text-white shadow-sm px-3 sm:px-8 py-2.5 sm:py-3 flex items-center justify-between shrink-0 z-50 gap-2 sm:gap-4 border-b border-[#2E3A47]">
         
         {/* Left Brand & Logo */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink">
@@ -124,16 +124,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={POPOVER_TRANSITION}
-                className="p-3 rounded-lg text-xs bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex items-start gap-2.5 shadow-2xs"
+                className="p-3 rounded-lg text-xs bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-[#DEE4EE] flex items-start gap-2.5 shadow-2xs"
               >
-                <Icon className="material-symbols-outlined text-icon-md text-slate-600 dark:text-slate-400 shrink-0 mt-0.5">
+                <Icon className="material-symbols-outlined text-icon-md text-primary shrink-0 mt-0.5">
                   info
                 </Icon>
                 <div className="flex-1 min-w-0">
-                  <span className="block font-black text-xs text-slate-900 dark:text-slate-100">
+                  <span className="block font-black text-xs text-[#1C2434] dark:text-white">
                     {lang === 'am' ? 'የስራ ክፍለ-ጊዜ ማብቂያ' : 'Session Expired for Security'}
                   </span>
-                  <span className="text-11 font-medium leading-relaxed block mt-0.5 text-slate-600 dark:text-slate-400">
+                  <span className="text-11 font-medium leading-relaxed block mt-0.5 text-[#64748B] dark:text-[#8A99AD]">
                     {sessionExpiredMessage}
                   </span>
                 </div>
@@ -141,7 +141,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   <button
                     type="button"
                     onClick={onClearSessionExpiredMessage}
-                    className="w-9 h-9 -mr-1.5 -mt-1.5 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer shrink-0 transition-colors"
+                    className="w-9 h-9 -mr-1.5 -mt-1.5 flex items-center justify-center text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white rounded-lg hover:bg-[#E2E8F0]/60 dark:hover:bg-[#333A48] cursor-pointer shrink-0 transition-colors"
                     title={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
                     aria-label={lang === 'am' ? 'ዝጋ' : 'Dismiss'}
                   >
@@ -158,9 +158,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
                 transition={POPOVER_TRANSITION}
-                className="p-3 rounded-lg text-xs font-bold bg-rose-50 dark:bg-rose-950/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 flex items-center gap-2 shadow-2xs"
+                className="p-3 rounded-lg text-xs font-bold bg-rose-50 dark:bg-[#FB5454]/15 border border-rose-200 dark:border-[#FB5454]/30 text-rose-700 dark:text-[#FDA4AF] flex items-center gap-2 shadow-2xs"
               >
-                <Icon className="material-symbols-outlined text-icon-sm text-rose-600 dark:text-rose-400 shrink-0">error</Icon>
+                <Icon className="material-symbols-outlined text-icon-sm text-rose-600 dark:text-[#FB5454] shrink-0">error</Icon>
                 <span>{authError}</span>
               </motion.div>
             )}

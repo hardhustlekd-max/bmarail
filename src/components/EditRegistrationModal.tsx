@@ -337,14 +337,12 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
         exit="exit"
         transition={TACTILE_SPRING}
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#F7F9FC] dark:bg-[#1A222C] border-0 sm:border border-[#E2E8F0] dark:border-[#2E3A47] rounded-none sm:rounded-xl max-w-3xl w-full h-full h-[100dvh] sm:h-[88vh] max-h-full max-h-[100dvh] sm:max-h-[88vh] flex flex-col shadow-2xl overflow-hidden"
+        className="bg-white dark:bg-[#1C2434] border-0 sm:border border-[#E2E8F0] dark:border-[#2E3A47] rounded-none sm:rounded-xl max-w-3xl w-full h-full h-[100dvh] sm:h-[88vh] max-h-full max-h-[100dvh] sm:max-h-[88vh] flex flex-col shadow-2xl overflow-hidden"
       >
         {/* Harmonized Sticky Header matching Information Drawer */}
-        <header className="px-4 sm:px-5 py-3.5 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-lg bg-[#F1F5F9] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-center text-primary shrink-0">
-              <Icon name="edit_document" size={20} />
-            </div>
+        <header className="px-4 sm:px-6 py-3.5 bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-3 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Icon name="edit_document" size={22} className="text-primary shrink-0" />
             <div className="min-w-0">
               <h3 className="text-sm sm:text-base font-extrabold text-[#1C2434] dark:text-white truncate">
                 {isAmharic ? 'የአባል መረጃ ማሻሻያ' : 'Edit Member Registration'}
@@ -360,7 +358,7 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
             disabled={isSubmitting}
             aria-label={isAmharic ? 'ዝጋ' : 'Close'}
             title={isAmharic ? 'ዝጋ' : 'Close'}
-            className="min-w-[36px] min-h-[36px] p-1.5 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#333A48] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center shrink-0 disabled:opacity-50"
+            className="min-w-[36px] min-h-[36px] p-1.5 rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white transition-colors cursor-pointer flex items-center justify-center shrink-0 disabled:opacity-50"
           >
             <Icon name="close" size={18} />
           </button>
@@ -764,37 +762,37 @@ export const EditRegistrationModal: React.FC<EditRegistrationModalProps> = ({
                       </label>
                     )}
 
-                    {/* Review Summary Card matching Information Drawer DataField tiles */}
-                    <div className="grid grid-cols-2 gap-2.5">
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] p-2.5 rounded-lg">
-                        <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD] block">
+                    {/* Review Summary Grid matching refactored Information Drawer */}
+                    <div className="grid grid-cols-2 gap-x-5 gap-y-3.5 pt-3.5 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                           {isAmharic ? 'ባለቤት' : 'Owner'}
                         </span>
-                        <span className="text-xs font-bold text-[#1C2434] dark:text-white block truncate mt-0.5">
+                        <span className="text-xs sm:text-[13px] font-bold text-[#1C2434] dark:text-white block truncate mt-0.5">
                           {fullName || '—'}
                         </span>
                       </div>
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] p-2.5 rounded-lg">
-                        <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD] block">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                           {isAmharic ? 'ሰሌዳ' : 'Plate'}
                         </span>
-                        <span className="text-xs font-mono font-extrabold text-[#1C2434] dark:text-white block truncate mt-0.5">
+                        <span className="text-xs sm:text-[13px] font-mono font-extrabold text-[#1C2434] dark:text-white block truncate mt-0.5 tabular-nums">
                           {plateNumber || '—'}
                         </span>
                       </div>
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] p-2.5 rounded-lg">
-                        <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD] block">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                           {isAmharic ? 'ክፍለ ከተማ' : 'Sub-City'}
                         </span>
-                        <span className="text-xs font-bold text-[#1C2434] dark:text-white block truncate mt-0.5">
+                        <span className="text-xs sm:text-[13px] font-bold text-[#1C2434] dark:text-white block truncate mt-0.5">
                           {subCity}
                         </span>
                       </div>
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] p-2.5 rounded-lg">
-                        <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD] block">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                           {isAmharic ? 'የተያያዙ ሰነዶች' : 'Uploaded Files'}
                         </span>
-                        <span className="text-xs font-mono font-bold text-primary block truncate mt-0.5 tabular-nums">
+                        <span className="text-xs sm:text-[13px] font-mono font-bold text-primary block truncate mt-0.5 tabular-nums">
                           {[userPortraitPhoto, nationalIdPhoto, nationalIdBackPhoto, drivingLicensePhoto, drivingPermitPhoto].filter(Boolean).length} / 5
                         </span>
                       </div>

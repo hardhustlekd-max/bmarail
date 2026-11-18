@@ -209,7 +209,7 @@ export const ActionTriggerSecondary = ({
     type="button"
     disabled={disabled}
     onClick={onClick}
-    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-white dark:bg-[#1C2434] hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 border border-[#E2E8F0] dark:border-[#2E3A47] shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/30 transition-colors duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    className={`min-h-[44px] px-5 py-2.5 rounded-lg bg-white dark:bg-[#1C2434] hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 border border-[#E2E8F0] dark:border-[#2E3A47] shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 transition-colors duration-150 cursor-pointer select-none disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
   >
     <Icon name={icon} size={20} />
     <span className="whitespace-nowrap">{label}</span>
@@ -261,12 +261,12 @@ export const Badge = ({
   className?: string;
 }) => {
   const variantClasses = {
-    neutral: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 font-semibold',
-    primary: 'bg-[#F1F5F9] dark:bg-[#24303F] text-[#0F172A] dark:text-[#F8FAFC] border-[#CBD5E1] dark:border-[#334155] font-bold',
-    success: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/80 dark:border-emerald-800/60 font-bold',
-    warning: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 font-bold',
-    error: 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200/80 dark:border-rose-800/60 font-bold',
-    info: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 font-semibold',
+    neutral: 'bg-[#F7F9FC] dark:bg-[#24303F] text-[#475569] dark:text-[#CBD5E1] border-[#E2E8F0] dark:border-[#2E3A47] font-semibold',
+    primary: 'bg-primary/10 dark:bg-primary/15 text-primary border-primary/25 dark:border-primary/30 font-bold',
+    success: 'bg-emerald-50 dark:bg-[#10B981]/15 text-emerald-700 dark:text-[#6EE7B7] border-emerald-200/80 dark:border-[#10B981]/30 font-bold',
+    warning: 'bg-amber-50 dark:bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-200/80 dark:border-amber-500/30 font-bold',
+    error: 'bg-rose-50 dark:bg-[#FB5454]/15 text-rose-700 dark:text-[#FDA4AF] border-rose-200/80 dark:border-[#FB5454]/30 font-bold',
+    info: 'bg-primary/10 dark:bg-primary/15 text-primary border-primary/25 dark:border-primary/30 font-semibold',
   };
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs border leading-tight shrink-0 whitespace-nowrap ${variantClasses[variant]} ${className}`}>

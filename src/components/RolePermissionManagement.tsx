@@ -661,10 +661,11 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
             whileTap={TAP_SCALE}
             transition={TACTILE_SPRING}
             onClick={() => setShowNewRoleModal(true)}
-            className="min-h-[44px] sm:min-h-[var(--ui-control-h-sm)] px-3.5 py-2 sm:py-1.5 bg-[#0f172a] dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer border border-transparent dark:border-slate-700 touch-manipulation"
+            className="min-h-[34px] sm:min-h-[var(--ui-control-h-sm)] px-2.5 sm:px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-on-primary rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer border border-transparent touch-manipulation whitespace-nowrap shrink-0"
+            title={isAmharic ? 'አዲስ ሚና' : 'Add Role'}
           >
-            <Icon className="material-symbols-outlined text-icon-sm">add</Icon>
-            <span>{isAmharic ? 'አዲስ ሚና' : 'Add Role'}</span>
+            <Icon className="material-symbols-outlined text-icon-sm shrink-0">add</Icon>
+            <span className="whitespace-nowrap shrink-0">{isAmharic ? 'አዲስ' : 'New'}</span>
           </motion.button>
         </div>
 
@@ -682,24 +683,24 @@ export const RolePermissionManagement: React.FC<RolePermissionManagementProps> =
                 onClick={() => setSelectedRoleId(r.id)}
                 className={`min-h-[calc(54px*var(--ui-scale))] p-3 rounded-xl border text-left transition-colors cursor-pointer relative flex flex-col justify-between gap-2 touch-manipulation ${
                   isSelected
-                    ? 'bg-surface-container-lowest border-[#0f172a] dark:border-blue-400 ring-2 ring-[#0f172a]/20 dark:ring-blue-400/20 shadow-xs'
-                    : 'bg-surface border-outline-variant/60 hover:border-slate-400 hover:bg-surface-container-lowest'
+                    ? 'bg-white dark:bg-[#1C2434] border-primary ring-2 ring-primary/20 shadow-xs'
+                    : 'bg-white dark:bg-[#1C2434] border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary/50 hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full ${r.avatarBg}`} />
                   <span className={`text-2xs font-extrabold px-2 py-0.5 rounded-full ${
-                    isSelected ? 'bg-[#0f172a] dark:bg-primary text-white dark:text-on-primary' : 'bg-surface-container text-secondary'
+                    isSelected ? 'bg-primary text-on-primary' : 'bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD]'
                   }`}>
                     {r.userCountText}
                   </span>
                 </div>
 
                 <div>
-                  <div className="text-xs font-black text-on-surface line-clamp-1">
+                  <div className="text-xs font-black text-[#1C2434] dark:text-white line-clamp-1">
                     {r.titleAm}
                   </div>
-                  <div className="text-2xs font-medium text-secondary line-clamp-1">
+                  <div className="text-2xs font-medium text-[#64748B] dark:text-[#8A99AD] line-clamp-1">
                     {r.titleEn}
                   </div>
                 </div>

@@ -119,20 +119,16 @@ export default function App() {
     Boolean(savedSession?.isLoggedIn) &&
     Date.now() - initialLastActivity >= INACTIVITY_TIMEOUT_MS;
 
-  // Clear stale session on boot if user was away for more than 15 minutes
-  if (isSessionExpiredOnBoot && savedSession) {
-    saveAuthSession(null);
-    clearStoredLastActivity();
-  }
+  const validSession = isSessionExpiredOnBoot ? null : savedSession;
 
   const [isLoggedIn, setIsLoggedIn] = useState(
-    savedSession?.isLoggedIn && !isSessionExpiredOnBoot ? true : false
+    validSession?.isLoggedIn ? true : false
   );
   const [userBadgeId, setUserBadgeId] = useState(
-    savedSession && !isSessionExpiredOnBoot ? savedSession.userBadgeId : ''
+    validSession ? validSession.userBadgeId : ''
   );
   const [userRole, setUserRole] = useState<UserRole>(
-    savedSession && !isSessionExpiredOnBoot ? savedSession.userRole : 'clerk'
+    validSession ? validSession.userRole : 'clerk'
   );
   const [sessionExpiredMessage, setSessionExpiredMessage] = useState<string | null>(
     () => {
@@ -144,6 +140,14 @@ export default function App() {
       return getStoredSessionExpiredReason();
     }
   );
+
+  useEffect(() => {
+    // Clear stale session on boot if user was away for more than 15 minutes
+    if (isSessionExpiredOnBoot && savedSession) {
+      saveAuthSession(null);
+      clearStoredLastActivity();
+    }
+  }, [isSessionExpiredOnBoot, savedSession]);
 
   // Restore state and authentication session on load
   useEffect(() => {

@@ -12,7 +12,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className = '', style }) => 
   return (
     <div
       style={style}
-      className={`animate-pulse bg-slate-200/80 dark:bg-slate-800/80 rounded-md ${className}`}
+      className={`animate-pulse bg-[#E2E8F0] dark:bg-[#24303F] rounded-md ${className}`}
     />
   );
 };
@@ -53,7 +53,7 @@ export const LoadingSpinner: React.FC<{ label?: string; size?: 'sm' | 'md' | 'lg
 
 export const MetricCardSkeleton: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
-    <div className={`p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/60 min-w-0 ${className}`}>
+    <div className={`p-2 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F]/60 border border-[#E2E8F0] dark:border-[#2E3A47] min-w-0 ${className}`}>
       <div className="flex flex-col items-center gap-1.5">
         <Skeleton className="h-3 w-16 sm:w-20" />
         <Skeleton className="h-6 sm:h-8 w-10 sm:w-14 my-0.5" />
@@ -87,7 +87,7 @@ export const MetricGridSkeleton: React.FC<{ count?: number; columns?: number | s
 
 export const TableRowSkeleton: React.FC<{ columnsCount?: number }> = ({ columnsCount = 6 }) => {
   return (
-    <tr className="border-b border-slate-100 dark:border-slate-800">
+    <tr className="border-b border-[#E2E8F0] dark:border-[#2E3A47]">
       {Array.from({ length: columnsCount }).map((_, idx) => (
         <td key={idx} className="px-4 py-3.5">
           <Skeleton className={`h-4 ${idx === 0 ? 'w-24' : idx === 1 ? 'w-32' : 'w-16'}`} />
@@ -103,9 +103,9 @@ export const TableSkeleton: React.FC<{ rows?: number; columnsCount?: number; sho
   showHeaderControls = true,
 }) => {
   return (
-    <div className="w-full bg-white dark:bg-[#1C2434] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+    <div className="w-full bg-white dark:bg-[#1C2434] rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] overflow-hidden shadow-xs">
       {showHeaderControls && (
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+        <div className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-3">
           <Skeleton className="h-8 w-48" />
           <div className="flex gap-2">
             <Skeleton className="h-8 w-20" />
@@ -115,7 +115,7 @@ export const TableSkeleton: React.FC<{ rows?: number; columnsCount?: number; sho
       )}
       <div className="overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800">
+          <thead className="bg-[#F7F9FC] dark:bg-[#24303F] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             <tr>
               {Array.from({ length: columnsCount }).map((_, idx) => (
                 <th key={idx} className="px-4 py-3">
@@ -147,9 +147,9 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
     <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-200">
       {/* 1. Hero QR Scanner Center Placeholder (For Officer Role) */}
       {userRole === 'officer' && (
-        <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-6 sm:p-8 shadow-xs flex flex-col items-center justify-center space-y-4">
+        <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl p-6 sm:p-8 shadow-xs flex flex-col items-center justify-center space-y-4">
           <Skeleton className="h-4 w-48 sm:w-64" />
-          <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+          <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-center">
             <Skeleton className="w-16 h-16 rounded-full" />
           </div>
           <Skeleton className="h-6 w-56" />
@@ -159,9 +159,9 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
       )}
 
       {/* 2. Unified Overview Container */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl shadow-xs overflow-hidden">
         {/* Header bar */}
-        <div className="flex items-center justify-between border-b border-outline-variant/60 px-4 sm:px-5 py-3.5 bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] px-4 sm:px-5 py-3.5 bg-[#F7F9FC] dark:bg-[#24303F]/60">
           <div className="flex items-center gap-2.5">
             <Skeleton className="w-5 h-5 rounded-md" />
             <Skeleton className="h-4 w-28 sm:w-36" />
@@ -169,7 +169,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
           <Skeleton className="h-6 w-24 rounded-full" />
         </div>
 
-        <div className="flex flex-col divide-y divide-outline-variant/60 dark:divide-slate-800">
+        <div className="flex flex-col divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
           {/* Section 1: Monthly Fee Statistics */}
           <div className="p-4 sm:p-5 space-y-3.5">
             <div className="flex items-center justify-between pb-2">
@@ -183,7 +183,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/60 flex flex-col items-center gap-1.5"
+                  className="p-2 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F]/60 border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col items-center gap-1.5"
                 >
                   <Skeleton className="h-3 w-16 sm:w-20" />
                   <Skeleton className="h-6 sm:h-7 w-12 sm:w-16 my-0.5" />
@@ -205,7 +205,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/60 flex flex-col items-center gap-1.5"
+                  className="p-2 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F]/60 border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col items-center gap-1.5"
                 >
                   <Skeleton className="h-3 w-16 sm:w-20" />
                   <Skeleton className="h-6 sm:h-7 w-10 sm:w-14 my-0.5" />
@@ -226,7 +226,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="p-2 sm:p-3 rounded-lg bg-slate-50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/60 flex flex-col items-center gap-1.5"
+                  className="p-2 sm:p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F]/60 border border-[#E2E8F0] dark:border-[#2E3A47] flex flex-col items-center gap-1.5"
                 >
                   <Skeleton className="h-3 w-14 sm:w-18" />
                   <Skeleton className="h-6 sm:h-7 w-8 sm:w-12 my-0.5" />
@@ -238,8 +238,8 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
       </div>
 
       {/* 3. Monthly Matrix Ledger Section Skeleton */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-outline-variant/60 pb-3">
+      <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
           <div className="flex items-center gap-2.5">
             <Skeleton className="w-5 h-5 rounded-md" />
             <div>
@@ -258,7 +258,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
           {Array.from({ length: 5 }).map((_, rIdx) => (
             <div
               key={rIdx}
-              className="p-3 rounded-lg border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/30 flex items-center justify-between gap-3"
+              className="p-3 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]/50 flex items-center justify-between gap-3"
             >
               <div className="flex items-center gap-3">
                 <Skeleton className="w-8 h-8 rounded-full" />
@@ -279,8 +279,8 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
       </div>
 
       {/* 4. Quick Actions Grid Skeleton */}
-      <div className="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
-        <div className="flex items-center gap-2.5 border-b border-outline-variant/60 pb-3">
+      <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl p-4 sm:p-5 shadow-xs space-y-4">
+        <div className="flex items-center gap-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
           <Skeleton className="w-5 h-5 rounded-md" />
           <Skeleton className="h-4 w-36" />
         </div>
@@ -288,7 +288,7 @@ export const DashboardOverviewSkeleton: React.FC<{ userRole?: string; isAmharic?
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-900/30 flex flex-col items-center gap-2"
+              className="p-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]/50 flex flex-col items-center gap-2"
             >
               <Skeleton className="w-10 h-10 rounded-xl" />
               <Skeleton className="h-3.5 w-24" />

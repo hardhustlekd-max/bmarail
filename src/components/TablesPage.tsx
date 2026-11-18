@@ -135,21 +135,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-600 shadow-2xs" title={isAmharic ? 'የተፈቀደ' : 'Approved'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-[#10B981]/15 text-emerald-700 dark:text-[#6EE7B7] border border-emerald-200/80 dark:border-[#10B981]/30 shadow-2xs" title={isAmharic ? 'የተፈቀደ' : 'Approved'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">check_circle</Icon>
             <span className={textClass}>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
           </span>
         );
       case 'printed':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-600 shadow-2xs" title={isAmharic ? 'የታተመ' : 'Printed'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-primary/10 dark:bg-primary/15 text-primary border border-primary/25 shadow-2xs" title={isAmharic ? 'የታተመ' : 'Printed'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">print</Icon>
             <span className={textClass}>{isAmharic ? 'የታተመ' : 'Printed'}</span>
           </span>
         );
       case 'ordered_print':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 shadow-2xs" title={isAmharic ? 'በሕትመት' : 'In Print'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-primary/10 dark:bg-primary/15 text-primary border border-primary/25 shadow-2xs" title={isAmharic ? 'በሕትመት' : 'In Print'}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">local_printshop</Icon>
             <span className={textClass}>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
           </span>
@@ -157,7 +157,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'rejected':
       case 'expired':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-600 shadow-2xs" title={status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-[#FB5454]/15 text-rose-700 dark:text-[#FDA4AF] border border-rose-200/80 dark:border-[#FB5454]/30 shadow-2xs" title={status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}>
             <Icon className="material-symbols-outlined text-[14px] shrink-0">cancel</Icon>
             <span className={textClass}>{status === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}</span>
           </span>
@@ -166,7 +166,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       case 'pending':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-2xs" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-semibold bg-[#F7F9FC] dark:bg-[#24303F] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs" title={isAmharic ? 'የሚጠበቅ' : 'Pending'}>
             <span className={textClass}>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
           </span>
         );
@@ -179,12 +179,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       return 'border-[#10B981] dark:border-[#10B981] ring-1 ring-[#10B981]/30';
     }
     if (status === 'ordered_print') {
-      return 'border-[#6366F1] dark:border-[#6366F1] ring-1 ring-[#6366F1]/30';
+      return 'border-primary ring-1 ring-primary/30';
     }
     if (status === 'rejected' || status === 'expired') {
       return 'border-[#FB5454] dark:border-[#FB5454] ring-1 ring-[#FB5454]/30';
     }
-    return 'border-slate-300 dark:border-slate-600 ring-1 ring-slate-400/20';
+    return 'border-[#E2E8F0] dark:border-[#2E3A47] ring-1 ring-[#8A99AD]/20';
   };
 
   // If user role is Officer, render the dedicated Verification History & Scanned Vehicles Log
@@ -248,7 +248,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     regSubCityFilter !== 'all' ||
     regCompanyVehicleFilter !== 'all' ||
     sortField !== 'date' ||
-    sortOrder !== 'desc'
+    sortOrder !== 'desc' ||
+    regSearchQuery.trim()
   );
 
   const handleToggleSort = (field: RegSortField) => {
@@ -788,20 +789,20 @@ export const TablesPage: React.FC<TablesPageProps> = ({
     <div className="pb-3 w-full max-w-full min-w-0 overflow-x-hidden">
       <UnifiedWorkspaceCard
         header={
-          <div className="px-3.5 sm:px-5 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-[#1C2434]">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center shrink-0 shadow-2xs">
-                <Icon className="material-symbols-outlined text-[20px]">table_chart</Icon>
+          <div className="px-3 sm:px-5 py-2 sm:py-2.5 flex flex-row items-center justify-between gap-2 bg-white dark:bg-[#1C2434] w-full max-w-full min-w-0">
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center shrink-0 shadow-2xs">
+                <Icon className="material-symbols-outlined text-[20px] shrink-0">table_chart</Icon>
               </div>
-              <div>
-                <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white tracking-tight leading-none mb-1">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-bold text-xs sm:text-base text-[#1C2434] dark:text-white tracking-tight leading-none mb-0.5 truncate">
                   {userRole === 'clerk'
                     ? (activeTableTab === 'approved'
                         ? (isAmharic ? 'የፀደቁ ተሽከርካሪዎች' : 'Approved Motor Registry')
                         : (isAmharic ? 'የቀረቡ ማመልከቻዎች' : 'View Submissions'))
                     : (isAmharic ? 'የአባላት መረጃዎች ማህደር' : 'Members Information Directory')}
                 </h3>
-                <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
+                <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block truncate">
                   {isAmharic ? 'ሙሉ የሞተር ተሽከርካሪዎች ምዝገባ እና የባለቤቶች መረጃ ዝርዝር' : 'Complete motor vehicle registry and owner information ledger'}
                 </p>
               </div>
@@ -809,7 +810,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             <div className="flex items-center gap-2 shrink-0">
               {isSuperAdmin && (
-                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-md text-[11px] font-bold shadow-2xs">
+                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#475569] dark:text-[#CBD5E1] rounded-md text-[11px] font-bold shadow-2xs">
                   <span>
                     {isAmharic ? 'የማህበር ተሽከርካሪዎች:' : 'Association Motors:'}{' '}
                     {registrations.filter((r) => r.hideFromOtherUsers).length}
@@ -848,57 +849,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
         }
         toolbar={
           <div className="flex flex-col w-full bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
-            {/* TIER 1: PRIMARY TOOLBAR (Search + Filter Toggle + Vehicle Types) */}
-            <div className="px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 text-xs w-full max-w-full">
-              {/* Left Sub-Row: Search Input + Filter Toggle Button */}
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
-                  <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
-                    <Icon className="material-symbols-outlined text-[17px]">search</Icon>
-                  </div>
-                  <input
-                    type="text"
-                    value={regSearchQuery}
-                    onChange={(e) => {
-                      setRegSearchQuery(e.target.value);
-                      setRegPage(1);
-                    }}
-                    placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search name, plate, phone, chasis...'}
-                    className="w-full h-8 pl-8 pr-7 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary/80 focus:bg-white dark:focus:bg-[#1C2434] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                  />
-                  {regSearchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setRegSearchQuery('')}
-                      className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-                    >
-                      <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-                    </button>
-                  )}
-                </div>
-
-                {/* Filter Drawer Toggle Button */}
-                <button
-                  type="button"
-                  onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
-                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
-                    isFilterDrawerOpen || hasActiveSecondaryFilters
-                      ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
-                      : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
-                  }`}
-                  title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
-                  <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
-                  {hasActiveSecondaryFilters && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                  )}
-                </button>
-              </div>
-
-              {/* Right Sub-Row (Mobile: Row 2 Scrollable; Desktop: Inline Right) */}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0 shrink-0">
-                <div className="inline-flex items-center p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0">
+            {/* TIER 1: PRIMARY TOOLBAR (Vehicle Types Tabbar + Filter Toggle) */}
+            <div className="px-2.5 sm:px-4 py-2 flex flex-row items-center justify-between gap-2 text-xs w-full max-w-full min-w-0">
+              {/* Left: Full-Width Scrollable Segmented Pill Tabs */}
+              <div className="flex items-center min-w-0 max-w-full flex-1 overflow-x-auto scrollbar-none">
+                <div className="flex min-w-full w-max items-center gap-0.5 p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] min-h-[34px] whitespace-nowrap">
                   {[
                     { id: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: tabScopedRegistrations.length },
                     { id: 'electric' as const, label: isAmharic ? 'ኤሌክትሪክ' : 'Electric', count: electricCount },
@@ -913,17 +868,17 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setRegVehicleTypeFilter(vType.id);
                           setRegPage(1);
                         }}
-                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                        className={`flex-1 h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                           active
-                            ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
+                            ? 'bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
                             : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
                         }`}
                       >
                         <span>{vType.label}</span>
-                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold tabular-nums leading-none ${
                           active
-                            ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
-                            : 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400'
+                            ? 'bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
+                            : 'bg-[#E2E8F0]/80 dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                         }`}>
                           {vType.count}
                         </span>
@@ -932,15 +887,61 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   })}
                 </div>
               </div>
+
+              {/* Right: Filter Drawer Toggle Button */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
+                  className={`h-[34px] px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                    isFilterDrawerOpen || hasActiveSecondaryFilters
+                      ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
+                      : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                  }`}
+                  title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px] shrink-0">tune</Icon>
+                  <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                  {hasActiveSecondaryFilters && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
             {isFilterDrawerOpen && (
-              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="flex flex-wrap items-center gap-2.5 text-xs">
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150 space-y-2.5 w-full max-w-full min-w-0">
+                {/* Search Bar inside Expandable Filter Section */}
+                <div className="relative w-full max-w-md min-w-0">
+                  <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
+                    <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                  </div>
+                  <input
+                    type="text"
+                    value={regSearchQuery}
+                    onChange={(e) => {
+                      setRegSearchQuery(e.target.value);
+                      setRegPage(1);
+                    }}
+                    placeholder={isAmharic ? 'በስም፣ ሰሌዳ፣ ስልክ ወይም ቻሲስ ፈልግ...' : 'Search name, plate, phone, chasis...'}
+                    className="w-full h-[34px] pl-8 pr-8 bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  />
+                  {regSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setRegSearchQuery('')}
+                      className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                      title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
+                    >
+                      <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center gap-2.5 text-xs w-full min-w-0">
                   {/* SubCity Filter */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                       {isAmharic ? 'ክ/ከተማ:' : 'Sub-City:'}
                     </span>
                     <select
@@ -949,7 +950,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         setRegSubCityFilter(e.target.value);
                         setRegPage(1);
                       }}
-                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                      className="h-[34px] py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                     >
                       <option value="all">{isAmharic ? 'ሁሉም ክፍለ ከተሞች' : 'All Sub-Cities'}</option>
                       {BAHIR_DAR_SUBCITIES.map((sc) => (
@@ -961,14 +962,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   </div>
 
                   {/* Sorting Dropdown & Direction */}
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                    <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                       {isAmharic ? 'ደርድር በ:' : 'Sort By:'}
                     </span>
                     <select
                       value={sortField}
                       onChange={(e) => handleToggleSort(e.target.value as any)}
-                      className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                      className="h-[34px] py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                     >
                       <option value="date">{isAmharic ? 'ቀን' : 'Date'}</option>
                       <option value="name">{isAmharic ? 'ስም' : 'Name'}</option>
@@ -981,10 +982,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <button
                       type="button"
                       onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                      className="h-8 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                      className="h-[34px] px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#333A48] transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap"
                       title={sortOrder === 'asc' ? (isAmharic ? 'ከትንሽ ወደ ትልቅ (ASC)' : 'Ascending') : (isAmharic ? 'ከትልቅ ወደ ትንሽ (DESC)' : 'Descending')}
                     >
-                      <Icon className="material-symbols-outlined text-[15px]">
+                      <Icon className="material-symbols-outlined text-[15px] shrink-0">
                         {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
                       </Icon>
                       <span className="text-[11px] font-mono">{sortOrder.toUpperCase()}</span>
@@ -993,8 +994,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                   {/* SuperAdmin Company Vehicle Filter */}
                   {isSuperAdmin && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                         {isAmharic ? 'አባልነት:' : 'Membership:'}
                       </span>
                       <select
@@ -1003,7 +1004,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setRegCompanyVehicleFilter(e.target.value as any);
                           setRegPage(1);
                         }}
-                        className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                        className="h-[34px] py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                       >
                         <option value="all">{isAmharic ? 'ሁሉም አባላት' : 'All Members'}</option>
                         <option value="standard">{isAmharic ? 'መደበኛ' : 'Standard'}</option>
@@ -1025,9 +1026,9 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                         setSortOrder('desc');
                         setRegPage(1);
                       }}
-                      className="h-8 px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                      className="h-[34px] px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs shrink-0 whitespace-nowrap ms-auto"
                     >
-                      <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
+                      <Icon className="material-symbols-outlined text-[15px] shrink-0">restart_alt</Icon>
                       <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
                     </button>
                   )}
@@ -1043,7 +1044,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           <div className="m-2 p-2 sm:p-2.5 bg-gradient-to-r from-primary/12 via-primary/6 to-transparent dark:from-primary/25 dark:via-primary/12 border border-primary/30 rounded-md flex flex-wrap items-center justify-between gap-2 animate-fade-in shadow-xs">
             {/* Left: Info & Selection count */}
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-md bg-primary text-white flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-8 h-8 rounded-md bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-xs">
                 <Icon className="material-symbols-outlined text-[18px]">checklist</Icon>
               </div>
               <div>
@@ -1106,7 +1107,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     type="button"
                     onClick={() => executeBulkToggleHide(true)}
                     disabled={isSubmittingBulk}
-                    className="px-2.5 py-1.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer border border-slate-300 dark:border-slate-700"
+                    className="px-2.5 py-1.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] font-semibold text-xs hover:bg-[#E2E8F0] dark:hover:bg-[#333A48] transition-colors cursor-pointer border border-[#E2E8F0] dark:border-[#2E3A47]"
                     title={isAmharic ? 'እንደ የማህበር ተሽከርካሪ ምልክት አድርግ' : 'Mark as Association Motor'}
                   >
                     <span>{isAmharic ? 'ማህበር' : 'Association'}</span>
@@ -1115,7 +1116,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     type="button"
                     onClick={() => executeBulkToggleHide(false)}
                     disabled={isSubmittingBulk}
-                    className="px-2.5 py-1.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors cursor-pointer border border-slate-300 dark:border-slate-600"
+                    className="px-2.5 py-1.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] font-semibold text-xs hover:bg-[#E2E8F0] dark:hover:bg-[#333A48] transition-colors cursor-pointer border border-[#E2E8F0] dark:border-[#2E3A47]"
                     title={isAmharic ? 'እንደ መደበኛ ተሽከርካሪ መልስ' : 'Mark as Standard Vehicle'}
                   >
                     <span>{isAmharic ? 'መደበኛ' : 'Standard'}</span>
@@ -1208,7 +1209,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                             onClick={() => {
                               setActiveTableTab('approved');
                             }}
-                            className="px-3 py-1.5 bg-primary text-white font-medium text-xs rounded-sm shadow-xs hover:bg-opacity-90 cursor-pointer"
+                            className="px-3 py-1.5 bg-primary hover:bg-primary-hover text-on-primary font-medium text-xs rounded-sm shadow-xs cursor-pointer"
                           >
                             {isAmharic ? 'የፀደቁትን አሳይ' : 'Show Approved Permits'}
                           </button>
@@ -1285,7 +1286,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   <span className="break-words font-semibold text-xs leading-snug">{displayName}</span>
                                   {reg.hideFromOtherUsers && isSuperAdmin && (
                                     <span
-                                      className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"
+                                      className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-[#F7F9FC] text-[#475569] dark:bg-[#24303F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] shrink-0 inline-flex items-center gap-1"
                                       title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
                                     >
                                       <Icon className="material-symbols-outlined text-[14px]">domain</Icon>
@@ -1298,7 +1299,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                             {/* Column 2: Plate Number */}
                             <td className="px-3 py-2.5 align-middle w-36 whitespace-nowrap">
-                              <span className="font-mono font-bold text-xs text-[#1C2434] dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-primary">
+                              <span className="font-mono font-bold text-xs text-primary bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] px-2 py-0.5 rounded">
                                 {reg.plateNumber || '—'}
                               </span>
                             </td>
@@ -1321,11 +1322,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   className="font-mono font-medium text-xs text-primary hover:underline inline-flex items-center gap-1.5"
                                   title={isAmharic ? 'ወደ ስልክ ቁጥር ደውል' : 'Call Phone'}
                                 >
-                                  <Icon className="material-symbols-outlined text-[13px] shrink-0 text-slate-400">call</Icon>
+                                  <Icon className="material-symbols-outlined text-[13px] shrink-0 text-[#8A99AD]">call</Icon>
                                   <span>{getDisplayPhone(reg)}</span>
                                 </a>
                               ) : (
-                                <span className="font-mono text-xs text-slate-400 dark:text-slate-500">—</span>
+                                <span className="font-mono text-xs text-[#8A99AD]">—</span>
                               )}
                             </td>
 
@@ -1382,7 +1383,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     <span>{isAmharic ? 'ሁሉንም አባላት ምረጥ (Select All)' : 'Select All Members'}</span>
                   </label>
                   {selectedRegIds.size > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white shadow-2xs">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-on-primary shadow-2xs">
                       {isAmharic ? `${selectedRegIds.size} ተመርጠዋል` : `${selectedRegIds.size} selected`}
                     </span>
                   )}
@@ -1390,20 +1391,20 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               )}
 
               {registrations.length === 0 ? (
-                <div className="p-10 text-center text-slate-500 dark:text-slate-400 space-y-1.5">
-                  <Icon className="material-symbols-outlined text-[36px] text-slate-400 dark:text-slate-600 mx-auto block">inbox</Icon>
-                  <p className="font-bold text-xs text-slate-700 dark:text-slate-200">
+                <div className="p-10 text-center text-[#64748B] dark:text-[#8A99AD] space-y-1.5">
+                  <Icon className="material-symbols-outlined text-[36px] text-[#8A99AD] mx-auto block">inbox</Icon>
+                  <p className="font-bold text-xs text-[#1C2434] dark:text-white">
                     {isAmharic ? 'ምንም የተመዘገቡ መረጃዎች የሉም' : 'No Vehicle Registrations Found'}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] max-w-xs mx-auto">
                     {isAmharic
                       ? 'አዲስ የተመዘገቡ መረጃዎች እዚህ ይታያሉ።'
                       : 'New registrations will appear here.'}
                   </p>
                 </div>
               ) : filteredRegistrations.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 text-xs">
-                  <Icon className="material-symbols-outlined text-[32px] text-slate-400 dark:text-slate-600 mx-auto block mb-1">search_off</Icon>
+                <div className="p-8 text-center text-[#64748B] dark:text-[#8A99AD] text-xs">
+                  <Icon className="material-symbols-outlined text-[32px] text-[#8A99AD] mx-auto block mb-1">search_off</Icon>
                   {isAmharic ? 'ምንም የሚመሳሰል ማህደር አልተገኘም' : 'No matching motorcycle records found.'}
                 </div>
               ) : (
@@ -1416,7 +1417,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       className={`p-3 transition-colors cursor-pointer select-none ${
                         isCardSelected
                           ? 'bg-primary/8 dark:bg-primary/15'
-                          : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40'
+                          : 'hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/40'
                       }`}
                       title={isAmharic ? 'የአባል ሙሉ መረጃ እና ተግባራትን በጎን መስኮት ክፈት' : 'Tap to open member details drawer'}
                     >
@@ -1435,7 +1436,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               className="w-4 h-4 rounded-xs border-[#E2E8F0] dark:border-[#2E3A47] text-primary focus:ring-primary cursor-pointer shrink-0"
                               title={isAmharic ? 'አባል ምረጥ' : 'Select member'}
                             />
-                            <span className="font-mono text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                            <span className="font-mono text-[11px] font-bold text-[#8A99AD]">
                               #{regStartIndex + index + 1}
                             </span>
                           </div>
@@ -1463,7 +1464,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                               </h4>
                               {reg.hideFromOtherUsers && isSuperAdmin && (
                                 <span
-                                  className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shrink-0 inline-flex items-center gap-1"
+                                  className="px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-[#F7F9FC] text-[#475569] dark:bg-[#24303F] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] shrink-0 inline-flex items-center gap-1"
                                   title={isAmharic ? 'የማህበር ተሽከርካሪ' : 'Association Vehicle'}
                                 >
                                   <Icon className="material-symbols-outlined text-[14px]">domain</Icon>
@@ -1480,7 +1481,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   : (isAmharic ? 'የነዳጅ' : 'Gasoline')}
                               </span>
 
-                              <span className="text-slate-300 dark:text-slate-600 font-bold">•</span>
+                              <span className="text-[#CBD5E1] dark:text-[#2E3A47] font-bold">•</span>
 
                               {/* Badge ID / Plate */}
                               <span className="font-mono text-xs font-semibold text-[#64748B] dark:text-[#8A99AD]">
@@ -1543,7 +1544,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
               </button>
 
-              <span className="px-3 py-1.5 bg-primary text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
+              <span className="px-3 py-1.5 bg-primary text-on-primary rounded-sm font-semibold font-mono text-xs shadow-xs">
                 {activeRegPage} / {totalRegPages}
               </span>
 
@@ -1619,8 +1620,8 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       {/* Rejection Reason Prompt Modal */}
       {rejectingId && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 overflow-y-auto transition-all duration-200">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-6 max-w-sm w-full space-y-4 shadow-xl">
-            <h3 className="font-extrabold text-sm text-rose-600 dark:text-rose-400 flex items-center gap-2">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg p-6 max-w-sm w-full space-y-4 shadow-xl">
+            <h3 className="font-extrabold text-sm text-[#FB5454] flex items-center gap-2">
               <Icon className="material-symbols-outlined">cancel</Icon>
               <span>{isAmharic ? 'የማህደር መሰረዣ ምክንያት' : 'Provide Rejection Reason'}</span>
             </h3>
@@ -1629,21 +1630,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               placeholder={isAmharic ? 'ምሳሌ፡ ያልተሟላ የመንጃ ፍቃድ ፎቶ' : 'e.g. Blurry driving license photo or invalid chassis number'}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md p-3 text-xs text-slate-900 dark:text-white h-24 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              className="w-full bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md p-3 text-xs text-[#1C2434] dark:text-white h-24 focus:outline-none focus:border-[#FB5454] focus:ring-2 focus:ring-[#FB5454]/20"
             />
 
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setRejectingId(null)}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs rounded-md font-bold cursor-pointer"
+                className="px-3 py-1.5 bg-[#F7F9FC] hover:bg-[#E2E8F0] text-[#475569] dark:bg-[#24303F] dark:hover:bg-[#333A48] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] text-xs rounded-md font-bold cursor-pointer"
               >
                 {isAmharic ? 'ተመለስ' : 'Cancel'}
               </button>
               <button
                 type="button"
                 onClick={() => handleConfirmReject(rejectingId)}
-                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs rounded-md font-extrabold cursor-pointer shadow-xs"
+                className="px-4 py-1.5 bg-[#FB5454] hover:bg-[#D34040] text-white text-xs rounded-md font-extrabold cursor-pointer shadow-xs"
               >
                 {isAmharic ? 'ሰርዝ' : 'Confirm Rejection'}
               </button>
@@ -1748,7 +1749,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           setSelectedRegForDetails(null);
                           setSelectedRegForQR(reg);
                         }}
-                        className="min-h-[36px] py-1.5 sm:py-2 px-3 rounded-lg bg-primary hover:bg-primary-hover text-white dark:text-slate-900 font-semibold text-xs inline-flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
+                        className="min-h-[36px] py-1.5 sm:py-2 px-3 rounded-lg bg-primary hover:bg-primary-hover text-on-primary font-semibold text-xs inline-flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-colors shrink-0"
                         title={isAmharic ? 'የመታወቂያ ካርድ አትም' : 'Print ID Card'}
                       >
                         <Icon name="badge" size={14} />
@@ -1806,10 +1807,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           >
             {/* TAB 1: OWNER & VEHICLE INFO */}
             {drawerActiveTab === 'info' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <div className="space-y-5 animate-in fade-in duration-200">
                 {/* Rejection notice if rejected */}
                 {selectedRegForDetails.status === 'rejected' && selectedRegForDetails.rejectionReason && (
-                  <div className="p-3 bg-[#FB5454]/10 border border-[#FB5454]/30 rounded-lg text-xs text-[#FB5454] space-y-1">
+                  <div className="py-2.5 px-3 bg-[#FB5454]/8 border border-[#FB5454]/25 rounded-lg text-xs text-[#FB5454] space-y-1">
                     <div className="flex items-center gap-1.5 font-bold">
                       <Icon name="error" size={16} />
                       <span>{isAmharic ? 'የመሰረዣ ምክንያት:' : 'Rejection Reason:'}</span>
@@ -1823,16 +1824,16 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   icon="person"
                   title={isAmharic ? 'የአባል እና የባለቤት ዝርዝር' : 'Owner & Member Identity'}
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-[124px_1fr] gap-3 items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-[116px_1fr] gap-4 sm:gap-5 items-start">
                     {/* Portrait Thumbnail */}
-                    <div className="flex flex-col items-center justify-center text-center space-y-1.5">
+                    <div className="flex flex-col items-center sm:items-start gap-1.5">
                       <div
                         onClick={() => {
                           const r = selectedRegForDetails as any;
                           const photo = r.userPortraitPhoto || r.user_portrait_photo || r.ownerPhoto || r.owner_photo || r.userPortraitThumbnail || r.user_portrait_thumbnail;
                           if (photo) openDocumentCarousel(photo, selectedRegForDetails, `${selectedRegForDetails.fullName} — ${isAmharic ? 'የባለቤት ፎቶ' : 'Portrait Photo'}`);
                         }}
-                        className="w-24 h-28 sm:w-28 sm:h-32 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] overflow-hidden flex items-center justify-center shadow-2xs relative group cursor-pointer"
+                        className="w-24 h-28 sm:w-28 sm:h-32 rounded-lg bg-[#F1F5F9] dark:bg-[#24303F] overflow-hidden flex items-center justify-center relative group cursor-pointer"
                         title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
                       >
                         {(() => {
@@ -1855,101 +1856,95 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           );
                         })()}
                       </div>
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD]">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD]">
                         {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
                       </span>
                     </div>
 
-                    {/* Owner Details Grid - Paired 2-Column Layout */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {/* Pair 1: Status & ID */}
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] grid grid-cols-2 gap-2 items-center">
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'የምዝገባ ሁኔታ' : 'Status'}
-                          </span>
-                          <div className="pt-0.5">
-                            {renderStatusBadge(selectedRegForDetails.status, true, selectedRegForDetails)}
-                          </div>
+                    {/* Owner Details Grid - Clean Unboxed Typographic Pairs */}
+                    <div className="grid grid-cols-2 gap-x-5 gap-y-3.5 min-w-0">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'የምዝገባ ሁኔታ' : 'Status'}
+                        </span>
+                        <div className="mt-1">
+                          {renderStatusBadge(selectedRegForDetails.status, true, selectedRegForDetails)}
                         </div>
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'መለያ ቁጥር' : 'Member ID'}
+                      </div>
+
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'መለያ ቁጥር' : 'Member ID'}
+                        </span>
+                        <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                          <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] truncate tabular-nums">
+                            #{selectedRegForDetails.id}
                           </span>
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums">
-                              #{selectedRegForDetails.id}
-                            </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyField(String(selectedRegForDetails.id), 'ID')}
+                            className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
+                            title={isAmharic ? 'መለያ ቁጥር ቅዳ' : 'Copy ID'}
+                          >
+                            <Icon name={drawerCopiedField === 'ID' ? 'check' : 'content_copy'} size={13} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
+                        </span>
+                        <span className="mt-0.5 font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block truncate" title={selectedRegForDetails.fullName}>
+                          {selectedRegForDetails.fullName || '—'}
+                        </span>
+                      </div>
+
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'ስልክ ቁጥር' : 'Phone'}
+                        </span>
+                        <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                          {selectedRegForDetails.phone ? (
+                            <a
+                              href={`tel:${selectedRegForDetails.phone}`}
+                              className="font-mono font-bold text-primary hover:underline text-xs sm:text-[13px] flex items-center gap-1 tabular-nums truncate"
+                            >
+                              <Icon name="call" size={13} className="text-[#8A99AD] shrink-0" />
+                              <span>{getDisplayPhone(selectedRegForDetails)}</span>
+                            </a>
+                          ) : (
+                            <span className="font-mono text-xs text-[#8A99AD]">—</span>
+                          )}
+                          {selectedRegForDetails.phone && (
                             <button
                               type="button"
-                              onClick={() => handleCopyField(String(selectedRegForDetails.id), 'ID')}
-                              className="p-1 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
-                              title={isAmharic ? 'መለያ ቁጥር ቅዳ' : 'Copy ID'}
+                              onClick={() => handleCopyField(selectedRegForDetails.phone, 'Phone')}
+                              className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
+                              title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
                             >
-                              <Icon name={drawerCopiedField === 'ID' ? 'check' : 'content_copy'} size={13} />
+                              <Icon name={drawerCopiedField === 'Phone' ? 'check' : 'content_copy'} size={13} />
                             </button>
-                          </div>
+                          )}
                         </div>
                       </div>
 
-                      {/* Pair 2: Full Name & Phone */}
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] grid grid-cols-2 gap-2 items-center">
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
-                          </span>
-                          <span className="font-bold text-[#1C2434] dark:text-white text-xs block truncate" title={selectedRegForDetails.fullName}>
-                            {selectedRegForDetails.fullName || '—'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'ስልክ ቁጥር' : 'Phone'}
-                          </span>
-                          <div className="flex items-center justify-between gap-1">
-                            {selectedRegForDetails.phone ? (
-                              <a
-                                href={`tel:${selectedRegForDetails.phone}`}
-                                className="font-mono font-bold text-primary hover:underline text-xs flex items-center gap-1 tabular-nums truncate"
-                              >
-                                <Icon name="call" size={13} className="text-[#8A99AD] shrink-0" />
-                                <span>{getDisplayPhone(selectedRegForDetails)}</span>
-                              </a>
-                            ) : (
-                              <span className="font-mono text-xs text-[#8A99AD]">—</span>
-                            )}
-                            {selectedRegForDetails.phone && (
-                              <button
-                                type="button"
-                                onClick={() => handleCopyField(selectedRegForDetails.phone, 'Phone')}
-                                className="p-1 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
-                                title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
-                              >
-                                <Icon name={drawerCopiedField === 'Phone' ? 'check' : 'content_copy'} size={13} />
-                              </button>
-                            )}
-                          </div>
-                        </div>
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'ክፍለ ከተማ' : 'Subcity'}
+                        </span>
+                        <span className="mt-0.5 font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate">
+                          {selectedRegForDetails.subCity || '—'}
+                        </span>
                       </div>
 
-                      {/* Pair 3: Subcity & Registered By */}
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] grid grid-cols-2 gap-2 items-center sm:col-span-2">
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'ክፍለ ከተማ' : 'Subcity'}
-                          </span>
-                          <span className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate">
-                            {selectedRegForDetails.subCity || '—'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'የመዘገበው ሰራተኛ' : 'Registered By'}
-                          </span>
-                          <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate tabular-nums">
-                            {selectedRegForDetails.registeredBy ? `Officer ${selectedRegForDetails.registeredBy}` : '—'}
-                          </span>
-                        </div>
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'የመዘገበው ሰራተኛ' : 'Registered By'}
+                        </span>
+                        <span className="mt-0.5 font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate tabular-nums">
+                          {selectedRegForDetails.registeredBy ? `Officer ${selectedRegForDetails.registeredBy}` : '—'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -1960,49 +1955,49 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   icon="two_wheeler"
                   title={isAmharic ? 'የተሽከርካሪ እና የሞተር መረጃ' : 'Vehicle Specifications'}
                 >
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-4 text-xs">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'ምድብ' : 'Category'}
                       </span>
-                      <span className="font-bold text-[#1C2434] dark:text-white text-xs block">
+                      <span className="mt-0.5 font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block">
                         {selectedRegForDetails.vehicleCategory === 'electric'
                           ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
                           : (isAmharic ? 'ነዳጅ (<110cc)' : 'Gas (<110cc)')}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'ብራንድ እና ሞዴል' : 'Brand & Model'}
                       </span>
-                      <span className="font-bold text-[#1C2434] dark:text-white text-xs block truncate" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
+                      <span className="mt-0.5 font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block truncate" title={`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`}>
                         {`${selectedRegForDetails.motorBrand || '—'} ${selectedRegForDetails.motorModel || ''}`.trim()}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'አገልግሎት' : 'Service Type'}
                       </span>
-                      <span className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate">
+                      <span className="mt-0.5 font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate">
                         {selectedRegForDetails.serviceCategory || (isAmharic ? 'መደበኛ' : 'Standard')}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis #'}
                       </span>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums" title={getChassisDisplay(selectedRegForDetails)}>
+                      <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] truncate tabular-nums" title={getChassisDisplay(selectedRegForDetails)}>
                           {getChassisDisplay(selectedRegForDetails)}
                         </span>
                         {selectedRegForDetails.chassisNumber && (
                           <button
                             type="button"
                             onClick={() => handleCopyField(selectedRegForDetails.chassisNumber || '', 'Chassis')}
-                            className="p-0.5 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                            className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
                             title={isAmharic ? 'ቻሲስ ቁጥር ቅዳ' : 'Copy Chassis #'}
                           >
                             <Icon name={drawerCopiedField === 'Chassis' ? 'check' : 'content_copy'} size={13} />
@@ -2011,19 +2006,19 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
                       </span>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums" title={selectedRegForDetails.plateNumber || '—'}>
+                      <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] truncate tabular-nums" title={selectedRegForDetails.plateNumber || '—'}>
                           {selectedRegForDetails.plateNumber || '—'}
                         </span>
                         {selectedRegForDetails.plateNumber && (
                           <button
                             type="button"
                             onClick={() => handleCopyField(selectedRegForDetails.plateNumber || '', 'Plate')}
-                            className="p-0.5 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                            className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
                             title={isAmharic ? 'የሰሌዳ ቁጥር ቅዳ' : 'Copy Plate Number'}
                           >
                             <Icon name={drawerCopiedField === 'Plate' ? 'check' : 'content_copy'} size={13} />
@@ -2032,11 +2027,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'የተመዘገበበት ቀን' : 'Reg Date (E.C.)'}
                       </span>
-                      <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate tabular-nums">
+                      <span className="mt-0.5 font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate tabular-nums">
                         {selectedRegForDetails.registrationDate ? formatEthiopianDate(selectedRegForDetails.registrationDate, isAmharic ? 'am' : 'en') : '—'}
                       </span>
                     </div>
@@ -2048,21 +2043,21 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   icon="fact_check"
                   title={isAmharic ? 'የማህበሩ ምዝገባ እና የስራ መረጃ' : 'Association Registration Records'}
                 >
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-3.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'የደም ዓይነት' : 'Blood Group'}
                       </span>
-                      <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums">
+                      <span className="mt-0.5 font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block truncate tabular-nums">
                         {selectedRegForDetails.bloodGroup || '—'}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'የመጨረሻ ደረሰኝ ቁጥር' : 'Last Receipt #'}
                       </span>
-                      <span className="font-mono font-bold text-primary text-xs block truncate tabular-nums">
+                      <span className="mt-0.5 font-mono font-bold text-primary text-xs sm:text-[13px] block truncate tabular-nums">
                         {selectedRegForDetails.lastReceiptNumber || selectedRegForDetails.receiptNumber || '—'}
                       </span>
                     </div>
@@ -2073,7 +2068,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             {/* TAB 2: PAYMENT STATUS & LEDGER */}
             {drawerActiveTab === 'payments' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <div className="space-y-5 animate-in fade-in duration-200">
                 <WorkspaceDrawerSection
                   icon="receipt_long"
                   title={isAmharic ? 'የክፍያ ሁኔታ እና የወቅቱ ደረሰኝ' : 'Payment Status & Current Receipt'}
@@ -2082,7 +2077,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       <button
                         type="button"
                         onClick={() => handleOpenRenewalModal(selectedRegForDetails)}
-                        className="px-2.5 py-1 bg-[#10B981] hover:bg-[#059669] text-white rounded-sm text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                        className="px-2.5 py-1 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer"
                         title={isAmharic ? 'አዲስ የክፍያ ደረሰኝ መዝግብ' : 'Record Renewal Receipt'}
                       >
                         <Icon name="add_card" size={14} />
@@ -2091,13 +2086,13 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     ) : undefined
                   }
                 >
-                  {/* Summary Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-1">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">
+                  {/* Clean Unboxed Summary Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-3.5 text-xs pb-4 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
+                    <div className="space-y-1">
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium block">
                         {isAmharic ? 'የክፍያ ሁኔታ' : 'Standing Status'}
                       </span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[11px] font-semibold ${compliance.badgeClass}`}>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold ${compliance.badgeClass}`}>
                         <Icon
                           name={compliance.status === 'active' ? 'check_circle' : compliance.status === 'expiring_soon' ? 'alarm' : 'cancel'}
                           size={13}
@@ -2106,94 +2101,94 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-0.5">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">
+                    <div>
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium block">
                         {isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt No'}
                       </span>
-                      <span className="font-mono font-bold text-[#1C2434] dark:text-white block truncate tabular-nums">
+                      <span className="mt-0.5 font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block truncate tabular-nums">
                         {latestRc?.receiptNumber || selectedRegForDetails.receiptNumber || '—'}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-0.5">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">
+                    <div>
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium block">
                         {isAmharic ? 'የክፍያ መጠን' : 'Amount (ETB)'}
                       </span>
-                      <span className="font-mono font-bold text-[#1C2434] dark:text-white block tabular-nums">
+                      <span className="mt-0.5 font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block tabular-nums">
                         {latestRc?.amount ? `${latestRc.amount} ETB` : selectedRegForDetails.paymentAmount ? `${selectedRegForDetails.paymentAmount} ETB` : '—'}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-0.5">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">
+                    <div>
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium block">
                         {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}
                       </span>
-                      <span className="font-mono font-medium text-[#1C2434] dark:text-[#DEE4EE] block tabular-nums">
+                      <span className="mt-0.5 font-mono font-medium text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block tabular-nums">
                         {latestRc?.paymentDate ? formatEthiopianDate(latestRc.paymentDate, isAmharic ? 'am' : 'en') : '—'}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-0.5 sm:col-span-2">
-                      <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">
+                    <div>
+                      <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium block">
                         {isAmharic ? 'የሚያበቃበት ቀን' : 'Expiration Date'}
                       </span>
-                      <span className="font-mono font-bold text-[#1C2434] dark:text-white block tabular-nums">
+                      <span className="mt-0.5 font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block tabular-nums">
                         {latestRc?.expirationDate ? formatEthiopianDate(latestRc.expirationDate, isAmharic ? 'am' : 'en') : '—'}
                       </span>
                     </div>
                   </div>
 
                   {/* Chronological Payment Receipts Ledger */}
-                  <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+                  <div className="pt-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[11px] font-bold text-[#64748B] dark:text-[#8A99AD]">
+                      <span className="text-xs font-bold text-[#64748B] dark:text-[#8A99AD]">
                         {isAmharic ? `የተመዘገቡ ደረሰኞች ታሪክ (${matchedReceipts.length})` : `Payment Receipts Ledger (${matchedReceipts.length})`}
                       </span>
                     </div>
 
                     {matchedReceipts.length === 0 ? (
-                      <div className="text-xs text-[#64748B] dark:text-[#8A99AD] py-3 bg-[#F7F9FC] dark:bg-[#24303F]/50 rounded-md px-3 border border-[#E2E8F0] dark:border-[#2E3A47] text-center">
+                      <p className="text-xs text-[#64748B] dark:text-[#8A99AD] py-6 text-center">
                         {isAmharic ? 'ምንም የተመዘገበ ተከታታይ የክፍያ ደረሰኝ የለም።' : 'No periodic payment receipts recorded yet for this member.'}
-                      </div>
+                      </p>
                     ) : (
-                      <div className="space-y-2">
-                        {/* Desktop & Tablet Table */}
-                        <div className="hidden sm:block overflow-x-auto rounded-sm border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] max-h-[240px]">
+                      <div>
+                        {/* Desktop & Tablet Clean Rule Table */}
+                        <div className="hidden sm:block overflow-x-auto max-h-[260px]">
                           <table className="w-full text-left text-xs">
-                            <thead className="bg-[#F7F9FC] dark:bg-[#24303F] text-xs font-semibold text-[#1C2434] dark:text-white border-b border-[#E2E8F0] dark:border-[#2E3A47] sticky top-0">
+                            <thead className="bg-[#F8FAFC] dark:bg-[#24303F]/60 text-[11px] font-semibold text-[#64748B] dark:text-[#8A99AD] border-y border-[#E2E8F0] dark:border-[#2E3A47] sticky top-0">
                               <tr>
                                 <th className="px-2.5 py-2">#</th>
-                                <th className="px-2.5 py-2 font-medium">{isAmharic ? 'ደረሰኝ ቁጥር' : 'Receipt No'}</th>
-                                <th className="px-2.5 py-2 font-medium">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
-                                <th className="px-2.5 py-2 font-medium">{isAmharic ? 'የሚያበቃበት' : 'Valid Until'}</th>
-                                <th className="px-2.5 py-2 font-medium">{isAmharic ? 'መጠን' : 'Amount'}</th>
-                                <th className="px-2.5 py-2 font-medium">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
-                                <th className="px-2.5 py-2 font-medium">{isAmharic ? 'ሰነድ' : 'Slip'}</th>
-                                {isSuperAdmin && <th className="px-2.5 py-2 text-center font-medium">{isAmharic ? 'አማራጮች' : 'Actions'}</th>}
+                                <th className="px-2.5 py-2">{isAmharic ? 'ደረሰኝ ቁጥር' : 'Receipt No'}</th>
+                                <th className="px-2.5 py-2">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</th>
+                                <th className="px-2.5 py-2">{isAmharic ? 'የሚያበቃበት' : 'Valid Until'}</th>
+                                <th className="px-2.5 py-2">{isAmharic ? 'መጠን' : 'Amount'}</th>
+                                <th className="px-2.5 py-2">{isAmharic ? 'ሁኔታ' : 'Status'}</th>
+                                <th className="px-2.5 py-2">{isAmharic ? 'ሰነድ' : 'Slip'}</th>
+                                {isSuperAdmin && <th className="px-2.5 py-2 text-center">{isAmharic ? 'አማራጮች' : 'Actions'}</th>}
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] font-medium text-xs">
                               {matchedReceipts.map((rc, idx) => {
                                 const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
                                 return (
-                                  <tr key={rc.id || idx} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 transition-colors">
-                                    <td className="px-2.5 py-1.5 font-mono text-[#64748B] dark:text-[#8A99AD] tabular-nums">{idx + 1}</td>
-                                    <td className="px-2.5 py-1.5 font-mono font-medium text-primary tabular-nums">{rc.receiptNumber}</td>
-                                    <td className="px-2.5 py-1.5 font-mono text-[#1C2434] dark:text-white tabular-nums">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</td>
-                                    <td className="px-2.5 py-1.5 font-mono text-[#1C2434] dark:text-white tabular-nums">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</td>
-                                    <td className="px-2.5 py-1.5 font-bold text-[#1C2434] dark:text-white tabular-nums">{rc.amount ? `${rc.amount} ETB` : '—'}</td>
-                                    <td className="px-2.5 py-1.5">
+                                  <tr key={rc.id || idx} className="hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/40 transition-colors">
+                                    <td className="px-2.5 py-2 font-mono text-[#64748B] dark:text-[#8A99AD] tabular-nums">{idx + 1}</td>
+                                    <td className="px-2.5 py-2 font-mono font-semibold text-primary tabular-nums">{rc.receiptNumber}</td>
+                                    <td className="px-2.5 py-2 font-mono text-[#1C2434] dark:text-white tabular-nums">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</td>
+                                    <td className="px-2.5 py-2 font-mono text-[#1C2434] dark:text-white tabular-nums">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</td>
+                                    <td className="px-2.5 py-2 font-bold text-[#1C2434] dark:text-white tabular-nums">{rc.amount ? `${rc.amount} ETB` : '—'}</td>
+                                    <td className="px-2.5 py-2">
                                       <span className={`px-2 py-0.5 text-[11px] font-semibold rounded-sm ${
                                         rcStatus.status === 'active'
-                                          ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
+                                          ? 'bg-[#10B981]/10 text-[#10B981]'
                                           : rcStatus.status === 'expiring_soon'
-                                          ? 'bg-slate-100 dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
-                                          : 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
+                                          ? 'bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE]'
+                                          : 'bg-[#FB5454]/10 text-[#FB5454]'
                                       }`}>
                                         {rcStatus.status === 'active' ? (isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያልተከፈለበት' : 'Overdue')}
                                       </span>
                                     </td>
-                                    <td className="px-2.5 py-1.5">
+                                    <td className="px-2.5 py-2">
                                       {rc.receiptScreenshot ? (
                                         <button
                                           type="button"
@@ -2204,11 +2199,11 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                           <span>{isAmharic ? 'እይ' : 'View'}</span>
                                         </button>
                                       ) : (
-                                        <span className="text-[#64748B] dark:text-[#8A99AD] italic">—</span>
+                                        <span className="text-[#8A99AD]">—</span>
                                       )}
                                     </td>
                                     {isSuperAdmin && (
-                                      <td className="px-2.5 py-1.5 text-center">
+                                      <td className="px-2.5 py-2 text-center">
                                         <button
                                           type="button"
                                           onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
@@ -2226,19 +2221,16 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                           </table>
                         </div>
 
-                        {/* Mobile Expandable Receipts View */}
-                        <div className="sm:hidden space-y-2">
+                        {/* Mobile Flat Accordion List */}
+                        <div className="sm:hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] border-t border-[#E2E8F0] dark:border-[#2E3A47]">
                           {matchedReceipts.map((rc, idx) => {
                             const rcStatus = getPaymentReceiptStatus(rc.expirationDate);
                             const isExpanded = !!expandedReceipts[rc.id || ''];
                             return (
-                              <div
-                                key={rc.id || idx}
-                                className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md overflow-hidden transition-all duration-150 shadow-2xs"
-                              >
+                              <div key={rc.id || idx}>
                                 <div
                                   onClick={() => rc.id && toggleReceiptExpand(rc.id)}
-                                  className="p-2.5 flex items-center justify-between cursor-pointer hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/50 select-none"
+                                  className="py-2.5 px-1 flex items-center justify-between cursor-pointer hover:bg-[#F7F9FC] dark:hover:bg-[#24303F]/40 select-none transition-colors"
                                 >
                                   <div className="space-y-0.5 min-w-0">
                                     <div className="flex items-center gap-1.5">
@@ -2255,10 +2247,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                   <div className="flex items-center gap-2 shrink-0">
                                     <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-sm ${
                                       rcStatus.status === 'active'
-                                        ? 'bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20'
+                                        ? 'bg-[#10B981]/10 text-[#10B981]'
                                         : rcStatus.status === 'expiring_soon'
-                                        ? 'bg-slate-100 dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
-                                        : 'bg-[#FB5454]/10 text-[#FB5454] border border-[#FB5454]/20'
+                                        ? 'bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE]'
+                                        : 'bg-[#FB5454]/10 text-[#FB5454]'
                                     }`}>
                                       {rcStatus.status === 'active' ? (isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid') : rcStatus.status === 'expiring_soon' ? (isAmharic ? 'ሊያልቅ' : 'Expiring') : (isAmharic ? 'ያልተከፈለበት' : 'Overdue')}
                                     </span>
@@ -2272,15 +2264,15 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
                                 <div className={`collapsible-grid ${isExpanded ? 'expanded' : ''}`}>
                                   <div className="collapsible-grid-inner">
-                                    <div className="p-2.5 pt-0 border-t border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]/40 text-[11px] space-y-2">
-                                      <div className="grid grid-cols-2 gap-2 pt-2">
+                                    <div className="p-2.5 mb-2 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F]/40 text-[11px] space-y-2">
+                                      <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
-                                          <span className="font-mono font-medium text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
+                                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-medium block">{isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}</span>
+                                          <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">{formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}</span>
                                         </div>
                                         <div>
-                                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-semibold block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
-                                          <span className="font-mono font-medium text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
+                                          <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-medium block">{isAmharic ? 'የሚያበቃበት ቀን' : 'Valid Until'}</span>
+                                          <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">{formatEthiopianDate(rc.expirationDate, isAmharic ? 'am' : 'en')}</span>
                                         </div>
                                       </div>
 
@@ -2295,14 +2287,14 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                                             <span>{isAmharic ? 'ሰነድ እይ' : 'View Slip'}</span>
                                           </button>
                                         ) : (
-                                          <span className="text-[#64748B] dark:text-[#8A99AD] italic">{isAmharic ? 'ምስል አልተያያዘም' : 'No Slip Screenshot'}</span>
+                                          <span className="text-[#8A99AD]">{isAmharic ? 'ምስል አልተያያዘም' : 'No Slip'}</span>
                                         )}
 
                                         {isSuperAdmin && (
                                           <button
                                             type="button"
                                             onClick={() => rc.id && handleDeleteReceiptClick(rc.id)}
-                                            className="text-[#FB5454] font-semibold cursor-pointer flex items-center gap-1 bg-[#FB5454]/10 px-2 py-0.5 rounded-sm border border-[#FB5454]/20 hover:bg-[#FB5454]/20 transition-colors"
+                                            className="text-[#FB5454] font-semibold cursor-pointer flex items-center gap-1 hover:bg-[#FB5454]/10 px-2 py-0.5 rounded-sm transition-colors"
                                           >
                                             <Icon name="delete" size={14} />
                                             <span>{isAmharic ? 'ሰርዝ' : 'Delete'}</span>
@@ -2325,10 +2317,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
             {/* TAB 3: UPLOADED DOCUMENTS */}
             {drawerActiveTab === 'documents' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <div className="space-y-5 animate-in fade-in duration-200">
                 <WorkspaceDrawerSection
                   icon="photo_library"
-                  title={isAmharic ? 'የተያያዙ ፎቶዎች እና ሰነዶች (ለማጉላት ይጫኑ)' : 'Uploaded Document Photos (Click to Zoom)'}
+                  title={isAmharic ? 'የተያያዙ ፎቶዎች እና ሰነዶች' : 'Uploaded Document Photos'}
                 >
                   {(() => {
                     const r = selectedRegForDetails as any;
@@ -2372,18 +2364,18 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     ];
 
                     return (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                         {docCards.map((doc, idx) => (
-                          <div key={idx} className="space-y-1">
-                            <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block truncate">
+                          <div key={idx} className="space-y-1.5">
+                            <span className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-semibold block truncate">
                               {doc.label}
                             </span>
                             <div
                               onClick={() => doc.url && openDocumentCarousel(doc.url, selectedRegForDetails, doc.title)}
-                              className={`h-32 sm:h-36 rounded-md overflow-hidden border flex items-center justify-center relative shadow-2xs transition-colors ${
+                              className={`h-32 sm:h-36 rounded-lg overflow-hidden flex items-center justify-center relative transition-colors ${
                                 doc.url
-                                  ? 'border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary bg-[#F7F9FC] dark:bg-[#24303F] cursor-pointer group'
-                                  : 'border-dashed border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC]/60 dark:bg-[#24303F]/30 cursor-default'
+                                  ? 'bg-[#F1F5F9] dark:bg-[#24303F] cursor-pointer group'
+                                  : 'bg-[#F7F9FC] dark:bg-[#24303F]/40 cursor-default'
                               }`}
                             >
                               {doc.url ? (
@@ -2422,15 +2414,15 @@ export const TablesPage: React.FC<TablesPageProps> = ({
       {/* RENEWAL MONTHLY PAYMENT RECEIPT MODAL */}
       {renewalModalReg && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg max-w-lg w-full p-4 sm:p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">add_card</Icon>
+                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-primary shrink-0">add_card</Icon>
                 <div>
-                  <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
+                  <h3 className="font-extrabold text-sm sm:text-base text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የወርሃዊ ክፍያ ደረሰኝ መመዝገቢያ' : 'Record Monthly Payment Receipt'}
                   </h3>
-                  <p className="text-[11px] text-slate-500 font-mono">
+                  <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-mono">
                     {renewalModalReg.fullName} • {renewalModalReg.plateNumber || getChassisDisplay(renewalModalReg)}
                   </p>
                 </div>
@@ -2438,41 +2430,41 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               <button
                 type="button"
                 onClick={() => setRenewalModalReg(null)}
-                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-md hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer"
               >
                 <Icon className="material-symbols-outlined text-[20px]">close</Icon>
               </button>
             </div>
 
             {renewalError && (
-              <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 rounded text-xs text-rose-800 dark:text-rose-200">
+              <div className="p-2.5 bg-rose-50 dark:bg-[#FB5454]/15 border border-rose-200 dark:border-[#FB5454]/30 rounded text-xs text-rose-700 dark:text-[#FDA4AF]">
                 {renewalError}
               </div>
             )}
 
             {renewalSuccess && (
-              <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded text-xs text-emerald-800 dark:text-emerald-200 font-bold">
+              <div className="p-2.5 bg-emerald-50 dark:bg-[#10B981]/15 border border-emerald-200 dark:border-[#10B981]/30 rounded text-xs text-emerald-700 dark:text-[#6EE7B7] font-bold">
                 {renewalSuccess}
               </div>
             )}
 
             <form onSubmit={handleSaveRenewalReceipt} className="space-y-3.5 text-xs">
               {/* Member Pre-filled Info (Read-only confirmation) */}
-              <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-200 dark:border-slate-700">
+              <div className="grid grid-cols-2 gap-2 p-2.5 bg-[#F7F9FC] dark:bg-[#24303F] rounded border border-[#E2E8F0] dark:border-[#2E3A47]">
                 <div>
-                  <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'ባለቤት:' : 'Member Name:'}</span>
-                  <span className="font-bold text-slate-900 dark:text-white block truncate">{renewalModalReg.fullName}</span>
+                  <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block">{isAmharic ? 'ባለቤት:' : 'Member Name:'}</span>
+                  <span className="font-bold text-[#1C2434] dark:text-white block truncate">{renewalModalReg.fullName}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-500 font-bold block">{isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:'}</span>
-                  <span className="font-mono font-bold text-[#1e293b] dark:text-yellow-400 block truncate">{renewalModalReg.plateNumber || '—'}</span>
+                  <span className="text-[10px] text-[#64748B] dark:text-[#8A99AD] font-bold block">{isAmharic ? 'የሰሌዳ ቁጥር:' : 'Plate Number:'}</span>
+                  <span className="font-mono font-bold text-primary block truncate">{renewalModalReg.plateNumber || '—'}</span>
                 </div>
               </div>
 
               {/* Receipt Number & Amount */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
+                  <label className="font-bold text-[#475569] dark:text-[#CBD5E1] block">
                     {isAmharic ? 'የደረሰኝ ቁጥር *' : 'Receipt Number *'}
                   </label>
                   <input
@@ -2481,12 +2473,12 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     placeholder="e.g. CBE-8492041"
                     value={renewalReceiptNumber}
                     onChange={(e) => setRenewalReceiptNumber(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono"
+                    className="w-full px-3 py-2 border border-[#E2E8F0] dark:border-[#2E3A47] rounded bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white font-mono focus:outline-none focus:border-primary"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block">
+                  <label className="font-bold text-[#475569] dark:text-[#CBD5E1] block">
                     {isAmharic ? 'የክፍያ መጠን (ብር)' : 'Amount (ETB)'}
                   </label>
                   <input
@@ -2494,7 +2486,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                     placeholder="500"
                     value={renewalAmount}
                     onChange={(e) => setRenewalAmount(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold"
+                    className="w-full px-3 py-2 border border-[#E2E8F0] dark:border-[#2E3A47] rounded bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white font-bold focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -2502,7 +2494,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
               {/* Payment Date & Calculated Expiration Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block text-xs">
+                  <label className="font-bold text-[#475569] dark:text-[#CBD5E1] block text-xs">
                     {isAmharic ? 'የተከፈለበት ቀን (E.C.)' : 'Payment Date (E.C.)'}
                   </label>
                   <EthiopianDatePickerPopover
@@ -2514,10 +2506,10 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-700 dark:text-slate-300 block text-xs">
+                  <label className="font-bold text-[#475569] dark:text-[#CBD5E1] block text-xs">
                     {isAmharic ? 'የሚያበቃበት ቀን (1 ወር)' : 'Expiration Date (1 month)'}
                   </label>
-                  <div className="px-3 py-1.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs cursor-not-allowed">
+                  <div className="px-3 py-1.5 border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] text-[#475569] dark:text-[#CBD5E1] font-bold text-xs cursor-not-allowed">
                     {formatEthiopianDate(calculateOneMonthExpiration(renewalPaymentDate), isAmharic ? 'am' : 'en')}
                   </div>
                 </div>
@@ -2535,7 +2527,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
 
               {/* Notes */}
               <div className="space-y-1">
-                <label className="font-bold text-slate-700 dark:text-slate-300 block">
+                <label className="font-bold text-[#475569] dark:text-[#CBD5E1] block">
                   {isAmharic ? 'ማስታወሻ / አስተያየት' : 'Remarks / Notes'}
                 </label>
                 <input
@@ -2543,23 +2535,23 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   placeholder={isAmharic ? 'አማራጭ ማስታወሻ...' : 'Optional notes...'}
                   value={renewalNotes}
                   onChange={(e) => setRenewalNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-[#E2E8F0] dark:border-[#2E3A47] rounded bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-white focus:outline-none focus:border-primary"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
                 <button
                   type="button"
                   disabled={isSubmittingRenewal}
                   onClick={() => setRenewalModalReg(null)}
-                  className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs rounded-md font-bold cursor-pointer"
+                  className="px-3 py-2 bg-[#F7F9FC] hover:bg-[#E2E8F0] text-[#475569] dark:bg-[#24303F] dark:hover:bg-[#333A48] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] text-xs rounded-md font-bold cursor-pointer"
                 >
                   {isAmharic ? 'ተመለስ' : 'Cancel'}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingRenewal}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs rounded-lg font-bold cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5"
+                  className="px-4 py-2 bg-[#10B981] hover:bg-[#059669] disabled:opacity-50 text-white text-xs rounded-lg font-bold cursor-pointer border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5"
                 >
                   {isSubmittingRenewal ? (
                     <>
@@ -2609,7 +2601,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">check_circle</Icon>
+                <Icon className="material-symbols-outlined text-[16px] text-[#10B981] shrink-0">check_circle</Icon>
                 <div>
                   <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የጅምላ ማፅደቅ ማረጋገጫ' : 'Confirm Bulk Approval'}
@@ -2631,7 +2623,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             </div>
 
             {/* Selected preview list */}
-            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#F7F9FC] dark:bg-[#24303F] rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs divide-y divide-slate-200 dark:divide-slate-700">
+            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#F7F9FC] dark:bg-[#24303F] rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] text-xs divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
               {selectedRegsList.map((reg, idx) => (
                 <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
                   <div className="min-w-0 pr-2">
@@ -2686,7 +2678,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
           <div className="bg-white dark:bg-[#1C2434] border border-[#FB5454]/30 rounded-md max-w-lg w-full p-5 space-y-4 shadow-xl animate-fade-in">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] text-slate-700 dark:text-slate-300 shrink-0">warning</Icon>
+                <Icon className="material-symbols-outlined text-[16px] text-[#FB5454] shrink-0">warning</Icon>
                 <div>
                   <h4 className="font-extrabold text-sm text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የጅምላ መሰረዝ ማረጋገጫ' : 'Confirm Bulk Deletion'}
@@ -2714,7 +2706,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             </p>
 
             {/* Selected preview list */}
-            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#FB5454]/5 rounded-md border border-[#FB5454]/20 text-xs divide-y divide-slate-200 dark:divide-slate-700">
+            <div className="max-h-48 overflow-y-auto space-y-1.5 p-2 bg-[#FB5454]/5 rounded-md border border-[#FB5454]/20 text-xs divide-y divide-[#E2E8F0] dark:divide-[#2E3A47]">
               {selectedRegsList.map((reg, idx) => (
                 <div key={reg.id} className="pt-1.5 first:pt-0 flex items-center justify-between text-xs">
                   <div className="min-w-0 pr-2">
@@ -2770,7 +2762,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
             {/* Modal Header */}
             <div className="p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between bg-[#F7F9FC] dark:bg-[#24303F]">
               <div className="flex items-center gap-2.5">
-                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-slate-700 dark:text-slate-300 shrink-0">print</Icon>
+                <Icon className="material-symbols-outlined text-[16px] sm:text-[18px] text-primary shrink-0">print</Icon>
                 <div>
                   <h3 className="font-bold text-sm sm:text-base text-[#1C2434] dark:text-white">
                     {isAmharic ? 'የተመረጡ አባላት ዝርዝር ማህደር' : 'Selected Members Roster'}
@@ -2786,7 +2778,7 @@ export const TablesPage: React.FC<TablesPageProps> = ({
                   onClick={() => {
                     window.print();
                   }}
-                  className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white font-bold text-xs rounded-md transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+                  className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-on-primary font-bold text-xs rounded-md transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
                 >
                   <Icon className="material-symbols-outlined text-[16px]">print</Icon>
                   <span>{isAmharic ? 'ወዲያውኑ አትም' : 'Print Now'}</span>

@@ -231,12 +231,12 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
               }}
               className={`pointer-events-auto relative overflow-hidden w-full rounded-xl p-3 sm:p-3.5 shadow-xl text-white touch-pan-x cursor-grab active:cursor-grabbing ${
                 activeToast.type === 'success'
-                  ? 'bg-emerald-600 border border-emerald-400/60 shadow-emerald-950/25'
+                  ? 'bg-[#10B981] border border-emerald-400/50 shadow-emerald-950/25'
                   : activeToast.type === 'warning'
-                  ? 'bg-slate-900 border border-amber-500/70 shadow-black/40 text-slate-100'
+                  ? 'bg-[#1C2434] border border-amber-500/60 shadow-black/40 text-[#DEE4EE]'
                   : activeToast.type === 'error'
-                  ? 'bg-rose-600 border border-rose-400/60 shadow-rose-950/25'
-                  : 'bg-slate-900 border border-slate-700 shadow-black/30'
+                  ? 'bg-rose-600 border border-rose-400/50 shadow-rose-950/25'
+                  : 'bg-[#1C2434] border border-[#2E3A47] shadow-black/30 text-[#DEE4EE]'
               }`}
             >
               {/* Top highlight line */}

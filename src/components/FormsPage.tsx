@@ -54,8 +54,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
   return (
     <div className="space-y-2 md:space-y-2.5">
       {isDenied ? (
-        <div className="p-3.5 sm:p-4 bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-800/60 rounded-lg text-rose-800 dark:text-rose-200 text-xs font-medium flex items-center gap-2.5">
-          <Icon className="material-symbols-outlined text-icon-md text-rose-600 dark:text-rose-400 shrink-0">gpp_maybe</Icon>
+        <div className="p-3.5 sm:p-4 bg-rose-50 dark:bg-[#FB5454]/15 border border-rose-200/80 dark:border-[#FB5454]/30 rounded-lg text-rose-700 dark:text-[#FDA4AF] text-xs font-medium flex items-center gap-2.5">
+          <Icon className="material-symbols-outlined text-icon-md text-rose-600 dark:text-[#FB5454] shrink-0">gpp_maybe</Icon>
           <span>
             {isAmharic
               ? 'አዲስ ምዝገባ በሚናዎ ፈቃድ ተገድቧል።'
@@ -63,8 +63,8 @@ export const FormsPage: React.FC<FormsPageProps> = ({
           </span>
         </div>
       ) : isReadOnly ? (
-        <div className="p-3.5 sm:p-4 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-slate-200 text-xs font-medium flex items-center gap-2.5">
-          <Icon className="material-symbols-outlined text-icon-md text-slate-500 dark:text-slate-400 shrink-0">warning</Icon>
+        <div className="p-3.5 sm:p-4 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg text-[#1C2434] dark:text-[#DEE4EE] text-xs font-medium flex items-center gap-2.5">
+          <Icon className="material-symbols-outlined text-icon-md text-[#64748B] dark:text-[#8A99AD] shrink-0">warning</Icon>
           <span>
             {isAmharic
               ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ ምዝገባ ተገድቧል።'

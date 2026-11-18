@@ -61,7 +61,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
           animate="visible"
           exit="exit"
           transition={POPOVER_TRANSITION}
-          className={`fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex ${
+          className={`fixed inset-0 z-50 bg-[#1A222C]/70 dark:bg-black/80 backdrop-blur-xs flex ${
             useSheet
               ? 'items-end justify-center p-0'
               : 'items-start justify-center pt-6 sm:pt-10 md:pt-14 pb-8 p-2 sm:p-4 overflow-y-auto'
@@ -78,7 +78,7 @@ export const BaseModal: React.FC<BaseModalProps> = ({
             dragConstraints={useSheet ? { top: 0 } : undefined}
             dragElastic={useSheet ? { top: 0, bottom: 0.4 } : undefined}
             onDragEnd={useSheet ? handleDragEnd : undefined}
-            className={`bg-surface-container-lowest border border-outline-variant w-full flex flex-col shadow-2xl overflow-hidden ${
+            className={`bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] w-full flex flex-col shadow-2xl overflow-hidden ${
               useSheet
                 ? 'rounded-t-2xl max-h-[92dvh] pb-[env(safe-area-inset-bottom,0px)]'
                 : 'rounded-xl max-w-3xl max-h-[92vh]'

@@ -412,7 +412,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   const [dateRangePreset, setDateRangePreset] = useState<DateRangePreset>('this_month');
   const [startDate, setStartDate] = useState<string>(() => computeEthiopianPresetRange('this_month').start);
   const [endDate, setEndDate] = useState<string>(() => computeEthiopianPresetRange('this_month').end);
-  const hasActiveSecondaryFilters = dateRangePreset !== 'this_month' || categoryFilter !== 'all' || sortField !== 'name' || sortOrder !== 'asc';
+  const hasActiveSecondaryFilters = Boolean(
+    dateRangePreset !== 'this_month' ||
+    categoryFilter !== 'all' ||
+    sortField !== 'name' ||
+    sortOrder !== 'asc' ||
+    searchQuery.trim()
+  );
 
   const handleSelectPreset = (preset: DateRangePreset) => {
     setDateRangePreset(preset);
@@ -1271,7 +1277,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
   }, [currentEthMonth, currentEthYear, isAmharic, matrixCounts, metrics, serverFeeStats]);
 
   // Reusable Tailwind-styled Date Range Picker matching table toolbar UI and controls
-  const renderDateRangePicker = () => {
+  const renderDateRangePicker = (pickerClassName = '') => {
     return (
       <EthiopianDateRangePicker
         startDate={startDate}
@@ -1281,6 +1287,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
         onEndDateChange={setEndDate}
         onPresetChange={setDateRangePreset}
         lang={isAmharic ? 'am' : 'en'}
+        className={pickerClassName}
       />
     );
   };
@@ -1290,41 +1297,42 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {/* UNIFIED WORKSPACE CARD SHELL (HOUSING INTEGRATED HEADER, FLUSH TABS, FILTERS & VIEW) */}
       <div className="rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] shadow-xs overflow-hidden divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] w-full max-w-full min-w-0">
         {/* 1. INTEGRATED TITLE BAR / HEADER */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white dark:bg-[#1C2434] py-2.5 px-3.5 sm:px-5 w-full max-w-full min-w-0">
-          <div className="flex items-center gap-2.5">
+        <div className="flex flex-row items-center justify-between gap-2 bg-white dark:bg-[#1C2434] py-2 sm:py-2.5 px-3 sm:px-5 w-full max-w-full min-w-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
             <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-              <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
+              <Icon className="material-symbols-outlined text-[20px] shrink-0">payments</Icon>
             </div>
-            <div>
-              <h2 className="text-sm sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight flex items-center gap-2">
-                <span>{isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}</span>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-xs sm:text-base font-bold text-[#1C2434] dark:text-white tracking-tight truncate">
+                {isAmharic ? 'የአባልነት ክፍያ ማህደር' : 'Membership Fee Directory'}
               </h2>
-              <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block">
+              <p className="text-[11px] text-[#64748B] dark:text-[#8A99AD] font-medium hidden sm:block truncate">
                 {isAmharic ? 'የወርሃዊ መዋጮ ማትሪክስ ሰንጠረዥ እና ገቢ ስታቲስቲክስ' : 'Monthly dues matrix ledger & revenue statistics'}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+          <div className="flex items-center gap-2 shrink-0">
             {canAddReceipt ? (
               <button
                 type="button"
                 onClick={() => setIsFormOpen((prev) => !prev)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95 whitespace-nowrap shrink-0"
+                title={isFormOpen ? (isAmharic ? 'ቅጹን ዝጋ' : 'Close Form') : (isAmharic ? 'አዲስ ክፍያ መዝግብ' : 'Record New Payment')}
               >
-                <Icon className="material-symbols-outlined text-[16px]">
+                <Icon className="material-symbols-outlined text-[16px] shrink-0">
                   {isFormOpen ? 'close' : 'add'}
                 </Icon>
-                <span>
+                <span className="whitespace-nowrap shrink-0">
                   {isFormOpen
-                    ? isAmharic ? 'ቅጹን ዝጋ' : 'Close Form'
-                    : isAmharic ? 'አዲስ ክፍያ' : 'New payment'}
+                    ? (isAmharic ? 'ዝጋ' : 'Close')
+                    : (isAmharic ? 'አዲስ' : 'New')}
                 </span>
               </button>
             ) : (
-              <div className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-500 text-xs font-bold flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-[15px]">lock</Icon>
-                <span>{isAmharic ? 'የደረሰኝ መመዝገቢያ ተገድቧል' : 'Receipt Entry Restricted'}</span>
+              <div className="px-2 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] text-xs font-bold flex items-center gap-1 whitespace-nowrap shrink-0">
+                <Icon className="material-symbols-outlined text-[15px] shrink-0">lock</Icon>
+                <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'የተገደበ' : 'Restricted'}</span>
               </div>
             )}
           </div>
@@ -1332,7 +1340,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
         {/* 2. FLUSH WORKSPACE TABS (ATTACHED DIRECTLY UNDERNEATH TITLE BAR, ZERO GAP) */}
         {canViewTable && canViewKPIs && (
-          <div className="flex items-center justify-between bg-[#F8FAFC] dark:bg-[#1E293B]/70 px-3 sm:px-5 pt-1.5 overflow-hidden w-full max-w-full">
+          <div className="flex items-center justify-between bg-[#F8FAFC] dark:bg-[#1A222C] px-3 sm:px-5 pt-1.5 overflow-hidden w-full max-w-full">
             <div className="flex items-center gap-2 sm:gap-6 overflow-x-auto scrollbar-none -mb-[1px] w-full min-w-0">
               <button
                 type="button"
@@ -1395,7 +1403,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <div className="flex items-center justify-between gap-2.5 sm:gap-3 border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-3">
               {/* Title */}
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-[#10B981]/15 border border-emerald-200/80 dark:border-[#10B981]/30 text-[#10B981] flex items-center justify-center shrink-0">
                   <Icon className="material-symbols-outlined text-[20px]">payments</Icon>
                 </div>
                 <div>
@@ -1533,7 +1541,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       setStatusFilter('all');
                       setActiveMainTab('table');
                     }}
-                    className="flex-1 py-2 px-3 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    className="flex-1 py-2 px-3 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Icon className="material-symbols-outlined text-[16px]">table_chart</Icon>
                     <span>{isAmharic ? 'ማትሪክስ መዝገብ ይመልከቱ' : 'View Matrix Table'}</span>
@@ -1542,7 +1550,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsFormOpen(true)}
-                      className="py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                      className="py-2 px-3 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <Icon className="material-symbols-outlined text-[16px]">add</Icon>
                       <span>{isAmharic ? 'አዲስ ክፍያ' : 'New payment'}</span>
@@ -1557,20 +1565,20 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
       {/* RECEIPT ENTRY FORM WITH ZERO-JUMP INTEGRATED MANIFEST STRIP */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-start justify-center pt-6 sm:pt-12 md:pt-14 pb-8 p-3 sm:p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in overflow-y-auto">
+        <div className="fixed inset-0 z-[1000] flex items-start justify-center pt-6 sm:pt-12 md:pt-14 pb-8 p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in overflow-y-auto">
           <div className="relative w-full max-w-2xl bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-sm shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F]">
               <div className="flex items-center gap-2">
-                <Icon className="material-symbols-outlined text-[18px] text-slate-700 dark:text-slate-300 shrink-0">
+                <Icon className="material-symbols-outlined text-[18px] text-primary shrink-0">
                   add_card
                 </Icon>
-                <h3 className="text-sm font-black text-slate-950 dark:text-white tracking-wider">
+                <h3 className="text-sm font-black text-[#1C2434] dark:text-white tracking-wider">
                   {isAmharic ? 'አዲስ የወርሃዊ ክፍያ ደረሰኝ መመዝገቢያ ቅጽ' : 'New Monthly Payment Receipt Entry'}
                 </h3>
               </div>
               <div className="flex items-center gap-2.5">
-                <span className="text-[10px] font-mono font-bold bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-700 dark:text-slate-300">
+                <span className="text-[10px] font-mono font-bold bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] px-2 py-0.5 rounded text-[#475569] dark:text-[#CBD5E1]">
                   Clerk: {userBadgeId}
                 </span>
                 <button
@@ -1590,8 +1598,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             >
 
           {isFormReadOnly && (
-            <div className="p-3 bg-slate-100 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg text-xs font-bold flex items-center gap-2 shadow-2xs">
-              <Icon className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[20px] shrink-0">lock</Icon>
+            <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-[#1C2434] dark:text-[#DEE4EE] rounded-lg text-xs font-bold flex items-center gap-2 shadow-2xs">
+              <Icon className="material-symbols-outlined text-[#64748B] dark:text-[#8A99AD] text-[20px] shrink-0">lock</Icon>
               <span>
                 {isAmharic
                   ? 'ተነባቢ ብቻ ሁነታ፡ አዲስ ደረሰኝ መመዝገብ ተገድቧል።'
@@ -1601,15 +1609,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           )}
 
           {submitError && (
-            <div className="p-3 bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200 rounded-lg text-xs font-bold flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-rose-600 text-[20px] shrink-0">error</Icon>
+            <div className="p-3 bg-rose-50 dark:bg-[#FB5454]/15 border border-rose-200 dark:border-[#FB5454]/30 text-rose-700 dark:text-[#FDA4AF] rounded-lg text-xs font-bold flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-[#FB5454] text-[20px] shrink-0">error</Icon>
               <span>{submitError}</span>
             </div>
           )}
 
           {submitSuccess && (
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 rounded-lg text-xs font-bold flex items-center gap-2">
-              <Icon className="material-symbols-outlined text-emerald-600 text-[20px] shrink-0">check_circle</Icon>
+            <div className="p-3 bg-emerald-50 dark:bg-[#10B981]/15 border border-emerald-200 dark:border-[#10B981]/30 text-emerald-700 dark:text-[#6EE7B7] rounded-lg text-xs font-bold flex items-center gap-2">
+              <Icon className="material-symbols-outlined text-[#10B981] text-[20px] shrink-0">check_circle</Icon>
               <span>{submitSuccess}</span>
             </div>
           )}
@@ -1618,9 +1626,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="space-y-3.5">
             {/* 1. Standalone Receipt / Bank Reference Number */}
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
+              <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] tracking-wide">
                 {isAmharic ? 'የደረሰኝ ቁጥር / የባንክ ማጣቀሻ ቁጥር' : 'Receipt # / Bank Reference'}
-                <span className="text-rose-600 ml-1">*</span>
+                <span className="text-[#FB5454] ml-1">*</span>
               </label>
               <div className="relative">
                 <input
@@ -1629,9 +1637,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   value={receiptNumber}
                   onChange={(e) => setReceiptNumber(e.target.value)}
                   placeholder={isAmharic ? 'ለምሳሌ፡ FT26071... ወይም REC-8902' : 'e.g., FT26071... or REC-8902'}
-                  className="w-full pl-8 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  className="w-full pl-8 pr-3 py-2.5 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg text-xs font-mono font-bold text-[#1C2434] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-500">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-[#8A99AD]">
                   <Icon className="material-symbols-outlined text-[16px]">receipt</Icon>
                 </div>
               </div>
@@ -1641,14 +1649,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {/* Bank Selector and Verification Button */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
+                <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] tracking-wide">
                   {isAmharic ? 'የባንክ ማረጋገጫ' : 'Bank System Check'}
                 </label>
                 <div className="flex gap-2">
                   <select
                     value={formChekiBank}
                     onChange={(e) => setFormChekiBank(e.target.value)}
-                    className="flex-1 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                    className="flex-1 px-3 py-2 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg text-xs font-bold text-[#1C2434] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   >
                     <option value="">{isAmharic ? 'ራስ-ሰር ባንክ' : 'Auto Bank'}</option>
                     <option value="cbe">CBE</option>
@@ -1663,7 +1671,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     type="button"
                     onClick={handleVerifyReceiptInForm}
                     disabled={formChekiLoading || !receiptNumber.trim()}
-                    className="px-3.5 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5 shrink-0 cursor-pointer disabled:cursor-not-allowed"
+                    className="px-3.5 py-2 rounded-lg bg-[#10B981] hover:bg-[#059669] disabled:bg-[#E2E8F0] dark:disabled:bg-[#2E3A47] text-white disabled:text-[#8A99AD] text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-1.5 shrink-0 cursor-pointer disabled:cursor-not-allowed"
                     title={isAmharic ? 'ደረሰኙን አረጋግጥ' : 'Verify receipt on bank system via Cheki API'}
                   >
                     {formChekiLoading ? (
@@ -1681,7 +1689,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 </div>
 
                 {formChekiError && (
-                  <div className="p-2 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 rounded-lg text-[11px] font-bold flex items-center justify-between gap-2 mt-1">
+                  <div className="p-2 bg-rose-50 dark:bg-[#FB5454]/15 border border-rose-200 dark:border-[#FB5454]/30 text-rose-700 dark:text-[#FDA4AF] rounded-lg text-[11px] font-bold flex items-center justify-between gap-2 mt-1">
                     <div className="flex items-center gap-1.5">
                       <Icon className="material-symbols-outlined text-[15px] shrink-0">error</Icon>
                       <span>{formChekiError}</span>
@@ -1689,9 +1697,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     <button
                       type="button"
                       onClick={() => setFormChekiError('')}
-                      className="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer"
+                      className="text-[#FB5454] hover:opacity-80 font-bold text-xs cursor-pointer inline-flex items-center"
                     >
-                      ✕
+                      <Icon className="material-symbols-outlined text-[14px]">close</Icon>
                     </button>
                   </div>
                 )}
@@ -1699,7 +1707,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
               {/* Payment Date Input in Ethiopian Calendar */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 tracking-wide">
+                <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] tracking-wide">
                   <span>{isAmharic ? 'የተከፈለበት ቀን (E.C.)' : 'Payment Date (E.C.)'}</span>
                 </label>
                 <EthiopianDatePickerPopover
@@ -1714,7 +1722,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* ZERO-JUMP DYNAMIC FIELDS: Integrated read-only manifest strip directly below registration input */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide flex items-center justify-between">
+            <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] tracking-wide flex items-center justify-between">
               <span>{isAmharic ? 'የምዝገባ ቁጥር፣ ሰሌዳ፣ ወይም ሞተር ቁጥር' : 'Registration ID, Plate #, or Engine #'}</span>
               {regNumber && (
                 <button
@@ -1727,7 +1735,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     setPhone('');
                     setIsAutoFilled(false);
                   }}
-                  className="text-[10px] text-rose-600 font-bold hover:underline flex items-center gap-0.5 cursor-pointer"
+                  className="text-[10px] text-[#FB5454] font-bold hover:underline flex items-center gap-0.5 cursor-pointer"
                 >
                   <Icon className="material-symbols-outlined text-[12px]">cancel</Icon>
                   <span>{isAmharic ? 'አፅዳ' : 'Clear'}</span>
@@ -1746,15 +1754,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     ? 'የምዝገባ ቁጥር፣ ሰሌዳ፣ ወይም ሞተር ቁጥር አስገባ...'
                     : 'Enter Registration #, Plate #, or Engine #'
                 }
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+                className="w-full pl-9 pr-3 py-2 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg text-xs font-mono font-bold text-[#1C2434] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
-              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-500">
+              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-[#8A99AD]">
                 <Icon className="material-symbols-outlined text-[18px]">search</Icon>
               </div>
 
               {/* Custom Suggestion Dropdown */}
               {regNumber.length >= 2 && !isAutoFilled && (
-                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg shadow-xl max-h-60 overflow-y-auto">
                   {effectiveRegistrations
                     .filter(
                       (r) =>
@@ -1770,10 +1778,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                         onClick={() => {
                           handleRegNumberChange(r.id);
                         }}
-                        className="w-full text-left px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-medium text-slate-700 dark:text-slate-200 cursor-pointer"
+                        className="w-full text-left px-4 py-2 hover:bg-[#F7F9FC] dark:hover:bg-[#24303F] text-xs font-medium text-[#1C2434] dark:text-[#DEE4EE] cursor-pointer"
                       >
                         <span className="font-bold">{r.fullName}</span>
-                        <span className="text-slate-500 dark:text-slate-400">
+                        <span className="text-[#64748B] dark:text-[#8A99AD]">
                           {' '}
                           ({r.plateNumber || 'No Plate'}) — ID: {r.id}
                         </span>
@@ -1785,7 +1793,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       (r.plateNumber && r.plateNumber.toLowerCase().includes(regNumber.toLowerCase())) ||
                       (r.fullName && r.fullName.toLowerCase().includes(regNumber.toLowerCase()))
                   ).length === 0 && (
-                    <div className="px-4 py-2 text-xs text-slate-500 italic">
+                    <div className="px-4 py-2 text-xs text-[#64748B] dark:text-[#8A99AD] italic">
                       {isAmharic ? 'ምንም ውጤት አልተገኘም' : 'No results found'}
                     </div>
                   )}
@@ -1797,44 +1805,44 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             <div
               className={`transition-all duration-150 rounded-xl border p-4 ${
                 selectedRegInfo
-                  ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900 shadow-sm'
-                  : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
+                  ? 'bg-primary/10 border-primary/25 shadow-sm'
+                  : 'bg-[#F7F9FC] dark:bg-[#24303F] border-[#E2E8F0] dark:border-[#2E3A47]'
               }`}
             >
               {selectedRegInfo ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {/* 1. Name */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <span className="text-[10px] font-black text-[#64748B] dark:text-[#8A99AD] uppercase tracking-wider">
                       {isAmharic ? 'የባለቤት ስም' : 'Owner Name'}
                     </span>
-                    <span className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                    <span className="font-bold text-[#1C2434] dark:text-white text-sm truncate">
                       {selectedRegInfo.registration.fullName}
                     </span>
                   </div>
 
                   {/* 2. Plate */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <span className="text-[10px] font-black text-[#64748B] dark:text-[#8A99AD] uppercase tracking-wider">
                       {isAmharic ? 'ሰሌዳ ቁጥር' : 'Plate #'}
                     </span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-white text-sm">
+                    <span className="font-mono font-bold text-[#1C2434] dark:text-white text-sm">
                       {selectedRegInfo.registration.plateNumber || (isAmharic ? 'ሰሌዳ የለም' : 'No Plate')}
                     </span>
                   </div>
 
                   {/* 3. Status */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <span className="text-[10px] font-black text-[#64748B] dark:text-[#8A99AD] uppercase tracking-wider">
                       {isAmharic ? 'የሂሳብ ሁኔታ' : 'Ledger Status'}
                     </span>
                     <span
                       className={`inline-block px-2 py-0.5 rounded text-[10px] font-black tracking-wider w-fit ${
                         selectedRegInfo.termStatus === 'CURRENT'
-                          ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200'
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-[#10B981]/15 dark:text-[#6EE7B7]'
                           : selectedRegInfo.termStatus === 'DUE'
-                          ? 'bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200'
-                          : 'bg-rose-100 text-rose-900 dark:bg-rose-900/40 dark:text-rose-200'
+                          ? 'bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300'
+                          : 'bg-rose-50 text-rose-700 dark:bg-[#FB5454]/15 dark:text-[#FDA4AF]'
                       }`}
                     >
                       {selectedRegInfo.termStatus}
@@ -1843,14 +1851,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
                   {/* 4. Prior Balance */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <span className="text-[10px] font-black text-[#64748B] dark:text-[#8A99AD] uppercase tracking-wider">
                       {isAmharic ? 'ቀሪ ዕዳ' : 'Prior Debt'}
                     </span>
                     <span
                       className={`font-mono font-bold text-sm ${
                         selectedRegInfo.unpaidDebtAmount > 0
-                          ? 'text-rose-600 dark:text-rose-400'
-                          : 'text-emerald-600 dark:text-emerald-400'
+                          ? 'text-[#FB5454]'
+                          : 'text-[#10B981]'
                       }`}
                     >
                       {selectedRegInfo.unpaidDebtAmount} ETB
@@ -1858,7 +1866,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 text-slate-400">
+                <div className="flex items-center gap-3 text-[#8A99AD]">
                   <Icon className="material-symbols-outlined text-[20px]">info</Icon>
                   <span className="text-xs font-medium">
                     {isAmharic
@@ -1874,7 +1882,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Amount */}
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
+              <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] tracking-wide">
                 {isAmharic ? 'የተከፈለው መጠን (ብር)' : 'Amount Paid (ETB)'}
               </label>
               <input
@@ -1882,28 +1890,28 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="500"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 font-mono"
+                className="w-full px-3 py-2 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg text-xs font-black text-[#1C2434] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 font-mono"
               />
             </div>
 
             {/* Calculated Expiration Date (1 Month Term) with Prominent Ethiopian Calendar */}
             <div className="space-y-1">
-              <label className="block text-xs font-bold text-emerald-800 dark:text-emerald-400  tracking-wide flex items-center justify-between">
+              <label className="block text-xs font-bold text-emerald-700 dark:text-[#6EE7B7] tracking-wide flex items-center justify-between">
                 <span className="flex items-center gap-1">
                   <Icon className="material-symbols-outlined text-[16px]">event_available</Icon>
                   <span>{isAmharic ? 'የ1 ወር ማብቂያ ቀን' : 'Calculated 1-Month Expiry (Eth)'}</span>
                 </span>
                 {!isAmharic && (
-                  <span className="text-[10px] font-mono text-slate-700 dark:text-slate-300">
+                  <span className="text-[10px] font-mono text-[#64748B] dark:text-[#8A99AD]">
                     GC: {calculatedExpirationDate}
                   </span>
                 )}
               </label>
-              <div className="w-full px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-lg text-xs font-black text-emerald-900 dark:text-emerald-300 flex items-center justify-between shadow-2xs">
+              <div className="w-full px-3 py-2 bg-emerald-50 dark:bg-[#10B981]/15 border border-emerald-200 dark:border-[#10B981]/30 rounded-lg text-xs font-black text-emerald-800 dark:text-[#6EE7B7] flex items-center justify-between shadow-2xs">
                 <span className="font-mono text-xs sm:text-sm">
                   {formatEthiopianDate(calculatedExpirationDate, isAmharic ? 'am' : 'en')}
                 </span>
-                <span className="px-2 py-0.5 rounded text-[10px]  font-black bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100">
+                <span className="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-100 dark:bg-[#10B981]/25 text-emerald-800 dark:text-[#6EE7B7]">
                   +1 {isAmharic ? 'ወር' : 'Month'}
                 </span>
               </div>
@@ -1911,14 +1919,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* Screenshot Upload Dropzone */}
-          <div className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800">
-            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
+          <div className="space-y-1.5 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+            <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] tracking-wide">
               {isAmharic ? 'የደረሰኝ ፎቶ ስቀል' : 'Receipt Screenshot Upload'}
             </label>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-lg border border-dashed border-slate-300 dark:border-slate-700">
+            <div className="flex flex-col sm:flex-row items-center gap-3 bg-[#F7F9FC] dark:bg-[#24303F] p-3 rounded-lg border border-dashed border-[#E2E8F0] dark:border-[#2E3A47]">
               {receiptScreenshot ? (
-                <div className="relative w-28 h-20 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 shadow-2xs shrink-0 bg-black">
+                <div className="relative w-28 h-20 rounded-lg overflow-hidden border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs shrink-0 bg-black">
                   <img
                     src={receiptScreenshot}
                     alt="Receipt Screenshot"
@@ -1927,13 +1935,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <button
                     type="button"
                     onClick={() => setReceiptScreenshot('')}
-                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center text-xs shadow-md cursor-pointer hover:bg-rose-700"
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#FB5454] text-white flex items-center justify-center text-xs shadow-md cursor-pointer hover:bg-[#D34040]"
                   >
-                    ✕
+                    <Icon className="material-symbols-outlined text-[13px]">close</Icon>
                   </button>
                 </div>
               ) : (
-                <div className="w-28 h-20 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
+                <div className="w-28 h-20 rounded-lg border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#1C2434] flex flex-col items-center justify-center text-[#64748B] dark:text-[#8A99AD] shrink-0">
                   <Icon className="material-symbols-outlined text-[24px]">receipt</Icon>
                   <span className="text-[9px] font-bold mt-0.5">
                     {isAmharic ? 'ፎቶ የለም' : 'No Image'}
@@ -1952,7 +1960,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
                   <label
                     htmlFor="receipt-screenshot-upload"
-                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-bold cursor-pointer transition-all shadow-xs"
+                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white hover:bg-[#F7F9FC] dark:bg-[#1C2434] dark:hover:bg-[#333A48] text-[#1C2434] dark:text-white border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-bold cursor-pointer transition-all shadow-xs"
                   >
                     <Icon className="material-symbols-outlined text-[16px]">cloud_upload</Icon>
                     <span>{isAmharic ? 'የደረሰኝ ፎቶ ስቀል' : 'Upload File'}</span>
@@ -1961,13 +1969,13 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowReceiptCamera(true)}
-                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold cursor-pointer transition-all shadow-xs"
+                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold cursor-pointer transition-all shadow-xs"
                   >
                     <Icon className="material-symbols-outlined text-[16px]">photo_camera</Icon>
                     <span>{isAmharic ? 'በካሜራ አንሳ' : 'Capture from Camera'}</span>
                   </button>
                 </div>
-                <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300">
+                <p className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD]">
                   {isAmharic
                     ? 'የቴሌብር/የባንክ ማረጋገጫ ስክሪንሾት ወይም የወረቀት ደረሰኙን ፎቶ ያያይዙ።'
                     : 'Upload Telebirr, CBE SMS, or physical paper treasury receipt photo.'}
@@ -1986,7 +1994,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
           {/* Optional Notes */}
           <div className="space-y-1">
-            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100  tracking-wide">
+            <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] tracking-wide">
               {isAmharic ? 'ተጨማሪ ማብራሪያ' : 'Notes & Remarks'}
             </label>
             <textarea
@@ -1994,23 +2002,23 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={isAmharic ? 'ተጨማሪ መረጃ ካለ ያስገቡ...' : 'Add optional clerk notes...'}
-              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900"
+              className="w-full px-3 py-2 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg text-xs font-medium text-[#1C2434] dark:text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
             <button
               type="button"
               onClick={() => setIsFormOpen(false)}
-              className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer"
+              className="px-4 py-2 rounded-lg bg-[#F7F9FC] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-bold transition-all cursor-pointer"
             >
               {isAmharic ? 'ሰርዝ' : 'Cancel'}
             </button>
             <button
               type="submit"
               disabled={isSubmitting || isFormReadOnly || !canAddReceipt || selectedRegInfo?.expirationStatusType === 'active'}
-              className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover disabled:opacity-50 text-white text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-lg bg-primary hover:bg-primary-hover disabled:opacity-50 text-on-primary text-xs font-bold border-0 shadow-none hover:shadow-none transition-colors duration-150 flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -2041,64 +2049,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           {/* SEARCH & STATUS FILTER TOOLBAR WITH COLLAPSIBLE DRAWER */}
           <div className="flex flex-col w-full bg-white dark:bg-[#1C2434] border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             {/* TIER 1: PRIMARY TOOLBAR */}
-            <div className="px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 w-full max-w-full">
-              {/* Left: Search Bar + Filter Drawer Button */}
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="relative flex-1 min-w-0 max-w-full sm:max-w-xs md:max-w-sm">
-                  <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
-                    <Icon className="material-symbols-outlined text-[17px]">search</Icon>
-                  </div>
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setPage(1);
-                    }}
-                    placeholder={
-                      isAmharic
-                        ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
-                        : 'Search receipt #, owner name, plate...'
-                    }
-                    className="w-full h-8 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] py-1 pl-8 pr-7 text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] outline-none transition focus:border-primary/80 focus:bg-white dark:focus:bg-[#1C2434] focus:ring-2 focus:ring-primary/20"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setPage(1);
-                      }}
-                      className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
-                      title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
-                    >
-                      <Icon className="material-symbols-outlined text-[16px]">close</Icon>
-                    </button>
-                  )}
-                </div>
-
-                {/* Filter Drawer Toggle Button */}
-                <button
-                  type="button"
-                  onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
-                  className={`h-8 px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
-                    isFilterDrawerOpen || hasActiveSecondaryFilters
-                      ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
-                      : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
-                  }`}
-                  title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
-                >
-                  <Icon className="material-symbols-outlined text-[16px]">tune</Icon>
-                  <span className="hidden xs:inline">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
-                  {hasActiveSecondaryFilters && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                  )}
-                </button>
-              </div>
-
-              {/* Right: Status Segmented Pill Tabs */}
-              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-0.5 sm:pb-0 shrink-0">
-                <div className="inline-flex items-center p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] h-8 shrink-0">
+            <div className="px-2.5 sm:px-4 py-2 flex flex-row items-center justify-between gap-2 w-full max-w-full min-w-0">
+              {/* Left: Full-Width Status Segmented Pill Tabs */}
+              <div className="flex items-center min-w-0 max-w-full flex-1 overflow-x-auto scrollbar-none">
+                <div className="flex min-w-full w-max items-center gap-0.5 p-0.5 rounded-md bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] min-h-[34px] whitespace-nowrap">
                   {[
                     { key: 'all' as const, label: isAmharic ? 'ሁሉም' : 'All', count: matrixCounts.all },
                     { key: 'active' as const, label: isAmharic ? 'ክፍያ የፈጸሙ' : 'Paid', count: matrixCounts.active },
@@ -2114,18 +2068,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           setStatusFilter(tab.key);
                           setPage(1);
                         }}
-                        className={`h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                        className={`flex-1 h-7 px-2 sm:px-2.5 rounded text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
                           isActive
-                            ? 'bg-white dark:bg-[#1C2434] text-slate-900 dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
+                            ? 'bg-white dark:bg-[#1C2434] text-[#1C2434] dark:text-white shadow-2xs border border-[#E2E8F0] dark:border-[#2E3A47]'
                             : 'text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white border border-transparent'
                         }`}
                       >
                         <span>{tab.label}</span>
                         <span
-                          className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                          className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold tabular-nums leading-none ${
                             isActive
-                              ? 'bg-slate-100 dark:bg-[#24303F] text-slate-800 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60'
-                              : 'bg-slate-200/70 dark:bg-slate-700/60 text-slate-600 dark:text-slate-400'
+                              ? 'bg-[#F7F9FC] dark:bg-[#24303F] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47]'
+                              : 'bg-[#E2E8F0]/80 dark:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD]'
                           }`}
                         >
                           {tab.count}
@@ -2135,21 +2089,75 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   })}
                 </div>
               </div>
+
+              {/* Right: Filter Drawer Toggle Button */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsFilterDrawerOpen((prev) => !prev)}
+                  className={`h-[34px] px-2.5 rounded-md border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-[#1C2434] ${
+                    isFilterDrawerOpen || hasActiveSecondaryFilters
+                      ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20 dark:border-primary'
+                      : 'border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#DEE4EE] hover:text-[#1C2434] dark:hover:text-white'
+                  }`}
+                  title={isAmharic ? 'ተጨማሪ ማጣሪያዎች' : 'Filter & Sort'}
+                >
+                  <Icon className="material-symbols-outlined text-[16px] shrink-0">tune</Icon>
+                  <span className="hidden xs:inline whitespace-nowrap">{isAmharic ? 'ማጣሪያ' : 'Filters'}</span>
+                  {hasActiveSecondaryFilters && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* TIER 2: COLLAPSIBLE SECONDARY FILTER DRAWER */}
             {isFilterDrawerOpen && (
-              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="flex flex-col gap-2.5">
-                  {/* Integrated Ethiopian Date Range Picker inside drawer */}
-                  <div className="w-full max-w-full overflow-hidden">
-                    {renderDateRangePicker()}
+              <div className="px-3 sm:px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-t border-[#E2E8F0] dark:border-[#2E3A47] animate-in fade-in slide-in-from-top-1 duration-150 w-full max-w-full min-w-0">
+                <div className="flex flex-col gap-2.5 w-full min-w-0">
+                  {/* Search Bar inside Expandable Filter Section */}
+                  <div className="relative w-full max-w-md min-w-0">
+                    <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none text-[#8A99AD]">
+                      <Icon className="material-symbols-outlined text-[17px]">search</Icon>
+                    </div>
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setPage(1);
+                      }}
+                      placeholder={
+                        isAmharic
+                          ? 'በደረሰኝ #፣ በስም፣ ወይም በሰሌዳ ፈልግ...'
+                          : 'Search receipt #, owner name, plate...'
+                      }
+                      className="w-full h-[34px] pl-8 pr-8 bg-white dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-md text-xs text-[#1C2434] dark:text-white placeholder-[#8A99AD] focus:border-primary/80 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery('');
+                          setPage(1);
+                        }}
+                        className="absolute inset-y-0 right-2 flex items-center text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                        title={isAmharic ? 'ፍለጋውን አጽዳ' : 'Clear search'}
+                      >
+                        <Icon className="material-symbols-outlined text-[16px]">close</Icon>
+                      </button>
+                    )}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2.5 text-xs pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+                  {/* Integrated Ethiopian Date Range Picker inside drawer */}
+                  <div className="w-full max-w-full min-w-0">
+                    {renderDateRangePicker('rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]')}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5 text-xs w-full min-w-0">
                     {/* Category Filter */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                         {isAmharic ? 'የሞተር ዓይነት:' : 'Category:'}
                       </span>
                       <select
@@ -2158,7 +2166,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           setCategoryFilter(e.target.value as any);
                           setPage(1);
                         }}
-                        className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                        className="h-[34px] py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                       >
                         <option value="all">{isAmharic ? 'ሁሉም ዓይነቶች' : 'All Types'}</option>
                         <option value="electric">{isAmharic ? 'ኤሌክትሪክ' : 'Electric'}</option>
@@ -2167,14 +2175,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     </div>
 
                     {/* Sort Field */}
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 min-w-0 max-w-full">
+                      <span className="text-[#64748B] dark:text-[#8A99AD] text-[11px] font-bold uppercase tracking-wider shrink-0 whitespace-nowrap">
                         {isAmharic ? 'ደርድር በ:' : 'Sort By:'}
                       </span>
                       <select
                         value={sortField}
                         onChange={(e) => setSortField(e.target.value as any)}
-                        className="h-8 py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer"
+                        className="h-[34px] py-1 px-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white text-xs font-semibold focus:border-primary focus:outline-none cursor-pointer min-w-0 max-w-full flex-1 sm:flex-initial truncate"
                       >
                         <option value="name">{isAmharic ? 'በባለቤት ስም' : 'Name'}</option>
                         <option value="plate">{isAmharic ? 'በሰሌዳ ቁጥር' : 'Plate No'}</option>
@@ -2183,10 +2191,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       <button
                         type="button"
                         onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-                        className="h-8 px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-1 shrink-0"
+                        className="h-[34px] px-2 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-white dark:bg-[#24303F] text-[#1C2434] dark:text-white hover:bg-[#F7F9FC] dark:hover:bg-[#333A48] transition-colors cursor-pointer flex items-center gap-1 shrink-0 whitespace-nowrap"
                         title={sortOrder === 'asc' ? (isAmharic ? 'ከትንሽ ወደ ትልቅ (ASC)' : 'Ascending') : (isAmharic ? 'ከትልቅ ወደ ትንሽ (DESC)' : 'Descending')}
                       >
-                        <Icon className="material-symbols-outlined text-[15px]">
+                        <Icon className="material-symbols-outlined text-[15px] shrink-0">
                           {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
                         </Icon>
                         <span className="text-[11px] font-mono">{sortOrder.toUpperCase()}</span>
@@ -2209,9 +2217,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           setStatusFilter('all');
                           setPage(1);
                         }}
-                        className="h-8 px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs ms-auto"
+                        className="h-[34px] px-2.5 rounded-md text-xs font-bold text-[#FB5454] bg-[#FB5454]/10 hover:bg-[#FB5454]/20 transition-colors flex items-center gap-1 cursor-pointer border border-[#FB5454]/20 shadow-2xs shrink-0 whitespace-nowrap ms-auto"
                       >
-                        <Icon className="material-symbols-outlined text-[15px]">restart_alt</Icon>
+                        <Icon className="material-symbols-outlined text-[15px] shrink-0">restart_alt</Icon>
                         <span>{isAmharic ? 'ሁሉንም አጽዳ' : 'Reset All'}</span>
                       </button>
                     )}
@@ -2222,8 +2230,8 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           </div>
 
           {/* MATRIX STATUS LEGEND */}
-          <div className="px-3 sm:px-4 py-1.5 bg-slate-50 dark:bg-slate-900/50 border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between sm:justify-end gap-2 w-full max-w-full flex-wrap">
-            <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-400 flex-wrap">
+          <div className="px-3 sm:px-4 py-1.5 bg-[#F8FAFC] dark:bg-[#1A222C] border-b border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between sm:justify-end gap-2 w-full max-w-full flex-wrap">
+            <div className="flex items-center gap-2.5 sm:gap-3 text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] flex-wrap">
               <span className="inline-flex items-center gap-1.5">
                 <StatusDot status="paid" size={10} />
                 <span>{isAmharic ? 'የተከፈለ' : 'Paid'}</span>
@@ -2301,7 +2309,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                                 );
                           setSelectedMemberDetail({ row, member: memberReg, receipts: memberReceipts });
                         }}
-                        className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-650 active:scale-95 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-600 shadow-2xs transition-all cursor-pointer"
+                        className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-white dark:bg-[#24303F] hover:bg-[#F7F9FC] dark:hover:bg-[#333A48] active:scale-95 text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs transition-all cursor-pointer"
                       >
                         <Icon name="visibility" size={16} />
                         <span className="truncate">{isAmharic ? 'የሂሳብ መዝገብ' : 'View Ledger'}</span>
@@ -2315,7 +2323,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             e.stopPropagation();
                             handlePrintReceipt(latestRc);
                           }}
-                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-sky-50 dark:bg-sky-950/80 hover:bg-sky-100 dark:hover:bg-sky-900 active:scale-95 text-sky-800 dark:text-sky-200 border border-sky-300 dark:border-sky-800 shadow-2xs transition-all cursor-pointer"
+                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-primary/10 hover:bg-primary/20 active:scale-95 text-primary border border-primary/25 shadow-2xs transition-all cursor-pointer"
                         >
                           <Icon name="print" size={16} />
                           <span className="truncate">{isAmharic ? 'ደረሰኝ አትም' : 'Print Receipt'}</span>
@@ -2330,7 +2338,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             e.stopPropagation();
                             handleOpenEditTransaction(latestRc);
                           }}
-                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 active:scale-95 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 shadow-2xs transition-all cursor-pointer"
+                          className="w-full min-h-[38px] px-2.5 py-2 rounded-lg text-xs font-bold inline-flex items-center justify-center gap-1.5 bg-[#F7F9FC] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] active:scale-95 text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs transition-all cursor-pointer"
                         >
                           <Icon name="edit" size={16} />
                           <span className="truncate">{isAmharic ? 'ክፍያ አርትዕ' : 'Edit Transaction'}</span>
@@ -2353,7 +2361,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           setIsFormOpen(true);
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
-                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-600 dark:hover:bg-emerald-500 shadow-2xs transition-all active:scale-95 cursor-pointer"
+                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-[#10B981] hover:bg-[#059669] text-white shadow-2xs transition-all active:scale-95 cursor-pointer"
                         title={isAmharic ? 'አዲስ ክፍያ መዝግብ' : 'Record New Payment'}
                       >
                         <Icon name="add_card" size={13} />
@@ -2381,7 +2389,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                               );
                         setSelectedMemberDetail({ row, member: memberReg, receipts: memberReceipts });
                       }}
-                      className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
+                      className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-[#F7F9FC] dark:bg-[#24303F] hover:bg-[#E2E8F0] dark:hover:bg-[#333A48] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] transition-all active:scale-95 cursor-pointer"
                       title={isAmharic ? 'የአባል ሂሳብ መዝገብ እይ' : 'View Member Ledger'}
                     >
                       <Icon name="visibility" size={13} />
@@ -2396,7 +2404,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           e.stopPropagation();
                           handlePrintReceipt(latestRc);
                         }}
-                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/80 hover:bg-sky-100 dark:hover:bg-sky-900 text-sky-800 dark:text-sky-200 border border-sky-300 dark:border-sky-800 transition-all active:scale-95 cursor-pointer"
+                        className="px-2 py-1 rounded-md text-[11px] font-bold inline-flex items-center gap-1 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25 transition-all active:scale-95 cursor-pointer"
                         title={isAmharic ? 'የመጨረሻውን ደረሰኝ አትም' : 'Print Latest Receipt'}
                       >
                         <Icon name="print" size={13} />
@@ -2412,7 +2420,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           e.stopPropagation();
                           handleOpenEditTransaction(latestRc);
                         }}
-                        className="px-2.5 py-1 rounded-md text-[11px] font-bold inline-flex items-center justify-center bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-all active:scale-95 cursor-pointer"
+                        className="px-2.5 py-1 rounded-md text-[11px] font-bold inline-flex items-center justify-center bg-[#F7F9FC] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-[#1C2434] dark:text-[#DEE4EE] border border-[#E2E8F0] dark:border-[#2E3A47] transition-all active:scale-95 cursor-pointer"
                         title={isAmharic ? 'የክፍያ ዝርዝር አርትዕ (SuperAdmin)' : 'Edit Transaction (SuperAdmin)'}
                       >
                         <span>{isAmharic ? 'አርትዕ' : 'Edit'}</span>
@@ -2490,7 +2498,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 <span>{isAmharic ? 'ቀዳሚ' : 'Previous'}</span>
               </button>
 
-              <span className="px-3 py-1.5 bg-primary text-white rounded-sm font-semibold font-mono text-xs shadow-xs">
+              <span className="px-3 py-1.5 bg-primary text-on-primary rounded-sm font-semibold font-mono text-xs shadow-xs">
                 {activePage} / {totalPages}
               </span>
 
@@ -2548,21 +2556,21 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           switch (memberStatus) {
             case 'approved':
               return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-600 shadow-2xs">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-emerald-50 dark:bg-[#10B981]/15 text-emerald-700 dark:text-[#6EE7B7] border border-emerald-200/80 dark:border-[#10B981]/30 shadow-2xs">
                   <Icon name="check_circle" size={14} />
                   <span>{isAmharic ? 'የተፈቀደ' : 'Approved'}</span>
                 </span>
               );
             case 'printed':
               return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-600 shadow-2xs">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-primary/10 dark:bg-primary/15 text-primary border border-primary/25 shadow-2xs">
                   <Icon name="print" size={14} />
                   <span>{isAmharic ? 'የታተመ' : 'Printed'}</span>
                 </span>
               );
             case 'ordered_print':
               return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-600 shadow-2xs">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-primary/10 dark:bg-primary/15 text-primary border border-primary/25 shadow-2xs">
                   <Icon name="local_printshop" size={14} />
                   <span>{isAmharic ? 'በሕትመት' : 'In Print'}</span>
                 </span>
@@ -2570,14 +2578,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
             case 'rejected':
             case 'expired':
               return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-600 shadow-2xs">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-rose-50 dark:bg-[#FB5454]/15 text-rose-700 dark:text-[#FDA4AF] border border-rose-200/80 dark:border-[#FB5454]/30 shadow-2xs">
                   <Icon name="cancel" size={14} />
                   <span>{memberStatus === 'expired' ? (isAmharic ? 'ጊዜው ያለፈበት' : 'Expired') : (isAmharic ? 'ውድቅ' : 'Rejected')}</span>
                 </span>
               );
             default:
               return (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-2xs">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-sm text-xs font-semibold bg-[#F7F9FC] dark:bg-[#24303F] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] shadow-2xs">
                   <span>{isAmharic ? 'የሚጠበቅ' : 'Pending'}</span>
                 </span>
               );
@@ -2636,21 +2644,21 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
           >
             {/* TAB 1: OWNER & VEHICLE INFO */}
             {memberDrawerTab === 'info' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <div className="space-y-5 animate-in fade-in duration-200">
                 {/* Section 1: Profile & Identity */}
                 <WorkspaceDrawerSection
                   icon="person"
                   title={isAmharic ? 'የአባል እና የባለቤት ዝርዝር' : 'Owner & Member Identity'}
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-[124px_1fr] gap-3 items-center">
+                  <div className="grid grid-cols-1 sm:grid-cols-[116px_1fr] gap-4 sm:gap-5 items-start">
                     {/* Portrait Thumbnail */}
-                    <div className="flex flex-col items-center justify-center text-center space-y-1.5">
+                    <div className="flex flex-col items-center sm:items-start gap-1.5">
                       <div
                         onClick={() => {
                           const photo = m?.userPortraitPhoto || m?.user_portrait_photo || m?.ownerPhoto || m?.owner_photo || m?.userPortraitThumbnail || m?.user_portrait_thumbnail;
                           if (photo) setPreviewDocPhoto({ url: photo, title: isAmharic ? 'የአባል ፎቶ' : 'Member Portrait Photo' });
                         }}
-                        className="w-24 h-28 sm:w-28 sm:h-32 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] bg-[#F7F9FC] dark:bg-[#24303F] overflow-hidden flex items-center justify-center shadow-2xs relative group cursor-pointer"
+                        className="w-24 h-28 sm:w-28 sm:h-32 rounded-lg bg-[#F1F5F9] dark:bg-[#24303F] overflow-hidden flex items-center justify-center relative group cursor-pointer"
                         title={isAmharic ? 'የባለቤት ፎቶ (ለማጉላት ይጫኑ)' : 'Portrait Photo (Click to zoom)'}
                       >
                         {(() => {
@@ -2672,101 +2680,95 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           );
                         })()}
                       </div>
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD]">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD]">
                         {isAmharic ? 'የባለቤት ፎቶ' : 'Owner Portrait'}
                       </span>
                     </div>
 
-                    {/* Owner Details Grid - Paired 2-Column Layout */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {/* Pair 1: Status & ID */}
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] grid grid-cols-2 gap-2 items-center">
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'የአባል ሁኔታ' : 'Status'}
-                          </span>
-                          <div className="pt-0.5">
-                            {renderMemberStatusBadge()}
-                          </div>
+                    {/* Owner Details Grid - Clean Unboxed Typographic Pairs */}
+                    <div className="grid grid-cols-2 gap-x-5 gap-y-3.5 min-w-0">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'የአባል ሁኔታ' : 'Status'}
+                        </span>
+                        <div className="mt-1">
+                          {renderMemberStatusBadge()}
                         </div>
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'መለያ ቁጥር' : 'Member ID'}
+                      </div>
+
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'መለያ ቁጥር' : 'Member ID'}
+                        </span>
+                        <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                          <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] truncate tabular-nums">
+                            #{selectedMemberDetail.member?.id || selectedMemberDetail.row.id}
                           </span>
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums">
-                              #{selectedMemberDetail.member?.id || selectedMemberDetail.row.id}
-                            </span>
+                          <button
+                            type="button"
+                            onClick={() => handleMemberCopyField(String(selectedMemberDetail.member?.id || selectedMemberDetail.row.id), 'ID')}
+                            className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
+                            title={isAmharic ? 'መለያ ቁጥር ቅዳ' : 'Copy ID'}
+                          >
+                            <Icon name={memberDrawerCopiedField === 'ID' ? 'check' : 'content_copy'} size={13} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
+                        </span>
+                        <span className="mt-0.5 font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block truncate" title={selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title}>
+                          {selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title || '—'}
+                        </span>
+                      </div>
+
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'ስልክ ቁጥር' : 'Phone'}
+                        </span>
+                        <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                          {selectedMemberDetail.member?.phone ? (
+                            <a
+                              href={`tel:${selectedMemberDetail.member.phone}`}
+                              className="font-mono font-bold text-primary hover:underline text-xs sm:text-[13px] flex items-center gap-1 tabular-nums truncate"
+                            >
+                              <Icon name="call" size={13} className="text-[#8A99AD] shrink-0" />
+                              <span>{selectedMemberDetail.member.phone}</span>
+                            </a>
+                          ) : (
+                            <span className="font-mono text-xs text-[#8A99AD]">—</span>
+                          )}
+                          {selectedMemberDetail.member?.phone && (
                             <button
                               type="button"
-                              onClick={() => handleMemberCopyField(String(selectedMemberDetail.member?.id || selectedMemberDetail.row.id), 'ID')}
-                              className="p-1 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
-                              title={isAmharic ? 'መለያ ቁጥር ቅዳ' : 'Copy ID'}
+                              onClick={() => handleMemberCopyField(selectedMemberDetail.member?.phone || '', 'Phone')}
+                              className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
+                              title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
                             >
-                              <Icon name={memberDrawerCopiedField === 'ID' ? 'check' : 'content_copy'} size={13} />
+                              <Icon name={memberDrawerCopiedField === 'Phone' ? 'check' : 'content_copy'} size={13} />
                             </button>
-                          </div>
+                          )}
                         </div>
                       </div>
 
-                      {/* Pair 2: Full Name & Phone */}
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] grid grid-cols-2 gap-2 items-center">
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'ሙሉ ስም' : 'Full Name'}
-                          </span>
-                          <span className="font-bold text-[#1C2434] dark:text-white text-xs block truncate" title={selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title}>
-                            {selectedMemberDetail.member?.fullName || selectedMemberDetail.row.title || '—'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'ስልክ ቁጥር' : 'Phone'}
-                          </span>
-                          <div className="flex items-center justify-between gap-1">
-                            {selectedMemberDetail.member?.phone ? (
-                              <a
-                                href={`tel:${selectedMemberDetail.member.phone}`}
-                                className="font-mono font-bold text-primary hover:underline text-xs flex items-center gap-1 tabular-nums truncate"
-                              >
-                                <Icon name="call" size={13} className="text-[#8A99AD] shrink-0" />
-                                <span>{selectedMemberDetail.member.phone}</span>
-                              </a>
-                            ) : (
-                              <span className="font-mono text-xs text-[#8A99AD]">—</span>
-                            )}
-                            {selectedMemberDetail.member?.phone && (
-                              <button
-                                type="button"
-                                onClick={() => handleMemberCopyField(selectedMemberDetail.member?.phone || '', 'Phone')}
-                                className="p-1 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
-                                title={isAmharic ? 'ስልክ ቁጥር ቅዳ' : 'Copy Phone'}
-                              >
-                                <Icon name={memberDrawerCopiedField === 'Phone' ? 'check' : 'content_copy'} size={13} />
-                              </button>
-                            )}
-                          </div>
-                        </div>
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'ክፍለ ከተማ' : 'Subcity'}
+                        </span>
+                        <span className="mt-0.5 font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate">
+                          {selectedMemberDetail.member?.subCity || '—'}
+                        </span>
                       </div>
 
-                      {/* Pair 3: Subcity & Registered By */}
-                      <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] grid grid-cols-2 gap-2 items-center sm:col-span-2">
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'ክፍለ ከተማ' : 'Subcity'}
-                          </span>
-                          <span className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate">
-                            {selectedMemberDetail.member?.subCity || '—'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
-                            {isAmharic ? 'የመዘገበው ሰራተኛ' : 'Registered By'}
-                          </span>
-                          <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate tabular-nums">
-                            {selectedMemberDetail.member?.registeredBy ? `Officer ${selectedMemberDetail.member.registeredBy}` : '—'}
-                          </span>
-                        </div>
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
+                          {isAmharic ? 'የመዘገበው ሰራተኛ' : 'Registered By'}
+                        </span>
+                        <span className="mt-0.5 font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate tabular-nums">
+                          {selectedMemberDetail.member?.registeredBy ? `Officer ${selectedMemberDetail.member.registeredBy}` : '—'}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -2777,49 +2779,49 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   icon="two_wheeler"
                   title={isAmharic ? 'የተሽከርካሪ እና የሞተር መረጃ' : 'Vehicle Specifications'}
                 >
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-4 text-xs">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'ምድብ' : 'Category'}
                       </span>
-                      <span className="font-bold text-[#1C2434] dark:text-white text-xs block">
+                      <span className="mt-0.5 font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block">
                         {selectedMemberDetail.member?.vehicleCategory === 'electric'
                           ? (isAmharic ? 'ኤሌክትሪክ' : 'Electric')
                           : (isAmharic ? 'ነዳጅ (<110cc)' : 'Gas (<110cc)')}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'ብራንድ እና ሞዴል' : 'Brand & Model'}
                       </span>
-                      <span className="font-bold text-[#1C2434] dark:text-white text-xs block truncate" title={`${selectedMemberDetail.member?.motorBrand || '—'} ${selectedMemberDetail.member?.motorModel || ''}`}>
+                      <span className="mt-0.5 font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] block truncate" title={`${selectedMemberDetail.member?.motorBrand || '—'} ${selectedMemberDetail.member?.motorModel || ''}`}>
                         {`${selectedMemberDetail.member?.motorBrand || '—'} ${selectedMemberDetail.member?.motorModel || ''}`.trim() || '—'}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'አገልግሎት' : 'Service Type'}
                       </span>
-                      <span className="font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate">
+                      <span className="mt-0.5 font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate">
                         {selectedMemberDetail.member?.serviceCategory || (isAmharic ? 'መደበኛ' : 'Standard')}
                       </span>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'ቻሲስ ቁጥር' : 'Chassis #'}
                       </span>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums">
+                      <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] truncate tabular-nums">
                           {selectedMemberDetail.member?.chassisNumber || '—'}
                         </span>
                         {selectedMemberDetail.member?.chassisNumber && (
                           <button
                             type="button"
                             onClick={() => handleMemberCopyField(selectedMemberDetail.member?.chassisNumber || '', 'Chassis')}
-                            className="p-0.5 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                            className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
                             title={isAmharic ? 'ቻሲስ ቁጥር ቅዳ' : 'Copy Chassis #'}
                           >
                             <Icon name={memberDrawerCopiedField === 'Chassis' ? 'check' : 'content_copy'} size={13} />
@@ -2828,19 +2830,19 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'የሰሌዳ ቁጥር' : 'Plate Number'}
                       </span>
-                      <div className="flex items-center justify-between gap-1">
-                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs block truncate tabular-nums" title={activePlate || '—'}>
+                      <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                        <span className="font-mono font-bold text-[#1C2434] dark:text-white text-xs sm:text-[13px] truncate tabular-nums" title={activePlate || '—'}>
                           {activePlate || '—'}
                         </span>
                         {activePlate && (
                           <button
                             type="button"
                             onClick={() => handleMemberCopyField(activePlate || '', 'Plate')}
-                            className="p-0.5 rounded-sm hover:bg-[#E2E8F0] dark:hover:bg-[#2E3A47] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
+                            className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary transition-colors cursor-pointer shrink-0"
                             title={isAmharic ? 'የሰሌዳ ቁጥር ቅዳ' : 'Copy Plate Number'}
                           >
                             <Icon name={memberDrawerCopiedField === 'Plate' ? 'check' : 'content_copy'} size={13} />
@@ -2849,11 +2851,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-2.5 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47]">
-                      <span className="text-[10px] font-semibold text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
+                    <div className="min-w-0">
+                      <span className="text-[11px] font-medium text-[#64748B] dark:text-[#8A99AD] block">
                         {isAmharic ? 'የተመዘገበበት ቀን' : 'Reg Date (E.C.)'}
                       </span>
-                      <span className="font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs block truncate tabular-nums">
+                      <span className="mt-0.5 font-mono font-semibold text-[#1C2434] dark:text-[#DEE4EE] text-xs sm:text-[13px] block truncate tabular-nums">
                         {selectedMemberDetail.member?.registrationDate ? formatEthiopianDate(selectedMemberDetail.member.registrationDate, isAmharic ? 'am' : 'en') : '—'}
                       </span>
                     </div>
@@ -2864,7 +2866,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
             {/* TAB 2: PAYMENT STATUS & LEDGER */}
             {memberDrawerTab === 'payments' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <div className="space-y-5 animate-in fade-in duration-200">
                 <WorkspaceDrawerSection
                   icon="receipt_long"
                   title={isAmharic ? `የተመዘገቡ ደረሰኞች ታሪክ (${selectedMemberDetail.receipts.length})` : `Payment Receipts Ledger (${selectedMemberDetail.receipts.length})`}
@@ -2878,7 +2880,7 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                           setSelectedMemberDetail(null);
                           setIsFormOpen(true);
                         }}
-                        className="px-2.5 py-1 bg-[#10B981] hover:bg-[#059669] text-white rounded-sm text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                        className="px-2.5 py-1 bg-[#10B981] hover:bg-[#059669] text-white rounded-md text-[11px] font-semibold transition-colors flex items-center gap-1 cursor-pointer"
                       >
                         <Icon name="add_card" size={14} />
                         <span>{isAmharic ? '+ አዲስ ክፍያ' : '+ Record'}</span>
@@ -2887,35 +2889,32 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                   }
                 >
                   {selectedMemberDetail.receipts.length > 0 ? (
-                    <div className="space-y-2">
+                    <div className="divide-y divide-[#E2E8F0] dark:divide-[#2E3A47] border-t border-[#E2E8F0] dark:border-[#2E3A47]">
                       {selectedMemberDetail.receipts.map((rc) => (
-                        <div
-                          key={rc.id}
-                          className="bg-[#F7F9FC] dark:bg-[#24303F]/60 p-3 rounded-md border border-[#E2E8F0] dark:border-[#2E3A47] space-y-2 shadow-2xs"
-                        >
+                        <div key={rc.id} className="py-3.5 first:pt-3 space-y-2.5">
                           <div className="flex items-center justify-between flex-wrap gap-2">
                             <div className="flex items-center gap-2">
-                              <span className="font-mono font-bold text-primary text-xs tabular-nums">
+                              <span className="font-mono font-bold text-primary text-xs sm:text-[13px] tabular-nums">
                                 #{rc.receiptNumber}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => handleMemberCopyField(rc.receiptNumber, `rc_${rc.id}`)}
-                                className="text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer"
+                                className="p-0.5 rounded-sm hover:bg-[#F1F5F9] dark:hover:bg-[#24303F] text-[#8A99AD] hover:text-primary cursor-pointer"
                                 title={isAmharic ? 'ቅዳ' : 'Copy'}
                               >
                                 <Icon name={memberDrawerCopiedField === `rc_${rc.id}` ? 'check' : 'content_copy'} size={13} />
                               </button>
                               {rc.verifiedByCheki && (
-                                <span className="px-1.5 py-0.5 rounded-sm text-[10px] font-semibold bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/20 flex items-center gap-0.5">
-                                  <Icon name="verified" size={11} />
+                                <span className="text-[11px] font-semibold text-[#10B981] flex items-center gap-1">
+                                  <Icon name="verified" size={13} />
                                   <span>{rc.chekiBank ? rc.chekiBank.toUpperCase() : 'Bank'} Verified</span>
                                 </span>
                               )}
                             </div>
 
                             <div className="flex items-center gap-2">
-                              <span className="font-mono font-bold text-[#10B981] text-xs tabular-nums">
+                              <span className="font-mono font-bold text-[#10B981] text-xs sm:text-[13px] tabular-nums">
                                 {rc.amount ? (String(rc.amount).includes('ETB') ? rc.amount : `${rc.amount} ETB`) : '500 ETB'}
                               </span>
                               {isSuperAdmin && (
@@ -2931,18 +2930,18 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-2 text-xs">
                             <div>
-                              <span className="text-[10px] block text-[#64748B] dark:text-[#8A99AD] font-semibold">
+                              <span className="text-[11px] block text-[#64748B] dark:text-[#8A99AD] font-medium">
                                 {isAmharic ? 'የተከፈለበት ቀን' : 'Payment Date'}
                               </span>
-                              <span className="font-mono text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">
+                              <span className="font-mono font-medium text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">
                                 {formatEthiopianDate(rc.paymentDate, isAmharic ? 'am' : 'en')}
                               </span>
                             </div>
 
                             <div>
-                              <span className="text-[10px] block text-[#64748B] dark:text-[#8A99AD] font-semibold">
+                              <span className="text-[11px] block text-[#64748B] dark:text-[#8A99AD] font-medium">
                                 {isAmharic ? 'የማብቂያ ቀን' : 'Expiration Date'}
                               </span>
                               <span className="font-mono font-bold text-[#1C2434] dark:text-white tabular-nums">
@@ -2951,17 +2950,17 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                             </div>
 
                             <div>
-                              <span className="text-[10px] block text-[#64748B] dark:text-[#8A99AD] font-semibold">
+                              <span className="text-[11px] block text-[#64748B] dark:text-[#8A99AD] font-medium">
                                 {isAmharic ? 'የመዘገበው ሰራተኛ' : 'Entered By'}
                               </span>
-                              <span className="font-mono text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">
+                              <span className="font-mono font-medium text-[#1C2434] dark:text-[#DEE4EE] tabular-nums">
                                 {rc.enteredBy || 'System'}
                               </span>
                             </div>
                           </div>
 
                           {rc.receiptScreenshot && (
-                            <div className="pt-1.5 flex items-center justify-between border-t border-[#E2E8F0] dark:border-[#2E3A47]">
+                            <div>
                               <button
                                 type="button"
                                 onClick={() =>
@@ -2981,9 +2980,9 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4 rounded-md bg-[#F7F9FC] dark:bg-[#24303F]/50 border border-[#E2E8F0] dark:border-[#2E3A47] text-center text-[#64748B] dark:text-[#8A99AD] space-y-1">
+                    <div className="py-8 text-center text-[#64748B] dark:text-[#8A99AD] space-y-1.5">
                       <Icon name="receipt" size={24} className="mx-auto text-[#8A99AD]" />
-                      <p className="font-semibold text-xs">
+                      <p className="font-medium text-xs">
                         {isAmharic ? 'ምንም የተመዘገበ የወርሃዊ ክፍያ ደረሰኝ የለም።' : 'No payment receipts recorded yet for this member.'}
                       </p>
                     </div>
@@ -2994,10 +2993,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
             {/* TAB 3: UPLOADED DOCUMENTS */}
             {memberDrawerTab === 'documents' && (
-              <div className="space-y-3 animate-in fade-in duration-200">
+              <div className="space-y-5 animate-in fade-in duration-200">
                 <WorkspaceDrawerSection
                   icon="photo_library"
-                  title={isAmharic ? 'የአባሉ ሰነዶች እና ፎቶዎች (ለማጉላት ይጫኑ)' : 'Member Documents & Photos (Click to Zoom)'}
+                  title={isAmharic ? 'የአባሉ ሰነዶች እና ፎቶዎች' : 'Member Documents & Photos'}
                 >
                   {(() => {
                     const memberDocs = [
@@ -3029,10 +3028,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                     ];
 
                     return (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
                         {memberDocs.map((doc, idx) => (
-                          <div key={idx} className="space-y-1">
-                            <span className="block text-[10px] font-bold text-[#64748B] dark:text-[#8A99AD] truncate">
+                          <div key={idx} className="space-y-1.5">
+                            <span className="block text-[11px] font-semibold text-[#64748B] dark:text-[#8A99AD] truncate">
                               {doc.label}
                             </span>
                             <div
@@ -3041,10 +3040,10 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                                   setPreviewDocPhoto({ url: doc.url, title: doc.label });
                                 }
                               }}
-                              className={`h-32 sm:h-36 rounded-md border overflow-hidden flex items-center justify-center relative shadow-2xs transition-colors ${
+                              className={`h-32 sm:h-36 rounded-lg overflow-hidden flex items-center justify-center relative transition-colors ${
                                 doc.url
-                                  ? 'bg-[#F7F9FC] dark:bg-[#24303F] border-[#E2E8F0] dark:border-[#2E3A47] hover:border-primary cursor-pointer group'
-                                  : 'bg-[#F7F9FC]/60 dark:bg-[#24303F]/30 border-dashed border-[#E2E8F0] dark:border-[#2E3A47] cursor-default'
+                                  ? 'bg-[#F1F5F9] dark:bg-[#24303F] cursor-pointer group'
+                                  : 'bg-[#F7F9FC] dark:bg-[#24303F]/40 cursor-default'
                               }`}
                             >
                               {doc.url ? (
@@ -3080,15 +3079,15 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {/* DOCUMENT & PHOTO LIGHTBOX MODAL */}
       {previewDocPhoto && (
         <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fade-in">
-          <div className="relative max-w-3xl w-full bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-700 animate-in zoom-in-95 duration-150">
-            <div className="p-3.5 bg-slate-900 text-white flex items-center justify-between">
+          <div className="relative max-w-3xl w-full bg-white dark:bg-[#1C2434] rounded-2xl overflow-hidden shadow-2xl border border-[#E2E8F0] dark:border-[#2E3A47] animate-in zoom-in-95 duration-150">
+            <div className="p-3.5 bg-[#1C2434] text-white flex items-center justify-between border-b border-[#2E3A47]">
               <span className="font-bold text-sm">{previewDocPhoto.title}</span>
               <button
                 type="button"
                 onClick={() => setPreviewDocPhoto(null)}
-                className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center cursor-pointer text-xs font-bold"
+                className="w-7 h-7 rounded-full bg-[#24303F] hover:bg-[#333A48] text-white flex items-center justify-center cursor-pointer text-xs font-bold"
               >
-                ✕
+                <Icon className="material-symbols-outlined text-[16px]">close</Icon>
               </button>
             </div>
             <div className="p-2 bg-black flex items-center justify-center max-h-[75vh] overflow-auto">
@@ -3098,11 +3097,11 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 className="max-h-[70vh] w-auto object-contain rounded-lg shadow-lg"
               />
             </div>
-            <div className="p-3 bg-slate-50 dark:bg-slate-800 flex justify-end">
+            <div className="p-3 bg-[#F7F9FC] dark:bg-[#24303F] border-t border-[#E2E8F0] dark:border-[#2E3A47] flex justify-end">
               <button
                 type="button"
                 onClick={() => setPreviewDocPhoto(null)}
-                className="px-4 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 cursor-pointer"
+                className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-bold cursor-pointer"
               >
                 {isAmharic ? 'ዝጋ' : 'Close'}
               </button>
@@ -3114,14 +3113,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {/* DELETE CONFIRMATION MODAL */}
       {deleteConfirmId && (
         <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-14 md:pt-16 pb-8 p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center gap-3 text-rose-600">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div className="flex items-center gap-3 text-[#FB5454]">
               <Icon className="material-symbols-outlined text-[28px]">warning</Icon>
-              <h3 className="text-base font-black  tracking-wide">
+              <h3 className="text-base font-black tracking-wide">
                 {isAmharic ? 'የክፍያ ደረሰኝ ሰርዝ?' : 'Delete Payment Receipt?'}
               </h3>
             </div>
-            <p className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-semibold">
+            <p className="text-xs text-[#475569] dark:text-[#CBD5E1] leading-relaxed font-semibold">
               {isAmharic
                 ? 'ይህንን የተመዘገበ የክፍያ ደረሰኝ ከሲስተሙ ለመሰረዝ እርግጠኛ ነዎት? ይህ ተግባር አይመለስም።'
                 : 'Are you sure you want to delete this registered payment receipt? This action cannot be undone.'}
@@ -3130,14 +3129,14 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
               <button
                 type="button"
                 onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-[#F7F9FC] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-bold transition-all cursor-pointer"
               >
                 {isAmharic ? 'ተመለስ' : 'Cancel'}
               </button>
               <button
                 type="button"
                 onClick={handleDeleteConfirmed}
-                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-black transition-all cursor-pointer shadow-xs"
+                className="px-4 py-2 rounded-lg bg-[#FB5454] hover:bg-[#D34040] text-white text-xs font-black transition-all cursor-pointer shadow-xs"
               >
                 {isAmharic ? 'አዎ ሰርዝ' : 'Yes, Delete'}
               </button>
@@ -3149,16 +3148,16 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
       {/* EDIT TRANSACTION MODAL (SUPERADMIN ONLY) */}
       {editingReceipt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-              <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl max-w-md w-full p-5 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#2E3A47] pb-2">
+              <h3 className="text-sm font-black text-[#1C2434] dark:text-white flex items-center gap-2">
                 <Icon name="edit" size={18} className="text-primary" />
                 <span>{isAmharic ? 'የክፍያ ዝርዝር አርትዕ' : 'Edit Transaction'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setEditingReceipt(null)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-1 rounded-md"
+                className="text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white cursor-pointer p-1 rounded-md"
                 title={isAmharic ? 'ዝጋ' : 'Close'}
               >
                 <Icon name="close" size={18} />
@@ -3167,31 +3166,31 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-bold text-[#475569] dark:text-[#CBD5E1] mb-1">
                   {isAmharic ? 'የደረሰኝ ቁጥር' : 'Receipt Number'}
                 </label>
                 <input
                   type="text"
                   disabled
                   value={editingReceipt.receiptNumber}
-                  className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold text-slate-500 dark:text-slate-400"
+                  className="w-full px-3 py-2 bg-[#F1F5F9] dark:bg-[#1A222C] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg font-mono font-bold text-[#64748B] dark:text-[#8A99AD]"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-bold text-[#475569] dark:text-[#CBD5E1] mb-1">
                   {isAmharic ? 'የተከፈለ መጠን (ብር)' : 'Amount Paid (ETB)'}
                 </label>
                 <input
                   type="number"
                   value={editFormAmount}
                   onChange={(e) => setEditFormAmount(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg font-mono font-bold text-slate-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg font-mono font-bold text-[#1C2434] dark:text-white focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-bold text-[#475569] dark:text-[#CBD5E1] mb-1">
                   {isAmharic ? 'የተከፈለበት ቀን (E.C.)' : 'Payment Date (E.C.)'}
                 </label>
                 <EthiopianDatePickerPopover
@@ -3205,36 +3204,36 @@ export const PaymentReceiptsPage: React.FC<PaymentReceiptsPageProps> = ({
                 />
               </div>
 
-              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-lg text-xs font-bold text-emerald-900 dark:text-emerald-300 flex items-center justify-between shadow-2xs">
+              <div className="p-2 bg-emerald-50 dark:bg-[#10B981]/15 border border-emerald-200 dark:border-[#10B981]/30 rounded-lg text-xs font-bold text-emerald-800 dark:text-[#6EE7B7] flex items-center justify-between shadow-2xs">
                 <span>{isAmharic ? 'የማብቂያ ቀን (ኢትዮጵያ):' : 'Calculated Expiry (Eth):'}</span>
                 <span className="font-mono">{formatEthiopianDate(editFormExpDate || editingReceipt.expirationDate, isAmharic ? 'am' : 'en')}</span>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-bold text-[#475569] dark:text-[#CBD5E1] mb-1">
                   {isAmharic ? 'ማስታወሻ / ዝርዝር' : 'Notes / Description'}
                 </label>
                 <input
                   type="text"
                   value={editFormNotes}
                   onChange={(e) => setEditFormNotes(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                  className="w-full px-3 py-2 bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-lg text-[#1C2434] dark:text-white focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end gap-2 pt-2 border-t border-[#E2E8F0] dark:border-[#2E3A47]">
               <button
                 type="button"
                 onClick={() => setEditingReceipt(null)}
-                className="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-[#F7F9FC] hover:bg-[#E2E8F0] dark:bg-[#24303F] dark:hover:bg-[#333A48] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#2E3A47] text-xs font-bold cursor-pointer"
               >
                 {isAmharic ? 'ሰርዝ' : 'Cancel'}
               </button>
               <button
                 type="button"
                 onClick={handleSaveEditedTransaction}
-                className="px-4 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white text-xs font-black shadow-xs cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-on-primary text-xs font-black shadow-xs cursor-pointer"
               >
                 {isAmharic ? 'አስቀምጥ' : 'Save Changes'}
               </button>

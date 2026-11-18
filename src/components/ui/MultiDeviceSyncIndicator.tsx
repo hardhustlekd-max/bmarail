@@ -64,16 +64,16 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
         };
       case 'dormant':
         return {
-          bg: 'bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 border-teal-500/30',
-          dot: 'bg-teal-400',
+          bg: 'bg-primary/10 dark:bg-primary/15 text-primary border-primary/25',
+          dot: 'bg-primary',
           ping: 'hidden',
           label: isAmharic ? 'ቆጣቢ እንቅልፍ' : 'Eco Sleep',
         };
       case 'offline':
       default:
         return {
-          bg: 'bg-slate-500/10 dark:bg-slate-500/20 text-slate-500 dark:text-slate-400 border-slate-500/30',
-          dot: 'bg-slate-400',
+          bg: 'bg-[#F7F9FC] dark:bg-[#24303F] text-[#64748B] dark:text-[#8A99AD] border-[#E2E8F0] dark:border-[#2E3A47]',
+          dot: 'bg-[#64748B] dark:bg-[#8A99AD]',
           ping: 'hidden',
           label: isAmharic ? 'ከመስመር ውጭ' : 'Offline Cache',
         };
@@ -145,13 +145,13 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={POPOVER_TRANSITION}
-            className="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-[#1C2434] border border-slate-200 dark:border-[#2E3A47] rounded-xl shadow-2xl p-3.5 z-50 text-slate-800 dark:text-[#DEE4EE]"
+            className="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-[#1C2434] border border-[#E2E8F0] dark:border-[#2E3A47] rounded-xl shadow-2xl p-3.5 z-50 text-[#1C2434] dark:text-[#DEE4EE]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 dark:border-white/10">
+            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-[#E2E8F0] dark:border-[#2E3A47]">
             <div className="flex items-center gap-2">
               <Icon className="material-symbols-outlined text-primary text-icon-lg">devices</Icon>
-              <span className="font-bold text-xs text-slate-900 dark:text-white">
+              <span className="font-bold text-xs text-[#1C2434] dark:text-white">
                 {isAmharic ? 'ባለብዙ-መሳሪያ የቀጥታ ማመሳሰል' : 'Multi-Device Live Sync'}
               </span>
             </div>
@@ -165,51 +165,51 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
           {/* Stats Details Grid */}
           <div className="space-y-2 text-xs">
             {/* Active Devices */}
-            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-              <span className="text-slate-500 dark:text-slate-400 text-11 flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-icon-sm text-slate-400">group_work</Icon>
+            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47]">
+              <span className="text-[#64748B] dark:text-[#8A99AD] text-11 flex items-center gap-1.5">
+                <Icon className="material-symbols-outlined text-icon-sm text-[#64748B] dark:text-[#8A99AD]">group_work</Icon>
                 {isAmharic ? 'የተገናኙ መሳሪያዎች' : 'Connected Devices'}
               </span>
-              <span className="font-bold text-slate-800 dark:text-slate-100 font-mono">
+              <span className="font-bold text-[#1C2434] dark:text-white font-mono">
                 {activeDevices} {isAmharic ? 'መሳሪያዎች' : 'stations'}
               </span>
             </div>
 
             {/* Latency & Protocol */}
-            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-              <span className="text-slate-500 dark:text-slate-400 text-11 flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-icon-sm text-slate-400">speed</Icon>
+            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47]">
+              <span className="text-[#64748B] dark:text-[#8A99AD] text-11 flex items-center gap-1.5">
+                <Icon className="material-symbols-outlined text-icon-sm text-[#64748B] dark:text-[#8A99AD]">speed</Icon>
                 {isAmharic ? 'የግንኙነት ፍጥነት' : 'Stream Latency'}
               </span>
-              <span className="font-medium text-slate-700 dark:text-slate-200 font-mono">
+              <span className="font-medium text-[#1C2434] dark:text-[#DEE4EE] font-mono">
                 {latencyMs > 0 ? `${latencyMs}ms (SSE)` : 'Active Stream'}
               </span>
             </div>
 
             {/* Last Synced */}
-            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-              <span className="text-slate-500 dark:text-slate-400 text-11 flex items-center gap-1.5">
-                <Icon className="material-symbols-outlined text-icon-sm text-slate-400">update</Icon>
+            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47]">
+              <span className="text-[#64748B] dark:text-[#8A99AD] text-11 flex items-center gap-1.5">
+                <Icon className="material-symbols-outlined text-icon-sm text-[#64748B] dark:text-[#8A99AD]">update</Icon>
                 {isAmharic ? 'የመጨረሻ ማመሳሰል' : 'Last Synced'}
               </span>
-              <span className="font-medium text-slate-700 dark:text-slate-200">
+              <span className="font-medium text-[#1C2434] dark:text-[#DEE4EE]">
                 {formatLastSync()}
               </span>
             </div>
 
             {/* Current Device ID */}
-            <div className="py-1 px-2 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 text-11">
-              <span className="text-slate-500 dark:text-slate-400 block mb-0.5">
+            <div className="py-1 px-2 rounded-lg bg-[#F7F9FC] dark:bg-[#24303F] border border-[#E2E8F0] dark:border-[#2E3A47] text-11">
+              <span className="text-[#64748B] dark:text-[#8A99AD] block mb-0.5">
                 {isAmharic ? 'የዚህ መሳሪያ መለያ (Device ID)' : 'Current Device ID'}
               </span>
-              <span className="font-mono text-slate-700 dark:text-slate-300 truncate block select-all">
+              <span className="font-mono text-[#1C2434] dark:text-[#DEE4EE] truncate block select-all">
                 {deviceId}
               </span>
             </div>
 
             {/* Serverless Free-Tier Eco Saver Notice */}
-            <div className="py-1 px-2 rounded-lg bg-teal-50 dark:bg-teal-950/30 border border-teal-200/60 dark:border-teal-800/40 text-2xs text-teal-800 dark:text-teal-200 flex items-start gap-1.5">
-              <Icon className="material-symbols-outlined text-icon-xs text-teal-600 shrink-0 mt-0.5">eco</Icon>
+            <div className="py-1 px-2 rounded-lg bg-emerald-50 dark:bg-[#10B981]/15 border border-emerald-200/80 dark:border-[#10B981]/30 text-2xs text-emerald-800 dark:text-[#6EE7B7] flex items-start gap-1.5">
+              <Icon className="material-symbols-outlined text-icon-xs text-emerald-600 dark:text-[#10B981] shrink-0 mt-0.5">eco</Icon>
               <span>
                 {isAmharic
                   ? 'የሰርቨር ወጪ ቆጣቢ ሞድ፡ ታቡ ሲዘጋ ወይም ስራ ሲፈታ ሰርቨሩ እንዳይቃጠል ግንኙነቱ በራስ-ሰር ይተኛል። መስተጋብር ሲኖር ወዲያውኑ ይነሳል።'
@@ -219,8 +219,8 @@ export const MultiDeviceSyncIndicator: React.FC<MultiDeviceSyncIndicatorProps> =
           </div>
 
           {/* Quick Action: Force Refresh / Manual Sync */}
-          <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-white/10 flex items-center justify-between gap-2">
-            <span className="text-2xs text-slate-400 dark:text-slate-500">
+          <div className="mt-3 pt-2.5 border-t border-[#E2E8F0] dark:border-[#2E3A47] flex items-center justify-between gap-2">
+            <span className="text-2xs text-[#64748B] dark:text-[#8A99AD]">
               TanStack Query + SSE
             </span>
             <motion.button

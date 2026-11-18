@@ -156,7 +156,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
   return (
     <div ref={containerRef} className={`relative inline-block text-left ${className}`}>
       {label && (
-        <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-xs font-bold text-[#1C2434] dark:text-[#DEE4EE] mb-1">
           {label}
         </label>
       )}
@@ -178,7 +178,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
           </Icon>
           <span className="truncate">{formattedDisplay}</span>
         </span>
-        <Icon className={`material-symbols-outlined text-15 text-slate-400 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}>
+        <Icon className={`material-symbols-outlined text-15 text-[#64748B] dark:text-[#8A99AD] transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}>
           expand_more
         </Icon>
       </button>
@@ -199,7 +199,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
               <button
                 type="button"
                 onClick={handlePrevMonth}
-                className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-600 dark:text-slate-300 transition-colors cursor-pointer shrink-0"
+                className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
                 title={isAmharic ? 'ያለፈው ወር' : 'Previous Month'}
               >
                 <Icon className="material-symbols-outlined text-icon-md">chevron_left</Icon>
@@ -210,7 +210,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
                 <select
                   value={viewMonth}
                   onChange={(e) => setViewMonth(Number(e.target.value))}
-                  className="text-xs font-black bg-slate-100 dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-md px-2 py-1 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
+                  className="text-xs font-black bg-[#F7F9FC] dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-md px-2 py-1 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
                 >
                   {ETHIOPIAN_MONTHS.map((m) => (
                     <option key={m.id} value={m.id}>
@@ -223,7 +223,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
                 <select
                   value={viewYear}
                   onChange={(e) => setViewYear(Number(e.target.value))}
-                  className="text-xs font-black bg-slate-100 dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-md px-2 py-1 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
+                  className="text-xs font-black bg-[#F7F9FC] dark:bg-[#1C2434] text-[#1C2434] dark:text-white rounded-md px-2 py-1 border border-[#E2E8F0] dark:border-[#2E3A47] outline-none cursor-pointer"
                 >
                   {yearOptions.map((y) => (
                     <option key={y} value={y}>
@@ -236,7 +236,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
               <button
                 type="button"
                 onClick={handleNextMonth}
-                className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-[#1C2434] text-slate-600 dark:text-slate-300 transition-colors cursor-pointer shrink-0"
+                className="w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-[#1C2434] text-[#64748B] dark:text-[#8A99AD] hover:text-[#1C2434] dark:hover:text-white transition-colors cursor-pointer shrink-0"
                 title={isAmharic ? 'ቀጣይ ወር' : 'Next Month'}
               >
                 <Icon className="material-symbols-outlined text-icon-md">chevron_right</Icon>
@@ -248,7 +248,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
               {ETHIOPIAN_WEEKDAYS.map((w) => (
                 <span
                   key={w.id}
-                  className="text-2xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-tight"
+                  className="text-2xs font-black text-[#64748B] dark:text-[#8A99AD] uppercase tracking-tight"
                   title={isAmharic ? w.am : w.en}
                 >
                   {isAmharic ? w.am.slice(0, 2) : w.en.slice(0, 2)}
@@ -287,8 +287,8 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
                       isSelected
                         ? 'bg-primary text-on-primary font-black shadow-sm ring-2 ring-primary/30'
                         : isToday
-                        ? 'bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 font-extrabold border border-primary/30'
-                        : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#1C2434]'
+                        ? 'bg-primary/10 text-primary dark:bg-primary/20 font-extrabold border border-primary/30'
+                        : 'text-[#1C2434] dark:text-[#DEE4EE] hover:bg-[#F1F5F9] dark:hover:bg-[#1C2434]'
                     }`}
                   >
                     {day}
@@ -314,7 +314,7 @@ export const EthiopianDatePickerPopover: React.FC<EthiopianDatePickerPopoverProp
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 font-bold cursor-pointer min-h-[var(--ui-control-h-sm)] px-2.5 rounded-md hover:bg-slate-100 dark:hover:bg-[#1C2434]"
+                className="text-[#64748B] hover:text-[#1C2434] dark:text-[#8A99AD] dark:hover:text-white font-bold cursor-pointer min-h-[var(--ui-control-h-sm)] px-2.5 rounded-md hover:bg-[#F1F5F9] dark:hover:bg-[#1C2434]"
               >
                 {isAmharic ? 'ዝጋ' : 'Close'}
               </button>

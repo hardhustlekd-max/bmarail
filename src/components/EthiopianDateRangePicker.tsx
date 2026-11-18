@@ -287,8 +287,8 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
       {/* Top Toolbar Row: Presets + Active Range Badge */}
       <div className="py-1.5 px-3 sm:px-4 flex flex-wrap items-center justify-between gap-1.5 w-full max-w-full min-w-0">
         {/* Preset Pills - Wrapping cleanly on mobile, zero overflow */}
-        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
-          <div className="flex flex-wrap items-center gap-1 p-0.5 rounded-lg bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47]">
+        <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 min-w-0 max-w-full">
+          <div className="flex flex-wrap items-center gap-1 p-0.5 rounded-lg bg-[#E2E8F0]/70 dark:bg-[#1C2434]/80 border border-[#E2E8F0] dark:border-[#2E3A47] max-w-full">
             {presetOptions.map((opt) => {
               const isActive = preset === opt.key && !isCustomOpen;
               return (
@@ -513,17 +513,17 @@ export const EthiopianDateRangePicker: React.FC<EthiopianDateRangePickerProps> =
 
         {/* Right Section: Active Ethiopian Range Indicator Badge */}
         {ethRangeDisplay && (
-          <div className="flex items-center gap-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-11 sm:text-xs font-bold bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 border border-primary/20">
-              <Icon className="material-symbols-outlined text-13 sm:text-icon-xs">calendar_today</Icon>
-              <span>{ethRangeDisplay}</span>
+          <div className="flex items-center gap-1 min-w-0 max-w-full">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-11 sm:text-xs font-bold bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-300 border border-primary/20 max-w-full min-w-0">
+              <Icon className="material-symbols-outlined text-13 sm:text-icon-xs shrink-0">calendar_today</Icon>
+              <span className="truncate">{ethRangeDisplay}</span>
             </span>
 
             {preset !== 'this_month' && (
               <button
                 type="button"
                 onClick={() => handleSelectPreset('this_month')}
-                className="w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-[#1C2434] transition-colors cursor-pointer"
+                className="w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-[#1C2434] transition-colors cursor-pointer shrink-0"
                 title={isAmharic ? 'ወደዚህ ወር መልስ' : 'Reset to this month'}
               >
                 <Icon className="material-symbols-outlined text-15">restart_alt</Icon>

@@ -150,7 +150,7 @@ export const CentralPageSpinner: React.FC<CentralPageSpinnerProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-[999] flex items-center justify-center bg-slate-900/20 dark:bg-black/50 backdrop-blur-[1.5px] animate-spinner-backdrop ${className}`}
+      className={`fixed inset-0 z-[999] flex items-center justify-center bg-[#1A222C]/25 dark:bg-black/55 backdrop-blur-[1.5px] animate-spinner-backdrop ${className}`}
     >
       {content}
     </div>

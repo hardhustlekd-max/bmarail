@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Icon } from './ui/Icon';
-import { BACKDROP_VARIANTS, TACTILE_SPRING, TAP_SCALE } from '../utils/motionPresets';
+import { SpinnerIcon } from './ui/CentralPageSpinner';
+import {
+  BACKDROP_VARIANTS,
+  MODAL_CONTENT_VARIANTS,
+  TACTILE_SPRING,
+  TAP_SCALE,
+} from '../utils/motionPresets';
 
 interface CameraCaptureModalProps {
   isOpen: boolean;
@@ -24,15 +30,19 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const nativeCameraInputRef = useRef<HTMLInputElement>(null);
+  const startRequestIdRef = useRef(0);
 
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>(defaultFacingMode);
   const [isStarting, setIsStarting] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
   const [cameraError, setCameraError] = useState<string>('');
   const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
   const [capturedPreviewUrl, setCapturedPreviewUrl] = useState<string>('');
   const [isSubmittingCapture, setIsSubmittingCapture] = useState(false);
 
   const stopStream = useCallback(() => {
+    startRequestIdRef.current += 1;
+    setIsVideoReady(false);
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => {
         try {
@@ -61,7 +71,9 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const startCamera = useCallback(
     async (mode: 'environment' | 'user') => {
       stopStream();
+      const requestId = ++startRequestIdRef.current;
       setCameraError('');
+      setIsVideoReady(false);
       setIsStarting(true);
 
       if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
@@ -93,12 +105,27 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           });
         }
 
+        if (requestId !== startRequestIdRef.current) {
+          stream.getTracks().forEach((track) => {
+            try {
+              track.stop();
+            } catch {
+              // Ignore track stop errors
+            }
+          });
+          return;
+        }
+
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch(() => {});
+          if (requestId === startRequestIdRef.current && videoRef.current.readyState >= 2) {
+            setIsVideoReady(true);
+          }
         }
       } catch (err: any) {
+        if (requestId !== startRequestIdRef.current) return;
         const msg = String(err?.name || err?.message || '').toLowerCase();
         if (msg.includes('notallowed') || msg.includes('permission')) {
           setCameraError(
@@ -120,7 +147,9 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           );
         }
       } finally {
-        setIsStarting(false);
+        if (requestId === startRequestIdRef.current) {
+          setIsStarting(false);
+        }
       }
     },
     [isAmharic, stopStream]
@@ -219,6 +248,8 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
   if (typeof document === 'undefined') return null;
 
+  const isLoadingViewport = isStarting || (!cameraError && !capturedPreviewUrl && !isVideoReady);
+
   return createPortal(
     <AnimatePresence>
       {isOpen && (
@@ -226,24 +257,25 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           role="dialog"
           aria-modal="true"
           variants={BACKDROP_VARIANTS}
-          initial="initial"
-          animate="animate"
+          initial="hidden"
+          animate="visible"
           exit="exit"
           onClick={onClose}
-          className="fixed inset-0 z-[10020] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4"
+          className="fixed inset-0 z-[10020] bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            variants={MODAL_CONTENT_VARIANTS}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             transition={TACTILE_SPRING}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-2xl bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[92dvh]"
+            className="w-full max-w-2xl h-[min(86dvh,640px)] bg-[#1A222C] border border-[#2E3A47] rounded-xl overflow-hidden shadow-2xl flex flex-col"
           >
             {/* Header */}
-            <div className="px-4 py-3 bg-slate-900/95 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
+            <div className="h-[60px] px-4 bg-[#1C2434] border-b border-[#2E3A47] flex items-center justify-between gap-2 shrink-0">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-primary/20 text-blue-400 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-[#24303F] border border-[#2E3A47] text-[#60A5FA] flex items-center justify-center shrink-0">
                   <Icon name="photo_camera" size={18} />
                 </div>
                 <div className="min-w-0">
@@ -259,7 +291,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                     type="button"
                     onClick={handleToggleFacingMode}
                     title={isAmharic ? 'ካሜራ ቀይር' : 'Switch Camera'}
-                    className="h-9 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="h-9 px-2.5 rounded-lg bg-[#24303F] hover:bg-[#333A48] border border-[#2E3A47] text-[#DEE4EE] text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Icon name="cameraswitch" size={17} />
                     <span className="hidden sm:inline">{isAmharic ? 'ካሜራ ቀይር' : 'Flip'}</span>
@@ -269,7 +301,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                   type="button"
                   onClick={onClose}
                   aria-label={isAmharic ? 'ዝጋ' : 'Close'}
-                  className="w-9 h-9 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-9 h-9 rounded-lg bg-[#24303F] hover:bg-[#333A48] border border-[#2E3A47] text-[#8A99AD] hover:text-white flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <Icon name="close" size={18} />
                 </button>
@@ -287,26 +319,26 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
             />
 
             {/* Viewport */}
-            <div className="relative flex-1 min-h-[280px] sm:min-h-[380px] bg-black flex items-center justify-center overflow-hidden">
+            <div className="relative flex-1 min-h-0 w-full bg-black flex items-center justify-center overflow-hidden">
               {capturedPreviewUrl ? (
                 <img
                   src={capturedPreviewUrl}
                   alt={title || 'Captured photo'}
-                  className="max-h-[65dvh] w-full object-contain"
+                  className="absolute inset-0 w-full h-full object-contain"
                 />
               ) : cameraError ? (
                 <div className="p-6 text-center max-w-sm space-y-3">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-400">
+                  <div className="w-14 h-14 mx-auto rounded-full bg-[#1C2434] border border-[#2E3A47] flex items-center justify-center text-[#8A99AD]">
                     <Icon name="videocam_off" size={28} />
                   </div>
-                  <p className="text-xs font-semibold text-slate-200 leading-relaxed">
+                  <p className="text-xs font-semibold text-[#DEE4EE] leading-relaxed">
                     {cameraError}
                   </p>
                   <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
                     <button
                       type="button"
                       onClick={() => startCamera(facingMode)}
-                      className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
+                      className="px-3.5 py-2 rounded-lg bg-[#24303F] hover:bg-[#333A48] border border-[#2E3A47] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
                     >
                       <Icon name="refresh" size={15} />
                       <span>{isAmharic ? 'እንደገና ሞክር' : 'Retry'}</span>
@@ -314,7 +346,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                     <button
                       type="button"
                       onClick={() => nativeCameraInputRef.current?.click()}
-                      className="px-3.5 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
+                      className="px-3.5 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
                     >
                       <Icon name="photo_camera" size={15} />
                       <span>{isAmharic ? 'የመሣሪያ ካሜራ ክፈት' : 'Device Camera'}</span>
@@ -328,11 +360,16 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                     autoPlay
                     playsInline
                     muted
-                    className={`w-full h-full max-h-[65dvh] object-cover ${facingMode === 'user' ? '-scale-x-100' : ''}`}
+                    onLoadedData={() => setIsVideoReady(true)}
+                    onCanPlay={() => setIsVideoReady(true)}
+                    onPlaying={() => setIsVideoReady(true)}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-200 ${
+                      isLoadingViewport ? 'opacity-0' : 'opacity-100'
+                    } ${facingMode === 'user' ? '-scale-x-100' : ''}`}
                   />
 
                   {/* Subtle document framing corner brackets */}
-                  {!isStarting && (
+                  {!isLoadingViewport && (
                     <div className="absolute inset-6 sm:inset-10 pointer-events-none">
                       <div className="absolute top-0 left-0 w-7 h-7 border-t-2 border-l-2 border-white/70 rounded-tl-md" />
                       <div className="absolute top-0 right-0 w-7 h-7 border-t-2 border-r-2 border-white/70 rounded-tr-md" />
@@ -341,10 +378,14 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                     </div>
                   )}
 
-                  {isStarting && (
-                    <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-2 text-white">
-                      <Icon name="progress_activity" size={28} className="animate-spin text-blue-400" />
-                      <span className="text-xs font-semibold text-slate-300">
+                  {isLoadingViewport && (
+                    <div className="absolute inset-0 bg-[#1A222C]/95 flex flex-col items-center justify-center gap-2.5 text-white">
+                      <SpinnerIcon
+                        size={30}
+                        className="text-[#60A5FA]"
+                        trackClassName="text-white/15"
+                      />
+                      <span className="text-xs font-semibold text-[#DEE4EE]">
                         {isAmharic ? 'ካሜራ በመክፈት ላይ...' : 'Starting camera...'}
                       </span>
                     </div>
@@ -354,7 +395,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
             </div>
 
             {/* Footer Controls */}
-            <div className="px-4 py-3 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between gap-3 shrink-0">
+            <div className="h-[76px] px-4 bg-[#1C2434] border-t border-[#2E3A47] flex items-center justify-between gap-3 shrink-0">
               {capturedPreviewUrl ? (
                 <>
                   <motion.button
@@ -363,7 +404,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                     transition={TACTILE_SPRING}
                     onClick={handleRetake}
                     disabled={isSubmittingCapture}
-                    className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
+                    className="px-4 py-2.5 rounded-lg bg-[#24303F] hover:bg-[#333A48] border border-[#2E3A47] text-[#DEE4EE] text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
                   >
                     <Icon name="refresh" size={16} />
                     <span>{isAmharic ? 'እንደገና አንሳ' : 'Retake'}</span>
@@ -375,7 +416,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                     transition={TACTILE_SPRING}
                     onClick={handleConfirmPhoto}
                     disabled={isSubmittingCapture}
-                    className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm disabled:opacity-50"
+                    className="px-5 py-2.5 rounded-lg bg-[#10B981] hover:bg-[#059669] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm disabled:opacity-50"
                   >
                     <Icon
                       name={isSubmittingCapture ? 'progress_activity' : 'check_circle'}
@@ -390,7 +431,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                   <button
                     type="button"
                     onClick={() => nativeCameraInputRef.current?.click()}
-                    className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                    className="px-3 py-2 rounded-lg bg-[#24303F] hover:bg-[#333A48] border border-[#2E3A47] text-[#DEE4EE] text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
                     title={isAmharic ? 'የመሣሪያ ካሜራ' : 'Device Camera'}
                   >
                     <Icon name="add_a_photo" size={16} />
@@ -403,8 +444,8 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                       whileTap={TAP_SCALE}
                       transition={TACTILE_SPRING}
                       onClick={handleTakeSnapshot}
-                      disabled={isStarting}
-                      className="w-13 h-13 rounded-full bg-white hover:bg-slate-100 text-slate-950 flex items-center justify-center shadow-lg ring-4 ring-white/25 cursor-pointer transition-all disabled:opacity-40"
+                      disabled={isLoadingViewport}
+                      className="w-[52px] h-[52px] rounded-full bg-white hover:bg-[#F1F5F9] text-[#1C2434] flex items-center justify-center shadow-lg ring-4 ring-white/25 cursor-pointer transition-all disabled:opacity-40"
                       title={isAmharic ? 'ፎቶ አንሳ' : 'Capture Photo'}
                     >
                       <Icon name="photo_camera" size={24} />
@@ -414,7 +455,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold cursor-pointer transition-colors"
+                    className="px-3.5 py-2 rounded-lg bg-[#24303F] hover:bg-[#333A48] border border-[#2E3A47] text-[#DEE4EE] text-xs font-semibold cursor-pointer transition-colors"
                   >
                     {isAmharic ? 'ሰርዝ' : 'Cancel'}
                   </button>
