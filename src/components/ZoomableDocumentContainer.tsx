@@ -41,7 +41,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isDownloading, setIsDownloading] = useState<boolean>(false);
+  const [downloadingTargetId, setDownloadingTargetId] = useState<string | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -54,8 +54,8 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
 
   const handleDownload = async (elementId: string, filename: string) => {
     const element = document.getElementById(elementId);
-    if (!element || isDownloading) return;
-    setIsDownloading(true);
+    if (!element || downloadingTargetId !== null) return;
+    setDownloadingTargetId(elementId);
     try {
       // 1. Ensure all custom fonts are ready
       if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
@@ -136,7 +136,7 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
     } catch (err) {
       console.error('[Document Download Error]:', err);
     } finally {
-      setIsDownloading(false);
+      setDownloadingTargetId(null);
     }
   };
 
@@ -484,38 +484,44 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
             </button>
           )}
 
-          {downloadFrontId && (
-            <button
-              type="button"
-              disabled={isDownloading}
-              onClick={() => handleDownload(downloadFrontId, 'id_front.jpg')}
-              className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
-              title={isAmharic ? 'የፊት ገጽ አውርድ' : 'Download Front'}
-            >
-              <Icon className={`material-symbols-outlined text-icon-md ${isDownloading ? 'animate-spin' : ''}`}>
-                {isDownloading ? 'progress_activity' : 'download'}
-              </Icon>
-              <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የፊት' : 'Front'}</span>
-            </button>
-          )}
-          {downloadBackId && (
-            <button
-              type="button"
-              disabled={isDownloading}
-              onClick={() => handleDownload(downloadBackId, 'id_back.jpg')}
-              className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
-              title={isAmharic ? 'የኋላ ገጽ አውርድ' : 'Download Back'}
-            >
-              <Icon className={`material-symbols-outlined text-icon-md ${isDownloading ? 'animate-spin' : ''}`}>
-                {isDownloading ? 'progress_activity' : 'download'}
-              </Icon>
-              <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የኋላ' : 'Back'}</span>
-            </button>
-          )}
+          {downloadFrontId && (() => {
+            const isFrontDownloading = downloadingTargetId === downloadFrontId;
+            return (
+              <button
+                type="button"
+                disabled={downloadingTargetId !== null}
+                onClick={() => handleDownload(downloadFrontId, 'id_front.jpg')}
+                className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
+                title={isAmharic ? 'የፊት ገጽ አውርድ' : 'Download Front'}
+              >
+                <Icon className={`material-symbols-outlined text-icon-md ${isFrontDownloading ? 'animate-spin' : ''}`}>
+                  {isFrontDownloading ? 'progress_activity' : 'download'}
+                </Icon>
+                <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የፊት' : 'Front'}</span>
+              </button>
+            );
+          })()}
+          {downloadBackId && (() => {
+            const isBackDownloading = downloadingTargetId === downloadBackId;
+            return (
+              <button
+                type="button"
+                disabled={downloadingTargetId !== null}
+                onClick={() => handleDownload(downloadBackId, 'id_back.jpg')}
+                className="h-9 px-3 flex items-center justify-center bg-white/10 border border-white/20 rounded-lg font-bold text-white hover:bg-white/20 transition-all cursor-pointer ml-1 disabled:opacity-50"
+                title={isAmharic ? 'የኋላ ገጽ አውርድ' : 'Download Back'}
+              >
+                <Icon className={`material-symbols-outlined text-icon-md ${isBackDownloading ? 'animate-spin' : ''}`}>
+                  {isBackDownloading ? 'progress_activity' : 'download'}
+                </Icon>
+                <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'የኋላ' : 'Back'}</span>
+              </button>
+            );
+          })()}
           {!downloadFrontId && !downloadBackId && (Boolean(contentRef.current?.querySelector?.('.printable-a4-document, #a4-permit-document, .printable-sticker, #sticker-container'))) && (
             <button
               type="button"
-              disabled={isDownloading}
+              disabled={downloadingTargetId !== null}
               onClick={() => {
                 const a4El = contentRef.current?.querySelector('#a4-permit-document, .printable-a4-document');
                 if (a4El) {
@@ -530,8 +536,8 @@ export const ZoomableDocumentContainer: React.FC<ZoomableDocumentContainerProps>
               className="h-9 px-3 flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold transition-all cursor-pointer ml-1 disabled:opacity-50 shadow-xs"
               title={isAmharic ? 'ሰነዱን አውርድ (Download)' : 'Download Document'}
             >
-              <Icon className={`material-symbols-outlined text-icon-md ${isDownloading ? 'animate-spin' : ''}`}>
-                {isDownloading ? 'progress_activity' : 'download'}
+              <Icon className={`material-symbols-outlined text-icon-md ${downloadingTargetId !== null ? 'animate-spin' : ''}`}>
+                {downloadingTargetId !== null ? 'progress_activity' : 'download'}
               </Icon>
               <span className="hidden sm:inline ml-1.5 text-xs">{isAmharic ? 'አውርድ' : 'Download'}</span>
             </button>
